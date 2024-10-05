@@ -3,22 +3,24 @@ package fr.unice.polytech.equipe.j.equipe.j.user;
 import java.util.UUID;
 
 public class User {
-    private String name;
+    private String username;
+    private String password;
     private UUID id;
     private double accountBalance;
 
-    public User(String name, double accountBalance) {
-        this.name = name;
+    public User(String name, String password, double accountBalance) {
+        this.username = name;
+        this.password = password;
         this.accountBalance = accountBalance;
         this.id = UUID.randomUUID();
     }
 
-    public String getName() {
-        return name;
+    public String getUsername() {
+        return username;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public UUID getId() {
@@ -35,5 +37,18 @@ public class User {
 
     public void setAccountBalance(double accountBalance) {
         this.accountBalance = accountBalance;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    @Override
+    public String toString() {
+        return username + " - " + accountBalance + "€";
     }
 }
