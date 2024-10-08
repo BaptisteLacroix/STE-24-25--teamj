@@ -1,26 +1,26 @@
-package fr.unice.polytech.equipe.j.equipe.j.user;
+package fr.unice.polytech.equipe.j.user;
 
 import java.util.UUID;
 
 public class User {
-    private String username;
+    private String email;
     private String password;
     private UUID id;
     private double accountBalance;
 
-    public User(String name, String password, double accountBalance) {
-        this.username = name;
+    public User(String email, String password, double accountBalance) {
+        this.email = email;
         this.password = password;
         this.accountBalance = accountBalance;
         this.id = UUID.randomUUID();
     }
 
-    public String getUsername() {
-        return username;
+    public String getEmail() {
+        return email;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public UUID getId() {
@@ -49,6 +49,6 @@ public class User {
 
     @Override
     public String toString() {
-        return username + " - " + accountBalance + "€";
+        return email + " - " + accountBalance + "€";
     }
 }
