@@ -1,57 +1,57 @@
 package fr.unice.polytech.equipe.j.stepdefs.backend.order;
 
-import fr.unice.polytech.equipe.j.order.Order;
-import fr.unice.polytech.equipe.j.order.OrderBuilder;
 import fr.unice.polytech.equipe.j.restaurant.Menu;
 import fr.unice.polytech.equipe.j.restaurant.MenuItem;
 import fr.unice.polytech.equipe.j.restaurant.Restaurant;
-import fr.unice.polytech.equipe.j.restaurant.RestaurantFactory;
+import fr.unice.polytech.equipe.j.restaurant.RestaurantProxy;
 import fr.unice.polytech.equipe.j.user.ConnectedUser;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 
-import java.text.ParseException;
 import java.time.LocalDateTime;
+import java.util.List;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertEquals;
 
 public class PlaceOrderStepDefs {
 
     private Restaurant restaurant;
-    private OrderBuilder orderBuilder;
-    private Order order;
+    private ConnectedUser connectedUser;
+    private RestaurantProxy restaurantProxy;
 
     /**
      * This step definition is used to simulate a user registration.
      */
     @Given("the user is registered")
     public void the_user_is_registered() {
-        new ConnectedUser("john@example.com", "password", 100.0);
+        connectedUser = new ConnectedUser("john@example.com", "password", 100.0);
     }
 
     /**
      * This step definition is used to simulate the user selecting a restaurant.
+     *
      * @param restaurantName the name of the restaurant
      */
     @Given("the user has selected the restaurant {string}")
-    public void the_user_has_selected_the_restaurant(String restaurantName) throws ParseException {
-        restaurant = RestaurantFactory.createRestaurant(restaurantName, "10:00", "22:00", null);
+    public void the_user_has_selected_the_restaurant(String restaurantName) {
+        restaurant = new Restaurant(restaurantName, LocalDateTime.now(), LocalDateTime.now(), null);
+        restaurantProxy = new RestaurantProxy(List.of(restaurant));
     }
 
     /**
      * This step definition is used to simulate the user viewing the menu of a restaurant.
+     *
      * @param restaurantName the name of the restaurant
-     * @param item1 the first item in the menu
-     * @param item2 the second item in the menu
+     * @param item1          the first item in the menu
+     * @param item2          the second item in the menu
      */
     @Given("the menu of {string} includes {string} and {string}")
     public void the_menu_of_includes_and(String restaurantName, String item1, String item2) {
         Menu menu = new Menu.MenuBuilder()
-                .addMenuItem(RestaurantFactory.createMenuItem(item1, 10.0))
-                .addMenuItem(RestaurantFactory.createMenuItem(item2, 10.0))
+                .addMenuItem(new MenuItem(item1, 10.0))
+                .addMenuItem(new MenuItem(item2, 5.0))
                 .build();
 
         restaurant.changeMenu(menu);
@@ -59,6 +59,7 @@ public class PlaceOrderStepDefs {
 
     /**
      * This step definition is used to simulate the user adding items to their order.
+     *
      * @param item1 the first item
      * @param item2 the second item
      */
@@ -67,25 +68,22 @@ public class PlaceOrderStepDefs {
         MenuItem menuItem1 = restaurant.getMenu().findItemByName(item1);
         MenuItem menuItem2 = restaurant.getMenu().findItemByName(item2);
 
-        // Start building the order
-        orderBuilder = new OrderBuilder()
-                .setRestaurant(restaurant)
-                .addMenuItem(menuItem1)
-                .addMenuItem(menuItem2);
+        connectedUser.startOrder(restaurantProxy, restaurant.getRestaurantId());
+        connectedUser.addItemToOrder(restaurantProxy, restaurant.getRestaurantId(), menuItem1);
+        connectedUser.addItemToOrder(restaurantProxy, restaurant.getRestaurantId(), menuItem2);
     }
 
     /**
-     * This step definition is used to simulate the user setting a delivery time for their order.
-     * @param hour the hour of the delivery time
-     * @param minute the minute of the delivery time
+     * This step definition is used to simulate the user adding item to their order.
+     *
+     * @param item1 the first item
      */
-    @When("sets a delivery time for {int}:{int} PM today")
-    public void sets_a_delivery_time_for_pm_today(Integer hour, Integer minute) {
-        LocalDateTime deliveryTime = LocalDateTime.now()
-                .withHour(hour)
-                .withMinute(minute);
+    @When("the user adds {string} to their order")
+    public void the_user_adds_to_their_order(String item1) {
+        MenuItem menuItem1 = restaurant.getMenu().findItemByName(item1);
 
-        orderBuilder.setDeliveryTime(deliveryTime);
+        connectedUser.startOrder(restaurantProxy, restaurant.getRestaurantId());
+        connectedUser.addItemToOrder(restaurantProxy, restaurant.getRestaurantId(), menuItem1);
     }
 
     /**
@@ -93,8 +91,7 @@ public class PlaceOrderStepDefs {
      */
     @When("places the order")
     public void places_the_order() {
-        order = orderBuilder.build();
-        restaurant.addOrder(order);
+        connectedUser.proceedCheckout(restaurantProxy, restaurant.getRestaurantId());
     }
 
     /**
@@ -102,8 +99,27 @@ public class PlaceOrderStepDefs {
      */
     @Then("the order is placed successfully")
     public void the_order_is_placed_successfully() {
-        assertNotNull(order);
-        assertEquals(restaurant, order.getRestaurant());
-        assertTrue(restaurant.getOrders().contains(order));
+        assertTrue(restaurant.getOrders().contains(connectedUser.getOrdersHistory().getLast()));
+    }
+
+    @When("the user tries to add {string} to their order")
+    public void the_user_tries_to_add_to_their_order(String string) {
+        assertThrows(IllegalArgumentException.class, () -> connectedUser.addItemToOrder(restaurantProxy, restaurant.getRestaurantId(), new MenuItem(string, 0.0)));
+    }
+
+    @Then("the user get an error message {string}")
+    public void the_user_get_an_error_message(String string) {
+        System.out.println(string);
+    }
+
+    @Then("the order is not placed")
+    public void the_order_is_not_placed() {
+        assertTrue(connectedUser.getOrdersHistory().isEmpty());
+        assertTrue(restaurant.getOrders().isEmpty());
+    }
+
+    @When("the user tries to place the order without adding any menu items")
+    public void the_user_tries_to_place_the_order_without_adding_any_menu_items() {
+        assertThrows(IllegalArgumentException.class, () -> connectedUser.proceedCheckout(restaurantProxy, restaurant.getRestaurantId()));
     }
 }

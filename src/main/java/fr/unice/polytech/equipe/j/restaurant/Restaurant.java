@@ -1,12 +1,15 @@
 package fr.unice.polytech.equipe.j.restaurant;
 
 import fr.unice.polytech.equipe.j.order.Order;
+import fr.unice.polytech.equipe.j.order.OrderBuilder;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class Restaurant {
+    private final UUID restaurantId = UUID.randomUUID();
     private final String restaurantName;
     private LocalDateTime openingTime;
     private LocalDateTime closingTime;
@@ -48,21 +51,45 @@ public class Restaurant {
         this.closingTime = closingTime;
     }
 
-    public void addOrder(Order order) {
-        orders.add(order);
-    }
-
-    public void removeOrder(Order order) {
-        orders.remove(order);
-    }
-
     public List<Order> getOrders() {
         return orders;
+    }
+
+    /**
+     * Create and return an OrderBuilder for the restaurant
+     *
+     * @return The OrderBuilder instance
+     */
+    public OrderBuilder createOrderBuilder() {
+        return new OrderBuilder().setRestaurant(this);
     }
 
     public double calculatePrice(Order order) {
         return order.getItems().stream()
                 .mapToDouble(MenuItem::getPrice)
                 .sum();
+    }
+
+    public boolean isItemAvailable(MenuItem item) {
+        return menu.getItems().contains(item);
+    }
+
+    public void addItemToOrder(OrderBuilder orderBuilder, MenuItem item) {
+        if (orderBuilder.getRestaurant() != this) {
+            throw new IllegalArgumentException("OrderBuilder is not for this restaurant");
+        }
+        if (isItemAvailable(item)) {
+            orderBuilder.addMenuItem(item);
+        } else {
+            throw new IllegalArgumentException("MenuItem " + item.getName() + " is not available.");
+        }
+    }
+
+    public UUID getRestaurantId() {
+        return restaurantId;
+    }
+
+    public void addOrder(Order order) {
+        orders.add(order);
     }
 }

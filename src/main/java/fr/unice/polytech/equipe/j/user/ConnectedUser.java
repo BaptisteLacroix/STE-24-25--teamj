@@ -2,19 +2,22 @@ package fr.unice.polytech.equipe.j.user;
 
 import fr.unice.polytech.equipe.j.order.Order;
 import fr.unice.polytech.equipe.j.order.OrderBuilder;
+import fr.unice.polytech.equipe.j.order.OrderStatus;
 import fr.unice.polytech.equipe.j.payment.CheckoutObserver;
 import fr.unice.polytech.equipe.j.payment.Transaction;
 import fr.unice.polytech.equipe.j.restaurant.MenuItem;
 import fr.unice.polytech.equipe.j.restaurant.Restaurant;
+import fr.unice.polytech.equipe.j.restaurant.RestaurantProxy;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class ConnectedUser extends User implements CheckoutObserver {
     private final Transaction transaction;
-    private OrderBuilder orderBuilder;
     private final List<Order> ordersHistory = new ArrayList<>();
+    private UUID currentOrder;
 
     public ConnectedUser(String email, String password, double accountBalance) {
         super(email, password, accountBalance);
@@ -22,48 +25,16 @@ public class ConnectedUser extends User implements CheckoutObserver {
         transaction.addObserver(this);
     }
 
-    /**
-     * Start a new order with the selected restaurant
-     */
-    public void startOrder(Restaurant restaurant) {
-        orderBuilder = new OrderBuilder().setRestaurant(restaurant);
+    public void startOrder(RestaurantProxy restaurantProxy, UUID restaurantId) {
+        currentOrder = restaurantProxy.startOrder(restaurantId);
     }
 
-    /**
-     * Add an item to the current order
-     *
-     * @param item The item to add
-     */
-    public void addItemToOrder(MenuItem item) {
-        if (orderBuilder == null) {
-            throw new IllegalStateException("No active order. Start an order first.");
-        }
-        orderBuilder.addMenuItem(item);
+    public void addItemToOrder(RestaurantProxy restaurantProxy, UUID restaurantId, MenuItem item) {
+        restaurantProxy.addItemToOrder(currentOrder, restaurantId, item);
     }
 
-    /**
-     * Add multiple items to the current order
-     *
-     * @param deliveryTime The delivery time
-     * @throws IllegalStateException if there is no active order
-     */
-    public void setOrderDeliveryTime(LocalDateTime deliveryTime) {
-        if (orderBuilder == null) {
-            throw new IllegalStateException("No active order. Start an order first.");
-        }
-        orderBuilder.setDeliveryTime(deliveryTime);
-    }
-
-    /**
-     * Proceed to checkout the current order
-     *
-     * @throws IllegalStateException if there is no order to check out
-     */
-    public void proceedCheckout() {
-        if (orderBuilder == null) {
-            throw new IllegalStateException("No order to checkout");
-        }
-        Order order = orderBuilder.build();
+    public void proceedCheckout(RestaurantProxy restaurantProxy, UUID restaurantId) {
+        Order order = restaurantProxy.validateOrder(currentOrder, restaurantId);
         transaction.proceedCheckout(order);
     }
 
@@ -75,7 +46,7 @@ public class ConnectedUser extends User implements CheckoutObserver {
     @Override
     public void notifyCheckoutSuccess(Order order) {
         addOrderToHistory(order);
-        clearCurrentOrder();
+        order.setStatus(OrderStatus.IN_PREPARATION);
     }
 
     /**
@@ -87,19 +58,12 @@ public class ConnectedUser extends User implements CheckoutObserver {
         ordersHistory.add(order);
     }
 
-    /**
-     * Clear the current order builder
-     */
-    private void clearCurrentOrder() {
-        orderBuilder = null;
-    }
-
     public List<Order> getOrdersHistory() {
         return ordersHistory;
     }
 
     @Override
     public String toString() {
-        return super.toString() + " - " + ordersHistory.size() + " orders";
+        return super.toString() + " - " + getOrdersHistory().size() + " orders";
     }
 }

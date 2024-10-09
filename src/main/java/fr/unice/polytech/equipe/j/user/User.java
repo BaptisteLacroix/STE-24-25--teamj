@@ -3,9 +3,9 @@ package fr.unice.polytech.equipe.j.user;
 import java.util.UUID;
 
 public class User {
-    private String email;
+    private final String email;
     private String password;
-    private UUID id;
+    private final UUID id;
     private double accountBalance;
 
     public User(String email, String password, double accountBalance) {
@@ -19,16 +19,8 @@ public class User {
         return email;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
     public UUID getId() {
         return id;
-    }
-
-    public void setId(UUID id) {
-        this.id = id;
     }
 
     public double getAccountBalance() {
@@ -39,16 +31,8 @@ public class User {
         this.accountBalance = accountBalance;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
     @Override
     public String toString() {
-        return email + " - " + accountBalance + "€";
+        return getEmail() + " - " + getAccountBalance() + "€";
     }
 }
