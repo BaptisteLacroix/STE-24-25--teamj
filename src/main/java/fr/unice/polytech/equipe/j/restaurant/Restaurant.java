@@ -5,6 +5,8 @@ import fr.unice.polytech.equipe.j.order.Order;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
 
 public class Restaurant {
     private final String restaurantName;
@@ -66,3 +68,5 @@ public class Restaurant {
                 .sum();
     }
 }
+
+
