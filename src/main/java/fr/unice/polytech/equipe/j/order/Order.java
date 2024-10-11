@@ -5,21 +5,20 @@ import fr.unice.polytech.equipe.j.restaurant.Restaurant;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
 public class Order {
-    private final UUID orderId = UUID.randomUUID();
+    private final UUID orderId;
     private final Restaurant restaurant;
     private final List<MenuItem> items;
-    private LocalDateTime deliveryTime;
     private OrderStatus status;
 
-    public Order(Restaurant restaurant) {
+    public Order(Restaurant restaurant, UUID orderId) {
         this.restaurant = restaurant;
         items = new ArrayList<>();
         this.status = OrderStatus.PENDING;
+        this.orderId = orderId;
     }
 
     public Restaurant getRestaurant() {
@@ -28,14 +27,6 @@ public class Order {
 
     public List<MenuItem> getItems() {
         return items;
-    }
-
-    public LocalDateTime getDeliveryTime() {
-        return deliveryTime;
-    }
-
-    public void setDeliveryTime(LocalDateTime deliveryTime) {
-        this.deliveryTime = deliveryTime;
     }
 
     public void addItem(MenuItem item) {
@@ -51,6 +42,14 @@ public class Order {
         return restaurant.calculatePrice(this);
     }
 
+    public void setStatus(OrderStatus status) {
+        this.status = status;
+    }
+
+    public OrderStatus getStatus() {
+        return status;
+    }
+
     public UUID getOrderId() {
         return orderId;
     }
@@ -63,7 +62,6 @@ public class Order {
                 ", items=" + items +
                 ", totalPrice=" + getTotalPrice() +
                 ", status=" + status +
-                ", deliveryTime=" + deliveryTime +
                 '}';
     }
 }

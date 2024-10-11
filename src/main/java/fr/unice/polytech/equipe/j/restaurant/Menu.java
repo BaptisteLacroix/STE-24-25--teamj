@@ -7,7 +7,7 @@ import java.util.List;
 public class Menu {
     private final List<MenuItem> items;
 
-    private Menu(List<MenuItem> items) {
+    public Menu(List<MenuItem> items) {
         this.items = new ArrayList<>(items);
     }
 

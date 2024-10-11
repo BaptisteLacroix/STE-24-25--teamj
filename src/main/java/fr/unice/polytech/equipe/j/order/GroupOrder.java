@@ -12,20 +12,17 @@ public class GroupOrder {
     private final UUID groupOrderId;
     private final List<Order> orders = new ArrayList<>();
     private final List<ConnectedUser> users = new ArrayList<>();
-    private final String deliveryLocation;
-    private LocalDateTime deliveryTime;
+    private final DeliveryDetails deliveryDetails;
     private OrderStatus status = OrderStatus.PENDING;
 
     public GroupOrder(String deliveryLocation, LocalDateTime deliveryTime) {
         this.groupOrderId = UUID.randomUUID();
-        this.deliveryLocation = deliveryLocation;
-        this.deliveryTime = deliveryTime;
+        this.deliveryDetails = new DeliveryDetails(deliveryLocation, deliveryTime);
     }
 
     public GroupOrder(String deliveryLocation) {
         this.groupOrderId = UUID.randomUUID();
-        this.deliveryLocation = deliveryLocation;
-        this.deliveryTime = null;
+        this.deliveryDetails = new DeliveryDetails(deliveryLocation);
     }
 
     // Add an individual order to the group
@@ -42,30 +39,29 @@ public class GroupOrder {
         return orders;
     }
 
-    public String getDeliveryLocation() {
-        return deliveryLocation;
+    public DeliveryDetails getDeliveryDetails() {
+        return deliveryDetails;
     }
 
-    public LocalDateTime getDeliveryTime() {
-        return deliveryTime;
-    }
-
+    /**
+     * If the user has defined the delivery time, it cannot be changed.
+     * @param deliveryTime The time when the order will be delivered
+     */
     public void setDeliveryTime(LocalDateTime deliveryTime) {
+        if (getDeliveryDetails().getDeliveryTime() != null) {
+            throw new UnsupportedOperationException("You cannot change the delivery time of a group order.");
+        }
         if (deliveryTime.isBefore(LocalDateTime.now())) {
-            throw new IllegalArgumentException("Delivery time must be in the future.");
+            throw new UnsupportedOperationException("You cannot specify a delivery time in the past.");
         }
-        if (getDeliveryTime() != null) {
-            throw new IllegalArgumentException("Delivery time must be specified only one time.");
-        }
-        this.deliveryTime = deliveryTime;
+        deliveryDetails.setDeliveryTime(deliveryTime);
     }
 
     @Override
     public String toString() {
         return "GroupOrder{" +
                 "groupOrderId=" + groupOrderId +
-                ", deliveryLocation='" + deliveryLocation + '\'' +
-                ", deliveryTime=" + deliveryTime +
+                "deliveryDetails=" + deliveryDetails +
                 ", orders=" + orders +
                 '}';
     }
