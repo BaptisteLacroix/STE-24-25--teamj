@@ -61,7 +61,7 @@ public class Restaurant {
      * @return The OrderBuilder instance
      */
     public OrderBuilder createOrderBuilder() {
-        return new OrderBuilder().setRestaurant(this);
+        return new OrderBuilder().setRestaurantUUID(getRestaurantId());
     }
 
     public double calculatePrice(Order order) {
@@ -75,7 +75,7 @@ public class Restaurant {
     }
 
     public void addItemToOrder(OrderBuilder orderBuilder, MenuItem item) {
-        if (orderBuilder.getRestaurant() != this) {
+        if (orderBuilder.getRestaurantUUID() != getRestaurantId()) {
             throw new IllegalArgumentException("OrderBuilder is not for this restaurant");
         }
         if (isItemAvailable(item)) {

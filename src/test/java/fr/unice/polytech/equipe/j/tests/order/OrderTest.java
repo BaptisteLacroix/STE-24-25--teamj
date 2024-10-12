@@ -6,7 +6,6 @@ import fr.unice.polytech.equipe.j.restaurant.Restaurant;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -77,6 +76,6 @@ class OrderTest {
 
     @Test
     void testOrderIdIsGenerated() {
-        assertEquals(orderId, order.getOrderId());
+        assertEquals(orderId, order.getOrderUUID());
     }
 }

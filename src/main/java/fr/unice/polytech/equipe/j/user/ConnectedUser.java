@@ -23,8 +23,13 @@ public class ConnectedUser extends User implements CheckoutObserver {
         transaction.addObserver(this);
     }
 
+<<<<<<< Updated upstream
     public void startOrder(RestaurantProxy restaurantProxy, UUID restaurantId) {
         currentOrder = restaurantProxy.startSingleOrder(restaurantId);
+=======
+    public void startIndividualOrder(RestaurantProxy restaurantProxy, UUID restaurantId) {
+        currentOrder = restaurantProxy.startOrder(restaurantId);
+>>>>>>> Stashed changes
     }
 
     public void addItemToOrder(RestaurantProxy restaurantProxy, UUID restaurantId, MenuItem item) {

@@ -1,29 +1,27 @@
 package fr.unice.polytech.equipe.j.order;
 
 import fr.unice.polytech.equipe.j.restaurant.MenuItem;
-import fr.unice.polytech.equipe.j.restaurant.Restaurant;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 public class Order {
-    private final UUID orderId;
-    private final Restaurant restaurant;
+    private final UUID orderUUID;
+    private final UUID restaurantUUID;
     private final List<MenuItem> items;
     private LocalDateTime deliveryTime;
     private OrderStatus status;
 
-    public Order(Restaurant restaurant, UUID orderId) {
-        this.restaurant = restaurant;
+    public Order(UUID restaurantUUID, UUID orderUUID) {
+        this.restaurantUUID = restaurantUUID;
         items = new ArrayList<>();
         this.status = OrderStatus.PENDING;
-        this.orderId = orderId;
+        this.orderUUID = orderUUID;
     }
 
-    public Restaurant getRestaurant() {
-        return restaurant;
+    public UUID getRestaurantUUID() {
+        return restaurantUUID;
     }
 
     public List<MenuItem> getItems() {
@@ -57,7 +55,7 @@ public class Order {
      * @return The total price of the order
      */
     public double getTotalPrice() {
-        return restaurant.calculatePrice(this);
+        return RestaurantManager.calculateOrderPriceFromRestaurant(this);
     }
 
     public void setStatus(OrderStatus status) {
@@ -68,15 +66,15 @@ public class Order {
         return status;
     }
 
-    public UUID getOrderId() {
-        return orderId;
+    public UUID getOrderUUID() {
+        return orderUUID;
     }
 
     @Override
     public String toString() {
         return "Order{" +
-                "orderId=" + orderId +
-                ", restaurant=" + restaurant +
+                "orderUUID=" + orderUUID +
+                ", restaurantUUID=" + restaurantUUID +
                 ", items=" + items +
                 ", totalPrice=" + getTotalPrice() +
                 ", status=" + status +

@@ -7,7 +7,6 @@ import fr.unice.polytech.equipe.j.restaurant.Restaurant;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.time.LocalDateTime;
 import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -39,7 +38,7 @@ class OrderBuilderTest {
                 .build();
 
         // Validate the order properties
-        assertEquals(restaurant, order.getRestaurant());
+        assertEquals(restaurant, order.getRestaurantUUID());
         assertTrue(order.getItems().containsAll(Arrays.asList(item1, item2)));
         assertEquals(2, order.getItems().size());
         assertEquals(deliveryTime, order.getDeliveryTime());

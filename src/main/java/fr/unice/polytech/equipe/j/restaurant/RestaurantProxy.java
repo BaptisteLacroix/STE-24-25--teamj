@@ -10,13 +10,10 @@ import java.util.List;
 import java.util.UUID;
 
 public class RestaurantProxy {
-    private final List<Restaurant> restaurants;
     private final List<OrderBuilder> orderBuilders = new ArrayList<>();
     private final List<GroupOrder> groupOrders = new ArrayList<>();
 
-    public RestaurantProxy(List<Restaurant> restaurants) {
-        this.restaurants = restaurants;
-    }
+    public RestaurantProxy() {}
 
     /**
      * Start the order through the proxy, ensuring only authorized users can create an order.
@@ -88,7 +85,7 @@ public class RestaurantProxy {
     }
 
     private Restaurant getRestaurant(UUID restaurantId) {
-        return restaurants.stream()
+        return RestaurantManager.getRestaurants().stream()
                 .filter(restaurant -> restaurant.getRestaurantId().equals(restaurantId))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("Restaurant with id: " + restaurantId + " not found."));

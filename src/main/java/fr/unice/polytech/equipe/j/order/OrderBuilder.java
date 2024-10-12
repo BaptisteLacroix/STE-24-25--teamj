@@ -3,13 +3,12 @@ package fr.unice.polytech.equipe.j.order;
 import fr.unice.polytech.equipe.j.restaurant.MenuItem;
 import fr.unice.polytech.equipe.j.restaurant.Restaurant;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 public class OrderBuilder {
-    private Restaurant restaurant;
+    private UUID restaurantUUID;
     private final List<MenuItem> items = new ArrayList<>();
     private LocalDateTime deliveryTime;
     private UUID orderId = UUID.randomUUID();
@@ -20,8 +19,8 @@ public class OrderBuilder {
      * @param restaurant The restaurant to order from
      * @return The OrderBuilder instance
      */
-    public OrderBuilder setRestaurant(Restaurant restaurant) {
-        this.restaurant = restaurant;
+    public OrderBuilder setRestaurantUUID(UUID restaurantUUID) {
+        this.restaurantUUID = restaurantUUID;
         return this;
     }
 
@@ -64,7 +63,7 @@ public class OrderBuilder {
      * @return The Order instance
      */
     public Order build() {
-        Order order = new Order(restaurant, orderId);
+        Order order = new Order(restaurantUUID, orderId);
         items.forEach(order::addItem);
         order.setDeliveryTime(deliveryTime);
         return order;
@@ -74,7 +73,7 @@ public class OrderBuilder {
         return orderId;
     }
 
-    public Restaurant getRestaurant() {
-        return restaurant;
+    public UUID getRestaurantUUID() {
+        return restaurantUUID;
     }
 }
