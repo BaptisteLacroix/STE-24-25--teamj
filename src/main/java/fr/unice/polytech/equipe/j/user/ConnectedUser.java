@@ -1,5 +1,6 @@
 package fr.unice.polytech.equipe.j.user;
 
+import fr.unice.polytech.equipe.j.order.DeliveryDetails;
 import fr.unice.polytech.equipe.j.order.GroupOrder;
 import fr.unice.polytech.equipe.j.order.Order;
 import fr.unice.polytech.equipe.j.order.OrderBuilder;
@@ -74,7 +75,8 @@ public class ConnectedUser extends User implements CheckoutObserver {
         if (deliveryLocation == null || deliveryLocation.isEmpty()) {
             throw new IllegalArgumentException("Delivery location must be specified.");
         }
-        groupOrder = new GroupOrder(deliveryLocation, deliveryTime);
+        DeliveryDetails deliveryDetails = new DeliveryDetails(deliveryLocation, deliveryTime);
+        groupOrder = new GroupOrder(deliveryDetails);
         return groupOrder;
     }
 

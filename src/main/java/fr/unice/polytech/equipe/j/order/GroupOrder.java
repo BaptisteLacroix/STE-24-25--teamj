@@ -15,14 +15,14 @@ public class GroupOrder {
     private final DeliveryDetails deliveryDetails;
     private OrderStatus status = OrderStatus.PENDING;
 
-    public GroupOrder(String deliveryLocation, LocalDateTime deliveryTime) {
+    public GroupOrder(DeliveryDetails deliveryDetails) {
         this.groupOrderId = UUID.randomUUID();
-        this.deliveryDetails = new DeliveryDetails(deliveryLocation, deliveryTime);
+        this.deliveryDetails = deliveryDetails;
     }
 
     public GroupOrder(String deliveryLocation) {
         this.groupOrderId = UUID.randomUUID();
-        this.deliveryDetails = new DeliveryDetails(deliveryLocation);
+        this.deliveryDetails = new DeliveryDetails(deliveryLocation, null);
     }
 
     // Add an individual order to the group
