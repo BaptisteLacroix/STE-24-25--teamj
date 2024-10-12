@@ -39,14 +39,23 @@ public class Order {
     }
 
     public void addItem(MenuItem item) {
+        if (getStatus().equals(OrderStatus.IN_PREPARATION)) {
+            throw new IllegalStateException("Cannot add items to an order that is already in preparation.");
+        }
         items.add(item);
     }
 
     public void removeItem(MenuItem item) {
+        if (getStatus().equals(OrderStatus.IN_PREPARATION)) {
+            throw new IllegalStateException("Cannot remove items from an order that is already in preparation.");
+        }
         items.remove(item);
     }
 
-    // This method now calls the restaurant to calculate the total price of the order
+    /**
+     * Calculate the total price of the order
+     * @return The total price of the order
+     */
     public double getTotalPrice() {
         return restaurant.calculatePrice(this);
     }

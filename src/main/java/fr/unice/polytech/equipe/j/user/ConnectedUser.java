@@ -1,12 +1,10 @@
 package fr.unice.polytech.equipe.j.user;
 
 import fr.unice.polytech.equipe.j.order.Order;
-import fr.unice.polytech.equipe.j.order.OrderBuilder;
 import fr.unice.polytech.equipe.j.order.OrderStatus;
 import fr.unice.polytech.equipe.j.payment.CheckoutObserver;
 import fr.unice.polytech.equipe.j.payment.Transaction;
 import fr.unice.polytech.equipe.j.restaurant.MenuItem;
-import fr.unice.polytech.equipe.j.restaurant.Restaurant;
 import fr.unice.polytech.equipe.j.restaurant.RestaurantProxy;
 
 import java.time.LocalDateTime;
@@ -26,7 +24,7 @@ public class ConnectedUser extends User implements CheckoutObserver {
     }
 
     public void startOrder(RestaurantProxy restaurantProxy, UUID restaurantId) {
-        currentOrder = restaurantProxy.startOrder(restaurantId);
+        currentOrder = restaurantProxy.startSingleOrder(restaurantId);
     }
 
     public void addItemToOrder(RestaurantProxy restaurantProxy, UUID restaurantId, MenuItem item) {
