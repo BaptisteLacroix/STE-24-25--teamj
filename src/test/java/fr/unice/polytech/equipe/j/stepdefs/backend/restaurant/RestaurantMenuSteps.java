@@ -62,7 +62,6 @@ public class RestaurantMenuSteps {
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("Restaurant not found"));
 
-//        System.out.println(currentRestaurant.getRestaurantName());
     }
 
     @Then("the user should see the menu for {string} with the following items:")
@@ -75,7 +74,7 @@ public class RestaurantMenuSteps {
             String name = expectedItem.get("name");
             double price = Double.parseDouble(expectedItem.get("price"));
 
-            // verifier  that the menu contains the item with the correct price
+            // verifier  that the menuItems names' match
             assertTrue(menuItems.stream()
                     .anyMatch(item -> item.getName().equals(name) ));
         }
@@ -107,7 +106,6 @@ public class RestaurantMenuSteps {
             Menu menu = createMenuFromString(menuItems);
             Restaurant restaurant = new Restaurant(name, null, null, menu);
             restaurants.add(restaurant);
-//            System.out.println(restaurants.get(0).getRestaurantName());
         }
     }
 

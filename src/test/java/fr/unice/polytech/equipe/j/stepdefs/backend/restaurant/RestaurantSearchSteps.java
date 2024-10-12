@@ -55,19 +55,10 @@ public class RestaurantSearchSteps {
         foundRestaurants = new ArrayList<>();
         foundRestaurants = restaurantServiceManager.searchByName(restaurantName);
 
-//        assertEquals(foundRestaurants.size(),1);
 
         assertFalse("No restaurant found with name: " + restaurantName, foundRestaurants.isEmpty());
 
 
-//        // found restaurants
-//
-//        for (Restaurant restaurant : restaurants) {
-//            if (restaurant.getRestaurantName().equalsIgnoreCase(restaurantName)) {
-//                foundRestaurants.add(restaurant);
-//            }
-//        }
-//        assertFalse("No restaurant found with name: " + restaurantName, foundRestaurants.isEmpty());
     }
 
     @Then("I should see the following restaurants:")
