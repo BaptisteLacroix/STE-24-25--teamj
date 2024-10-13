@@ -1,15 +1,14 @@
 package fr.unice.polytech.equipe.j.restaurant;
 
 public class MenuItem {
-    private String name;
+    private final String name;
     private String description;
     private int prepTime;
-    private int price;
+    private double price;
     private int capacity;
 
-    public MenuItem(String name, String description, int prepTime, int price, int capacity) {
+    public MenuItem(String name, int prepTime, double price, int capacity) {
         this.name = name;
-        this.description = description;
         this.prepTime = prepTime;
         this.price = price;
         this.capacity = capacity;
@@ -23,27 +22,16 @@ public class MenuItem {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
 
     public int getPrepTime() {
         return prepTime;
     }
 
-    public int getPrice() {
+    public double getPrice() {
         return price;
     }
 
-    public void setPrice(int price) {
+    public void setPrice(double price) {
         this.price = price;
     }
 
@@ -54,4 +42,8 @@ public class MenuItem {
     public void setCapacity(int capacity) {
         this.capacity = capacity;
     }
-}
+    @Override
+        public String toString () {
+            return name + " - " + price + " EUR";
+        }
+    }

@@ -1,4 +1,4 @@
-package features;
+package fr.unice.polytech.equipe.j.stepdefs.backend.restaurant;
 
 import fr.unice.polytech.equipe.j.restaurant.Menu;
 import fr.unice.polytech.equipe.j.restaurant.MenuItem;
@@ -15,6 +15,7 @@ import io.cucumber.datatable.DataTable;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -26,7 +27,7 @@ public class ManageRestaurantStepDef {
     private Restaurant restaurant;
     private LocalDateTime openingHour;
     private LocalDateTime closingHour;
-    private Menu menu = new Menu();
+    private Menu menu = new Menu(new ArrayList<>());
     private List<Slot> slots;
     private MenuItem selectedItem;
     private Slot slot;
@@ -34,8 +35,8 @@ public class ManageRestaurantStepDef {
 
     @Given("{string}, a restaurant manager of the {string} restaurant")
     public void aRestaurantManagerOfTheRestaurant(String name, String restaurantName) {
-        restaurant = new Restaurant(restaurantName, slots, "Aucune", LocalDateTime.now(), LocalDateTime.now().plusHours(8),menu);
-        restaurantManager = new RestaurantManager(name, restaurant);
+        restaurant = new Restaurant(restaurantName, slots, LocalDateTime.now(), LocalDateTime.now().plusHours(8), menu);
+        restaurantManager = new RestaurantManager("jeanne@example.com", "password", 100.0,name, restaurant);
     }
     @And("the restaurant has a menu with the following items:")
     public void theRestaurantHasAMenuWithTheFollowingItems(DataTable dataTable) {
@@ -69,7 +70,7 @@ public class ManageRestaurantStepDef {
     @Then("the opening hours should be {string} to {string}")
     public void theOpeningHoursShouldBeTo(String expectedStartTime, String expectedEndTime) {
         DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-        String actualOpeningHours = restaurant.getOpeningHour().format(outputFormatter) + " to " + restaurant.getClosingHour().format(outputFormatter);
+        String actualOpeningHours = restaurant.getOpeningTime().format(outputFormatter) + " to " + restaurant.getClosingTime().format(outputFormatter);
         String expectedHours = expectedStartTime + " to " + expectedEndTime;
         assertEquals(expectedHours, actualOpeningHours);
 
@@ -78,51 +79,51 @@ public class ManageRestaurantStepDef {
 
     @Given("Jeanne wants to update the price of {string}")
     public void jeanneWantsToUpdateThePriceOf(String itemName) {
-        assertNotNull(restaurant.getMenu().findMenuItemByName(itemName));
+        assertNotNull(restaurant.getMenu().findItemByName(itemName));
     }
 
-    @When("the restaurant manager updates the price of {string} to {int}")
-    public void theRestaurantManagerUpdatesThePriceOfTo(String itemName, int price) {
-        selectedItem = restaurant.getMenu().findMenuItemByName(itemName);
+    @When("the restaurant manager updates the price of {string} to {double}")
+    public void theRestaurantManagerUpdatesThePriceOfTo(String itemName, double price) {
+        selectedItem = restaurant.getMenu().findItemByName(itemName);
         selectedItem.setPrice(price);
     }
 
-    @Then("the price of {string} should be {int}")
-    public void thePriceOfShouldBe(String item, int price) {
-        assertEquals(price, restaurant.getMenu().findMenuItemByName(item).getPrice());
+    @Then("the price of {string} should be {double}")
+    public void thePriceOfShouldBe(String item, double price) {
+        assertEquals(price, restaurant.getMenu().findItemByName(item).getPrice(),0.01);
     }
 
 
     @Given("Jeanne wants to update the preparation time of {string}")
     public void jeanneWantsToUpdateThePreparationTimeOf(String itemName) {
-        assertNotNull(restaurant.getMenu().findMenuItemByName(itemName));
+        assertNotNull(restaurant.getMenu().findItemByName(itemName));
     }
 
     @When("the restaurant manager updates the preparation time of {string} to {int}")
     public void theRestaurantManagerUpdatesThePreparationTimeOfTo(String itemName, int itemPrepTime) {
-        selectedItem = restaurant.getMenu().findMenuItemByName(itemName);
+        selectedItem = restaurant.getMenu().findItemByName(itemName);
         selectedItem.setPrepTime(itemPrepTime);
     }
 
     @Then("the preparation time of {string} should be {int} seconds")
     public void thePreparationTimeOfShouldBeSeconds(String itemName, int prepTime) {
-        assertEquals(prepTime, restaurant.getMenu().findMenuItemByName(itemName).getPrepTime());
+        assertEquals(prepTime, restaurant.getMenu().findItemByName(itemName).getPrepTime());
     }
 
     @Given("Jeanne wants to update the capacity of {string}")
     public void jeanneWantsToUpdateTheCapacityOf(String itemName) {
-        assertNotNull(restaurant.getMenu().findMenuItemByName(itemName));
+        assertNotNull(restaurant.getMenu().findItemByName(itemName));
     }
 
     @When("Jeanne updates the preparation time of {string} to {int}")
     public void jeanneUpdatesThePreparationTimeOfTo(String itemName, int itemCapacity) {
-        selectedItem = restaurant.getMenu().findMenuItemByName(itemName);
+        selectedItem = restaurant.getMenu().findItemByName(itemName);
         selectedItem.setCapacity(itemCapacity);
     }
 
     @Then("the capacity of {string} should be {int}")
     public void theCapacityOfShouldBe(String itemName, int itemCapacity) {
-        assertEquals(itemCapacity, restaurant.getMenu().findMenuItemByName(itemName).getCapacity());
+        assertEquals(itemCapacity, restaurant.getMenu().findItemByName(itemName).getCapacity());
     }
 
     @Given("Jeanne wants to set a mixed production order")
@@ -141,7 +142,7 @@ public class ManageRestaurantStepDef {
 
     @And("the restaurant manager processes {int} portions of {string}")
     public void theRestaurantManagerProcessesPortionsOf(int portions, String menuItem) {
-        MenuItem item = restaurant.getMenu().findMenuItemByName(menuItem);
+        MenuItem item = restaurant.getMenu().findItemByName(menuItem);
         assertNotNull(item);
 
 

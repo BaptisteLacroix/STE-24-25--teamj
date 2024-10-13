@@ -10,7 +10,8 @@ public class RestaurantManager extends User {
     private Restaurant restaurant;
     private String name;
 
-    public RestaurantManager(String name, Restaurant restaurant) {
+    public RestaurantManager(String email, String password, double accountBalance, String name, Restaurant restaurant) {
+        super(email, password, accountBalance);
         this.name = name;
         this.restaurant = restaurant;
     }
@@ -23,23 +24,23 @@ public class RestaurantManager extends User {
         this.restaurant = restaurant;
     }
 
-    public String getName(){
+    public String getName() {
         return this.name;
     }
 
     // Mettre à jour les heures d'ouverture et de fermeture
     public void updateHours(LocalDateTime openingHour, LocalDateTime closingHour) {
         if (openingHour != null) {
-            this.restaurant.setOpeningHour(openingHour);
+            this.restaurant.setOpeningTime(openingHour);
         }
         if (closingHour != null) {
-            this.restaurant.setClosingHour(closingHour);
+            this.restaurant.setClosingTime(closingHour);
         }
     }
 
     // Ajouter un nouvel élément au menu via le restaurant
     public void addMenuItem(String itemName, String description, int prepTimeInSeconds, int price, int capacity) {
-        MenuItem newItem = new MenuItem(itemName, description, prepTimeInSeconds, price, capacity);
+        MenuItem newItem = new MenuItem(itemName, prepTimeInSeconds, price, capacity);
         this.restaurant.getMenu().addMenuItem(newItem);
     }
 

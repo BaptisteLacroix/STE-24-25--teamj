@@ -7,9 +7,9 @@ Feature: Update restaurant opening hours and menu offerings
   Background:
     Given "Jeanne", a restaurant manager of the "Chicken Burger" restaurant
     And the restaurant has a menu with the following items:
-      | itemName | description  | prepTime | price | capacity |
-      | BigMac   | Burger       | 120      | 5     | 2        |
-      | Fries    | Crispy fries | 60       | 3     | 4        |
+      | itemName | prepTime | price | capacity |
+      | BigMac   | 120      | 5     | 2        |
+      | Fries    | 60       | 3     | 4        |
 
 
   Scenario: Update opening hours
@@ -19,8 +19,8 @@ Feature: Update restaurant opening hours and menu offerings
 
   Scenario: Update the price of a menu item
     Given Jeanne wants to update the price of "BigMac"
-    When the restaurant manager updates the price of "BigMac" to 6
-    Then the price of "BigMac" should be 6
+    When the restaurant manager updates the price of "BigMac" to 6.0
+    Then the price of "BigMac" should be 6.0
 
   Scenario: Update the preparation time of a menu item
     Given Jeanne wants to update the preparation time of "Fries"

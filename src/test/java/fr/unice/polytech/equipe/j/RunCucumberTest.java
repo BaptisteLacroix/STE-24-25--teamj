@@ -1,3 +1,4 @@
+package fr.unice.polytech.equipe.j;
 
 import org.junit.platform.suite.api.ConfigurationParameter;
 import org.junit.platform.suite.api.IncludeEngines;
@@ -10,10 +11,11 @@ import static io.cucumber.junit.platform.engine.Constants.PLUGIN_PROPERTY_NAME;
 @Suite
 @IncludeEngines("cucumber")
 
-@SelectClasspathResource("features")
+@SelectClasspathResource("features/orders")
+@SelectClasspathResource("features.restaurants")
 
 @ConfigurationParameter(key = PLUGIN_PROPERTY_NAME, value = "pretty")
-@ConfigurationParameter(key = GLUE_PROPERTY_NAME, value = "features")
+@ConfigurationParameter(key = GLUE_PROPERTY_NAME, value = "fr.unice.polytech.equipe.j")
 
 public class RunCucumberTest {
     // will run all features found on the classpath
