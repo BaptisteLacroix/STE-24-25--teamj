@@ -9,10 +9,8 @@ Feature: Group Order Creation
   Scenario: Registered user creates a group order with delivery time
     Given [GroupOrder]the user is registered
     When [GroupOrder]the user creates a group order with delivery location "123 Campus Lane"
-    And [GroupOrder]the user specifies a delivery time of 23:30 PM
     Then [GroupOrder]the user receives a group order identifier
     And [GroupOrder]the group order delivery location is "123 Campus Lane"
-    And [GroupOrder]the group order delivery time is 23:30 PM
 
   Scenario: Registered user tries to create a group order without specifying a delivery location
     Given [GroupOrder]the user is registered

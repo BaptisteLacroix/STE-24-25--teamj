@@ -1,7 +1,6 @@
 package fr.unice.polytech.equipe.j.order;
 
 import fr.unice.polytech.equipe.j.user.ConnectedUser;
-import fr.unice.polytech.equipe.j.user.User;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -18,11 +17,6 @@ public class GroupOrder {
     public GroupOrder(DeliveryDetails deliveryDetails) {
         this.groupOrderId = UUID.randomUUID();
         this.deliveryDetails = deliveryDetails;
-    }
-
-    public GroupOrder(String deliveryLocation) {
-        this.groupOrderId = UUID.randomUUID();
-        this.deliveryDetails = new DeliveryDetails(deliveryLocation, null);
     }
 
     // Add an individual order to the group
@@ -64,5 +58,9 @@ public class GroupOrder {
                 "deliveryDetails=" + deliveryDetails +
                 ", orders=" + orders +
                 '}';
+    }
+
+    public OrderStatus getStatus() {
+        return status;
     }
 }

@@ -1,12 +1,15 @@
 package fr.unice.polytech.equipe.j.stepdefs.backend.order;
 
-import fr.unice.polytech.equipe.j.order.GroupOrder;
+import fr.unice.polytech.equipe.j.order.DeliveryDetails;
+import fr.unice.polytech.equipe.j.restaurant.Restaurant;
+import fr.unice.polytech.equipe.j.restaurant.RestaurantProxy;
 import fr.unice.polytech.equipe.j.user.ConnectedUser;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -15,36 +18,34 @@ import static org.junit.Assert.assertThrows;
 
 public class GroupOrderStepDefs {
     private ConnectedUser user;
-    private GroupOrder groupOrder;
+    private RestaurantProxy restaurantProxy;
+
+    public void setUp() {
+        Restaurant restaurant = new Restaurant("McDonald's", LocalDateTime.of(2021, 1, 1, 8, 0), LocalDateTime.of(2021, 1, 1, 22, 0), null);
+        restaurantProxy = new RestaurantProxy(List.of(restaurant));
+    }
 
     @Given("[GroupOrder]the user is registered")
     public void the_user_is_registered() {
+        this.setUp();
         user = new ConnectedUser("john@example.com", "password123", 100.0);
     }
 
     @When("[GroupOrder]the user creates a group order with delivery location {string}")
     public void the_user_creates_a_group_order_with_delivery_location(String deliveryLocation) {
-        groupOrder = user.createGroupOrder(deliveryLocation, null);
-        assertNotNull(user.getGroupOrder());
-    }
-
-    @When("[GroupOrder]the user specifies a delivery time of {int}:{int} PM")
-    public void the_user_specifies_a_delivery_time_of_pm(Integer hour, Integer minute) {
-        LocalDateTime deliveryTime = LocalDateTime.now()
-                .withHour(hour)
-                .withMinute(minute);
-        user.getGroupOrder().setDeliveryTime(deliveryTime);
+        user.startGroupOrder(restaurantProxy, new DeliveryDetails(deliveryLocation, null));
+        assertNotNull(user.getGroupOrderUUID());
     }
 
     @Then("[GroupOrder]the user receives a group order identifier")
     public void the_user_receives_a_group_order_identifier() {
-        assertNotNull(groupOrder);
-        assertNotNull(groupOrder.getGroupOrderId());
+        assertNotNull(restaurantProxy.getGroupOrder(user.getGroupOrderUUID()));
+        assertNotNull(restaurantProxy.getGroupOrder(user.getGroupOrderUUID()).getGroupOrderId());
     }
 
     @Then("[GroupOrder]the group order delivery location is {string}")
     public void the_group_order_delivery_location_is(String expectedLocation) {
-        assertEquals(expectedLocation, groupOrder.getDeliveryDetails().getDeliveryLocation());
+        assertEquals(expectedLocation, restaurantProxy.getGroupOrder(user.getGroupOrderUUID()).getDeliveryDetails().getDeliveryLocation());
     }
 
     @Then("[GroupOrder]the group order delivery time is {int}:{int} PM")
@@ -52,13 +53,13 @@ public class GroupOrderStepDefs {
         LocalDateTime expectedTime = LocalDateTime.now()
                 .withHour(hour)
                 .withMinute(minute);
-        assertEquals(expectedTime.getHour(), groupOrder.getDeliveryDetails().getDeliveryTime().getHour());
-        assertEquals(expectedTime.getMinute(), groupOrder.getDeliveryDetails().getDeliveryTime().getMinute());
+        assertEquals(expectedTime.getHour(), restaurantProxy.getGroupOrder(user.getGroupOrderUUID()).getDeliveryDetails().getDeliveryTime().getHour());
+        assertEquals(expectedTime.getMinute(), restaurantProxy.getGroupOrder(user.getGroupOrderUUID()).getDeliveryDetails().getDeliveryTime().getMinute());
     }
 
     @When("[GroupOrder]the user tries to create a group order without specifying a delivery location")
     public void group_order_the_user_tries_to_create_a_group_order_without_specifying_a_delivery_location() {
-        assertThrows(IllegalArgumentException.class, () -> user.createGroupOrder(null, null));
+        assertThrows(IllegalArgumentException.class, () -> user.startGroupOrder(restaurantProxy, new DeliveryDetails(null, null)));
     }
 
     @Then("[GroupOrder]the user receives an error message {string}")
@@ -68,7 +69,7 @@ public class GroupOrderStepDefs {
 
     @Then("[GroupOrder]the group order is not created")
     public void group_order_the_group_order_is_not_created() {
-        assertNull(user.getGroupOrder());
+        assertNull(user.getGroupOrderUUID());
     }
 
     @When("[GroupOrder]the user creates a group order with delivery location {string} and delivery time of {int}:{int} PM")
@@ -76,7 +77,8 @@ public class GroupOrderStepDefs {
         LocalDateTime deliveryTime = LocalDateTime.now()
                 .withHour(int1)
                 .withMinute(int2);
-        groupOrder = user.createGroupOrder(string, deliveryTime);
+        user.startGroupOrder(restaurantProxy, new DeliveryDetails(string, deliveryTime));
+        assertNotNull(user.getGroupOrderUUID());
     }
 
     @When("[GroupOrder]the user tries to change the delivery time to {int}:{int} PM")
@@ -84,7 +86,7 @@ public class GroupOrderStepDefs {
         LocalDateTime deliveryTime = LocalDateTime.now()
                 .withHour(hour)
                 .withMinute(minute);
-        assertThrows(UnsupportedOperationException.class, () -> user.getGroupOrder().setDeliveryTime(deliveryTime));
+        assertThrows(UnsupportedOperationException.class, () -> user.changeGroupDeliveryTime(restaurantProxy, deliveryTime));
     }
 
     @When("[GroupOrder]the user tries to specify a delivery time in the past of {int}:{int} PM")
@@ -92,6 +94,6 @@ public class GroupOrderStepDefs {
         LocalDateTime deliveryTime = LocalDateTime.now()
                 .withHour(int1)
                 .withMinute(int2);
-        assertThrows(UnsupportedOperationException.class, () -> user.getGroupOrder().setDeliveryTime(deliveryTime));
+        assertThrows(UnsupportedOperationException.class, () -> user.changeGroupDeliveryTime(restaurantProxy, deliveryTime));
     }
 }

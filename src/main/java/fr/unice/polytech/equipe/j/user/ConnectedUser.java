@@ -19,8 +19,8 @@ import java.util.UUID;
 public class ConnectedUser extends User implements CheckoutObserver {
     private final Transaction transaction;
     private final List<Order> ordersHistory = new ArrayList<>();
-    private GroupOrder groupOrder;
     private UUID currentOrder;
+    private UUID currenGroupOrder;
 
     public ConnectedUser(String email, String password, double accountBalance) {
         super(email, password, accountBalance);
@@ -29,7 +29,17 @@ public class ConnectedUser extends User implements CheckoutObserver {
     }
 
     public void startOrder(RestaurantProxy restaurantProxy, UUID restaurantId) {
-        currentOrder = restaurantProxy.startOrder(restaurantId);
+        this.currentOrder = restaurantProxy.startOrder(restaurantId);
+    }
+
+    /**
+     * Start a group order
+     *
+     * @param restaurantProxy The restaurant proxy
+     * @param deliveryDetails The delivery details
+     */
+    public void startGroupOrder(RestaurantProxy restaurantProxy, DeliveryDetails deliveryDetails) {
+        this.currenGroupOrder = restaurantProxy.startGroupOrder(deliveryDetails);
     }
 
     public void addItemToOrder(RestaurantProxy restaurantProxy, UUID restaurantId, MenuItem item) {
@@ -39,6 +49,10 @@ public class ConnectedUser extends User implements CheckoutObserver {
     public void proceedCheckout(RestaurantProxy restaurantProxy, UUID restaurantId) {
         Order order = restaurantProxy.validateOrder(currentOrder, restaurantId);
         transaction.proceedCheckout(order);
+    }
+
+    public void changeGroupDeliveryTime(RestaurantProxy restaurantProxy, LocalDateTime deliveryTime) {
+        restaurantProxy.changeGroupDeliveryTime(currenGroupOrder, deliveryTime);
     }
 
     /**
@@ -65,27 +79,12 @@ public class ConnectedUser extends User implements CheckoutObserver {
         return ordersHistory;
     }
 
-    /**
-     * Create a group order
-     * @param deliveryLocation The location where the order will be delivered
-     * @param deliveryTime The time when the order will be delivered
-     * @return The newly created group order
-     */
-    public GroupOrder createGroupOrder(String deliveryLocation, LocalDateTime deliveryTime) {
-        if (deliveryLocation == null || deliveryLocation.isEmpty()) {
-            throw new IllegalArgumentException("Delivery location must be specified.");
-        }
-        DeliveryDetails deliveryDetails = new DeliveryDetails(deliveryLocation, deliveryTime);
-        groupOrder = new GroupOrder(deliveryDetails);
-        return groupOrder;
-    }
-
-    public GroupOrder getGroupOrder() {
-        return groupOrder;
-    }
-
     @Override
     public String toString() {
         return super.toString() + " - " + getOrdersHistory().size() + " orders";
+    }
+
+    public UUID getGroupOrderUUID() {
+        return currenGroupOrder;
     }
 }

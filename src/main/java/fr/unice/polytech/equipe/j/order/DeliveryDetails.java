@@ -7,6 +7,9 @@ public class DeliveryDetails {
     private LocalDateTime deliveryTime;
 
     public DeliveryDetails(String deliveryLocation, LocalDateTime deliveryTime) {
+        if (deliveryLocation == null) {
+            throw new IllegalArgumentException("The delivery location must be specified.");
+        }
         this.deliveryLocation = deliveryLocation;
         this.deliveryTime = deliveryTime;
     }
