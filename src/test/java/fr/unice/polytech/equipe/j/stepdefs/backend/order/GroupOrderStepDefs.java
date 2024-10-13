@@ -53,8 +53,8 @@ public class GroupOrderStepDefs {
         LocalDateTime expectedTime = LocalDateTime.now()
                 .withHour(hour)
                 .withMinute(minute);
-        assertEquals(expectedTime.getHour(), restaurantProxy.getGroupOrder(user.getGroupOrderUUID()).getDeliveryDetails().getDeliveryTime().getHour());
-        assertEquals(expectedTime.getMinute(), restaurantProxy.getGroupOrder(user.getGroupOrderUUID()).getDeliveryDetails().getDeliveryTime().getMinute());
+        assertEquals(expectedTime.getHour(), restaurantProxy.getGroupOrder(user.getGroupOrderUUID()).getDeliveryDetails().getDeliveryTime().get().getHour());
+        assertEquals(expectedTime.getMinute(), restaurantProxy.getGroupOrder(user.getGroupOrderUUID()).getDeliveryDetails().getDeliveryTime().get().getMinute());
     }
 
     @When("[GroupOrder]the user tries to create a group order without specifying a delivery location")
