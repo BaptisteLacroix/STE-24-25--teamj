@@ -13,6 +13,7 @@ import io.cucumber.datatable.DataTable;
 
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +29,8 @@ public class ManageRestaurantStepDef {
     private Menu menu = new Menu();
     private List<Slot> slots;
     private MenuItem selectedItem;
+    private Slot slot;
+    private int totalTimeAvailable;
 
     @Given("{string}, a restaurant manager of the {string} restaurant")
     public void aRestaurantManagerOfTheRestaurant(String name, String restaurantName) {
@@ -120,5 +123,31 @@ public class ManageRestaurantStepDef {
     @Then("the capacity of {string} should be {int}")
     public void theCapacityOfShouldBe(String itemName, int itemCapacity) {
         assertEquals(itemCapacity, restaurant.getMenu().findMenuItemByName(itemName).getCapacity());
+    }
+
+    @Given("Jeanne wants to set a mixed production order")
+    public void jeanneWantsToSetAMixedProductionOrder() {
+        // To modify
+    }
+
+    @When("the restaurant manager allocates {int} personnel for the time slot from {string} to {string}")
+    public void theRestaurantManagerAllocatesPersonnelForTheTimeSlotFromTo(int nbPersonnal, String startHour, String endHour) {
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("h:mm a");
+        LocalTime time = LocalTime.parse(startHour, timeFormatter);
+        LocalDateTime startSlot = LocalDateTime.of(LocalDateTime.now().toLocalDate(), time);
+        Slot slot = new Slot(2,20, startSlot, 0);
+        restaurantManager.updateSlotPersonnel(slot, nbPersonnal);
+    }
+
+    @And("the restaurant manager processes {int} portions of {string}")
+    public void theRestaurantManagerProcessesPortionsOf(int portions, String menuItem) {
+        MenuItem item = restaurant.getMenu().findMenuItemByName(menuItem);
+        assertNotNull(item);
+
+
+    }
+
+    @Then("the remaining production capacity for {string} should be {int} portions")
+    public void theRemainingProductionCapacityForShouldBePortions(String arg0, int arg1) {
     }
 }

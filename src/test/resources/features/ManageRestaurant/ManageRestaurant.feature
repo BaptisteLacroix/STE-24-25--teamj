@@ -31,3 +31,9 @@ Feature: Update restaurant opening hours and menu offerings
     Given Jeanne wants to update the capacity of "BigMac"
     When Jeanne updates the preparation time of "BigMac" to 5
     Then the capacity of "BigMac" should be 5
+
+  Scenario: Allocate production for a mixed order of Caesar Salad and Fries
+    Given Jeanne wants to set a mixed production order
+    When the restaurant manager allocates 4 personnel for the time slot from "12:00 PM" to "12:30 PM"
+    And the restaurant manager processes 10 portions of "Caesar Salad"
+    Then the remaining production capacity for "Fries" should be 90 portions

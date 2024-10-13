@@ -12,8 +12,8 @@ public class Slot {
     private int currentCapacity;
     private int maxCapacity;
     private LocalDateTime openingDate;
-    private Duration durationTime = Duration.ofMinutes(30);
-    private int numberOfPersonnel; // Nombre de personnel pour ce slot
+    private Duration durationTime;
+    private int numberOfPersonnel;
     private List<Order> orders;
 
     public Slot(int currentCapacity, int maxCapacity, LocalDateTime openingDate, int numberOfPersonnel) {
@@ -22,6 +22,8 @@ public class Slot {
         this.openingDate = openingDate;
         this.numberOfPersonnel = numberOfPersonnel;
         this.orders = new ArrayList<>();
+        this.durationTime = Duration.ofMinutes(30);
+
     }
 
     // Getters et Setters
