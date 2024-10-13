@@ -1,14 +1,14 @@
 package fr.unice.polytech.equipe.j.order;
 
-import fr.unice.polytech.equipe.j.restaurant.Restaurant;
+import fr.unice.polytech.equipe.j.restaurant.RestaurantFacade;
 
 import java.util.UUID;
 
 public class IndividualOrder extends Order {
     private DeliveryDetails deliveryDetails;
 
-    public IndividualOrder(UUID restaurantUUID, UUID orderUUID, DeliveryDetails deliveryDetails) {
-        super(restaurantUUID, orderUUID);
+    public IndividualOrder(RestaurantFacade restaurantFacade, UUID orderUUID, DeliveryDetails deliveryDetails) {
+        super(restaurantFacade, orderUUID);
         this.deliveryDetails = deliveryDetails;
     }
 
@@ -27,7 +27,7 @@ public class IndividualOrder extends Order {
     public String toString() {
         return "IndividualOrder{" +
                 "orderId=" + getOrderUUID() +
-                ", restaurant=" + getRestaurantUUID() +
+                ", restaurant=" + getRestaurantFacade() +
                 ", items=" + getItems() +
                 ", deliveryTime=" + getDeliveryDetails() +
                 ", totalPrice=" + getTotalPrice() +

@@ -1,10 +1,13 @@
 package fr.unice.polytech.equipe.j.payment;
 
 import fr.unice.polytech.equipe.j.order.Order;
+import fr.unice.polytech.equipe.j.restaurant.RestaurantProxy;
+import fr.unice.polytech.equipe.j.restaurant.RestaurantServiceManager;
 import fr.unice.polytech.equipe.j.user.ConnectedUser;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class Transaction {
     private final List<CheckoutObserver> observers = new ArrayList<>();
@@ -19,7 +22,8 @@ public class Transaction {
         this.user = user;
     }
 
-    public void proceedCheckout(Order order) {
+    public void proceedCheckout(UUID orderUUID) {
+        Order order = RestaurantServiceManager.getInstance().getOrder(orderUUID);
         if (user.getAccountBalance() < order.getTotalPrice()) {
             throw new IllegalArgumentException("Insufficient funds");
         }

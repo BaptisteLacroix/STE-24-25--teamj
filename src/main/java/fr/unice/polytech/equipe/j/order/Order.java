@@ -1,27 +1,30 @@
 package fr.unice.polytech.equipe.j.order;
 
 import fr.unice.polytech.equipe.j.restaurant.MenuItem;
+import fr.unice.polytech.equipe.j.restaurant.RestaurantFacade;
+import fr.unice.polytech.equipe.j.restaurant.RestaurantServiceManager;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 public class Order {
     private final UUID orderUUID;
-    private final UUID restaurantUUID;
+    private final RestaurantFacade restaurantFacade;
     private final List<MenuItem> items;
     private LocalDateTime deliveryTime;
     private OrderStatus status;
 
-    public Order(UUID restaurantUUID, UUID orderUUID) {
-        this.restaurantUUID = restaurantUUID;
+    public Order(RestaurantFacade restaurantFacade, UUID orderUUID) {
+        this.restaurantFacade = restaurantFacade;
         items = new ArrayList<>();
         this.status = OrderStatus.PENDING;
         this.orderUUID = orderUUID;
     }
 
-    public UUID getRestaurantUUID() {
-        return restaurantUUID;
+    public RestaurantFacade getRestaurantFacade() {
+        return restaurantFacade;
     }
 
     public List<MenuItem> getItems() {
@@ -37,14 +40,14 @@ public class Order {
     }
 
     public void addItem(MenuItem item) {
-        if (getStatus().equals(OrderStatus.IN_PREPARATION)) {
+        if (getStatus().equals(OrderStatus.VALIDATED)) {
             throw new IllegalStateException("Cannot add items to an order that is already in preparation.");
         }
         items.add(item);
     }
 
     public void removeItem(MenuItem item) {
-        if (getStatus().equals(OrderStatus.IN_PREPARATION)) {
+        if (getStatus().equals(OrderStatus.VALIDATED)) {
             throw new IllegalStateException("Cannot remove items from an order that is already in preparation.");
         }
         items.remove(item);
@@ -52,10 +55,11 @@ public class Order {
 
     /**
      * Calculate the total price of the order
+     *
      * @return The total price of the order
      */
     public double getTotalPrice() {
-        return RestaurantManager.calculateOrderPriceFromRestaurant(this);
+        return RestaurantServiceManager.getInstance().calculateOrderPriceFromRestaurant(restaurantFacade.getRestaurantId(), this);
     }
 
     public void setStatus(OrderStatus status) {
@@ -74,7 +78,7 @@ public class Order {
     public String toString() {
         return "Order{" +
                 "orderUUID=" + orderUUID +
-                ", restaurantUUID=" + restaurantUUID +
+                ", restaurantUUID=" + restaurantFacade +
                 ", items=" + items +
                 ", totalPrice=" + getTotalPrice() +
                 ", status=" + status +

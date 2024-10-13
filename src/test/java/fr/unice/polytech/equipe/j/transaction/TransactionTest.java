@@ -1,4 +1,4 @@
-package fr.unice.polytech.equipe.j.tests.transaction;
+package fr.unice.polytech.equipe.j.transaction;
 
 import fr.unice.polytech.equipe.j.order.Order;
 import fr.unice.polytech.equipe.j.payment.CheckoutObserver;
@@ -43,7 +43,7 @@ class TransactionTest {
         when(user.getAccountBalance()).thenReturn(50.0);
 
         // Perform checkout
-        transaction.proceedCheckout(order);
+        transaction.proceedCheckout(order.getOrderUUID());
 
         // Verify both observers are notified
         verify(observer1, times(1)).notifyCheckoutSuccess(order);
@@ -57,7 +57,7 @@ class TransactionTest {
         when(user.getAccountBalance()).thenReturn(100.0);
 
         // Perform the checkout
-        transaction.proceedCheckout(order);
+        transaction.proceedCheckout(order.getOrderUUID());
 
         // Verify account balance is updated
         verify(user, times(1)).setAccountBalance(80.0); // 100.0 - 20.0
@@ -71,7 +71,7 @@ class TransactionTest {
 
         // Ensure an exception is thrown
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            transaction.proceedCheckout(order);
+            transaction.proceedCheckout(order.getOrderUUID());
         });
 
         assertEquals("Insufficient funds", exception.getMessage());
@@ -92,7 +92,7 @@ class TransactionTest {
         when(user.getAccountBalance()).thenReturn(100.0);
 
         // Perform the checkout
-        transaction.proceedCheckout(order);
+        transaction.proceedCheckout(order.getOrderUUID());
 
         // Verify both observers are notified
         verify(observer1, times(1)).notifyCheckoutSuccess(order);
@@ -106,7 +106,7 @@ class TransactionTest {
         when(user.getAccountBalance()).thenReturn(100.0);
 
         // Ensure an exception is thrown
-        assertThrows(IllegalArgumentException.class, () -> transaction.proceedCheckout(order));
+        assertThrows(IllegalArgumentException.class, () -> transaction.proceedCheckout(order.getOrderUUID()));
 
         // Verify that the user's balance was not updated
         verify(user, never()).setAccountBalance(anyDouble());

@@ -1,4 +1,4 @@
-package fr.unice.polytech.equipe.j.stepdefs.backend.restaurant;
+package fr.unice.polytech.equipe.j.restaurant;
 
 import fr.unice.polytech.equipe.j.restaurant.Menu;
 import fr.unice.polytech.equipe.j.restaurant.MenuItem;

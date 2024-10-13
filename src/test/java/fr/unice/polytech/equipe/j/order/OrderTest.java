@@ -1,11 +1,13 @@
-package fr.unice.polytech.equipe.j.tests.order;
+package fr.unice.polytech.equipe.j.order;
 
 import fr.unice.polytech.equipe.j.order.Order;
 import fr.unice.polytech.equipe.j.restaurant.MenuItem;
 import fr.unice.polytech.equipe.j.restaurant.Restaurant;
+import fr.unice.polytech.equipe.j.restaurant.RestaurantFacade;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -22,7 +24,7 @@ class OrderTest {
     private Restaurant restaurant;
     private MenuItem item1;
     private MenuItem item2;
-    private UUID orderId = UUID.randomUUID();
+    private final UUID orderId = UUID.randomUUID();
 
     @BeforeEach
     void setUp() {
@@ -30,7 +32,7 @@ class OrderTest {
         restaurant = mock(Restaurant.class);
 
         // Create an Order object with the mocked Restaurant
-        order = new Order(restaurant, orderId);
+        order = new Order(new RestaurantFacade(restaurant), orderId);
 
         // Create some menu items
         item1 = new MenuItem("Burger", 5.99);

@@ -1,19 +1,18 @@
 package fr.unice.polytech.equipe.j.restaurant;
 
+import fr.unice.polytech.equipe.j.order.DeliveryDetails;
 import fr.unice.polytech.equipe.j.order.GroupOrder;
 import fr.unice.polytech.equipe.j.order.Order;
 import fr.unice.polytech.equipe.j.order.OrderBuilder;
+import fr.unice.polytech.equipe.j.order.OrderStatus;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 public class RestaurantProxy {
-    private final List<OrderBuilder> orderBuilders = new ArrayList<>();
-    private final List<GroupOrder> groupOrders = new ArrayList<>();
-
-    public RestaurantProxy() {}
+    private final Set<OrderBuilder> orderBuilders = new HashSet<>();
+    private final Set<GroupOrder> groupOrders = new HashSet<>();
 
     /**
      * Start the order through the proxy, ensuring only authorized users can create an order.
@@ -25,15 +24,27 @@ public class RestaurantProxy {
         return orderBuilder.getOrderId();
     }
 
+    public void cancelOrder(UUID orderId) {
+        RestaurantFacade restaurant = getRestaurantFromOrderId(orderId);
+        RestaurantServiceManager.getInstance().getRestaurant(restaurant.getRestaurantId()).cancelOrder(orderId);
+    }
+
+    private RestaurantFacade getRestaurantFromOrderId(UUID orderId) {
+        return orderBuilders.stream()
+                .filter(builder -> builder.getOrderId().equals(orderId))
+                .findFirst()
+                .map(OrderBuilder::getRestaurant)
+                .orElseThrow(() -> new IllegalArgumentException("Order with id: " + orderId + " not found."));
+    }
+
     /**
      * Start a group order.
      *
-     * @param deliveryLocation The location to deliver to
-     * @param deliveryTime     The time to deliver
+     * @param deliveryDetails The delivery details for the group order
      * @return The UUID of the group order
      */
-    public UUID startGroupOrder(String deliveryLocation, LocalDateTime deliveryTime) {
-        GroupOrder groupOrder = new GroupOrder(deliveryLocation, deliveryTime);
+    public UUID startGroupOrder(DeliveryDetails deliveryDetails) {
+        GroupOrder groupOrder = new GroupOrder(deliveryDetails);
         groupOrders.add(groupOrder);
         return groupOrder.getGroupOrderId();
     }
@@ -67,28 +78,33 @@ public class RestaurantProxy {
     }
 
     /**
-     * Validate and finalize the order.
-     *
-     * @return The validated Order object
+     * Validate and finalize the individual order.
      */
-    public Order validateOrder(UUID orderId, UUID restaurantId) {
+    public void validateIndividualOrder(UUID orderId, UUID restaurantId) {
         OrderBuilder orderBuilder = getOrderBuilder(orderId);
         Order order = orderBuilder.build();
         getRestaurant(restaurantId).addOrder(order);
-        return order;
     }
 
-    public GroupOrder validateGroupOrder(UUID groupOrderId) {
+    /**
+     * Validate and finalize the group order.
+     *
+     * @param groupOrderId The group order to validate
+     */
+    public void validateGroupOrder(UUID groupOrderId) {
         GroupOrder groupOrder = getGroupOrder(groupOrderId);
-        groupOrder.getOrders().forEach(order -> getRestaurant(order.getRestaurant().getRestaurantId()).addOrder(order));
-        return groupOrder;
+        // for each order in the group order that are OrderStatus.VALIDATED, add them to the restaurant
+        groupOrder.getOrders().stream()
+                .filter(order -> order.getStatus() == OrderStatus.VALIDATED)
+                .forEach(order -> getRestaurant(order.getRestaurantFacade().getRestaurantId()).addOrder(order));
     }
 
     private Restaurant getRestaurant(UUID restaurantId) {
-        return RestaurantManager.getRestaurants().stream()
-                .filter(restaurant -> restaurant.getRestaurantId().equals(restaurantId))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("Restaurant with id: " + restaurantId + " not found."));
+        Restaurant restaurant = RestaurantServiceManager.getInstance().getRestaurant(restaurantId);
+        if (restaurant == null) {
+            throw new IllegalArgumentException("Restaurant with id: " + restaurantId + " not found.");
+        }
+        return restaurant;
     }
 
     private OrderBuilder getOrderBuilder(UUID orderId) {

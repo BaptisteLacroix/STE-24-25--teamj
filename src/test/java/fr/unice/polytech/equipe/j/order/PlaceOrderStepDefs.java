@@ -1,4 +1,4 @@
-package fr.unice.polytech.equipe.j.stepdefs.backend.order;
+package fr.unice.polytech.equipe.j.order;
 
 import fr.unice.polytech.equipe.j.restaurant.Menu;
 import fr.unice.polytech.equipe.j.restaurant.MenuItem;
@@ -10,7 +10,6 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
@@ -37,7 +36,7 @@ public class PlaceOrderStepDefs {
     @Given("the user has selected the restaurant {string}")
     public void the_user_has_selected_the_restaurant(String restaurantName) {
         restaurant = new Restaurant(restaurantName, LocalDateTime.now(), LocalDateTime.now(), null);
-        restaurantProxy = new RestaurantProxy(List.of(restaurant));
+        restaurantProxy = new RestaurantProxy();
     }
 
     /**
@@ -68,7 +67,7 @@ public class PlaceOrderStepDefs {
         MenuItem menuItem1 = restaurant.getMenu().findItemByName(item1);
         MenuItem menuItem2 = restaurant.getMenu().findItemByName(item2);
 
-        connectedUser.startOrder(restaurantProxy, restaurant.getRestaurantId());
+        connectedUser.startIndividualOrder(restaurantProxy, restaurant.getRestaurantId());
         connectedUser.addItemToOrder(restaurantProxy, restaurant.getRestaurantId(), menuItem1);
         connectedUser.addItemToOrder(restaurantProxy, restaurant.getRestaurantId(), menuItem2);
     }
@@ -82,7 +81,7 @@ public class PlaceOrderStepDefs {
     public void the_user_adds_to_their_order(String item1) {
         MenuItem menuItem1 = restaurant.getMenu().findItemByName(item1);
 
-        connectedUser.startOrder(restaurantProxy, restaurant.getRestaurantId());
+        connectedUser.startIndividualOrder(restaurantProxy, restaurant.getRestaurantId());
         connectedUser.addItemToOrder(restaurantProxy, restaurant.getRestaurantId(), menuItem1);
     }
 
@@ -91,7 +90,7 @@ public class PlaceOrderStepDefs {
      */
     @When("places the order")
     public void places_the_order() {
-        connectedUser.proceedCheckout(restaurantProxy, restaurant.getRestaurantId());
+        connectedUser.proceedIndividualOrderCheckout();
     }
 
     /**
@@ -120,6 +119,6 @@ public class PlaceOrderStepDefs {
 
     @When("the user tries to place the order without adding any menu items")
     public void the_user_tries_to_place_the_order_without_adding_any_menu_items() {
-        assertThrows(IllegalArgumentException.class, () -> connectedUser.proceedCheckout(restaurantProxy, restaurant.getRestaurantId()));
+        assertThrows(IllegalArgumentException.class, () -> connectedUser.proceedIndividualOrderCheckout());
     }
 }

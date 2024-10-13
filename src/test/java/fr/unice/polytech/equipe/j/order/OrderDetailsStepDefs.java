@@ -1,4 +1,4 @@
-package fr.unice.polytech.equipe.j.stepdefs.backend.order;
+package fr.unice.polytech.equipe.j.order;
 
 import fr.unice.polytech.equipe.j.restaurant.Restaurant;
 import fr.unice.polytech.equipe.j.restaurant.RestaurantProxy;
@@ -23,12 +23,12 @@ public class OrderDetailsStepDefs {
     @When("[OrderDetails]the user selects the restaurant {string}")
     public void order_details_the_user_selects_the_restaurant(String string) {
         restaurant = new Restaurant(string, LocalDateTime.now(), LocalDateTime.now(), null);
-        restaurantProxy = new RestaurantProxy(List.of(restaurant));
+        restaurantProxy = new RestaurantProxy();
     }
 
     @Then("[OrderDetails]the user start a single order by specifying the delivery location from the pre-recorded location")
     public void order_details_the_user_start_a_single_order_by_specifying_the_delivery_location_from_the_pre_recorded_location() {
-        user.startOrder(restaurantProxy, restaurant.getRestaurantId());
+        user.startIndividualOrder(restaurantProxy, restaurant.getRestaurantId());
     }
 
     @Then("[OrderDetails]choose and delivery date within the restaurant's preparation capabilities.")

@@ -2,6 +2,7 @@ package fr.unice.polytech.equipe.j.restaurant;
 
 import fr.unice.polytech.equipe.j.order.Order;
 import fr.unice.polytech.equipe.j.order.OrderBuilder;
+import fr.unice.polytech.equipe.j.order.OrderStatus;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -15,6 +16,7 @@ public class Restaurant {
     private LocalDateTime closingTime;
     private Menu menu;
     private final List<Order> orders = new ArrayList<>();
+    private int capacity = 10; // TODO: Change later (EX2)
 
     public Restaurant(String name, LocalDateTime openingTime, LocalDateTime closingTime, Menu menu) {
         this.restaurantName = name;
@@ -61,7 +63,29 @@ public class Restaurant {
      * @return The OrderBuilder instance
      */
     public OrderBuilder createOrderBuilder() {
-        return new OrderBuilder().setRestaurantUUID(getRestaurantId());
+        return new OrderBuilder().setRestaurant(new RestaurantFacade(this));
+    }
+
+    /**
+     * Check if the restaurant is at full capacity
+     */
+    private void capacityCheck() {
+        long activeOrders = orders.stream()
+                .filter(order -> order.getStatus() == OrderStatus.PENDING || order.getStatus() == OrderStatus.VALIDATED)
+                .count();
+        if (activeOrders >= capacity) {
+            throw new IllegalStateException("Restaurant is at full capacity.");
+        }
+    }
+
+    /**
+     * Cancel an order
+     *
+     * @param orderUUID The UUID of the order to cancel
+     */
+    public void cancelOrder(UUID orderUUID) {
+        orders.removeIf(o -> o.getOrderUUID().equals(orderUUID));
+        capacity--;
     }
 
     public double calculatePrice(Order order) {
@@ -75,7 +99,7 @@ public class Restaurant {
     }
 
     public void addItemToOrder(OrderBuilder orderBuilder, MenuItem item) {
-        if (orderBuilder.getRestaurantUUID() != getRestaurantId()) {
+        if (orderBuilder.getRestaurant().getRestaurantId() != getRestaurantId()) {
             throw new IllegalArgumentException("OrderBuilder is not for this restaurant");
         }
         if (isItemAvailable(item)) {
@@ -90,6 +114,8 @@ public class Restaurant {
     }
 
     public void addOrder(Order order) {
+        capacityCheck();
+        capacity++;
         orders.add(order);
     }
 }

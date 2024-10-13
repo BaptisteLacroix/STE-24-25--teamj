@@ -1,9 +1,5 @@
-package fr.unice.polytech.equipe.j.stepdefs.backend.restaurant;
+package fr.unice.polytech.equipe.j.restaurant;
 
-import fr.unice.polytech.equipe.j.restaurant.Menu;
-import fr.unice.polytech.equipe.j.restaurant.MenuItem;
-import fr.unice.polytech.equipe.j.restaurant.Restaurant;
-import fr.unice.polytech.equipe.j.restaurant.RestaurantServiceManager;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
@@ -13,15 +9,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class RestaurantSearchSteps {
 
-    RestaurantServiceManager restaurantServiceManager = new RestaurantServiceManager();
-
-    private List<Restaurant> restaurants = new ArrayList<>();
-    private List<Restaurant> foundRestaurants = new ArrayList<>();  // Store search results
-    private Restaurant currentRestaurant;
+    private final List<Restaurant> restaurants = new ArrayList<>();
+    private List<RestaurantFacade> foundRestaurants = new ArrayList<>();  // Store search results
 
     // Given step - sets up multiple restaurants and their menu items
     @Given("the following restaurants exist:")
@@ -32,7 +27,7 @@ public class RestaurantSearchSteps {
             Menu menu = createMenuFromString(menuItems);
             Restaurant restaurant = new Restaurant(name, null, null, menu);
             restaurants.add(restaurant);
-            restaurantServiceManager.addRestaurant(restaurant);
+            RestaurantServiceManager.getInstance().addRestaurant(restaurant);
             System.out.println(restaurant);
         }
     }
@@ -51,14 +46,10 @@ public class RestaurantSearchSteps {
     // When step - search for restaurants by name
     @When("I search for restaurants by name {string}")
     public void searchForRestaurantsByName(String restaurantName) {
-
         foundRestaurants = new ArrayList<>();
-        foundRestaurants = restaurantServiceManager.searchByName(restaurantName);
-
+        foundRestaurants = RestaurantServiceManager.getInstance().searchByName(restaurantName);
 
         assertFalse("No restaurant found with name: " + restaurantName, foundRestaurants.isEmpty());
-
-
     }
 
     @Then("I should see the following restaurants:")
@@ -73,7 +64,7 @@ public class RestaurantSearchSteps {
         }
 
         // Iterate through found restaurants and verify their details
-        for (Restaurant foundRestaurant : foundRestaurants) {
+        for (RestaurantFacade foundRestaurant : foundRestaurants) {
             String restaurantName = foundRestaurant.getRestaurantName();
             assertTrue("Unexpected restaurant found: " + restaurantName, expectedRestaurantMap.containsKey(restaurantName));
 
@@ -96,7 +87,7 @@ public class RestaurantSearchSteps {
     @When("I search for the food with name {string}")
     public void i_search_for_the_food_with_name(String foodName) {
         foundRestaurants = new ArrayList<>();
-        foundRestaurants = restaurantServiceManager.searchByTypeOfFood(foodName);
+        foundRestaurants = RestaurantServiceManager.getInstance().searchByTypeOfFood(foodName);
 
         // Ensure that at least one restaurant is found offering the food
         assertFalse("No restaurant found with food: " + foodName, foundRestaurants.isEmpty());

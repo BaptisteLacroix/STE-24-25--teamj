@@ -1,26 +1,27 @@
 package fr.unice.polytech.equipe.j.order;
 
 import fr.unice.polytech.equipe.j.restaurant.MenuItem;
-import fr.unice.polytech.equipe.j.restaurant.Restaurant;
+import fr.unice.polytech.equipe.j.restaurant.RestaurantFacade;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 public class OrderBuilder {
-    private UUID restaurantUUID;
+    private RestaurantFacade restaurantFacade;
     private final List<MenuItem> items = new ArrayList<>();
-    private LocalDateTime deliveryTime;
-    private UUID orderId = UUID.randomUUID();
+    private DeliveryDetails deliveryDetails;
+    private final UUID orderId = UUID.randomUUID();
+    private boolean isIndividualOrder = false;  // Flag to determine the order type
 
     /**
      * Set the restaurant for the order
      *
-     * @param restaurant The restaurant to order from
+     * @param restaurantFacade The restaurant facade
      * @return The OrderBuilder instance
      */
-    public OrderBuilder setRestaurantUUID(UUID restaurantUUID) {
-        this.restaurantUUID = restaurantUUID;
+    public OrderBuilder setRestaurant(RestaurantFacade restaurantFacade) {
+        this.restaurantFacade = restaurantFacade;
         return this;
     }
 
@@ -47,25 +48,29 @@ public class OrderBuilder {
     }
 
     /**
-     * Set the delivery time for the order
+     * Set the delivery details for the order
      *
-     * @param deliveryTime The delivery time
+     * @param deliveryDetails The delivery details
      * @return The OrderBuilder instance
      */
-    public OrderBuilder setDeliveryTime(LocalDateTime deliveryTime) {
-        this.deliveryTime = deliveryTime;
+    public OrderBuilder setDeliveryDetails(DeliveryDetails deliveryDetails) {
+        this.deliveryDetails = deliveryDetails;
         return this;
     }
 
     /**
-     * Build the order
+     * Build the order based on the type (Individual or Simple Order for Group)
      *
-     * @return The Order instance
+     * @return The Order instance (either Individual or Simple Order)
      */
     public Order build() {
-        Order order = new Order(restaurantUUID, orderId);
+        Order order;
+        if (isIndividualOrder) {
+            order = OrderFactory.createIndividualOrder(restaurantFacade, orderId, deliveryDetails);
+        } else {
+            order = OrderFactory.createSimpleOrder(restaurantFacade, orderId);
+        }
         items.forEach(order::addItem);
-        order.setDeliveryTime(deliveryTime);
         return order;
     }
 
@@ -73,7 +78,7 @@ public class OrderBuilder {
         return orderId;
     }
 
-    public UUID getRestaurantUUID() {
-        return restaurantUUID;
+    public RestaurantFacade getRestaurant() {
+        return restaurantFacade;
     }
 }

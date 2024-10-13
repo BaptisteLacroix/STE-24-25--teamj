@@ -1,4 +1,4 @@
-package fr.unice.polytech.equipe.j.tests.user;
+package fr.unice.polytech.equipe.j.user;
 
 import fr.unice.polytech.equipe.j.order.Order;
 import fr.unice.polytech.equipe.j.order.OrderStatus;
@@ -7,6 +7,7 @@ import fr.unice.polytech.equipe.j.restaurant.Menu;
 import fr.unice.polytech.equipe.j.restaurant.MenuItem;
 import fr.unice.polytech.equipe.j.restaurant.Restaurant;
 import fr.unice.polytech.equipe.j.restaurant.RestaurantProxy;
+import fr.unice.polytech.equipe.j.restaurant.RestaurantServiceManager;
 import fr.unice.polytech.equipe.j.user.ConnectedUser;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,6 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
@@ -32,7 +34,6 @@ class ConnectedUserTest {
     private MenuItem item1;
     private MenuItem item2;
     private Transaction transaction;
-    private RestaurantProxy restaurantProxy;
     private RestaurantProxy noMockRestaurantProxy;
     private ConnectedUser noMockUser;
     private Restaurant noMockRestaurant;
@@ -43,16 +44,15 @@ class ConnectedUserTest {
         item1 = new MenuItem("Burger", 5.99);
         item2 = new MenuItem("Fries", 2.99);
         transaction = mock(Transaction.class);
-        restaurantProxy = mock(RestaurantProxy.class);
         noMockUser = new ConnectedUser("user@email.com", "password", 100.0);
         noMockRestaurant = new Restaurant("Restaurant", LocalDateTime.now(), LocalDateTime.now(), null);
         noMockRestaurant.changeMenu(new Menu(List.of(item1, item2)));
-        noMockRestaurantProxy = new RestaurantProxy(List.of(noMockRestaurant));
+        noMockRestaurantProxy = new RestaurantProxy();
     }
 
     @Test
     void testStartOrder() {
-        noMockUser.startOrder(noMockRestaurantProxy, noMockRestaurant.getRestaurantId());
+        noMockUser.startIndividualOrder(noMockRestaurantProxy, noMockRestaurant.getRestaurantId());
         noMockUser.addItemToOrder(noMockRestaurantProxy, noMockRestaurant.getRestaurantId(), item1);
         noMockUser.addItemToOrder(noMockRestaurantProxy, noMockRestaurant.getRestaurantId(), item2);
 
@@ -63,23 +63,23 @@ class ConnectedUserTest {
     @Test
     void testProceedCheckout() {
         // Spy on the ConnectedUser instance to track method calls
-        noMockUser.startOrder(noMockRestaurantProxy, noMockRestaurant.getRestaurantId());
+        noMockUser.startIndividualOrder(noMockRestaurantProxy, noMockRestaurant.getRestaurantId());
 
         noMockUser.addItemToOrder(noMockRestaurantProxy, noMockRestaurant.getRestaurantId(), item1);
 
         // Simulate the transaction checkout
-        doNothing().when(transaction).proceedCheckout(Mockito.any(Order.class));
+        doNothing().when(transaction).proceedCheckout(any());
 
-        noMockUser.proceedCheckout(noMockRestaurantProxy, noMockRestaurant.getRestaurantId());
+        noMockUser.proceedIndividualOrderCheckout();
 
         // Verify that the status of the order change
-        assertEquals(OrderStatus.IN_PREPARATION, noMockUser.getOrdersHistory().getLast().getStatus());
+        assertEquals(OrderStatus.VALIDATED, noMockUser.getOrdersHistory().getLast().getStatus());
     }
 
 
     @Test
     void testProceedCheckout_WithoutOrder_ThrowsException() {
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> user.proceedCheckout(noMockRestaurantProxy, noMockRestaurant.getRestaurantId()));
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> user.proceedIndividualOrderCheckout());
         assertEquals("Order with id: null not found.", exception.getMessage());
     }
 
