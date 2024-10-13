@@ -10,8 +10,8 @@ class MenuItemTest {
     @Test
     void testCreateMenuItem() {
         MenuItem item = new MenuItem("Burger", 5.99);
-        assertEquals("Burger", item.getName());
-        assertEquals(5.99, item.getPrice());
+        assertEquals("Burger", item.name());
+        assertEquals(5.99, item.price());
     }
 
     @Test

@@ -33,7 +33,7 @@ public class RestaurantServiceManager {
     public List<Restaurant> searchByTypeOfFood(String foodType) {
         return restaurants.stream()
                 .filter(restaurant -> restaurant.getMenu().getItems().stream()
-                        .anyMatch(item -> item.getName().equalsIgnoreCase(foodType)))
+                        .anyMatch(item -> item.name().equalsIgnoreCase(foodType)))
                 .collect(Collectors.toList());
     }
 

@@ -84,9 +84,9 @@ public class RestaurantSearchSteps {
 
             // Verify that the found restaurant's menu matches the expected menu
             for (MenuItem expectedMenuItem : expectedMenu.getItems()) {
-                assertTrue("Menu item not found or price mismatch for: " + expectedMenuItem.getName(),
+                assertTrue("Menu item not found or price mismatch for: " + expectedMenuItem.name(),
                         menuItems.stream()
-                                .anyMatch(item -> item.getName().equals(expectedMenuItem.getName()) && item.getPrice() == expectedMenuItem.getPrice())
+                                .anyMatch(item -> item.name().equals(expectedMenuItem.name()) && item.price() == expectedMenuItem.price())
                 );
             }
         }

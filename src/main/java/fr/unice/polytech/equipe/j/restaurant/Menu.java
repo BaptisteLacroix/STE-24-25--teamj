@@ -17,7 +17,7 @@ public class Menu {
 
     public MenuItem findItemByName(String name) {
         return items.stream()
-                .filter(item -> item.getName().equals(name))
+                .filter(item -> item.name().equals(name))
                 .findFirst()
                 .orElse(null);
     }

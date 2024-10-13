@@ -1,12 +1,17 @@
 package fr.unice.polytech.equipe.j.restaurant;
 
+import fr.unice.polytech.equipe.j.order.DeliverableOrder;
+import fr.unice.polytech.equipe.j.order.GroupOrder;
 import fr.unice.polytech.equipe.j.order.Order;
 import fr.unice.polytech.equipe.j.order.OrderBuilder;
+import fr.unice.polytech.equipe.j.user.ConnectedUser;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class Restaurant {
     private final UUID restaurantId = UUID.randomUUID();
@@ -15,12 +20,24 @@ public class Restaurant {
     private LocalDateTime closingTime;
     private Menu menu;
     private final List<Order> orders = new ArrayList<>();
+    private OrderPriceStrategy orderPriceStrategy;
+    private List<DeliverableOrder> individualOrdersHistory;
+    private List<GroupOrder> groupOrdersHistory;
 
     public Restaurant(String name, LocalDateTime openingTime, LocalDateTime closingTime, Menu menu) {
         this.restaurantName = name;
         this.openingTime = openingTime;
         this.closingTime = closingTime;
         this.menu = menu;
+        this.orderPriceStrategy = OrderPriceStrategyFactory.makeGiveItemForNItems(8);
+    }
+
+    public Restaurant(String name, LocalDateTime openingTime, LocalDateTime closingTime, Menu menu, OrderPriceStrategy orderPriceStrategy) {
+        this.restaurantName = name;
+        this.openingTime = openingTime;
+        this.closingTime = closingTime;
+        this.menu = menu;
+        this.orderPriceStrategy = orderPriceStrategy;
     }
 
     public void changeMenu(Menu newMenu) {
@@ -55,6 +72,34 @@ public class Restaurant {
         return orders;
     }
 
+    public void setMenu(Menu menu) {
+        this.menu = menu;
+    }
+
+    public OrderPriceStrategy getOrderPriceStrategy() {
+        return orderPriceStrategy;
+    }
+
+    public void setOrderPriceStrategy(OrderPriceStrategy orderPriceStrategy) {
+        this.orderPriceStrategy = orderPriceStrategy;
+    }
+
+    public List<DeliverableOrder> getIndividualOrdersHistory() {
+        return individualOrdersHistory;
+    }
+
+    public void setIndividualOrdersHistory(List<DeliverableOrder> individualOrdersHistory) {
+        this.individualOrdersHistory = individualOrdersHistory;
+    }
+
+    public List<GroupOrder> getGroupOrdersHistory() {
+        return groupOrdersHistory;
+    }
+
+    public void setGroupOrdersHistory(List<GroupOrder> groupOrdersHistory) {
+        this.groupOrdersHistory = groupOrdersHistory;
+    }
+// TODO : remove this method
     /**
      * Create and return an OrderBuilder for the restaurant
      *
@@ -66,7 +111,7 @@ public class Restaurant {
 
     public double calculatePrice(Order order) {
         return order.getItems().stream()
-                .mapToDouble(MenuItem::getPrice)
+                .mapToDouble(MenuItem::price)
                 .sum();
     }
 
@@ -81,7 +126,7 @@ public class Restaurant {
         if (isItemAvailable(item)) {
             orderBuilder.addMenuItem(item);
         } else {
-            throw new IllegalArgumentException("MenuItem " + item.getName() + " is not available.");
+            throw new IllegalArgumentException("MenuItem " + item.name() + " is not available.");
         }
     }
 
@@ -92,20 +137,7 @@ public class Restaurant {
     public void addOrder(Order order) {
         orders.add(order);
     }
-import fr.unice.polytech.equipe.j.order.DeliverableOrder;
-import fr.unice.polytech.equipe.j.order.GroupOrder;
-import fr.unice.polytech.equipe.j.order.Order;
-import fr.unice.polytech.equipe.j.user.ConnectedUser;
 
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-public record Restaurant (
-    OrderPriceStrategy orderPriceStrategy,
-    List<DeliverableOrder> individualOrdersHistory,
-    List<GroupOrder> groupOrdersHistory
-){
     public void addOrderToHistory(DeliverableOrder order) {
         this.individualOrdersHistory.add(order);
     }
@@ -115,7 +147,7 @@ public record Restaurant (
     }
 
     public OrderPrice processOrderPrice(DeliverableOrder indivOder) {
-        return this.orderPriceStrategy().processOrderPrice(indivOder.user(), indivOder.order(), this);
+        return this.orderPriceStrategy.processOrderPrice(indivOder.user(), indivOder.order(), this);
     }
 
     public Map<Order, OrderPrice> processOrderPrice(GroupOrder groupOrder) {
@@ -125,7 +157,7 @@ public record Restaurant (
                     ConnectedUser user = entry.getValue();
                     return Map.entry(
                             order,
-                            this.orderPriceStrategy().processOrderPrice(user, order, this)
+                            this.orderPriceStrategy.processOrderPrice(user, order, this)
                     );
                 }).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }

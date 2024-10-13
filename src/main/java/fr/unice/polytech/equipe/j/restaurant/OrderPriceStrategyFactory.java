@@ -11,16 +11,16 @@ public class OrderPriceStrategyFactory {
     public static OrderPriceStrategy makeSubstractKpercentforNOrder(int k, int n) {
         return (ConnectedUser user, Order order, Restaurant restaurant)-> {
             // get number of user previous commands
-            long previousGroupOrders = restaurant.groupOrdersHistory().stream()
+            long previousGroupOrders = restaurant.getGroupOrdersHistory().stream()
                     .filter(groupOrder -> groupOrder.orderToConnectedUserMap().containsValue(user))
                     .count();
-            long previousIndividualOrders =  restaurant.individualOrdersHistory().stream()
+            long previousIndividualOrders =  restaurant.getIndividualOrdersHistory().stream()
                     .filter(individualOrder -> individualOrder.user().equals(user))
                     .count();
 
             // map order menuItems to their prices
-            var prices = order.items.stream().collect(Collectors.toMap((item)->item, MenuItem::price));
-            double totalPrice = prices.values().stream().mapToInt(Integer::intValue).sum();
+            var prices = order.getItems().stream().collect(Collectors.toMap((item)->item, MenuItem::price));
+            double totalPrice = prices.values().stream().mapToDouble(Double::doubleValue).sum();
 
             String description = "No discount";
             // if the order is dividable by n, apply k% discount
@@ -40,14 +40,14 @@ public class OrderPriceStrategyFactory {
 
     public static OrderPriceStrategy makeGiveItemForNItems(int n) {
         return (ConnectedUser user, Order order, Restaurant restaurant)-> {
-            var prices = order.items.stream().collect(Collectors.toMap((item)->item, MenuItem::price));
-            Map.Entry<MenuItem, Integer> min = null;
-            for (Map.Entry<MenuItem, Integer> entry : prices.entrySet()) {
+            var prices = order.getItems().stream().collect(Collectors.toMap((item)->item, MenuItem::price));
+            Map.Entry<MenuItem, Double> min = null;
+            for (Map.Entry<MenuItem, Double> entry : prices.entrySet()) {
                 if (min == null || min.getValue() > entry.getValue()) {
                     min = entry;
                 }
             }
-            double totalPrice = prices.values().stream().mapToInt(Integer::intValue).sum();
+            double totalPrice = prices.values().stream().mapToDouble(Double::doubleValue).sum();
 
             // if there is no elements or less that n elements, don't change a thing
             if (min == null || prices.size() < n) {
@@ -58,7 +58,7 @@ public class OrderPriceStrategyFactory {
                 );
             }
 
-            prices.put(min.getKey(), 0);
+            prices.put(min.getKey(), 0.0);
             return new OrderPrice(
                     prices,
                     totalPrice,
