@@ -5,7 +5,7 @@ name: Java CI with Maven
 
 on:
   push:
-    branches: [ "main"]
+    branches: [ "main","fix/fix-github-actions-workflow"]
   pull_request:
     branches: [ "main" ]
 
@@ -24,3 +24,6 @@ jobs:
           cache: maven
       - name:  Build with Maven
         run: mvn -B package --file pom.xml
+
+      - name: Running tests
+        run: mvn test --file pom.xml
