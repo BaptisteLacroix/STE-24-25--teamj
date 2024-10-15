@@ -11,8 +11,7 @@ import java.util.UUID;
 public class OrderBuilder {
     private Restaurant restaurant;
     private final List<MenuItem> items = new ArrayList<>();
-    private LocalDateTime deliveryTime;
-    private UUID orderId = UUID.randomUUID();
+    private final UUID orderId = UUID.randomUUID();
 
     /**
      * Set the restaurant for the order
@@ -48,17 +47,6 @@ public class OrderBuilder {
     }
 
     /**
-     * Set the delivery time for the order
-     *
-     * @param deliveryTime The delivery time
-     * @return The OrderBuilder instance
-     */
-    public OrderBuilder setDeliveryTime(LocalDateTime deliveryTime) {
-        this.deliveryTime = deliveryTime;
-        return this;
-    }
-
-    /**
      * Build the order
      *
      * @return The Order instance
@@ -66,7 +54,6 @@ public class OrderBuilder {
     public Order build() {
         Order order = new Order(restaurant, orderId);
         items.forEach(order::addItem);
-        order.setDeliveryTime(deliveryTime);
         return order;
     }
 

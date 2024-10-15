@@ -30,19 +30,16 @@ class OrderBuilderTest {
 
     @Test
     void testBuildOrderWithItems() {
-        LocalDateTime deliveryTime = LocalDateTime.now().plusHours(2);
         Order order = orderBuilder
                 .setRestaurant(restaurant)
                 .addMenuItem(item1)
                 .addMenuItem(item2)
-                .setDeliveryTime(deliveryTime)
                 .build();
 
         // Validate the order properties
         assertEquals(restaurant, order.getRestaurant());
         assertTrue(order.getItems().containsAll(Arrays.asList(item1, item2)));
         assertEquals(2, order.getItems().size());
-        assertEquals(deliveryTime, order.getDeliveryTime());
     }
 
     @Test
