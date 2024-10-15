@@ -13,14 +13,14 @@ public class Slot {
     private int maxCapacity;
     private LocalDateTime openingDate;
     private Duration durationTime;
-    private int numberOfPersonnel;
+    private int numberOfPersonnal;
     private List<Order> orders;
 
-    public Slot(int currentCapacity, int maxCapacity, LocalDateTime openingDate, int numberOfPersonnel) {
+    public Slot(int currentCapacity, int maxCapacity, LocalDateTime openingDate, int numberOfPersonnal) {
         this.currentCapacity = currentCapacity;
         this.maxCapacity = maxCapacity;
         this.openingDate = openingDate;
-        this.numberOfPersonnel = numberOfPersonnel;
+        this.numberOfPersonnal = numberOfPersonnal;
         this.orders = new ArrayList<>();
         this.durationTime = Duration.ofMinutes(30);
 
@@ -28,11 +28,11 @@ public class Slot {
 
     // Getters et Setters
     public int getNumberOfPersonnel() {
-        return numberOfPersonnel;
+        return numberOfPersonnal;
     }
 
-    public void setNumberOfPersonnel(int numberOfPersonnel) {
-        this.numberOfPersonnel = numberOfPersonnel;
+    public void setNumberOfPersonnal(int numberOfPersonnal) {
+        this.numberOfPersonnal = numberOfPersonnal;
     }
 
     public int getMaxCapacity() {
@@ -59,12 +59,14 @@ public class Slot {
         this.orders = orders;
     }
 
-
+    public Duration getDurationTime(){
+        return durationTime;
+    }
     // Méthode pour calculer la capacité de production pour un item sur un slot
     public int calculateProductionCapacity(MenuItem item) {
         int prepTimeInSeconds = item.getPrepTime();
         int slotTimeInSeconds = (int) durationTime.getSeconds();
-        return numberOfPersonnel * slotTimeInSeconds;
+        return numberOfPersonnal * slotTimeInSeconds;
 
     }
 }

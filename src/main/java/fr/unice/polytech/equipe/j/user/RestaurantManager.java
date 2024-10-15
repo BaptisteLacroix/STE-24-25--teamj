@@ -50,16 +50,17 @@ public class RestaurantManager extends User {
     }
 
     public void updateMenuItemPrice(String itemName, int newPrice) {
-        this.getRestaurant().getMenu().updateMenuItemPrice(itemName, newPrice);
+        this.restaurant.getMenu().updateMenuItemPrice(itemName, newPrice);
     }
 
     // Supprimer un élément du menu
     public void removeMenuItem(String itemName) {
-        this.getRestaurant().getMenu().removeMenuItem(itemName);
+        this.restaurant.getMenu().removeMenuItem(itemName);
     }
 
     // Mettre à jour le nombre de personnel pour un slot spécifique
-    public void updateSlotPersonnel(Slot slot, int numberOfPersonnel) {
-        slot.setNumberOfPersonnel(numberOfPersonnel);
+    public void updateNumberOfPersonnal(Slot slot, int numberOfPersonnel) {
+        this.restaurant.setNumberOfPersonnal(numberOfPersonnel);
+
     }
 }

@@ -17,13 +17,15 @@ public class Restaurant {
     private List<Slot> slots;
     private Menu menu;
     private final List<Order> orders = new ArrayList<>();
+    private int numberOfPersonnal;
 
-    public Restaurant(String name, List<Slot> slots, LocalDateTime openingTime, LocalDateTime closingTime, Menu menu) {
+    public Restaurant(String name, List<Slot> slots, LocalDateTime openingTime, LocalDateTime closingTime, Menu menu, int numberOfPersonnal) {
         this.restaurantName = name;
         this.openingTime = openingTime;
         this.closingTime = closingTime;
         this.menu = menu;
         this.slots = slots;
+        this.numberOfPersonnal = numberOfPersonnal;
     }
 
     public void changeMenu(Menu newMenu) {
@@ -98,5 +100,34 @@ public class Restaurant {
 
     public void addOrder(Order order) {
         orders.add(order);
+    }
+
+    public Slot getActiveSlot() {
+        LocalDateTime now = LocalDateTime.now();
+        for (Slot slot : slots) {
+            LocalDateTime slotStart = slot.getOpeningDate();
+            LocalDateTime slotEnd = slotStart.plus(slot.getDurationTime());
+
+            // Vérifie si l'heure actuelle est dans la plage du slot
+            if (now.isAfter(slotStart) && now.isBefore(slotEnd)) {
+                return slot;
+            }
+        }
+        return null;
+    }
+
+    public void setNumberOfPersonnal(int numberOfPersonnal) {
+        this.numberOfPersonnal = numberOfPersonnal;
+
+        Slot activeSlot = getActiveSlot();
+
+        if (activeSlot != null) {
+            // Mise à jour du nombre de personnel uniquement pour le slot actif
+            activeSlot.setNumberOfPersonnal(numberOfPersonnal);
+        }
+    }
+
+    public int getNumberOfPersonnal() {
+        return numberOfPersonnal;
     }
 }
