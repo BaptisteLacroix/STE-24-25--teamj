@@ -21,6 +21,10 @@ public class RestaurantServiceManager {
         this.restaurants = new ArrayList<>();
     }
 
+    static void resetInstance() {
+        instance = null;
+    }
+
     // Static method to get the single instance (Singleton pattern)
     public static RestaurantServiceManager getInstance() {
         if (instance == null) {
@@ -54,6 +58,7 @@ public class RestaurantServiceManager {
     public List<RestaurantFacade> searchByName(String name) {
         return restaurants.stream()
                 .filter(restaurant -> restaurant.getRestaurantName().toLowerCase().contains(name.toLowerCase()))
+                .distinct()
                 .map(RestaurantFacade::new)
                 .collect(Collectors.toList());
     }
@@ -62,7 +67,8 @@ public class RestaurantServiceManager {
     public List<RestaurantFacade> searchByTypeOfFood(String foodType) {
         return restaurants.stream()
                 .filter(restaurant -> restaurant.getMenu().getItems().stream()
-                        .anyMatch(item -> item.getName().equalsIgnoreCase(foodType)))
+                        .anyMatch(item -> item.getName().contains(foodType)))
+                .distinct()
                 .map(RestaurantFacade::new)
                 .collect(Collectors.toList());
     }
@@ -71,6 +77,7 @@ public class RestaurantServiceManager {
     public List<RestaurantFacade> searchByAvailability(LocalDateTime time) {
         return restaurants.stream()
                 .filter(restaurant -> isOpenAt(restaurant, time))
+                .distinct()
                 .map(RestaurantFacade::new)
                 .collect(Collectors.toList());
     }
@@ -82,8 +89,9 @@ public class RestaurantServiceManager {
 
     /**
      * Calculate the price of an order from a restaurant.
+     *
      * @param restaurantId The ID of the restaurant
-     * @param order The order to calculate the price for
+     * @param order        The order to calculate the price for
      * @return The total price of the order
      */
     public double calculateOrderPriceFromRestaurant(UUID restaurantId, Order order) {
@@ -96,5 +104,11 @@ public class RestaurantServiceManager {
                 .filter(order -> order.getOrderUUID().equals(orderUUID))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("Order not found"));
+    }
+
+    public List<RestaurantFacade> getRestaurants() {
+        return restaurants.stream()
+                .map(RestaurantFacade::new)
+                .collect(Collectors.toList());
     }
 }

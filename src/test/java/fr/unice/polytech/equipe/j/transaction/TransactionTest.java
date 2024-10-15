@@ -46,8 +46,8 @@ class TransactionTest {
         transaction.proceedCheckout(order.getOrderUUID());
 
         // Verify both observers are notified
-        verify(observer1, times(1)).notifyCheckoutSuccess(order);
-        verify(observer2, times(1)).notifyCheckoutSuccess(order);
+        verify(observer1, times(1)).orderPaid(order);
+        verify(observer2, times(1)).orderPaid(order);
     }
 
     @Test
@@ -78,7 +78,7 @@ class TransactionTest {
 
         // Verify that the user's balance is not changed
         verify(user, never()).setAccountBalance(anyDouble());
-        verify(observer1, never()).notifyCheckoutSuccess(any());
+        verify(observer1, never()).orderPaid(any());
     }
 
     @Test
@@ -95,8 +95,8 @@ class TransactionTest {
         transaction.proceedCheckout(order.getOrderUUID());
 
         // Verify both observers are notified
-        verify(observer1, times(1)).notifyCheckoutSuccess(order);
-        verify(observer2, times(1)).notifyCheckoutSuccess(order);
+        verify(observer1, times(1)).orderPaid(order);
+        verify(observer2, times(1)).orderPaid(order);
     }
 
     @Test
@@ -112,7 +112,7 @@ class TransactionTest {
         verify(user, never()).setAccountBalance(anyDouble());
 
         // Verify that observers were not notified
-        verify(observer1, never()).notifyCheckoutSuccess(any());
-        verify(observer2, never()).notifyCheckoutSuccess(any());
+        verify(observer1, never()).orderPaid(any());
+        verify(observer2, never()).orderPaid(any());
     }
 }

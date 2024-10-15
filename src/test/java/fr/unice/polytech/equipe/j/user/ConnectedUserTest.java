@@ -6,13 +6,9 @@ import fr.unice.polytech.equipe.j.payment.Transaction;
 import fr.unice.polytech.equipe.j.restaurant.Menu;
 import fr.unice.polytech.equipe.j.restaurant.MenuItem;
 import fr.unice.polytech.equipe.j.restaurant.Restaurant;
-import fr.unice.polytech.equipe.j.restaurant.RestaurantProxy;
-import fr.unice.polytech.equipe.j.restaurant.RestaurantServiceManager;
-import fr.unice.polytech.equipe.j.user.ConnectedUser;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -34,7 +30,6 @@ class ConnectedUserTest {
     private MenuItem item1;
     private MenuItem item2;
     private Transaction transaction;
-    private RestaurantProxy noMockRestaurantProxy;
     private ConnectedUser noMockUser;
     private Restaurant noMockRestaurant;
 
@@ -47,25 +42,24 @@ class ConnectedUserTest {
         noMockUser = new ConnectedUser("user@email.com", "password", 100.0);
         noMockRestaurant = new Restaurant("Restaurant", LocalDateTime.now(), LocalDateTime.now(), null);
         noMockRestaurant.changeMenu(new Menu(List.of(item1, item2)));
-        noMockRestaurantProxy = new RestaurantProxy();
     }
 
     @Test
     void testStartOrder() {
-        noMockUser.startIndividualOrder(noMockRestaurantProxy, noMockRestaurant.getRestaurantId());
-        noMockUser.addItemToOrder(noMockRestaurantProxy, noMockRestaurant.getRestaurantId(), item1);
-        noMockUser.addItemToOrder(noMockRestaurantProxy, noMockRestaurant.getRestaurantId(), item2);
+        noMockUser.startIndividualOrder(noMockRestaurant.getRestaurantId());
+        noMockUser.addItemToOrder(noMockRestaurant.getRestaurantId(), item1);
+        noMockUser.addItemToOrder(noMockRestaurant.getRestaurantId(), item2);
 
         // Assuming OrderBuilder works correctly, no exception should be thrown
-        assertDoesNotThrow(() -> noMockUser.addItemToOrder(noMockRestaurantProxy, noMockRestaurant.getRestaurantId(), item1));
+        assertDoesNotThrow(() -> noMockUser.addItemToOrder(noMockRestaurant.getRestaurantId(), item1));
     }
 
     @Test
     void testProceedCheckout() {
         // Spy on the ConnectedUser instance to track method calls
-        noMockUser.startIndividualOrder(noMockRestaurantProxy, noMockRestaurant.getRestaurantId());
+        noMockUser.startIndividualOrder(noMockRestaurant.getRestaurantId());
 
-        noMockUser.addItemToOrder(noMockRestaurantProxy, noMockRestaurant.getRestaurantId(), item1);
+        noMockUser.addItemToOrder(noMockRestaurant.getRestaurantId(), item1);
 
         // Simulate the transaction checkout
         doNothing().when(transaction).proceedCheckout(any());
@@ -86,7 +80,7 @@ class ConnectedUserTest {
     @Test
     void testNotifyCheckoutSuccess() {
         Order order = mock(Order.class);
-        user.notifyCheckoutSuccess(order);
+        user.orderPaid(order);
 
         // Ensure order history is updated and the current order is cleared
         assertTrue(user.getOrdersHistory().contains(order));
@@ -95,7 +89,7 @@ class ConnectedUserTest {
     @Test
     void testGetOrdersHistory() {
         Order order = mock(Order.class);
-        user.notifyCheckoutSuccess(order);
+        user.orderPaid(order);
         List<Order> history = user.getOrdersHistory();
 
         assertEquals(1, history.size());
@@ -111,7 +105,7 @@ class ConnectedUserTest {
 
         // After adding an order to history
         Order order = mock(Order.class);
-        user.notifyCheckoutSuccess(order);
+        user.orderPaid(order);
         when(user.getOrdersHistory()).thenReturn(List.of(order));
         assertEquals("user@test.com - 100.0€ - 1 orders", user.toString());
     }

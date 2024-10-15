@@ -14,7 +14,7 @@ import java.util.UUID;
 
 public class ConnectedUser extends User implements CheckoutObserver {
     private final Transaction transaction;
-    private final List<Order> ordersHistory = new ArrayList<>();
+    private final List<UUID> ordersHistory = new ArrayList<>();
     private UUID currentOrder;
     private UUID currentGroupOrder;
 
@@ -27,51 +27,47 @@ public class ConnectedUser extends User implements CheckoutObserver {
     /**
      * Start an individual order
      *
-     * @param restaurantProxy The restaurant proxy
      * @param restaurantId    The restaurant ID
      */
-    public void startIndividualOrder(RestaurantProxy restaurantProxy, UUID restaurantId) {
-        this.currentOrder = restaurantProxy.startSingleOrder(restaurantId);
+    public void startIndividualOrder(UUID restaurantId) {
+        this.currentOrder = RestaurantProxy.getInstance().startSingleOrder(restaurantId);
     }
 
     /**
      * Start a group order
      *
-     * @param restaurantProxy The restaurant proxy
      * @param deliveryDetails The delivery details
      */
-    public void startGroupOrder(RestaurantProxy restaurantProxy, DeliveryDetails deliveryDetails) {
-        this.currentOrder = restaurantProxy.startGroupOrder(deliveryDetails);
+    public void startGroupOrder(DeliveryDetails deliveryDetails) {
+        this.currentOrder = RestaurantProxy.getInstance().startGroupOrder(deliveryDetails);
     }
 
     /**
      * Add an item to the current order
      *
-     * @param restaurantProxy The restaurant proxy
      * @param restaurantId    The restaurant ID
      * @param item            The item to add
      */
-    public void addItemToOrder(RestaurantProxy restaurantProxy, UUID restaurantId, MenuItem item) {
-        restaurantProxy.addItemToOrder(currentOrder, restaurantId, item);
+    public void addItemToOrder(UUID restaurantId, MenuItem item) {
+        RestaurantProxy.getInstance().addItemToOrder(currentOrder, restaurantId, item);
     }
 
     /**
      * Add an item to the current group order
      *
-     * @param restaurantProxy The restaurant proxy
      */
-    public void validateGroupOrder(RestaurantProxy restaurantProxy) {
-        restaurantProxy.validateGroupOrder(currentGroupOrder);
+    public void validateGroupOrder() {
+        RestaurantProxy.getInstance().validateGroupOrder(currentGroupOrder);
     }
 
     /**
      * Validate the individual order
      *
-     * @param restaurantProxy The restaurant proxy
      * @param restaurantId    The restaurant ID
      */
-    public void validateIndividualOrder(RestaurantProxy restaurantProxy, UUID restaurantId) {
-        restaurantProxy.validateIndividualOrder(currentOrder, restaurantId);
+    public void validateIndividualOrder(UUID restaurantId) {
+        // TODO: Proceed to checkout
+        RestaurantProxy.getInstance().validateIndividualOrder(currentOrder, restaurantId);
     }
 
     /**
@@ -88,9 +84,8 @@ public class ConnectedUser extends User implements CheckoutObserver {
      * @param order The order that was successfully checked out
      */
     @Override
-    public void notifyCheckoutSuccess(Order order) {
+    public void orderPaid(UUID order) {
         addOrderToHistory(order);
-        order.setStatus(OrderStatus.VALIDATED);
     }
 
     /**
@@ -98,12 +93,20 @@ public class ConnectedUser extends User implements CheckoutObserver {
      *
      * @param order The order to add
      */
-    private void addOrderToHistory(Order order) {
+    private void addOrderToHistory(UUID order) {
         ordersHistory.add(order);
     }
 
-    public List<Order> getOrdersHistory() {
+    public List<UUID> getOrdersHistory() {
         return ordersHistory;
+    }
+
+    public OrderStatus getCurrentOrderState(UUID restaurantUUID, UUID orderUUID) {
+        return RestaurantProxy.getInstance().getOrderStatus(restaurantUUID, orderUUID);
+    }
+
+    public UUID getCurrentOrder() {
+        return currentOrder;
     }
 
     @Override

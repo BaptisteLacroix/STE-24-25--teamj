@@ -1,7 +1,7 @@
 package fr.unice.polytech.equipe.j.payment;
 
-import fr.unice.polytech.equipe.j.order.Order;
+import java.util.UUID;
 
 public interface CheckoutObserver {
-    void notifyCheckoutSuccess(Order order);
+    void orderPaid(UUID orderUUID);
 }

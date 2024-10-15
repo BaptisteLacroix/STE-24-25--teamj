@@ -12,71 +12,35 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 
 public class RestaurantMenuSteps {
 
-    private List<Restaurant> restaurants = new ArrayList<>();
-    private Restaurant currentRestaurant;
-
-
-    // Given step - sets up the campus restaurant and its menu items
-    @Given("the following campus restaurant exists:")
-    public void givenRestaurantExists(List<Map<String, String>> restaurantData) {
-        for (Map<String, String> data : restaurantData) {
-            String name = data.get("name");
-            String menuItems = data.get("menu items");
-            Menu menu = createMenuFromString(menuItems);
-            Restaurant restaurant = new Restaurant(name, null, null, menu);
-            restaurants.add(restaurant);
-        }
-    }
-
-    // Helper method to create a Menu from a string of menu items
-    private Menu createMenuFromString(String menuItems) {
-        Menu.MenuBuilder builder = new Menu.MenuBuilder();
-
-        for (String item : menuItems.split("\", ")) {
-            String[] parts = item.replace("\"", "").split(", ");
-            builder.addMenuItem(new MenuItem(parts[0], Double.parseDouble(parts[1])));
-        }
-        return builder.build();
-    }
+    private RestaurantFacade currentRestaurant;
 
     // When step - user visits the specific restaurant
     @When("the user visits the {string} restaurant")
     public void userVisitsRestaurant(String restaurantName) {
-        currentRestaurant = restaurants.stream()
-                .filter(restaurant -> restaurant.getRestaurantName().equals(restaurantName))
-                .findFirst()
-                .orElseThrow(() -> new RuntimeException("Restaurant not found"));
-
-        System.out.println(currentRestaurant.getRestaurantName());
-    }
-
-    @When("when the user visits the {string} restaurant")
-    public void when_the_user_visits_the_restaurant(String restaurantName) {
-        currentRestaurant = restaurants.stream()
-                .filter(restaurant -> restaurant.getRestaurantName().equals(restaurantName))
-                .findFirst()
-                .orElseThrow(() -> new RuntimeException("Restaurant not found"));
-
+        currentRestaurant = RestaurantServiceManager.getInstance().searchByName(restaurantName).getFirst();
+        assertNotNull(currentRestaurant);
     }
 
     @Then("the user should see the menu for {string} with the following items:")
     public void verifyMenu(String restaurantName, List<Map<String, String>> expectedMenuItems) {
         assertEquals(restaurantName, currentRestaurant.getRestaurantName());
 
+        // Get the actual items from the restaurant s menu
         List<MenuItem> menuItems = currentRestaurant.getMenu().getItems();
 
         for (Map<String, String> expectedItem : expectedMenuItems) {
             String name = expectedItem.get("name");
             double price = Double.parseDouble(expectedItem.get("price"));
 
-            // verifier  that the menuItems names' match
+            // verification finale
             assertTrue(menuItems.stream()
-                    .anyMatch(item -> item.getName().equals(name) ));
+                    .anyMatch(item -> item.getName().equals(name) && item.getPrice() == price));
         }
     }
 
@@ -95,17 +59,6 @@ public class RestaurantMenuSteps {
             // verification finale
             assertTrue(menuItems.stream()
                     .anyMatch(item -> item.getName().equals(name) && item.getPrice() == price));
-        }
-    }
-
-    @Given("the following campus restaurants exist:")
-    public void givenMultipleRestaurantsExist(List<Map<String, String>> restaurantData) {
-        for (Map<String, String> data : restaurantData) {
-            String name = data.get("name");
-            String menuItems = data.get("menu items");
-            Menu menu = createMenuFromString(menuItems);
-            Restaurant restaurant = new Restaurant(name, null, null, menu);
-            restaurants.add(restaurant);
         }
     }
 

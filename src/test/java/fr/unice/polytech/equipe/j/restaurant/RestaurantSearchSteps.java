@@ -1,11 +1,11 @@
 package fr.unice.polytech.equipe.j.restaurant;
 
+import io.cucumber.java.Before;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -15,82 +15,67 @@ import static org.junit.Assert.assertTrue;
 
 public class RestaurantSearchSteps {
 
-    private final List<Restaurant> restaurants = new ArrayList<>();
-    private List<RestaurantFacade> foundRestaurants = new ArrayList<>();  // Store search results
+    private List<RestaurantFacade> foundRestaurants;  // Store search results
 
-    // Given step - sets up multiple restaurants and their menu items
-    @Given("the following restaurants exist:")
-    public void givenMultipleRestaurantsExists(List<Map<String, String>> restaurantData) {
-        for (Map<String, String> data : restaurantData) {
-            String name = data.get("name");
-            String menuItems = data.get("menu items");
-            Menu menu = createMenuFromString(menuItems);
-            Restaurant restaurant = new Restaurant(name, null, null, menu);
-            restaurants.add(restaurant);
-            RestaurantServiceManager.getInstance().addRestaurant(restaurant);
-            System.out.println(restaurant);
-        }
-    }
-
-    // Helper method to create a Menu from a string of menu items
-    private Menu createMenuFromString(String menuItems) {
-        Menu.MenuBuilder builder = new Menu.MenuBuilder();
-
-        for (String item : menuItems.split("\", ")) {
-            String[] parts = item.replace("\"", "").split(", ");
-            builder.addMenuItem(new MenuItem(parts[0], Double.parseDouble(parts[1])));
-        }
-        return builder.build();
+    @Before
+    public void setUp() {
+        // Initialize the list before each scenario
+        foundRestaurants = new ArrayList<>();
     }
 
     // When step - search for restaurants by name
-    @When("I search for restaurants by name {string}")
+    @When("the user searches for restaurants by name {string}")
     public void searchForRestaurantsByName(String restaurantName) {
-        foundRestaurants = new ArrayList<>();
         foundRestaurants = RestaurantServiceManager.getInstance().searchByName(restaurantName);
-
         assertFalse("No restaurant found with name: " + restaurantName, foundRestaurants.isEmpty());
     }
 
-    @Then("I should see the following restaurants:")
-    public void verifySearchResults(List<Map<String, String>> expectedRestaurants) {
-        // First, verify the number of restaurants matches
-        assertEquals("Mismatch in number of restaurants", expectedRestaurants.size(), foundRestaurants.size());
-
-        // Create a map for quick lookup of expected restaurant data by name
-        Map<String, Map<String, String>> expectedRestaurantMap = new HashMap<>();
-        for (Map<String, String> expectedRestaurant : expectedRestaurants) {
-            expectedRestaurantMap.put(expectedRestaurant.get("name"), expectedRestaurant);
-        }
-
-        // Iterate through found restaurants and verify their details
-        for (RestaurantFacade foundRestaurant : foundRestaurants) {
-            String restaurantName = foundRestaurant.getRestaurantName();
-            assertTrue("Unexpected restaurant found: " + restaurantName, expectedRestaurantMap.containsKey(restaurantName));
-
-            // Get the expected menu data for this restaurant
-            Map<String, String> expectedRestaurant = expectedRestaurantMap.get(restaurantName);
-            Menu expectedMenu = createMenuFromString(expectedRestaurant.get("menu items"));
-            List<MenuItem> menuItems = foundRestaurant.getMenu().getItems();
-
-            // Verify that the found restaurant's menu matches the expected menu
-            for (MenuItem expectedMenuItem : expectedMenu.getItems()) {
-                assertTrue("Menu item not found or price mismatch for: " + expectedMenuItem.getName(),
-                        menuItems.stream()
-                                .anyMatch(item -> item.getName().equals(expectedMenuItem.getName()) && item.getPrice() == expectedMenuItem.getPrice())
-                );
-            }
-        }
+    @Given("the user searches for restaurants by name {string} that is not in the system")
+    public void the_user_searches_for_restaurants_by_name_that_is_not_in_the_system(String string) {
+        foundRestaurants = RestaurantServiceManager.getInstance().searchByName(string);
+        assertTrue("Restaurants found when none were expected", foundRestaurants.isEmpty());
     }
 
+    @Given("the user searches for food with name {string} that is not in the system")
+    public void the_user_searches_for_food_with_name_that_is_not_in_the_system(String string) {
+        foundRestaurants = RestaurantServiceManager.getInstance().searchByTypeOfFood(string);
+        assertTrue("Restaurants found when none were expected", foundRestaurants.isEmpty());
+    }
 
-    @When("I search for the food with name {string}")
-    public void i_search_for_the_food_with_name(String foodName) {
-        foundRestaurants = new ArrayList<>();
+    @When("the user searches for food with name {string}")
+    public void searchForRestaurantsByFood(String foodName) {
         foundRestaurants = RestaurantServiceManager.getInstance().searchByTypeOfFood(foodName);
-
-        // Ensure that at least one restaurant is found offering the food
         assertFalse("No restaurant found with food: " + foodName, foundRestaurants.isEmpty());
     }
 
+    @Then("the user should see the following restaurant\\(s):")
+    public void the_user_should_see_the_following_restaurant_s(io.cucumber.datatable.DataTable dataTable) {
+        List<Map<String, String>> expectedRestaurants = dataTable.asMaps();
+        System.out.println("Expected restaurants: " + expectedRestaurants);
+        System.out.println("Found restaurants: " + foundRestaurants);
+        assertEquals("Number of restaurants found does not match", expectedRestaurants.size(), foundRestaurants.size());
+
+        for (Map<String, String> expectedRestaurant : expectedRestaurants) {
+            boolean found = false;
+            for (RestaurantFacade restaurant : foundRestaurants) {
+                if (restaurant.getRestaurantName().equals(expectedRestaurant.get("name"))) {
+                    found = true;
+                    Menu menu = restaurant.getMenu();
+                    String[] menuItems = expectedRestaurant.get("menu items").split(", ");
+                    String[] prices = expectedRestaurant.get("price").split(", ");
+                    for (int i = 0; i < menuItems.length; i++) {
+                        assertTrue("Menu item not found: " + menuItems[i], menu.findItemByName(menuItems[i]) != null);
+                        assertEquals("Menu item price does not match", Double.parseDouble(prices[i]), menu.findItemByName(menuItems[i]).getPrice(), 0.01);
+                    }
+                }
+            }
+            assertTrue("Restaurant not found: " + expectedRestaurant.get("name"), found);
+        }
+    }
+
+    @Then("the user should not see any restaurants")
+    public void the_user_should_not_see_any_restaurants() {
+        assertTrue("Restaurants found when none were expected", foundRestaurants.isEmpty());
+    }
 }
+

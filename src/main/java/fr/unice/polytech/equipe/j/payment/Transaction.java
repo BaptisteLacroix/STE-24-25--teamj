@@ -1,7 +1,6 @@
 package fr.unice.polytech.equipe.j.payment;
 
 import fr.unice.polytech.equipe.j.order.Order;
-import fr.unice.polytech.equipe.j.restaurant.RestaurantProxy;
 import fr.unice.polytech.equipe.j.restaurant.RestaurantServiceManager;
 import fr.unice.polytech.equipe.j.user.ConnectedUser;
 
@@ -29,8 +28,10 @@ public class Transaction {
         }
         user.setAccountBalance(user.getAccountBalance() - order.getTotalPrice());
 
+        // TODO: Call the restaurant to update the status of the command, VALIDATED if payment is successful
+
         for (CheckoutObserver observer : observers) {
-            observer.notifyCheckoutSuccess(order);
+            observer.orderPaid(orderUUID);
         }
     }
 }

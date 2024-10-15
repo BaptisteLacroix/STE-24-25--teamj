@@ -5,14 +5,27 @@ import fr.unice.polytech.equipe.j.order.GroupOrder;
 import fr.unice.polytech.equipe.j.order.Order;
 import fr.unice.polytech.equipe.j.order.OrderBuilder;
 import fr.unice.polytech.equipe.j.order.OrderStatus;
+import fr.unice.polytech.equipe.j.payment.CheckoutObserver;
 
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
-public class RestaurantProxy {
+public class RestaurantProxy implements CheckoutObserver {
     private final Set<OrderBuilder> orderBuilders = new HashSet<>();
     private final Set<GroupOrder> groupOrders = new HashSet<>();
+
+    private static RestaurantProxy instance;
+
+    private RestaurantProxy() {
+    }
+
+    public static RestaurantProxy getInstance() {
+        if (instance == null) {
+            instance = new RestaurantProxy();
+        }
+        return instance;
+    }
 
     /**
      * Start the order through the proxy, ensuring only authorized users can create an order.
@@ -78,6 +91,15 @@ public class RestaurantProxy {
     }
 
     /**
+     * When the user paid the order, the order is marked as VALIDATED.
+     * and the order is add to the restaurant.
+     * @param orderId
+     */
+    public void orderPaid(UUID orderId) {
+
+    }
+
+    /**
      * Validate and finalize the individual order.
      */
     public void validateIndividualOrder(UUID orderId, UUID restaurantId) {
@@ -119,5 +141,9 @@ public class RestaurantProxy {
                 .filter(group -> group.getGroupOrderId().equals(groupOrderId))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("GroupOrder with id: " + groupOrderId + " not found."));
+    }
+
+    public OrderStatus getOrderStatus(UUID restaurantUUID, UUID currentOrder) {
+        return getRestaurant(restaurantUUID).getOrderStatus(currentOrder);
     }
 }

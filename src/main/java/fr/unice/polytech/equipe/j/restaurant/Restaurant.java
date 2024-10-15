@@ -113,6 +113,15 @@ public class Restaurant {
         return restaurantId;
     }
 
+
+    public OrderStatus getOrderStatus(UUID orderUUID) {
+        return orders.stream()
+                .filter(order -> order.getOrderUUID().equals(orderUUID))
+                .findFirst()
+                .map(Order::getStatus)
+                .orElseThrow(() -> new IllegalArgumentException("Order not found"));
+    }
+
     public void addOrder(Order order) {
         capacityCheck();
         capacity++;

@@ -3,7 +3,9 @@ package fr.unice.polytech.equipe.j.order;
 import fr.unice.polytech.equipe.j.restaurant.Menu;
 import fr.unice.polytech.equipe.j.restaurant.MenuItem;
 import fr.unice.polytech.equipe.j.restaurant.Restaurant;
+import fr.unice.polytech.equipe.j.restaurant.RestaurantFacade;
 import fr.unice.polytech.equipe.j.restaurant.RestaurantProxy;
+import fr.unice.polytech.equipe.j.restaurant.RestaurantServiceManager;
 import fr.unice.polytech.equipe.j.user.ConnectedUser;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
@@ -11,14 +13,19 @@ import io.cucumber.java.en.When;
 
 import java.time.LocalDateTime;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 public class PlaceOrderStepDefs {
 
-    private Restaurant restaurant;
+    private RestaurantFacade restaurant;
     private ConnectedUser connectedUser;
-    private RestaurantProxy restaurantProxy;
+
+    @Given("the restaurant service manager configured the following restaurants:")
+    public void the_restaurant_service_manager_configured_the_following_restaurants(io.cucumber.datatable.DataTable dataTable) {
+        // Initialized in the @Before method
+    }
 
     /**
      * This step definition is used to simulate a user registration.
@@ -35,25 +42,7 @@ public class PlaceOrderStepDefs {
      */
     @Given("the user has selected the restaurant {string}")
     public void the_user_has_selected_the_restaurant(String restaurantName) {
-        restaurant = new Restaurant(restaurantName, LocalDateTime.now(), LocalDateTime.now(), null);
-        restaurantProxy = new RestaurantProxy();
-    }
-
-    /**
-     * This step definition is used to simulate the user viewing the menu of a restaurant.
-     *
-     * @param restaurantName the name of the restaurant
-     * @param item1          the first item in the menu
-     * @param item2          the second item in the menu
-     */
-    @Given("the menu of {string} includes {string} and {string}")
-    public void the_menu_of_includes_and(String restaurantName, String item1, String item2) {
-        Menu menu = new Menu.MenuBuilder()
-                .addMenuItem(new MenuItem(item1, 10.0))
-                .addMenuItem(new MenuItem(item2, 5.0))
-                .build();
-
-        restaurant.changeMenu(menu);
+        restaurant = RestaurantServiceManager.getInstance().searchByName(restaurantName).getFirst();
     }
 
     /**
@@ -67,9 +56,9 @@ public class PlaceOrderStepDefs {
         MenuItem menuItem1 = restaurant.getMenu().findItemByName(item1);
         MenuItem menuItem2 = restaurant.getMenu().findItemByName(item2);
 
-        connectedUser.startIndividualOrder(restaurantProxy, restaurant.getRestaurantId());
-        connectedUser.addItemToOrder(restaurantProxy, restaurant.getRestaurantId(), menuItem1);
-        connectedUser.addItemToOrder(restaurantProxy, restaurant.getRestaurantId(), menuItem2);
+        connectedUser.startIndividualOrder(restaurant.getRestaurantId());
+        connectedUser.addItemToOrder(restaurant.getRestaurantId(), menuItem1);
+        connectedUser.addItemToOrder(restaurant.getRestaurantId(), menuItem2);
     }
 
     /**
@@ -81,8 +70,8 @@ public class PlaceOrderStepDefs {
     public void the_user_adds_to_their_order(String item1) {
         MenuItem menuItem1 = restaurant.getMenu().findItemByName(item1);
 
-        connectedUser.startIndividualOrder(restaurantProxy, restaurant.getRestaurantId());
-        connectedUser.addItemToOrder(restaurantProxy, restaurant.getRestaurantId(), menuItem1);
+        connectedUser.startIndividualOrder(restaurant.getRestaurantId());
+        connectedUser.addItemToOrder(restaurant.getRestaurantId(), menuItem1);
     }
 
     /**
@@ -90,7 +79,7 @@ public class PlaceOrderStepDefs {
      */
     @When("places the order")
     public void places_the_order() {
-        connectedUser.proceedIndividualOrderCheckout();
+        connectedUser.validateIndividualOrder(restaurant.getRestaurantId());
     }
 
     /**
@@ -98,15 +87,16 @@ public class PlaceOrderStepDefs {
      */
     @Then("the order is placed successfully")
     public void the_order_is_placed_successfully() {
-        assertTrue(restaurant.getOrders().contains(connectedUser.getOrdersHistory().getLast()));
+        assertTrue(connectedUser.getOrdersHistory().size() == 1);
+        assertEquals(OrderStatus.VALIDATED, connectedUser.getCurrentOrderState(restaurant.getRestaurantId(), connectedUser.getCurrentOrder()));
     }
 
     @When("the user tries to add {string} to their order")
     public void the_user_tries_to_add_to_their_order(String string) {
-        assertThrows(IllegalArgumentException.class, () -> connectedUser.addItemToOrder(restaurantProxy, restaurant.getRestaurantId(), new MenuItem(string, 0.0)));
+        assertThrows(IllegalArgumentException.class, () -> connectedUser.addItemToOrder(restaurant.getRestaurantId(), new MenuItem(string, 0.0)));
     }
 
-    @Then("the user get an error message {string}")
+    @Then("the user gets an error message {string}")
     public void the_user_get_an_error_message(String string) {
         System.out.println(string);
     }
@@ -114,7 +104,7 @@ public class PlaceOrderStepDefs {
     @Then("the order is not placed")
     public void the_order_is_not_placed() {
         assertTrue(connectedUser.getOrdersHistory().isEmpty());
-        assertTrue(restaurant.getOrders().isEmpty());
+        assertThrows(IllegalArgumentException.class, () -> connectedUser.getCurrentOrderState(restaurant.getRestaurantId(), connectedUser.getCurrentOrder()));
     }
 
     @When("the user tries to place the order without adding any menu items")
