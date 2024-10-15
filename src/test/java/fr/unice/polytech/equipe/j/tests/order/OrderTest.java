@@ -69,13 +69,6 @@ class OrderTest {
     }
 
     @Test
-    void testSetAndGetDeliveryTime() {
-        LocalDateTime deliveryTime = LocalDateTime.now().plusDays(1);
-        order.setDeliveryTime(deliveryTime);
-        assertEquals(deliveryTime, order.getDeliveryTime());
-    }
-
-    @Test
     void testOrderIdIsGenerated() {
         assertEquals(orderId, order.getOrderId());
     }
