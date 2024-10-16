@@ -11,7 +11,6 @@ public class Order {
     private final UUID orderId;
     private final Restaurant restaurant;
     private final List<MenuItem> items;
-    private LocalDateTime deliveryTime;
     private OrderStatus status;
 
     public Order(Restaurant restaurant, UUID orderId) {
@@ -27,14 +26,6 @@ public class Order {
 
     public List<MenuItem> getItems() {
         return items;
-    }
-
-    public LocalDateTime getDeliveryTime() {
-        return deliveryTime;
-    }
-
-    public void setDeliveryTime(LocalDateTime deliveryTime) {
-        this.deliveryTime = deliveryTime;
     }
 
     public void addItem(MenuItem item) {
@@ -70,7 +61,6 @@ public class Order {
                 ", items=" + items +
                 ", totalPrice=" + getTotalPrice() +
                 ", status=" + status +
-                ", deliveryTime=" + deliveryTime +
                 '}';
     }
 }
