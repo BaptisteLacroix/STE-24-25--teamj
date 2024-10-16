@@ -1,11 +1,5 @@
 package fr.unice.polytech.equipe.j.order;
 
-import fr.unice.polytech.equipe.j.delivery.DeliveryLocationManager;
-import fr.unice.polytech.equipe.j.order.DeliveryDetails;
-import fr.unice.polytech.equipe.j.order.GroupOrder;
-import fr.unice.polytech.equipe.j.order.IndividualOrder;
-import fr.unice.polytech.equipe.j.order.Order;
-import fr.unice.polytech.equipe.j.order.OrderStatus;
 import fr.unice.polytech.equipe.j.payment.Transaction;
 import fr.unice.polytech.equipe.j.restaurant.MenuItem;
 import fr.unice.polytech.equipe.j.restaurant.Restaurant;
@@ -31,10 +25,11 @@ public class OrderManager {
         order.setStatus(OrderStatus.CANCELLED);
     }
 
-    public void addItemToOrder(Order order, Restaurant restaurant, MenuItem menuItem) {
-        if (restaurant.isItemAvailable(menuItem)) {
-            order.addItem(menuItem);
+    public void addItemToOrder(Order order, Restaurant restaurant, MenuItem menuItem) throws IllegalArgumentException {
+        if (!restaurant.isItemAvailable(menuItem)) {
+            throw new IllegalArgumentException("Item is not available.");
         }
+        order.addItem(menuItem);
     }
 
     public void addOrderToGroup(GroupOrder groupOrder, Order order) {
@@ -44,10 +39,16 @@ public class OrderManager {
     }
 
     public void validateIndividualOrder(Transaction transaction, Order order, Restaurant restaurant) throws IllegalArgumentException {
-        transaction.addObserver(restaurant);
+        if (order.getStatus() != OrderStatus.PENDING) {
+            throw new IllegalArgumentException("Cannot validate order that is not pending.");
+        }
+        if (order.getItems().isEmpty()) {
+            throw new IllegalArgumentException("Cannot validate order with no items.");
+        }
         if (!restaurant.isOrderValid(order)) {
             throw new IllegalArgumentException("Order is not valid.");
         }
+        transaction.addObserver(restaurant);
         transaction.proceedCheckout(order, getTotalPrice(order));
         transaction.removeObserver(restaurant);
     }

@@ -36,4 +36,8 @@ public class Transaction {
             observer.orderPaid(order);
         }
     }
+
+    public List<CheckoutObserver> getObservers() {
+        return observers;
+    }
 }

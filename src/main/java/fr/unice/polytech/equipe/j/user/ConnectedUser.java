@@ -9,6 +9,7 @@ import fr.unice.polytech.equipe.j.restaurant.MenuItem;
 import fr.unice.polytech.equipe.j.order.OrderManager;
 import fr.unice.polytech.equipe.j.restaurant.Restaurant;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,7 +31,7 @@ public class ConnectedUser extends User implements CheckoutObserver {
      * Start an individual order
      */
     public void startIndividualOrder(Restaurant restaurant, DeliveryDetails deliveryDetails) {
-        this.currentOrder = new OrderManager().startSingleOrder(restaurant, deliveryDetails);
+        this.currentOrder = orderManager.startSingleOrder(restaurant, deliveryDetails);
     }
 
     /**
@@ -39,15 +40,19 @@ public class ConnectedUser extends User implements CheckoutObserver {
      * @param deliveryDetails The delivery details
      */
     public void startGroupOrder(DeliveryDetails deliveryDetails) {
-        this.currentGroupOrder = new OrderManager().startGroupOrder(deliveryDetails);
+        this.currentGroupOrder = orderManager.startGroupOrder(deliveryDetails);
     }
 
     public void addItemToOrder(Restaurant restaurant, MenuItem item) {
-        new OrderManager().addItemToOrder(getCurrentOrder(), restaurant, item);
+        orderManager.addItemToOrder(getCurrentOrder(), restaurant, item);
     }
 
     public void validateIndividualOrder(Restaurant restaurant) {
-        new OrderManager().validateIndividualOrder(transaction, getCurrentOrder(), restaurant);
+        orderManager.validateIndividualOrder(transaction, getCurrentOrder(), restaurant);
+    }
+
+    public void changeGroupDeliveryTime(LocalDateTime deliveryTime) {
+        currentGroupOrder.setDeliveryTime(deliveryTime);
     }
 
     @Override
@@ -55,6 +60,11 @@ public class ConnectedUser extends User implements CheckoutObserver {
         addOrderToHistory(order);
     }
 
+    /**
+     * Add the order to the user's order history
+     *
+     * @param order The order to add
+     */
     private void addOrderToHistory(Order order) {
         ordersHistory.add(order);
     }

@@ -111,7 +111,12 @@ public class PlaceOrderStepDefs {
     @Then("the order is not placed")
     public void the_order_is_not_placed() {
         assertTrue(connectedUser.getOrdersHistory().isEmpty());
-        assertThrows(IllegalArgumentException.class, () -> connectedUser.getCurrentOrder().getStatus());
+        assertEquals(OrderStatus.PENDING, connectedUser.getCurrentOrder().getStatus());
+    }
+
+    @Then("the item is not added to the order")
+    public void the_item_is_not_added_to_the_order() {
+        assertEquals(0, connectedUser.getCurrentOrder().getItems().size());
     }
 
     @When("the user tries to place the order without adding any menu items")

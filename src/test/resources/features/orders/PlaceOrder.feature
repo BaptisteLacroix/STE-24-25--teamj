@@ -29,7 +29,7 @@ Feature: User places an order from a restaurant
     And the user start and order by specifying the delivery location from the pre-recorded locations
     When the user tries to add "Spaghetti Carbonara" to their order
     Then the user gets an error message "Spaghetti Carbonara is not in the menu"
-    And the order is not placed
+    And the item is not added to the order
 
   Scenario: Registered user tries to place an order without adding any menu items
     Given the user is registered
