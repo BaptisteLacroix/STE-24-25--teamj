@@ -4,6 +4,7 @@ import fr.unice.polytech.equipe.j.restaurant.Menu;
 import fr.unice.polytech.equipe.j.restaurant.MenuItem;
 import fr.unice.polytech.equipe.j.restaurant.Restaurant;
 import fr.unice.polytech.equipe.j.restaurant.RestaurantServiceManager;
+import fr.unice.polytech.equipe.j.stepdefs.backend.Utils;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
@@ -29,23 +30,12 @@ public class RestaurantSearchSteps {
         for (Map<String, String> data : restaurantData) {
             String name = data.get("name");
             String menuItems = data.get("menu items");
-            Menu menu = createMenuFromString(menuItems);
+            Menu menu = Utils.createMenuFromString(menuItems);
             Restaurant restaurant = new Restaurant(name, null, null, menu);
             restaurants.add(restaurant);
             restaurantServiceManager.addRestaurant(restaurant);
             System.out.println(restaurant);
         }
-    }
-
-    // Helper method to create a Menu from a string of menu items
-    private Menu createMenuFromString(String menuItems) {
-        Menu.MenuBuilder builder = new Menu.MenuBuilder();
-
-        for (String item : menuItems.split("\", ")) {
-            String[] parts = item.replace("\"", "").split(", ");
-            builder.addMenuItem(new MenuItem(parts[0], Double.parseDouble(parts[1])));
-        }
-        return builder.build();
     }
 
     // When step - search for restaurants by name
@@ -79,7 +69,7 @@ public class RestaurantSearchSteps {
 
             // Get the expected menu data for this restaurant
             Map<String, String> expectedRestaurant = expectedRestaurantMap.get(restaurantName);
-            Menu expectedMenu = createMenuFromString(expectedRestaurant.get("menu items"));
+            Menu expectedMenu = Utils.createMenuFromString(expectedRestaurant.get("menu items"));
             List<MenuItem> menuItems = foundRestaurant.getMenu().getItems();
 
             // Verify that the found restaurant's menu matches the expected menu

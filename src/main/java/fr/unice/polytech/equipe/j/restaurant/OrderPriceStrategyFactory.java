@@ -8,9 +8,10 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class OrderPriceStrategyFactory {
-    public static OrderPriceStrategy makeSubstractKpercentforNOrder(int k, int n) {
+    public static OrderPriceStrategy makeSubstractKpercentforNOrder(double k, int n) {
         return (ConnectedUser user, Order order, Restaurant restaurant)-> {
             // get number of user previous commands
+            // FIXME : one group order could contain multiple command of same user
             long previousGroupOrders = restaurant.getGroupOrdersHistory().stream()
                     .filter(groupOrder -> groupOrder.orderToConnectedUserMap().containsValue(user))
                     .count();
@@ -25,7 +26,7 @@ public class OrderPriceStrategyFactory {
             String description = "No discount";
             // if the order is dividable by n, apply k% discount
             if ((previousGroupOrders + previousIndividualOrders + 1) % n == 0) {
-                totalPrice = totalPrice - totalPrice * ((float)k/100.0);
+                totalPrice = totalPrice - totalPrice * (k/100.0);
                 description = "Price is reduced by " + k + " percent since it's " + user +
                         "'s " + (previousGroupOrders + previousIndividualOrders + 1) + "'th command";
             }

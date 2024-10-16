@@ -12,6 +12,7 @@ Feature: Search for Restaurants
 
 
 
+
   Scenario: Search for a restaurant by food
     Given the following restaurants exist:
       | name      | menu items                                        |

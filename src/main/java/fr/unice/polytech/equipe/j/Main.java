@@ -2,10 +2,7 @@ package fr.unice.polytech.equipe.j;
 
 import fr.unice.polytech.equipe.j.order.DeliverableOrder;
 import fr.unice.polytech.equipe.j.order.Order;
-import fr.unice.polytech.equipe.j.restaurant.Menu;
-import fr.unice.polytech.equipe.j.restaurant.MenuItem;
-import fr.unice.polytech.equipe.j.restaurant.OrderPriceStrategyFactory;
-import fr.unice.polytech.equipe.j.restaurant.Restaurant;
+import fr.unice.polytech.equipe.j.restaurant.*;
 import fr.unice.polytech.equipe.j.user.ConnectedUser;
 
 import java.time.LocalDateTime;
@@ -40,7 +37,7 @@ public class Main {
             order.addItem(new MenuItem("Ketchap", 7));
 
             var indivOder1 = new DeliverableOrder(order, user);
-            var orderPrice = restaurant.processOrderPrice(indivOder1);
+            OrderPrice orderPrice = restaurant.processOrderPrice(indivOder1);
             restaurant.addOrderToHistory(indivOder1);
             // if (orderPrice.totalPrice() != 12)
             System.out.println(orderPrice);

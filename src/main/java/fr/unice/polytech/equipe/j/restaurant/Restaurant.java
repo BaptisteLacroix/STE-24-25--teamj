@@ -19,10 +19,10 @@ public class Restaurant {
     private LocalDateTime openingTime;
     private LocalDateTime closingTime;
     private Menu menu;
-    private final List<Order> orders = new ArrayList<>();
     private OrderPriceStrategy orderPriceStrategy;
-    private List<DeliverableOrder> individualOrdersHistory;
-    private List<GroupOrder> groupOrdersHistory;
+    private final List<Order> orders = new ArrayList<>();
+    private List<DeliverableOrder> individualOrdersHistory = new ArrayList<>();
+    private List<GroupOrder> groupOrdersHistory = new ArrayList<>();
 
     public Restaurant(String name, LocalDateTime openingTime, LocalDateTime closingTime, Menu menu) {
         this.restaurantName = name;
@@ -147,6 +147,7 @@ public class Restaurant {
     }
 
     public OrderPrice processOrderPrice(DeliverableOrder indivOder) {
+        assert indivOder.order().getRestaurant().equals(this);
         return this.orderPriceStrategy.processOrderPrice(indivOder.user(), indivOder.order(), this);
     }
 
