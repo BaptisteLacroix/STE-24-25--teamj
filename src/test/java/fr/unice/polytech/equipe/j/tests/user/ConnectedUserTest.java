@@ -46,7 +46,7 @@ class ConnectedUserTest {
         transaction = mock(Transaction.class);
         restaurantProxy = mock(RestaurantProxy.class);
         noMockUser = new ConnectedUser("user@email.com", "password", 100.0);
-        noMockRestaurant = new Restaurant("Restaurant", new ArrayList<>(), LocalDateTime.now(), LocalDateTime.now(), null);
+        noMockRestaurant = new Restaurant("Restaurant", new ArrayList<>(), LocalDateTime.now(), LocalDateTime.now(), null,4);
         noMockRestaurant.changeMenu(new Menu(List.of(item1, item2)));
         noMockRestaurantProxy = new RestaurantProxy(List.of(noMockRestaurant));
     }

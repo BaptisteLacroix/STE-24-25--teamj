@@ -19,19 +19,28 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 public class ManageRestaurantStepDef {
     private RestaurantManager restaurantManager;
     private Restaurant restaurant;
     private LocalDateTime openingHour;
     private LocalDateTime closingHour;
-    private Menu menu = new Menu(new ArrayList<>());
-    private List<Slot> slots;
+    private final Menu menu = new Menu(new ArrayList<>());
+    private final List<Slot> slots = new ArrayList<>();
     private MenuItem selectedItem;
     private Slot slot;
-    private int totalTimeAvailable;
+
+    private Slot findSlotByStartTime(String slotStartTime) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        LocalDateTime startTime = LocalDateTime.parse(slotStartTime, formatter);
+
+        return slots.stream()
+                .filter(slot -> slot.getOpeningDate().equals(startTime))
+                .findFirst()
+                .orElse(null);
+    }
+
 
     @Given("{string}, a restaurant manager of the {string} restaurant")
     public void aRestaurantManagerOfTheRestaurant(String name, String restaurantName) {
@@ -110,45 +119,36 @@ public class ManageRestaurantStepDef {
         assertEquals(prepTime, restaurant.getMenu().findItemByName(itemName).getPrepTime());
     }
 
-    @Given("Jeanne wants to update the capacity of {string}")
-    public void jeanneWantsToUpdateTheCapacityOf(String itemName) {
-        assertNotNull(restaurant.getMenu().findItemByName(itemName));
-    }
+    @Given("the restaurant has slots from {string} to {string}")
+    public void theRestaurantHasSlotsFromTo(String openingTime, String closingTime, io.cucumber.datatable.DataTable dataTable) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
-    @When("Jeanne updates the preparation time of {string} to {int}")
-    public void jeanneUpdatesThePreparationTimeOfTo(String itemName, int itemCapacity) {
-        selectedItem = restaurant.getMenu().findItemByName(itemName);
-        selectedItem.setCapacity(itemCapacity);
-    }
+        dataTable.asMaps().forEach(row -> {
+            LocalDateTime slotStart = LocalDateTime.parse(row.get("slotStart"), formatter);
+            int currentCapacity = Integer.parseInt(row.get("currentCapacity"));
+            int maxCapacity = Integer.parseInt(row.get("maxCapacity"));
+            int personnel = Integer.parseInt(row.get("personnel"));
 
-    @Then("the capacity of {string} should be {int}")
-    public void theCapacityOfShouldBe(String itemName, int itemCapacity) {
-        assertEquals(itemCapacity, restaurant.getMenu().findItemByName(itemName).getCapacity());
-    }
-
-    @Given("Jeanne wants to set a mixed production order")
-    public void jeanneWantsToSetAMixedProductionOrder() {
-        // To modify
-    }
-
-    @When("the restaurant manager allocates {int} personnel for the time slot from {string} to {string}")
-    public void theRestaurantManagerAllocatesPersonnelForTheTimeSlotFromTo(int nbPersonnal, String startHour, String endHour) {
-        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("h:mm a");
-        LocalTime time = LocalTime.parse(startHour, timeFormatter);
-        LocalDateTime startSlot = LocalDateTime.of(LocalDateTime.now().toLocalDate(), time);
-        Slot slot = new Slot(2,20, startSlot, 0);
-        restaurantManager.updateSlotPersonnel(slot, nbPersonnal);
-    }
-
-    @And("the restaurant manager processes {int} portions of {string}")
-    public void theRestaurantManagerProcessesPortionsOf(int portions, String menuItem) {
-        MenuItem item = restaurant.getMenu().findItemByName(menuItem);
-        assertNotNull(item);
-
+            Slot slot = new Slot(currentCapacity, maxCapacity, slotStart, personnel);
+            slots.add(slot);
+        });
 
     }
 
-    @Then("the remaining production capacity for {string} should be {int} portions")
-    public void theRemainingProductionCapacityForShouldBePortions(String arg0, int arg1) {
+    @And("Jeanne wants to update the number of personnel for the slot starting at {string}")
+    public void jeanneWantsToUpdateTheNumberOfPersonnelForTheSlotStartingAt(String openingTime) {
+        assertNotNull(findSlotByStartTime(openingTime));
+    }
+
+    @When("the restaurant manager updates the personnel for this slot to {int}")
+    public void theRestaurantManagerUpdatesThePersonnelForThisSlotTo(int newPersonnelCount) {
+        Slot slotToUpdate = findSlotByStartTime("2024-10-08 13:00");
+        restaurantManager.updateNumberOfPersonnel(slotToUpdate, newPersonnelCount);
+    }
+
+    @Then("the number of personnel for the slot starting at {string} should be {int}")
+    public void theNumberOfPersonnelForTheSlotStartingAtShouldBe(String slotStartTime, int expectedPersonnelCount) {
+        Slot slot = findSlotByStartTime(slotStartTime);
+        assertEquals(expectedPersonnelCount, slot.getNumberOfPersonnel());
     }
 }

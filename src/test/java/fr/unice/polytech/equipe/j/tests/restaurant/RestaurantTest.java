@@ -26,8 +26,8 @@ class RestaurantTest {
 
     @BeforeEach
     void setUp() {
-        item1 = new MenuItem("Burger", 40,5.99,2);
-        item2 = new MenuItem("Fries", 1,2.99,1);
+        item1 = new MenuItem("Burger", 40,5.99);
+        item2 = new MenuItem("Fries", 1,2.99);
         menu = new Menu.MenuBuilder().addMenuItems(List.of(item1, item2)).build();
         restaurant = new Restaurant("Test Restaurant", new ArrayList<>(), LocalDateTime.of(2024, 10, 1, 9, 0), LocalDateTime.of(2024, 10, 1, 21, 0), menu);
     }
@@ -44,7 +44,7 @@ class RestaurantTest {
 
     @Test
     void testChangeMenu() {
-        Menu newMenu = new Menu.MenuBuilder().addMenuItem(new MenuItem("Salad", 10,4.99,6)).build();
+        Menu newMenu = new Menu.MenuBuilder().addMenuItem(new MenuItem("Salad", 10,4.99)).build();
         restaurant.changeMenu(newMenu);
         assertEquals(newMenu, restaurant.getMenu());
     }

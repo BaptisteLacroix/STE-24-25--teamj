@@ -39,7 +39,7 @@ public class RestaurantMenuSteps {
 
         for (String item : menuItems.split("\", ")) {
             String[] parts = item.replace("\"", "").split(", ");
-            builder.addMenuItem(new MenuItem(parts[0],0, Double.parseDouble(parts[1]),0));
+            builder.addMenuItem(new MenuItem(parts[0],0, Double.parseDouble(parts[1])));
         }
         return builder.build();
     }

@@ -7,11 +7,10 @@ public class MenuItem {
     private double price;
     private int capacity;
 
-    public MenuItem(String name, int prepTime, double price, int capacity) {
+    public MenuItem(String name, int prepTime, double price) {
         this.name = name;
         this.prepTime = prepTime;
         this.price = price;
-        this.capacity = capacity;
     }
 
     public void setPrepTime(int prepTime){
@@ -42,6 +41,9 @@ public class MenuItem {
     public void setCapacity(int capacity) {
         this.capacity = capacity;
     }
+
+
+
     @Override
         public String toString () {
             return name + " - " + price + " EUR";

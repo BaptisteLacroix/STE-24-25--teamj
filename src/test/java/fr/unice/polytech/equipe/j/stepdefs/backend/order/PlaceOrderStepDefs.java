@@ -53,8 +53,8 @@ public class PlaceOrderStepDefs {
     @Given("[PlaceOrder]the menu of {string} includes {string} and {string}")
     public void the_menu_of_includes_and(String restaurantName, String item1, String item2) {
         Menu menu = new Menu.MenuBuilder()
-                .addMenuItem(new MenuItem(item1, 10,10.0,4))
-                .addMenuItem(new MenuItem(item2, 6,5.0,2))
+                .addMenuItem(new MenuItem(item1, 10,10.0))
+                .addMenuItem(new MenuItem(item2, 6,5.0))
                 .build();
 
         restaurant.changeMenu(menu);
@@ -107,7 +107,7 @@ public class PlaceOrderStepDefs {
 
     @When("[PlaceOrder]the user tries to add {string} to their order")
     public void the_user_tries_to_add_to_their_order(String string) {
-        assertThrows(IllegalArgumentException.class, () -> connectedUser.addItemToOrder(restaurantProxy, restaurant.getRestaurantId(), new MenuItem(string, 10,0.0, 4)));
+        assertThrows(IllegalArgumentException.class, () -> connectedUser.addItemToOrder(restaurantProxy, restaurant.getRestaurantId(), new MenuItem(string, 10,0.0)));
     }
 
     @Then("[PlaceOrder]the user get an error message {string}")

@@ -40,7 +40,7 @@ public class RestaurantManager extends User {
 
     // Ajouter un nouvel élément au menu via le restaurant
     public void addMenuItem(String itemName, String description, int prepTimeInSeconds, int price, int capacity) {
-        MenuItem newItem = new MenuItem(itemName, prepTimeInSeconds, price, capacity);
+        MenuItem newItem = new MenuItem(itemName, prepTimeInSeconds, price);
         this.restaurant.getMenu().addMenuItem(newItem);
     }
 
@@ -59,8 +59,7 @@ public class RestaurantManager extends User {
     }
 
     // Mettre à jour le nombre de personnel pour un slot spécifique
-    public void updateNumberOfPersonnal(Slot slot, int numberOfPersonnel) {
-        this.restaurant.setNumberOfPersonnal(numberOfPersonnel);
-
+    public void updateNumberOfPersonnel(Slot slotToUpdate, int numberOfPersonnel) {
+        this.restaurant.setNumberOfPersonnel(slotToUpdate,numberOfPersonnel);
     }
 }

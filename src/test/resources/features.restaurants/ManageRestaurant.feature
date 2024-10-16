@@ -7,9 +7,9 @@ Feature: Update restaurant opening hours and menu offerings
   Background:
     Given "Jeanne", a restaurant manager of the "Chicken Burger" restaurant
     And the restaurant has a menu with the following items:
-      | itemName | prepTime | price | capacity |
-      | BigMac   | 120      | 5     | 2        |
-      | Fries    | 60       | 3     | 4        |
+      | itemName | prepTime | price |
+      | BigMac   | 120      | 5     |
+      | Fries    | 60       | 3     |
 
 
   Scenario: Update opening hours
@@ -27,13 +27,14 @@ Feature: Update restaurant opening hours and menu offerings
     When the restaurant manager updates the preparation time of "Fries" to 45
     Then the preparation time of "Fries" should be 45 seconds
 
-  Scenario: Update the capacity of a menu item
-    Given Jeanne wants to update the capacity of "BigMac"
-    When Jeanne updates the preparation time of "BigMac" to 5
-    Then the capacity of "BigMac" should be 5
+  Scenario: Update the number of personnel for a slot
+    Given the restaurant has slots from "2024-10-08 12:00" to "2024-10-08 14:00"
+      | slotStart           | currentCapacity | maxCapacity | personnel |
+      | 2024-10-08 12:00    | 0               | 50          | 4         |
+      | 2024-10-08 12:30    | 0               | 50          | 4         |
+      | 2024-10-08 13:00    | 0               | 50          | 4         |
+      | 2024-10-08 13:30    | 0               | 50          | 4         |
+    And Jeanne wants to update the number of personnel for the slot starting at "2024-10-08 13:00"
+    When the restaurant manager updates the personnel for this slot to 6
+    Then the number of personnel for the slot starting at "2024-10-08 13:00" should be 6
 
-  Scenario: Allocate production for a mixed order of Caesar Salad and Fries
-    Given Jeanne wants to set a mixed production order
-    When the restaurant manager allocates 4 personnel for the time slot from "12:00 PM" to "12:30 PM"
-    And the restaurant manager processes 10 portions of "Caesar Salad"
-    Then the remaining production capacity for "Fries" should be 90 portions

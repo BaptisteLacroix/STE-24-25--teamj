@@ -13,14 +13,14 @@ public class Slot {
     private int maxCapacity;
     private LocalDateTime openingDate;
     private Duration durationTime;
-    private int numberOfPersonnal;
+    private int numberOfPersonnel;
     private List<Order> orders;
 
-    public Slot(int currentCapacity, int maxCapacity, LocalDateTime openingDate, int numberOfPersonnal) {
+    public Slot(int currentCapacity, int maxCapacity, LocalDateTime openingDate, int numberOfPersonnel) {
         this.currentCapacity = currentCapacity;
         this.maxCapacity = maxCapacity;
         this.openingDate = openingDate;
-        this.numberOfPersonnal = numberOfPersonnal;
+        this.numberOfPersonnel = numberOfPersonnel;
         this.orders = new ArrayList<>();
         this.durationTime = Duration.ofMinutes(30);
 
@@ -28,11 +28,12 @@ public class Slot {
 
     // Getters et Setters
     public int getNumberOfPersonnel() {
-        return numberOfPersonnal;
+        return numberOfPersonnel;
     }
 
-    public void setNumberOfPersonnal(int numberOfPersonnal) {
-        this.numberOfPersonnal = numberOfPersonnal;
+    public void setNumberOfPersonnel(int numberOfPersonnel) {
+        this.numberOfPersonnel = numberOfPersonnel;
+        calculateCapacityForASlot(numberOfPersonnel);
     }
 
     public int getMaxCapacity() {
@@ -41,6 +42,14 @@ public class Slot {
 
     public void setMaxCapacity(int maxCapacity) {
         this.maxCapacity = maxCapacity;
+    }
+
+    public int getCurrentCapacity() {
+        return currentCapacity;
+    }
+
+    public void addCapacity(int newCapacity) {
+        currentCapacity = currentCapacity + newCapacity;
     }
 
     public LocalDateTime getOpeningDate() {
@@ -62,11 +71,24 @@ public class Slot {
     public Duration getDurationTime(){
         return durationTime;
     }
-    // Méthode pour calculer la capacité de production pour un item sur un slot
-    public int calculateProductionCapacity(MenuItem item) {
-        int prepTimeInSeconds = item.getPrepTime();
-        int slotTimeInSeconds = (int) durationTime.getSeconds();
-        return numberOfPersonnal * slotTimeInSeconds;
 
+    public void calculateCapacityForASlot(int numberOfPersonnel){
+        setMaxCapacity(1800*numberOfPersonnel);
     }
+
+    public boolean UpdateSlotCapacity(MenuItem item) {
+        int itemCapacity = item.getPrepTime();
+        if(getCurrentCapacity()+itemCapacity < getMaxCapacity()){
+            addCapacity(itemCapacity);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    // Méthode permettant de récupérer la capacité utilisable
+    public int getAvailableCapacity(){
+        return this.maxCapacity - this.currentCapacity;
+    }
+
 }
