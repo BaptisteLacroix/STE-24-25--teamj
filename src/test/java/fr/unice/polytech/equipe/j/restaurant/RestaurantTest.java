@@ -1,9 +1,5 @@
 package fr.unice.polytech.equipe.j.restaurant;
 
-import fr.unice.polytech.equipe.j.order.Order;
-import fr.unice.polytech.equipe.j.restaurant.Menu;
-import fr.unice.polytech.equipe.j.restaurant.MenuItem;
-import fr.unice.polytech.equipe.j.restaurant.Restaurant;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -11,10 +7,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 class RestaurantTest {
 
@@ -30,17 +22,7 @@ class RestaurantTest {
         menu = new Menu.MenuBuilder().addMenuItems(List.of(item1, item2)).build();
         restaurant = new Restaurant("Test Restaurant", LocalDateTime.of(2024, 10, 1, 9, 0), LocalDateTime.of(2024, 10, 1, 21, 0), menu);
     }
-
-    @Test
-    void testCalculatePrice() {
-        // Mock an Order
-        Order order = mock(Order.class);
-        when(order.getItems()).thenReturn(List.of(item1, item2));
-
-        double totalPrice = restaurant.calculatePrice(order);
-        assertEquals(8.98, totalPrice);
-    }
-
+    
     @Test
     void testChangeMenu() {
         Menu newMenu = new Menu.MenuBuilder().addMenuItem(new MenuItem("Salad", 4.99)).build();

@@ -1,7 +1,5 @@
 package fr.unice.polytech.equipe.j.order;
 
-import fr.unice.polytech.equipe.j.user.ConnectedUser;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +8,6 @@ import java.util.UUID;
 public class GroupOrder {
     private final UUID groupOrderId;
     private final List<Order> orders = new ArrayList<>();
-    private final List<ConnectedUser> users = new ArrayList<>();
     private final DeliveryDetails deliveryDetails;
     private OrderStatus status = OrderStatus.PENDING;
 
@@ -39,6 +36,7 @@ public class GroupOrder {
 
     /**
      * If the user has defined the delivery time, it cannot be changed.
+     *
      * @param deliveryTime The time when the order will be delivered
      */
     public void setDeliveryTime(LocalDateTime deliveryTime) {
@@ -49,6 +47,14 @@ public class GroupOrder {
             throw new UnsupportedOperationException("You cannot specify a delivery time in the past.");
         }
         deliveryDetails.setDeliveryTime(deliveryTime);
+    }
+
+    public void setStatus(OrderStatus status) {
+        this.status = status;
+    }
+
+    public OrderStatus getStatus() {
+        return status;
     }
 
     @Override

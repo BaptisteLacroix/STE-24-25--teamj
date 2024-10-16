@@ -1,13 +1,8 @@
 package fr.unice.polytech.equipe.j.restaurant;
 
-import fr.unice.polytech.equipe.j.restaurant.Menu;
-import fr.unice.polytech.equipe.j.restaurant.MenuItem;
-import fr.unice.polytech.equipe.j.restaurant.Restaurant;
-import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -18,7 +13,7 @@ import static org.junit.Assert.assertTrue;
 
 public class RestaurantMenuSteps {
 
-    private RestaurantFacade currentRestaurant;
+    private Restaurant currentRestaurant;
 
     // When step - user visits the specific restaurant
     @When("the user visits the {string} restaurant")

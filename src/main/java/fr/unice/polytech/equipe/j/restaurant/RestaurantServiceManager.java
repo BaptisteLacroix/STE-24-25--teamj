@@ -1,11 +1,8 @@
 package fr.unice.polytech.equipe.j.restaurant;
 
-import fr.unice.polytech.equipe.j.order.Order;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class RestaurantServiceManager {
@@ -33,52 +30,40 @@ public class RestaurantServiceManager {
         return instance;
     }
 
-    // --- Management Methods (Package-Private) ---
-
     // Add restaurant to the manager (Package-Private)
-    void addRestaurant(Restaurant restaurant) {
+    public void addRestaurant(Restaurant restaurant) {
         restaurants.add(restaurant);
     }
 
     // Remove restaurant from the manager (Package-Private)
-    void removeRestaurant(Restaurant restaurant) {
+    public void removeRestaurant(Restaurant restaurant) {
         restaurants.remove(restaurant);
-    }
-
-    Restaurant getRestaurant(UUID restaurantId) {
-        return restaurants.stream()
-                .filter(restaurant -> restaurant.getRestaurantId().equals(restaurantId))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("Restaurant not found"));
     }
 
     // --- Public Search Methods ---
 
     // Search restaurants by name (exact or partial match)
-    public List<RestaurantFacade> searchByName(String name) {
+    public List<Restaurant> searchByName(String name) {
         return restaurants.stream()
                 .filter(restaurant -> restaurant.getRestaurantName().toLowerCase().contains(name.toLowerCase()))
                 .distinct()
-                .map(RestaurantFacade::new)
                 .collect(Collectors.toList());
     }
 
     // Search restaurants by type of food (based on menu items)
-    public List<RestaurantFacade> searchByTypeOfFood(String foodType) {
+    public List<Restaurant> searchByTypeOfFood(String foodType) {
         return restaurants.stream()
                 .filter(restaurant -> restaurant.getMenu().getItems().stream()
                         .anyMatch(item -> item.getName().contains(foodType)))
                 .distinct()
-                .map(RestaurantFacade::new)
                 .collect(Collectors.toList());
     }
 
     // Search restaurants by availability (check if open at a specific time)
-    public List<RestaurantFacade> searchByAvailability(LocalDateTime time) {
+    public List<Restaurant> searchByAvailability(LocalDateTime time) {
         return restaurants.stream()
                 .filter(restaurant -> isOpenAt(restaurant, time))
                 .distinct()
-                .map(RestaurantFacade::new)
                 .collect(Collectors.toList());
     }
 
@@ -87,28 +72,7 @@ public class RestaurantServiceManager {
         return time.isAfter(restaurant.getOpeningTime()) && time.isBefore(restaurant.getClosingTime());
     }
 
-    /**
-     * Calculate the price of an order from a restaurant.
-     *
-     * @param restaurantId The ID of the restaurant
-     * @param order        The order to calculate the price for
-     * @return The total price of the order
-     */
-    public double calculateOrderPriceFromRestaurant(UUID restaurantId, Order order) {
-        return getRestaurant(restaurantId).calculatePrice(order);
-    }
-
-    public Order getOrder(UUID orderUUID) {
-        return restaurants.stream()
-                .flatMap(restaurant -> restaurant.getOrders().stream())
-                .filter(order -> order.getOrderUUID().equals(orderUUID))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("Order not found"));
-    }
-
-    public List<RestaurantFacade> getRestaurants() {
-        return restaurants.stream()
-                .map(RestaurantFacade::new)
-                .collect(Collectors.toList());
+    public List<Restaurant> getRestaurants() {
+        return restaurants;
     }
 }

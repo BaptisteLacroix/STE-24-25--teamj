@@ -1,21 +1,22 @@
 package fr.unice.polytech.equipe.j.restaurant;
 
 import fr.unice.polytech.equipe.j.order.Order;
-import fr.unice.polytech.equipe.j.order.OrderBuilder;
 import fr.unice.polytech.equipe.j.order.OrderStatus;
+import fr.unice.polytech.equipe.j.payment.CheckoutObserver;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class Restaurant {
+public class Restaurant implements CheckoutObserver {
     private final UUID restaurantId = UUID.randomUUID();
     private final String restaurantName;
     private LocalDateTime openingTime;
     private LocalDateTime closingTime;
     private Menu menu;
-    private final List<Order> orders = new ArrayList<>();
+    private final List<Order> ordersHistory = new ArrayList<>();
+    private final List<Order> pendingOrders = new ArrayList<>();
     private int capacity = 10; // TODO: Change later (EX2)
 
     public Restaurant(String name, LocalDateTime openingTime, LocalDateTime closingTime, Menu menu) {
@@ -53,78 +54,77 @@ public class Restaurant {
         this.closingTime = closingTime;
     }
 
-    public List<Order> getOrders() {
-        return orders;
+    public List<Order> getOrdersHistory() {
+        return ordersHistory;
     }
 
-    /**
-     * Create and return an OrderBuilder for the restaurant
-     *
-     * @return The OrderBuilder instance
-     */
-    public OrderBuilder createOrderBuilder() {
-        return new OrderBuilder().setRestaurant(new RestaurantFacade(this));
+    public void addOrder(Order order) {
+        pendingOrders.add(order);
+        capacity--;
     }
 
     /**
      * Check if the restaurant is at full capacity
+     * If the restaurant is at full capacity, an IllegalStateException is thrown
+     * Otherwise, the capacity is decremented
+     *
+     * @throws IllegalStateException if the restaurant is at full capacity
      */
-    private void capacityCheck() {
-        long activeOrders = orders.stream()
-                .filter(order -> order.getStatus() == OrderStatus.PENDING || order.getStatus() == OrderStatus.VALIDATED)
-                .count();
-        if (activeOrders >= capacity) {
-            throw new IllegalStateException("Restaurant is at full capacity.");
-        }
+    public boolean capacityCheck() {
+        return getCapacity() > 0;
     }
 
     /**
      * Cancel an order
-     *
-     * @param orderUUID The UUID of the order to cancel
      */
-    public void cancelOrder(UUID orderUUID) {
-        orders.removeIf(o -> o.getOrderUUID().equals(orderUUID));
-        capacity--;
+    public void cancelOrder(Order order) {
+        getPendingOrders().remove(order);
+        capacity++;
     }
 
-    public double calculatePrice(Order order) {
-        return order.getItems().stream()
-                .mapToDouble(MenuItem::getPrice)
-                .sum();
-    }
-
+    /**
+     * Check if an item is available
+     *
+     * @param item The item to check
+     * @return true if the item is available, false otherwise
+     */
     public boolean isItemAvailable(MenuItem item) {
-        return menu.getItems().contains(item);
-    }
-
-    public void addItemToOrder(OrderBuilder orderBuilder, MenuItem item) {
-        if (orderBuilder.getRestaurant().getRestaurantId() != getRestaurantId()) {
-            throw new IllegalArgumentException("OrderBuilder is not for this restaurant");
-        }
-        if (isItemAvailable(item)) {
-            orderBuilder.addMenuItem(item);
-        } else {
-            throw new IllegalArgumentException("MenuItem " + item.getName() + " is not available.");
-        }
+        return getMenu().getItems().contains(item);
     }
 
     public UUID getRestaurantId() {
         return restaurantId;
     }
 
-
-    public OrderStatus getOrderStatus(UUID orderUUID) {
-        return orders.stream()
-                .filter(order -> order.getOrderUUID().equals(orderUUID))
-                .findFirst()
-                .map(Order::getStatus)
-                .orElseThrow(() -> new IllegalArgumentException("Order not found"));
+    /**
+     * Check if the order is valid
+     *
+     * @param order The order to check
+     * @return true if the order is valid, false otherwise
+     */
+    public boolean isOrderValid(Order order) {
+        // TODO: Improve when the issues restaurant managers are done
+        return order.getItems().stream().allMatch(this::isItemAvailable);
     }
 
-    public void addOrder(Order order) {
-        capacityCheck();
-        capacity++;
-        orders.add(order);
+    /**
+     * When the user paid the order, the order is marked as VALIDATED.
+     * and the order is add to the restaurant.
+     *
+     * @param order The UUID of the order
+     */
+    @Override
+    public void orderPaid(Order order) {
+        order.setStatus(OrderStatus.VALIDATED);
+        getOrdersHistory().add(order);
+        getPendingOrders().remove(order);
+    }
+
+    public List<Order> getPendingOrders() {
+        return pendingOrders;
+    }
+
+    public int getCapacity() {
+        return capacity;
     }
 }

@@ -1,112 +1,122 @@
 package fr.unice.polytech.equipe.j.user;
 
+import fr.unice.polytech.equipe.j.order.DeliveryDetails;
+import fr.unice.polytech.equipe.j.order.GroupOrder;
 import fr.unice.polytech.equipe.j.order.Order;
-import fr.unice.polytech.equipe.j.order.OrderStatus;
 import fr.unice.polytech.equipe.j.payment.Transaction;
-import fr.unice.polytech.equipe.j.restaurant.Menu;
 import fr.unice.polytech.equipe.j.restaurant.MenuItem;
+import fr.unice.polytech.equipe.j.order.OrderManager;
 import fr.unice.polytech.equipe.j.restaurant.Restaurant;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 
-import java.time.LocalDateTime;
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class ConnectedUserTest {
 
-    @Mock
-    private ConnectedUser user;
-    private MenuItem item1;
-    private MenuItem item2;
-    private Transaction transaction;
-    private ConnectedUser noMockUser;
-    private Restaurant noMockRestaurant;
+    private ConnectedUser connectedUser;
+    private OrderManager mockOrderManager;
+    private Restaurant mockRestaurant;
+    private MenuItem mockMenuItem;
+    private Order mockOrder;
+    private DeliveryDetails mockDeliveryDetails;
 
     @BeforeEach
     void setUp() {
-        user = spy(new ConnectedUser("user@test.com", "password", 100.0));
-        item1 = new MenuItem("Burger", 5.99);
-        item2 = new MenuItem("Fries", 2.99);
-        transaction = mock(Transaction.class);
-        noMockUser = new ConnectedUser("user@email.com", "password", 100.0);
-        noMockRestaurant = new Restaurant("Restaurant", LocalDateTime.now(), LocalDateTime.now(), null);
-        noMockRestaurant.changeMenu(new Menu(List.of(item1, item2)));
+        // Mocking dependencies
+        mockOrderManager = mock(OrderManager.class);
+        mockRestaurant = mock(Restaurant.class);
+        mockMenuItem = mock(MenuItem.class);
+        mockOrder = mock(Order.class);
+        mockDeliveryDetails = mock(DeliveryDetails.class);
+
+        // Mocking Restaurant behavior
+        when(mockRestaurant.capacityCheck()).thenReturn(true);
+        when(mockRestaurant.isOrderValid(any(Order.class))).thenReturn(true);
+
+        // Create ConnectedUser with the mock OrderManager
+        connectedUser = new ConnectedUser("user@example.com", "password123", 100.0, mockOrderManager);
+
+        // Mock OrderManager behaviors
+        when(mockOrderManager.startSingleOrder(mockRestaurant, mockDeliveryDetails)).thenReturn(mockOrder);
+        when(mockOrderManager.startGroupOrder(mockDeliveryDetails)).thenReturn(mock(GroupOrder.class));
     }
 
     @Test
-    void testStartOrder() {
-        noMockUser.startIndividualOrder(noMockRestaurant.getRestaurantId());
-        noMockUser.addItemToOrder(noMockRestaurant.getRestaurantId(), item1);
-        noMockUser.addItemToOrder(noMockRestaurant.getRestaurantId(), item2);
+    void testStartIndividualOrder() {
+        // Act
+        connectedUser.startIndividualOrder(mockRestaurant, mockDeliveryDetails);
 
-        // Assuming OrderBuilder works correctly, no exception should be thrown
-        assertDoesNotThrow(() -> noMockUser.addItemToOrder(noMockRestaurant.getRestaurantId(), item1));
+        // Assert
+        assertNotNull(connectedUser.getCurrentOrder(), "Order should be initialized");
     }
 
     @Test
-    void testProceedCheckout() {
-        // Spy on the ConnectedUser instance to track method calls
-        noMockUser.startIndividualOrder(noMockRestaurant.getRestaurantId());
+    void testStartGroupOrder() {
+        // Act
+        connectedUser.startGroupOrder(mockDeliveryDetails);
 
-        noMockUser.addItemToOrder(noMockRestaurant.getRestaurantId(), item1);
-
-        // Simulate the transaction checkout
-        doNothing().when(transaction).proceedCheckout(any());
-
-        noMockUser.proceedIndividualOrderCheckout();
-
-        // Verify that the status of the order change
-        assertEquals(OrderStatus.VALIDATED, noMockUser.getOrdersHistory().getLast().getStatus());
-    }
-
-
-    @Test
-    void testProceedCheckout_WithoutOrder_ThrowsException() {
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> user.proceedIndividualOrderCheckout());
-        assertEquals("Order with id: null not found.", exception.getMessage());
+        // Assert
+        assertNotNull(connectedUser.getCurrentGroupOrder(), "Group order should be initialized");
     }
 
     @Test
-    void testNotifyCheckoutSuccess() {
-        Order order = mock(Order.class);
-        user.orderPaid(order);
+    void testAddItemToOrder() {
+        // Arrange
+        connectedUser.startIndividualOrder(mockRestaurant, mockDeliveryDetails);
 
-        // Ensure order history is updated and the current order is cleared
-        assertTrue(user.getOrdersHistory().contains(order));
+        // Act
+        connectedUser.addItemToOrder(mockRestaurant, mockMenuItem);
+
+        // Assert
+        verify(mockOrderManager, times(1)).addItemToOrder(mockOrder, mockRestaurant, mockMenuItem);
     }
 
     @Test
-    void testGetOrdersHistory() {
-        Order order = mock(Order.class);
-        user.orderPaid(order);
-        List<Order> history = user.getOrdersHistory();
+    void testValidateIndividualOrder() {
+        // Arrange
+        connectedUser.startIndividualOrder(mockRestaurant, mockDeliveryDetails);
 
-        assertEquals(1, history.size());
-        assertTrue(history.contains(order));
+        // Act
+        connectedUser.validateIndividualOrder(mockRestaurant);
+
+        // Assert
+        verify(mockOrderManager, times(1)).validateIndividualOrder(any(Transaction.class), eq(mockOrder), eq(mockRestaurant));
+    }
+
+    @Test
+    void testOrderPaid() {
+        // Arrange
+        connectedUser.startIndividualOrder(mockRestaurant, mockDeliveryDetails);
+        Order mockPaidOrder = mock(Order.class);
+
+        // Act
+        connectedUser.orderPaid(mockPaidOrder);
+
+        // Assert
+        assertEquals(1, connectedUser.getOrdersHistory().size(), "Order history should have one entry after payment");
+        assertTrue(connectedUser.getOrdersHistory().contains(mockPaidOrder), "Order history should contain the paid order");
     }
 
     @Test
     void testToString() {
-        when(user.getOrdersHistory()).thenReturn(List.of());
-        when(user.getEmail()).thenReturn("user@test.com");
-        when(user.getAccountBalance()).thenReturn(100.0);
-        assertEquals("user@test.com - 100.0€ - 0 orders", user.toString());
+        // Arrange
+        connectedUser.startIndividualOrder(mockRestaurant, mockDeliveryDetails);
 
-        // After adding an order to history
-        Order order = mock(Order.class);
-        user.orderPaid(order);
-        when(user.getOrdersHistory()).thenReturn(List.of(order));
-        assertEquals("user@test.com - 100.0€ - 1 orders", user.toString());
+        // Act
+        connectedUser.orderPaid(mockOrder);
+        String result = connectedUser.toString();
+
+        // Assert
+        assertTrue(result.contains("1 orders"), "ToString should reflect the number of orders in the history");
     }
 }
+

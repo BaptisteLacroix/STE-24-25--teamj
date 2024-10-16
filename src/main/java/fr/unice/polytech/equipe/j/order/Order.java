@@ -1,8 +1,7 @@
 package fr.unice.polytech.equipe.j.order;
 
 import fr.unice.polytech.equipe.j.restaurant.MenuItem;
-import fr.unice.polytech.equipe.j.restaurant.RestaurantFacade;
-import fr.unice.polytech.equipe.j.restaurant.RestaurantServiceManager;
+import fr.unice.polytech.equipe.j.restaurant.Restaurant;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -10,21 +9,20 @@ import java.util.List;
 import java.util.UUID;
 
 public class Order {
-    private final UUID orderUUID;
-    private final RestaurantFacade restaurantFacade;
+    private final UUID orderUUID = UUID.randomUUID();
+    private final Restaurant restaurant;
     private final List<MenuItem> items;
     private LocalDateTime deliveryTime;
     private OrderStatus status;
 
-    public Order(RestaurantFacade restaurantFacade, UUID orderUUID) {
-        this.restaurantFacade = restaurantFacade;
+    public Order(Restaurant restaurant) {
+        this.restaurant = restaurant;
         items = new ArrayList<>();
         this.status = OrderStatus.PENDING;
-        this.orderUUID = orderUUID;
     }
 
-    public RestaurantFacade getRestaurantFacade() {
-        return restaurantFacade;
+    public Restaurant getRestaurant() {
+        return restaurant;
     }
 
     public List<MenuItem> getItems() {
@@ -53,15 +51,6 @@ public class Order {
         items.remove(item);
     }
 
-    /**
-     * Calculate the total price of the order
-     *
-     * @return The total price of the order
-     */
-    public double getTotalPrice() {
-        return RestaurantServiceManager.getInstance().calculateOrderPriceFromRestaurant(restaurantFacade.getRestaurantId(), this);
-    }
-
     public void setStatus(OrderStatus status) {
         this.status = status;
     }
@@ -78,9 +67,8 @@ public class Order {
     public String toString() {
         return "Order{" +
                 "orderUUID=" + orderUUID +
-                ", restaurantUUID=" + restaurantFacade +
+                ", restaurantUUID=" + restaurant +
                 ", items=" + items +
-                ", totalPrice=" + getTotalPrice() +
                 ", status=" + status +
                 ", deliveryTime=" + deliveryTime +
                 '}';

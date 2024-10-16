@@ -15,23 +15,25 @@ public class Transaction {
         observers.add(observer);
     }
 
+    public void removeObserver(CheckoutObserver observer) {
+        observers.remove(observer);
+    }
+
     private final ConnectedUser user;
 
     public Transaction(ConnectedUser user) {
         this.user = user;
     }
 
-    public void proceedCheckout(UUID orderUUID) {
-        Order order = RestaurantServiceManager.getInstance().getOrder(orderUUID);
-        if (user.getAccountBalance() < order.getTotalPrice()) {
+    public void proceedCheckout(Order order, double price) throws IllegalArgumentException {
+        if (user.getAccountBalance() < price) {
             throw new IllegalArgumentException("Insufficient funds");
         }
-        user.setAccountBalance(user.getAccountBalance() - order.getTotalPrice());
-
-        // TODO: Call the restaurant to update the status of the command, VALIDATED if payment is successful
+        user.setAccountBalance(user.getAccountBalance() - price);
 
         for (CheckoutObserver observer : observers) {
-            observer.orderPaid(orderUUID);
+            // Call the restaurant and the user so the restaurant set the order as paid and the user can see the order uuid in his history
+            observer.orderPaid(order);
         }
     }
 }

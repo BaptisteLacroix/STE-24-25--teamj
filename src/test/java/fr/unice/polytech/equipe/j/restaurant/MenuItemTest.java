@@ -1,6 +1,5 @@
 package fr.unice.polytech.equipe.j.restaurant;
 
-import fr.unice.polytech.equipe.j.restaurant.MenuItem;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

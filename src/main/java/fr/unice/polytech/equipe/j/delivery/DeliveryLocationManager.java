@@ -45,9 +45,9 @@ public class DeliveryLocationManager {
      * @param locationName The name of the location
      * @return The location
      */
-    public DeliveryLocation findLocationByName(String locationName) {
+    public DeliveryLocation findLocationByName(String locationName) throws IllegalArgumentException {
         return predefinedLocations.stream()
-                .filter(location -> location.getLocationName().equalsIgnoreCase(locationName))
+                .filter(location -> location.locationName().equalsIgnoreCase(locationName))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("Location not found: " + locationName));
     }

@@ -10,6 +10,7 @@ Feature: User places an order from a restaurant
   Scenario: Registered user places an order for multiple menu items
     Given the user is registered
     And the user has selected the restaurant "Le Petit Nice"
+    And the user start and order by specifying the delivery location from the pre-recorded locations
     When the user adds "Salade Nicoise" and "Bouillabaisse" to their order
     And places the order
     Then the order is placed successfully
@@ -17,6 +18,7 @@ Feature: User places an order from a restaurant
   Scenario: Registered user places an order for a single menu item
     Given the user is registered
     And the user has selected the restaurant "Le Petit Nice"
+    And the user start and order by specifying the delivery location from the pre-recorded locations
     When the user adds "Salade Nicoise" to their order
     And places the order
     Then the order is placed successfully
@@ -24,6 +26,7 @@ Feature: User places an order from a restaurant
   Scenario: Registered user tries to place an order adding a menu item that is not available
     Given the user is registered
     And the user has selected the restaurant "Le Petit Nice"
+    And the user start and order by specifying the delivery location from the pre-recorded locations
     When the user tries to add "Spaghetti Carbonara" to their order
     Then the user gets an error message "Spaghetti Carbonara is not in the menu"
     And the order is not placed
@@ -31,6 +34,7 @@ Feature: User places an order from a restaurant
   Scenario: Registered user tries to place an order without adding any menu items
     Given the user is registered
     And the user has selected the restaurant "Le Petit Nice"
+    And the user start and order by specifying the delivery location from the pre-recorded locations
     When the user tries to place the order without adding any menu items
     Then the user gets an error message "You must add at least one item to your order"
     And the order is not placed

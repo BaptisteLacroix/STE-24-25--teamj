@@ -15,7 +15,7 @@ import static org.junit.Assert.assertTrue;
 
 public class RestaurantSearchSteps {
 
-    private List<RestaurantFacade> foundRestaurants;  // Store search results
+    private List<Restaurant> foundRestaurants;  // Store search results
 
     @Before
     public void setUp() {
@@ -57,7 +57,7 @@ public class RestaurantSearchSteps {
 
         for (Map<String, String> expectedRestaurant : expectedRestaurants) {
             boolean found = false;
-            for (RestaurantFacade restaurant : foundRestaurants) {
+            for (Restaurant restaurant : foundRestaurants) {
                 if (restaurant.getRestaurantName().equals(expectedRestaurant.get("name"))) {
                     found = true;
                     Menu menu = restaurant.getMenu();

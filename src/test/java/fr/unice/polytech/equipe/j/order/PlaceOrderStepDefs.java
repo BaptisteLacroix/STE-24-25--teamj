@@ -1,17 +1,15 @@
 package fr.unice.polytech.equipe.j.order;
 
-import fr.unice.polytech.equipe.j.restaurant.Menu;
+import fr.unice.polytech.equipe.j.delivery.DeliveryLocation;
+import fr.unice.polytech.equipe.j.delivery.DeliveryLocationManager;
 import fr.unice.polytech.equipe.j.restaurant.MenuItem;
 import fr.unice.polytech.equipe.j.restaurant.Restaurant;
-import fr.unice.polytech.equipe.j.restaurant.RestaurantFacade;
-import fr.unice.polytech.equipe.j.restaurant.RestaurantProxy;
 import fr.unice.polytech.equipe.j.restaurant.RestaurantServiceManager;
 import fr.unice.polytech.equipe.j.user.ConnectedUser;
+import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-
-import java.time.LocalDateTime;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
@@ -19,7 +17,7 @@ import static org.junit.Assert.assertTrue;
 
 public class PlaceOrderStepDefs {
 
-    private RestaurantFacade restaurant;
+    private Restaurant restaurant;
     private ConnectedUser connectedUser;
 
     @Given("the restaurant service manager configured the following restaurants:")
@@ -32,7 +30,7 @@ public class PlaceOrderStepDefs {
      */
     @Given("the user is registered")
     public void the_user_is_registered() {
-        connectedUser = new ConnectedUser("john@example.com", "password", 100.0);
+        connectedUser = new ConnectedUser("john@example.com", "password", 100.0, new OrderManager());
     }
 
     /**
@@ -43,6 +41,13 @@ public class PlaceOrderStepDefs {
     @Given("the user has selected the restaurant {string}")
     public void the_user_has_selected_the_restaurant(String restaurantName) {
         restaurant = RestaurantServiceManager.getInstance().searchByName(restaurantName).getFirst();
+    }
+
+    @And("the user start and order by specifying the delivery location from the pre-recorded locations")
+    public void the_user_start_and_order_by_specifying_the_delivery_location_from_the_pre_recorded_locations() {
+        DeliveryLocation deliveryLocation = DeliveryLocationManager.getInstance().getPredefinedLocations().getFirst();
+        DeliveryDetails deliveryDetails = new DeliveryDetails(deliveryLocation, null);
+        connectedUser.startIndividualOrder(restaurant, deliveryDetails);
     }
 
     /**
@@ -56,9 +61,10 @@ public class PlaceOrderStepDefs {
         MenuItem menuItem1 = restaurant.getMenu().findItemByName(item1);
         MenuItem menuItem2 = restaurant.getMenu().findItemByName(item2);
 
-        connectedUser.startIndividualOrder(restaurant.getRestaurantId());
-        connectedUser.addItemToOrder(restaurant.getRestaurantId(), menuItem1);
-        connectedUser.addItemToOrder(restaurant.getRestaurantId(), menuItem2);
+        connectedUser.addItemToOrder(restaurant, menuItem1);
+        connectedUser.addItemToOrder(restaurant, menuItem2);
+
+        assertEquals(2, connectedUser.getCurrentOrder().getItems().size());
     }
 
     /**
@@ -70,8 +76,9 @@ public class PlaceOrderStepDefs {
     public void the_user_adds_to_their_order(String item1) {
         MenuItem menuItem1 = restaurant.getMenu().findItemByName(item1);
 
-        connectedUser.startIndividualOrder(restaurant.getRestaurantId());
-        connectedUser.addItemToOrder(restaurant.getRestaurantId(), menuItem1);
+        connectedUser.addItemToOrder(restaurant, menuItem1);
+
+        assertEquals(1, connectedUser.getCurrentOrder().getItems().size());
     }
 
     /**
@@ -79,7 +86,7 @@ public class PlaceOrderStepDefs {
      */
     @When("places the order")
     public void places_the_order() {
-        connectedUser.validateIndividualOrder(restaurant.getRestaurantId());
+        connectedUser.validateIndividualOrder(restaurant);
     }
 
     /**
@@ -87,13 +94,13 @@ public class PlaceOrderStepDefs {
      */
     @Then("the order is placed successfully")
     public void the_order_is_placed_successfully() {
-        assertTrue(connectedUser.getOrdersHistory().size() == 1);
-        assertEquals(OrderStatus.VALIDATED, connectedUser.getCurrentOrderState(restaurant.getRestaurantId(), connectedUser.getCurrentOrder()));
+        assertEquals(1, connectedUser.getOrdersHistory().size());
+        assertEquals(OrderStatus.VALIDATED, connectedUser.getCurrentOrder().getStatus());
     }
 
     @When("the user tries to add {string} to their order")
     public void the_user_tries_to_add_to_their_order(String string) {
-        assertThrows(IllegalArgumentException.class, () -> connectedUser.addItemToOrder(restaurant.getRestaurantId(), new MenuItem(string, 0.0)));
+        assertThrows(IllegalArgumentException.class, () -> connectedUser.addItemToOrder(restaurant, new MenuItem(string, 0.0)));
     }
 
     @Then("the user gets an error message {string}")
@@ -104,11 +111,11 @@ public class PlaceOrderStepDefs {
     @Then("the order is not placed")
     public void the_order_is_not_placed() {
         assertTrue(connectedUser.getOrdersHistory().isEmpty());
-        assertThrows(IllegalArgumentException.class, () -> connectedUser.getCurrentOrderState(restaurant.getRestaurantId(), connectedUser.getCurrentOrder()));
+        assertThrows(IllegalArgumentException.class, () -> connectedUser.getCurrentOrder().getStatus());
     }
 
     @When("the user tries to place the order without adding any menu items")
     public void the_user_tries_to_place_the_order_without_adding_any_menu_items() {
-        assertThrows(IllegalArgumentException.class, () -> connectedUser.proceedIndividualOrderCheckout());
+        assertThrows(IllegalArgumentException.class, () -> connectedUser.validateIndividualOrder(restaurant));
     }
 }

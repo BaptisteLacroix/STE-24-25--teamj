@@ -1,83 +1,51 @@
 package fr.unice.polytech.equipe.j.order;
 
-import fr.unice.polytech.equipe.j.order.Order;
 import fr.unice.polytech.equipe.j.restaurant.MenuItem;
 import fr.unice.polytech.equipe.j.restaurant.Restaurant;
-import fr.unice.polytech.equipe.j.restaurant.RestaurantFacade;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import java.time.LocalDateTime;
-import java.util.UUID;
+import org.mockito.Mockito;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class OrderTest {
 
     private Order order;
     private Restaurant restaurant;
-    private MenuItem item1;
-    private MenuItem item2;
-    private final UUID orderId = UUID.randomUUID();
 
     @BeforeEach
     void setUp() {
-        // Mock the Restaurant class
-        restaurant = mock(Restaurant.class);
-
-        // Create an Order object with the mocked Restaurant
-        order = new Order(new RestaurantFacade(restaurant), orderId);
-
-        // Create some menu items
-        item1 = new MenuItem("Burger", 5.99);
-        item2 = new MenuItem("Fries", 2.99);
+        // Mocking RestaurantFacade
+        restaurant = Mockito.mock(Restaurant.class);
+        order = new Order(restaurant);
     }
 
     @Test
     void testAddItem() {
-        order.addItem(item1);
-        assertTrue(order.getItems().contains(item1));
+        MenuItem menuItem = new MenuItem("Pizza", 10.0);
+        order.addItem(menuItem);
         assertEquals(1, order.getItems().size());
     }
 
     @Test
     void testRemoveItem() {
-        order.addItem(item1);
-        order.removeItem(item1);
-        assertFalse(order.getItems().contains(item1));
+        MenuItem menuItem = new MenuItem("Pizza", 10.0);
+        order.addItem(menuItem);
+        order.removeItem(menuItem);
+        assertEquals(0, order.getItems().size());
     }
 
     @Test
-    void testGetTotalPrice() {
-        // Add items to the order
-        order.addItem(item1);
-        order.addItem(item2);
-
-        // Mock the calculatePrice method of the restaurant
-        when(restaurant.calculatePrice(order)).thenReturn(8.98);
-
-        // Test the getTotalPrice method
-        assertEquals(8.98, order.getTotalPrice(), 0.001);
-
-        // Verify that the restaurant's method was called
-        verify(restaurant, times(1)).calculatePrice(order);
+    void testSetStatus() {
+        order.setStatus(OrderStatus.VALIDATED);
+        assertEquals(OrderStatus.VALIDATED, order.getStatus());
     }
 
     @Test
-    void testSetAndGetDeliveryTime() {
-        LocalDateTime deliveryTime = LocalDateTime.now().plusDays(1);
-        order.setDeliveryTime(deliveryTime);
-        assertEquals(deliveryTime, order.getDeliveryTime());
-    }
-
-    @Test
-    void testOrderIdIsGenerated() {
-        assertEquals(orderId, order.getOrderUUID());
+    void testCannotAddItemAfterValidated() {
+        order.setStatus(OrderStatus.VALIDATED);
+        MenuItem menuItem = new MenuItem("Pizza", 10.0);
+        assertThrows(IllegalStateException.class, () -> order.addItem(menuItem));
     }
 }
