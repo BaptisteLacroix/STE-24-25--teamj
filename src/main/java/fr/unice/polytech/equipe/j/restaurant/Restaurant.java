@@ -152,7 +152,7 @@ public class Restaurant {
     }
 
     public Map<Order, OrderPrice> processOrderPrice(GroupOrder groupOrder) {
-        return groupOrder.orderToConnectedUserMap().entrySet().stream()
+        return groupOrder.getOrdersToConnectedUser().entrySet().stream()
                 .map((entry)-> {
                     Order order = entry.getKey();
                     ConnectedUser user = entry.getValue();

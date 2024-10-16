@@ -3,13 +3,11 @@ package fr.unice.polytech.equipe.j.order;
 import fr.unice.polytech.equipe.j.user.ConnectedUser;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class GroupOrder {
     private final UUID groupOrderId;
-    private final List<Order> orders = new ArrayList<>();
+    private final Map<Order, ConnectedUser> ordersToConnectedUser = new HashMap<>();
     private final List<ConnectedUser> users = new ArrayList<>();
     private final DeliveryDetails deliveryDetails;
     private OrderStatus status = OrderStatus.PENDING;
@@ -19,9 +17,13 @@ public class GroupOrder {
         this.deliveryDetails = deliveryDetails;
     }
 
+    public Map<Order, ConnectedUser> getOrdersToConnectedUser() {
+        return ordersToConnectedUser;
+    }
+
     // Add an individual order to the group
-    public void addOrder(Order order) {
-        orders.add(order);
+    public void addOrder(Order order, ConnectedUser user) {
+        this.ordersToConnectedUser.put(order, user);
     }
 
     // Getters
@@ -29,8 +31,11 @@ public class GroupOrder {
         return groupOrderId;
     }
 
+    /**
+     * You can get the order as an unmodifiableList but please use addOrder to add an order
+     */
     public List<Order> getOrders() {
-        return orders;
+        return List.copyOf(this.ordersToConnectedUser.keySet());
     }
 
     public DeliveryDetails getDeliveryDetails() {
@@ -56,7 +61,7 @@ public class GroupOrder {
         return "GroupOrder{" +
                 "groupOrderId=" + groupOrderId +
                 "deliveryDetails=" + deliveryDetails +
-                ", orders=" + orders +
+                ", orders=" + this.getOrders() +
                 '}';
     }
 

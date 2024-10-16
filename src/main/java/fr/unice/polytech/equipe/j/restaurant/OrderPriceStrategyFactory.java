@@ -13,7 +13,7 @@ public class OrderPriceStrategyFactory {
             // get number of user previous commands
             // FIXME : one group order could contain multiple command of same user
             long previousGroupOrders = restaurant.getGroupOrdersHistory().stream()
-                    .filter(groupOrder -> groupOrder.orderToConnectedUserMap().containsValue(user))
+                    .filter(groupOrder -> groupOrder.getOrdersToConnectedUser().containsValue(user))
                     .count();
             long previousIndividualOrders =  restaurant.getIndividualOrdersHistory().stream()
                     .filter(individualOrder -> individualOrder.user().equals(user))
