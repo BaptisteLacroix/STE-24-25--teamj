@@ -4,6 +4,8 @@ import fr.unice.polytech.equipe.j.payment.Transaction;
 import fr.unice.polytech.equipe.j.restaurant.MenuItem;
 import fr.unice.polytech.equipe.j.restaurant.Restaurant;
 
+import java.time.LocalDateTime;
+
 
 public class OrderManager {
 
@@ -11,10 +13,20 @@ public class OrderManager {
         return new GroupOrder(deliveryDetails);
     }
 
-    public Order startSingleOrder(Restaurant restaurant, DeliveryDetails deliveryDetails) {
+    public IndividualOrder startSingleOrder(Restaurant restaurant, DeliveryDetails deliveryDetails) {
         if (restaurant.capacityCheck()) {
             IndividualOrder order = new IndividualOrder(restaurant, deliveryDetails);
             restaurant.addOrder(order);
+            return order;
+        }
+        return null;
+    }
+
+    public Order startSubGroupOrder(Restaurant restaurant, GroupOrder groupOrder) {
+        if (restaurant.capacityCheck()) {
+            Order order = new Order(restaurant);
+            restaurant.addOrder(order);
+            groupOrder.addOrder(order);
             return order;
         }
         return null;
@@ -38,26 +50,39 @@ public class OrderManager {
         }
     }
 
-    public void validateIndividualOrder(Transaction transaction, Order order, Restaurant restaurant) throws IllegalArgumentException {
+    public void validateOrder(Transaction transaction, Order order) throws IllegalArgumentException {
         if (order.getStatus() != OrderStatus.PENDING) {
             throw new IllegalArgumentException("Cannot validate order that is not pending.");
         }
         if (order.getItems().isEmpty()) {
             throw new IllegalArgumentException("Cannot validate order with no items.");
         }
-        if (!restaurant.isOrderValid(order)) {
+        if (!order.getRestaurant().isOrderValid(order)) {
             throw new IllegalArgumentException("Order is not valid.");
         }
-        transaction.addObserver(restaurant);
+        transaction.addObserver(order.getRestaurant());
         transaction.proceedCheckout(order, getTotalPrice(order));
-        transaction.removeObserver(restaurant);
+        transaction.removeObserver(order.getRestaurant());
     }
 
     public void validateGroupOrder(GroupOrder groupOrder) throws IllegalArgumentException {
-        // TODO: Check for validation Order group
         if (groupOrder.getStatus() != OrderStatus.PENDING) {
             throw new IllegalArgumentException("Cannot validate group order that is not pending.");
         }
+        if (groupOrder.getDeliveryDetails().getDeliveryTime().isEmpty()) {
+            throw new IllegalArgumentException("Cannot validate group order with no delivery time.");
+        }
+        groupOrder.setStatus(OrderStatus.VALIDATED);
+    }
+
+    public void validateGroupOrder(GroupOrder groupOrder, LocalDateTime deliveryTime) throws IllegalArgumentException {
+        if (groupOrder.getStatus() != OrderStatus.PENDING) {
+            throw new IllegalArgumentException("Cannot validate group order that is not pending.");
+        }
+        if (groupOrder.getDeliveryDetails().getDeliveryTime().isPresent()) {
+            throw new IllegalArgumentException("You cannot change the delivery time of a group order that is already set.");
+        }
+        groupOrder.setDeliveryTime(deliveryTime);
         groupOrder.setStatus(OrderStatus.VALIDATED);
     }
 

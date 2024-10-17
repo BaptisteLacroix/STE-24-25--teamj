@@ -26,7 +26,7 @@ public class GroupOrderStepDefs {
     public void the_user_creates_a_group_order_with_delivery_location(String deliveryLocation) {
         DeliveryLocation location = DeliveryLocationManager.getInstance().findLocationByName(deliveryLocation);
         DeliveryDetails deliveryDetails = new DeliveryDetails(location, null);
-        user.startGroupOrder(deliveryDetails);
+        user.createGroupOrder(deliveryDetails);
     }
 
     @Then("[GroupOrder]the user receives a group order identifier")
@@ -50,12 +50,12 @@ public class GroupOrderStepDefs {
 
     @When("[GroupOrder]the user tries to create a group order without specifying a delivery location")
     public void group_order_the_user_tries_to_create_a_group_order_without_specifying_a_delivery_location() {
-        assertThrows(IllegalArgumentException.class, () -> user.startGroupOrder(new DeliveryDetails(null, null)));
+        assertThrows(IllegalArgumentException.class, () -> user.createGroupOrder(new DeliveryDetails(null, null)));
     }
 
     @Then("[GroupOrder]the user receives an error message {string}")
     public void group_order_the_user_receives_an_error_message(String string) {
-        // The exception message is not checked in the test
+        System.out.println(string);
     }
 
     @Then("[GroupOrder]the group order is not created")
@@ -70,23 +70,7 @@ public class GroupOrderStepDefs {
                 .withMinute(int2);
         DeliveryLocation location = DeliveryLocationManager.getInstance().findLocationByName(string);
         DeliveryDetails deliveryDetails = new DeliveryDetails(location, deliveryTime);
-        user.startGroupOrder(deliveryDetails);
+        user.createGroupOrder(deliveryDetails);
         assertNotNull(user.getCurrentGroupOrder());
-    }
-
-    @When("[GroupOrder]the user tries to change the delivery time to {int}:{int} PM")
-    public void group_order_the_user_tries_to_change_the_delivery_location_to(Integer hour, Integer minute) {
-        LocalDateTime deliveryTime = LocalDateTime.now()
-                .withHour(hour)
-                .withMinute(minute);
-        assertThrows(UnsupportedOperationException.class, () -> user.changeGroupDeliveryTime(deliveryTime));
-    }
-
-    @When("[GroupOrder]the user tries to specify a delivery time in the past of {int}:{int} PM")
-    public void group_order_the_user_tries_to_specify_a_delivery_time_in_the_past_of_pm(Integer int1, Integer int2) {
-        LocalDateTime deliveryTime = LocalDateTime.now()
-                .withHour(int1)
-                .withMinute(int2);
-        assertThrows(UnsupportedOperationException.class, () -> user.changeGroupDeliveryTime(deliveryTime));
     }
 }

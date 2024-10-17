@@ -2,6 +2,7 @@ package fr.unice.polytech.equipe.j.user;
 
 import fr.unice.polytech.equipe.j.order.DeliveryDetails;
 import fr.unice.polytech.equipe.j.order.GroupOrder;
+import fr.unice.polytech.equipe.j.order.IndividualOrder;
 import fr.unice.polytech.equipe.j.order.Order;
 import fr.unice.polytech.equipe.j.payment.Transaction;
 import fr.unice.polytech.equipe.j.restaurant.MenuItem;
@@ -27,6 +28,7 @@ class ConnectedUserTest {
     private Restaurant mockRestaurant;
     private MenuItem mockMenuItem;
     private Order mockOrder;
+    private IndividualOrder mockIndividualOrder;
     private DeliveryDetails mockDeliveryDetails;
 
     @BeforeEach
@@ -36,6 +38,7 @@ class ConnectedUserTest {
         mockRestaurant = mock(Restaurant.class);
         mockMenuItem = mock(MenuItem.class);
         mockOrder = mock(Order.class);
+        mockIndividualOrder = mock(IndividualOrder.class);
         mockDeliveryDetails = mock(DeliveryDetails.class);
 
         // Mocking Restaurant behavior
@@ -46,7 +49,7 @@ class ConnectedUserTest {
         connectedUser = new ConnectedUser("user@example.com", "password123", 100.0, mockOrderManager);
 
         // Mock OrderManager behaviors
-        when(mockOrderManager.startSingleOrder(mockRestaurant, mockDeliveryDetails)).thenReturn(mockOrder);
+        when(mockOrderManager.startSingleOrder(mockRestaurant, mockDeliveryDetails)).thenReturn(mockIndividualOrder);
         when(mockOrderManager.startGroupOrder(mockDeliveryDetails)).thenReturn(mock(GroupOrder.class));
     }
 
@@ -62,7 +65,7 @@ class ConnectedUserTest {
     @Test
     void testStartGroupOrder() {
         // Act
-        connectedUser.startGroupOrder(mockDeliveryDetails);
+        connectedUser.createGroupOrder(mockDeliveryDetails);
 
         // Assert
         assertNotNull(connectedUser.getCurrentGroupOrder(), "Group order should be initialized");
@@ -86,10 +89,10 @@ class ConnectedUserTest {
         connectedUser.startIndividualOrder(mockRestaurant, mockDeliveryDetails);
 
         // Act
-        connectedUser.validateIndividualOrder(mockRestaurant);
+        connectedUser.validateOrder();
 
         // Assert
-        verify(mockOrderManager, times(1)).validateIndividualOrder(any(Transaction.class), eq(mockOrder), eq(mockRestaurant));
+        verify(mockOrderManager, times(1)).validateOrder(any(Transaction.class), eq(mockOrder));
     }
 
     @Test

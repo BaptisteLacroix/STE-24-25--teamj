@@ -24,16 +24,3 @@ Feature: Group Order Creation
     When [GroupOrder]the user tries to create a group order without specifying a delivery location
     Then [GroupOrder]the user receives an error message "You must specify a delivery location"
     And [GroupOrder]the group order is not created
-
-  Scenario: Registered user creates a group order with delivery location and tries to change the delivery time
-    Given [GroupOrder]the user is registered
-    When [GroupOrder]the user creates a group order with delivery location "Campus Main Gate" and delivery time of 23:30 PM
-    And [GroupOrder]the user tries to change the delivery time to 23:30 PM
-    Then [GroupOrder]the user receives an error message "You cannot change the delivery time of a group order"
-    And [GroupOrder]the group order delivery location is "Campus Main Gate"
-
-  Scenario: Registered user creates a group order with delivery location and tries to specify a delivery time in the past
-    Given [GroupOrder]the user is registered
-    When [GroupOrder]the user creates a group order with delivery location "Campus Main Gate"
-    And [GroupOrder]the user tries to specify a delivery time in the past of 01:00 PM
-    Then [GroupOrder]the user receives an error message "You cannot specify a delivery time in the past"

@@ -39,20 +39,34 @@ public class ConnectedUser extends User implements CheckoutObserver {
      *
      * @param deliveryDetails The delivery details
      */
-    public void startGroupOrder(DeliveryDetails deliveryDetails) {
+    public void createGroupOrder(DeliveryDetails deliveryDetails) {
         this.currentGroupOrder = orderManager.startGroupOrder(deliveryDetails);
+    }
+
+    public void startSubGroupOrder(Restaurant restaurant) {
+        this.currentOrder = orderManager.startSubGroupOrder(restaurant, currentGroupOrder);
+    }
+
+    public void joinGroupOrder(GroupOrder groupOrder) {
+        this.currentGroupOrder = groupOrder;
     }
 
     public void addItemToOrder(Restaurant restaurant, MenuItem item) {
         orderManager.addItemToOrder(getCurrentOrder(), restaurant, item);
     }
 
-    public void validateIndividualOrder(Restaurant restaurant) {
-        orderManager.validateIndividualOrder(transaction, getCurrentOrder(), restaurant);
+    public void validateOrder() {
+        orderManager.validateOrder(transaction, getCurrentOrder());
     }
 
-    public void changeGroupDeliveryTime(LocalDateTime deliveryTime) {
-        currentGroupOrder.setDeliveryTime(deliveryTime);
+    public void validateOrderAndGroupOrder() {
+        orderManager.validateOrder(transaction, getCurrentOrder());
+        orderManager.validateGroupOrder(currentGroupOrder);
+    }
+
+    public void validateOrderAndGroupOrder(LocalDateTime deliveryTime) {
+        orderManager.validateOrder(transaction, getCurrentOrder());
+        orderManager.validateGroupOrder(currentGroupOrder, deliveryTime);
     }
 
     @Override

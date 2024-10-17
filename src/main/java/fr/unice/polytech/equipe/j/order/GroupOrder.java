@@ -40,7 +40,8 @@ public class GroupOrder {
      * @param deliveryTime The time when the order will be delivered
      */
     public void setDeliveryTime(LocalDateTime deliveryTime) {
-        if (getDeliveryDetails().getDeliveryTime() != null) {
+        // TODO: Check if the delivery time is compatible with all sub orders
+        if (getDeliveryDetails().getDeliveryTime().isPresent()) {
             throw new UnsupportedOperationException("You cannot change the delivery time of a group order.");
         }
         if (deliveryTime.isBefore(LocalDateTime.now())) {

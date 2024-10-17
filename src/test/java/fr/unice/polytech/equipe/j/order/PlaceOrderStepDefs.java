@@ -86,7 +86,7 @@ public class PlaceOrderStepDefs {
      */
     @When("places the order")
     public void places_the_order() {
-        connectedUser.validateIndividualOrder(restaurant);
+        connectedUser.validateOrder();
     }
 
     /**
@@ -121,6 +121,6 @@ public class PlaceOrderStepDefs {
 
     @When("the user tries to place the order without adding any menu items")
     public void the_user_tries_to_place_the_order_without_adding_any_menu_items() {
-        assertThrows(IllegalArgumentException.class, () -> connectedUser.validateIndividualOrder(restaurant));
+        assertThrows(IllegalArgumentException.class, () -> connectedUser.validateOrder());
     }
 }
