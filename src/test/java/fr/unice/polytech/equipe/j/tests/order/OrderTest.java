@@ -34,8 +34,8 @@ class OrderTest {
         order = new Order(restaurant, orderId);
 
         // Create some menu items
-        item1 = new MenuItem("Burger", 20,5.99,40);
-        item2 = new MenuItem("Fries", 50,2.99,18);
+        item1 = new MenuItem("Burger", 20,5.99);
+        item2 = new MenuItem("Fries", 50,2.99);
     }
 
     @Test

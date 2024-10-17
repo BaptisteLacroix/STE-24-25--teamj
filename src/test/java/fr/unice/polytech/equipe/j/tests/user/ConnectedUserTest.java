@@ -41,12 +41,12 @@ class ConnectedUserTest {
     @BeforeEach
     void setUp() {
         user = spy(new ConnectedUser("user@test.com", "password", 100.0));
-        item1 = new MenuItem("Burger", 20,5.99,40);
-        item2 = new MenuItem("Fries", 50,2.99,18);
+        item1 = new MenuItem("Burger", 20,5.99);
+        item2 = new MenuItem("Fries", 50,2.99);
         transaction = mock(Transaction.class);
         restaurantProxy = mock(RestaurantProxy.class);
         noMockUser = new ConnectedUser("user@email.com", "password", 100.0);
-        noMockRestaurant = new Restaurant("Restaurant", new ArrayList<>(), LocalDateTime.now(), LocalDateTime.now(), null,4);
+        noMockRestaurant = new Restaurant("Restaurant", new ArrayList<>(), LocalDateTime.now(), LocalDateTime.now(), null);
         noMockRestaurant.changeMenu(new Menu(List.of(item1, item2)));
         noMockRestaurantProxy = new RestaurantProxy(List.of(noMockRestaurant));
     }
