@@ -2,6 +2,7 @@ package fr.unice.polytech.equipe.j.restaurant;
 
 import fr.unice.polytech.equipe.j.order.Order;
 import fr.unice.polytech.equipe.j.order.OrderBuilder;
+import fr.unice.polytech.equipe.j.slot.Slot;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -13,14 +14,17 @@ public class Restaurant {
     private final String restaurantName;
     private LocalDateTime openingTime;
     private LocalDateTime closingTime;
+    private List<Slot> slots;
     private Menu menu;
     private final List<Order> orders = new ArrayList<>();
+    private int numberOfPersonnel;
 
-    public Restaurant(String name, LocalDateTime openingTime, LocalDateTime closingTime, Menu menu) {
+    public Restaurant(String name, List<Slot> slots, LocalDateTime openingTime, LocalDateTime closingTime, Menu menu) {
         this.restaurantName = name;
         this.openingTime = openingTime;
         this.closingTime = closingTime;
         this.menu = menu;
+        this.slots = slots;
     }
 
     public void changeMenu(Menu newMenu) {
@@ -29,6 +33,10 @@ public class Restaurant {
 
     public Menu getMenu() {
         return menu;
+    }
+
+    public void setMenu(Menu menu){
+        this.menu = menu;
     }
 
     public String getRestaurantName() {
@@ -91,5 +99,15 @@ public class Restaurant {
 
     public void addOrder(Order order) {
         orders.add(order);
+    }
+
+    public void setNumberOfPersonnel(Slot slotToUpdate, int numberOfPersonnel) {
+         if (slotToUpdate != null) {
+            slotToUpdate.setNumberOfPersonnel(numberOfPersonnel);
+        }
+    }
+
+    public int getNumberOfPersonnel() {
+        return numberOfPersonnel;
     }
 }

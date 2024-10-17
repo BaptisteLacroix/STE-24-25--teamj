@@ -24,8 +24,8 @@ class OrderBuilderTest {
     void setUp() {
         restaurant = mock(Restaurant.class);
         orderBuilder = new OrderBuilder();
-        item1 = new MenuItem("Pizza", 12.99);
-        item2 = new MenuItem("Salad", 6.99);
+        item1 = new MenuItem("Pizza", 6,12.99);
+        item2 = new MenuItem("Salad",5, 6.99);
     }
 
     @Test

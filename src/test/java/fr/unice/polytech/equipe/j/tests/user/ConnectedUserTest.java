@@ -14,6 +14,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -40,12 +41,12 @@ class ConnectedUserTest {
     @BeforeEach
     void setUp() {
         user = spy(new ConnectedUser("user@test.com", "password", 100.0));
-        item1 = new MenuItem("Burger", 5.99);
-        item2 = new MenuItem("Fries", 2.99);
+        item1 = new MenuItem("Burger", 20,5.99);
+        item2 = new MenuItem("Fries", 50,2.99);
         transaction = mock(Transaction.class);
         restaurantProxy = mock(RestaurantProxy.class);
         noMockUser = new ConnectedUser("user@email.com", "password", 100.0);
-        noMockRestaurant = new Restaurant("Restaurant", LocalDateTime.now(), LocalDateTime.now(), null);
+        noMockRestaurant = new Restaurant("Restaurant", new ArrayList<>(), LocalDateTime.now(), LocalDateTime.now(), null);
         noMockRestaurant.changeMenu(new Menu(List.of(item1, item2)));
         noMockRestaurantProxy = new RestaurantProxy(List.of(noMockRestaurant));
     }

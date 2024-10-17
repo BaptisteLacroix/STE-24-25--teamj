@@ -4,6 +4,7 @@ import fr.unice.polytech.equipe.j.restaurant.Menu;
 import fr.unice.polytech.equipe.j.restaurant.MenuItem;
 import fr.unice.polytech.equipe.j.restaurant.Restaurant;
 import fr.unice.polytech.equipe.j.restaurant.RestaurantProxy;
+import fr.unice.polytech.equipe.j.slot.Slot;
 import fr.unice.polytech.equipe.j.user.ConnectedUser;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
@@ -20,6 +21,8 @@ public class PlaceOrderStepDefs {
     private Restaurant restaurant;
     private ConnectedUser connectedUser;
     private RestaurantProxy restaurantProxy;
+    private List<Slot> slots;
+
 
     /**
      * This step definition is used to simulate a user registration.
@@ -36,7 +39,7 @@ public class PlaceOrderStepDefs {
      */
     @Given("[PlaceOrder]the user has selected the restaurant {string}")
     public void the_user_has_selected_the_restaurant(String restaurantName) {
-        restaurant = new Restaurant(restaurantName, LocalDateTime.now(), LocalDateTime.now(), null);
+        restaurant = new Restaurant(restaurantName, slots, LocalDateTime.now(), LocalDateTime.now(), null);
         restaurantProxy = new RestaurantProxy(List.of(restaurant));
     }
 
@@ -50,8 +53,8 @@ public class PlaceOrderStepDefs {
     @Given("[PlaceOrder]the menu of {string} includes {string} and {string}")
     public void the_menu_of_includes_and(String restaurantName, String item1, String item2) {
         Menu menu = new Menu.MenuBuilder()
-                .addMenuItem(new MenuItem(item1, 10.0))
-                .addMenuItem(new MenuItem(item2, 5.0))
+                .addMenuItem(new MenuItem(item1, 10,10.0))
+                .addMenuItem(new MenuItem(item2, 6,5.0))
                 .build();
 
         restaurant.changeMenu(menu);
@@ -104,7 +107,7 @@ public class PlaceOrderStepDefs {
 
     @When("[PlaceOrder]the user tries to add {string} to their order")
     public void the_user_tries_to_add_to_their_order(String string) {
-        assertThrows(IllegalArgumentException.class, () -> connectedUser.addItemToOrder(restaurantProxy, restaurant.getRestaurantId(), new MenuItem(string, 0.0)));
+        assertThrows(IllegalArgumentException.class, () -> connectedUser.addItemToOrder(restaurantProxy, restaurant.getRestaurantId(), new MenuItem(string, 10,0.0)));
     }
 
     @Then("[PlaceOrder]the user get an error message {string}")

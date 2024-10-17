@@ -28,7 +28,7 @@ public class RestaurantMenuSteps {
             String name = data.get("name");
             String menuItems = data.get("menu items");
             Menu menu = createMenuFromString(menuItems);
-            Restaurant restaurant = new Restaurant(name, null, null, menu);
+            Restaurant restaurant = new Restaurant(name, null, null, null, menu);
             restaurants.add(restaurant);
         }
     }
@@ -39,7 +39,7 @@ public class RestaurantMenuSteps {
 
         for (String item : menuItems.split("\", ")) {
             String[] parts = item.replace("\"", "").split(", ");
-            builder.addMenuItem(new MenuItem(parts[0], Double.parseDouble(parts[1])));
+            builder.addMenuItem(new MenuItem(parts[0],0, Double.parseDouble(parts[1])));
         }
         return builder.build();
     }
@@ -104,7 +104,7 @@ public class RestaurantMenuSteps {
             String name = data.get("name");
             String menuItems = data.get("menu items");
             Menu menu = createMenuFromString(menuItems);
-            Restaurant restaurant = new Restaurant(name, null, null, menu);
+            Restaurant restaurant = new Restaurant(name, null, null,null, menu);
             restaurants.add(restaurant);
         }
     }
