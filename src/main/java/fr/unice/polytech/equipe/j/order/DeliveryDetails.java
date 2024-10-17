@@ -2,6 +2,7 @@ package fr.unice.polytech.equipe.j.order;
 
 import fr.unice.polytech.equipe.j.delivery.DeliveryLocation;
 import fr.unice.polytech.equipe.j.delivery.DeliveryLocationManager;
+import fr.unice.polytech.equipe.j.restaurant.MenuItem;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -38,5 +39,17 @@ public class DeliveryDetails {
                 "deliveryLocation='" + deliveryLocation + '\'' +
                 ", deliveryTime=" + deliveryTime +
                 '}';
+    }
+
+    /**
+     * Update the delivery time of the order, in case of a change in the preparation time of an item.
+     * @param item
+     */
+    public void updateDeliveryTime(MenuItem item) {
+        int prepTime = item.getPrepTime();
+        if (deliveryTime.isPresent()) {
+            deliveryTime = Optional.of(deliveryTime.get().plusMinutes(prepTime));
+        }
+        deliveryTime = Optional.of(LocalDateTime.now().plusMinutes(prepTime));
     }
 }

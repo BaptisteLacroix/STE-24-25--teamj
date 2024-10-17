@@ -20,25 +20,25 @@ public class RestaurantServiceHooks {
 
         // add menu items to the restaurant
         List<MenuItem> itemsRestaurant1 = new ArrayList<>();
-        itemsRestaurant1.add(new MenuItem("Salade Nicoise", 12.50));
-        itemsRestaurant1.add(new MenuItem("Bouillabaisse", 25.00));
-        itemsRestaurant1.add(new MenuItem("Tarte Tatin", 8.00));
+        itemsRestaurant1.add(new MenuItem("Salade Nicoise", 5, 12.50));
+        itemsRestaurant1.add(new MenuItem("Bouillabaisse", 30,  25.00));
+        itemsRestaurant1.add(new MenuItem("Tarte Tatin", 10, 8.00));
         // Add some restaurants if necessary
         Restaurant restaurant1 = new Restaurant("Le Petit Nice", LocalDateTime.of(2021, 1, 1, 10, 0),
                 LocalDateTime.of(2021, 1, 1, 22, 0), new Menu(itemsRestaurant1));
 
         List<MenuItem> itemsRestaurant2 = new ArrayList<>();
-        itemsRestaurant2.add(new MenuItem("Salade de chèvre chaud", 10.00));
-        itemsRestaurant2.add(new MenuItem("Magret de canard", 20.00));
-        itemsRestaurant2.add(new MenuItem("Crème brûlée", 7.00));
+        itemsRestaurant2.add(new MenuItem("Salade de chèvre chaud", 7, 10.00));
+        itemsRestaurant2.add(new MenuItem("Magret de canard", 25, 20.00));
+        itemsRestaurant2.add(new MenuItem("Crème brûlée", 10, 7.00));
 
         Restaurant restaurant2 = new Restaurant("Le Petit Jardin", LocalDateTime.of(2021, 1, 1, 11, 0),
                 LocalDateTime.of(2021, 1, 1, 23, 0), new Menu(itemsRestaurant2));
 
         List<MenuItem> itemsRestaurant3 = new ArrayList<>();
-        itemsRestaurant3.add(new MenuItem("Escargots", 15.00));
-        itemsRestaurant3.add(new MenuItem("Coq au vin", 22.00));
-        itemsRestaurant3.add(new MenuItem("Mousse au chocolat", 6.00));
+        itemsRestaurant3.add(new MenuItem("Escargots", 14, 15.00));
+        itemsRestaurant3.add(new MenuItem("Coq au vin", 20, 22.00));
+        itemsRestaurant3.add(new MenuItem("Mousse au chocolat", 20, 6.00));
 
         Restaurant restaurant3 = new Restaurant("Le Petit Chateau", LocalDateTime.of(2021, 1, 1, 9, 0),
                 LocalDateTime.of(2021, 1, 1, 21, 0), new Menu(itemsRestaurant3));

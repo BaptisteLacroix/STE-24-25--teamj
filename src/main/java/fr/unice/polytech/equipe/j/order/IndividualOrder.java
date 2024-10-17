@@ -1,5 +1,6 @@
 package fr.unice.polytech.equipe.j.order;
 
+import fr.unice.polytech.equipe.j.restaurant.MenuItem;
 import fr.unice.polytech.equipe.j.restaurant.Restaurant;
 
 public class IndividualOrder extends Order {
@@ -12,6 +13,10 @@ public class IndividualOrder extends Order {
 
     public DeliveryDetails getDeliveryDetails() {
         return deliveryDetails;
+    }
+
+    public void updateDeliveryTime(MenuItem item) {
+        deliveryDetails.updateDeliveryTime(item);
     }
 
     @Override

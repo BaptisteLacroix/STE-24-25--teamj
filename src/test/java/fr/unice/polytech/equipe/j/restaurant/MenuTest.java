@@ -19,8 +19,8 @@ class MenuTest {
     @BeforeEach
     void setUp() {
         menuBuilder = new Menu.MenuBuilder();
-        item1 = new MenuItem("Pizza", 12.99);
-        item2 = new MenuItem("Pasta", 8.99);
+        item1 = new MenuItem("Pizza", 10, 12.99);
+        item2 = new MenuItem("Pasta", 10, 8.99);
     }
 
     @Test
