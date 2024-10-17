@@ -1,8 +1,7 @@
 Feature: Update restaurant opening hours and menu offerings
 
-  As a Restaurant Manager
-  I want to update my opening hours and menu offerings
-  So that I can inform people who are ordering about the current capacity and our opening time
+  As a Restaurant Manager, I want to update my opening hours and menu offerings
+  so that I can inform people who are ordering the price and the preparation time of a meal, the availability to prepare their order and our opening time.
 
   Background:
     Given "Jeanne", a restaurant manager of the "Chicken Burger" restaurant
@@ -38,3 +37,13 @@ Feature: Update restaurant opening hours and menu offerings
     When the restaurant manager updates the personnel for this slot to 6
     Then the number of personnel for the slot starting at "2024-10-08 13:00" should be 6
 
+Scenario: Allocate personnel when the restaurant is closed
+  Given the restaurant has slots from "2024-10-08 12:00" to "2024-10-08 14:00"
+    | slotStart           | currentCapacity | maxCapacity | personnel |
+    | 2024-10-08 12:00    | 0               | 50          | 4         |
+    | 2024-10-08 12:30    | 0               | 50          | 4         |
+    | 2024-10-08 13:00    | 0               | 50          | 4         |
+    | 2024-10-08 13:30    | 0               | 50          | 4         |
+  And Jeanne wants to allocate 4 personnel to the slot starting at "2024-10-08 14:00"
+  When Jeanne tries to allocate 4 personnel to this slot
+  Then Jeanne will see that it is impossible

@@ -151,4 +151,22 @@ public class ManageRestaurantStepDef {
         Slot slot = findSlotByStartTime(slotStartTime);
         assertEquals(expectedPersonnelCount, slot.getNumberOfPersonnel());
     }
+
+
+
+    @And("Jeanne wants to allocate {int} personnel to the slot starting at {string}")
+    public void jeanneWantsToAllocatePersonnelToTheSlotStartingAt(int numberOfPersonnel, String slotStartingTime) {
+        
+    }
+
+    @When("Jeanne tries to allocate {int} personnel to this slot")
+    public void jeanneTriesToAllocatePersonnelToThisSlot(int newNumberOfPersonnel) {
+        Slot slot = findSlotByStartTime("2024-10-08 14:00");
+        restaurantManager.updateNumberOfPersonnel(slot, newNumberOfPersonnel);
+    }
+
+    @Then("Jeanne will see that it is impossible")
+    public void jeanneWillSeeThatItIsImpossible() {
+
+    }
 }
