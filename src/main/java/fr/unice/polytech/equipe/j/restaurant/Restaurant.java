@@ -27,6 +27,10 @@ public class Restaurant {
         this.slots = slots;
     }
 
+    public List<Slot> getSlots() {
+        return slots;
+    }
+
     public void changeMenu(Menu newMenu) {
         this.menu = newMenu;
     }
@@ -107,7 +111,18 @@ public class Restaurant {
         }
     }
 
-    public void addMenuItemToSlot()
+    public boolean addMenuItemToSlot(Slot slot, MenuItem item) {
+        if (!slot.UpdateSlotCapacity(item)) {
+            int index = slots.indexOf(slot);
+            if (index != -1 && index < slots.size() - 1) {
+                Slot nextSlot = slots.get(index + 1);
+                return addMenuItemToSlot(nextSlot, item);
+            } else {
+                return false;  // Plus de slots disponibles
+            }
+        }
+        return true;  // Slot disponible
+    }
 
     public int getNumberOfPersonnel() {
         return numberOfPersonnel;

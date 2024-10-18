@@ -32,11 +32,12 @@ public class ManageRestaurantStepDef {
     private MenuItem selectedItem;
     private Slot slot;
 
-    private Slot findSlotByStartTime(String slotStartTime) {
+    private Slot findSlotByStartTime(Restaurant restaurant, String slotStartTime) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         LocalDateTime startTime = LocalDateTime.parse(slotStartTime, formatter);
 
-        return slots.stream()
+        // Recherche le slot correspondant dans les slots du restaurant
+        return restaurant.getSlots().stream()
                 .filter(slot -> slot.getOpeningDate().equals(startTime))
                 .findFirst()
                 .orElse(null);
@@ -136,18 +137,18 @@ public class ManageRestaurantStepDef {
 
     @And("Jeanne wants to update the number of personnel for the slot starting at {string}")
     public void jeanneWantsToUpdateTheNumberOfPersonnelForTheSlotStartingAt(String openingTime) {
-        assertNotNull(findSlotByStartTime(openingTime));
+        assertNotNull(findSlotByStartTime(restaurant,openingTime));
     }
 
     @When("the restaurant manager updates the personnel for this slot to {int}")
     public void theRestaurantManagerUpdatesThePersonnelForThisSlotTo(int newPersonnelCount) {
-        Slot slotToUpdate = findSlotByStartTime("2024-10-08 13:00");
+        Slot slotToUpdate = findSlotByStartTime(restaurant,"2024-10-08 13:00");
         restaurantManager.updateNumberOfPersonnel(slotToUpdate, newPersonnelCount);
     }
 
     @Then("the number of personnel for the slot starting at {string} should be {int}")
     public void theNumberOfPersonnelForTheSlotStartingAtShouldBe(String slotStartTime, int expectedPersonnelCount) {
-        Slot slot = findSlotByStartTime(slotStartTime);
+        Slot slot = findSlotByStartTime(restaurant,slotStartTime);
         assertEquals(expectedPersonnelCount, slot.getNumberOfPersonnel());
     }
 
@@ -160,7 +161,7 @@ public class ManageRestaurantStepDef {
 
     @When("Jeanne tries to allocate {int} personnel to this slot")
     public void jeanneTriesToAllocatePersonnelToThisSlot(int newNumberOfPersonnel) {
-        Slot slot = findSlotByStartTime("2024-10-08 14:00");
+        Slot slot = findSlotByStartTime(restaurant,"2024-10-08 14:00");
         restaurantManager.updateNumberOfPersonnel(slot, newNumberOfPersonnel);
     }
 
@@ -188,15 +189,33 @@ public class ManageRestaurantStepDef {
     @And("the restaurant receives an order with a {string} at {string}")
     public void jeanneReceivesAnOrderWithAAt(String menuItem, String slotHours) {
         selectedItem = restaurant.getMenu().findItemByName(menuItem);
-        slot = findSlotByStartTime(slotHours);
+        slot = findSlotByStartTime(restaurant,slotHours);
     }
 
     @When("the restaurant adds {string} to this slot")
     public void jeanneAddsToThisSlot(String menuItem) {
-
+        restaurant.addMenuItemToSlot(slot, selectedItem);
     }
 
     @Then("the new current capacity of this slot should be {int}")
-    public void theNewCurrentCapacityOfThisSlotShouldBe(int arg0) {
+    public void theNewCurrentCapacityOfThisSlotShouldBe(int expectedCurrentCapacity) {
+        assertEquals(expectedCurrentCapacity, slot.getCurrentCapacity());
+    }
+
+    @And("the available capacity should be {int}")
+    public void theAvailableCapacityShouldBe(int expectedAvailableCapacity) {
+        assertEquals(expectedAvailableCapacity, slot.getAvailableCapacity());
+    }
+
+    @Then("it would be add to the next slot at {string} with a capacity of {int}")
+    public void itWouldBeAddToTheNextSlotAt(String expectedSlotAllocated, int itemCapacity) {
+        assertFalse(slot.UpdateSlotCapacity(selectedItem));
+        Slot newAllocatedSLot = findSlotByStartTime(restaurant,expectedSlotAllocated);
+        assertEquals(itemCapacity, newAllocatedSLot.getCurrentCapacity());
+    }
+
+    @Then("the item is not added by the restaurant")
+    public void theItemIsNotAddedByTheRestaurant() {
+        assertFalse(restaurant.addMenuItemToSlot(slot,selectedItem));
     }
 }

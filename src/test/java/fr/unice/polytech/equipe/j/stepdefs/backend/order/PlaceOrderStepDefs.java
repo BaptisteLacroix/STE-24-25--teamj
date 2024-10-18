@@ -6,6 +6,7 @@ import fr.unice.polytech.equipe.j.restaurant.Restaurant;
 import fr.unice.polytech.equipe.j.restaurant.RestaurantProxy;
 import fr.unice.polytech.equipe.j.slot.Slot;
 import fr.unice.polytech.equipe.j.user.ConnectedUser;
+import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
@@ -125,4 +126,5 @@ public class PlaceOrderStepDefs {
     public void the_user_tries_to_place_the_order_without_adding_any_menu_items() {
         assertThrows(IllegalArgumentException.class, () -> connectedUser.proceedCheckout(restaurantProxy, restaurant.getRestaurantId()));
     }
+
 }
