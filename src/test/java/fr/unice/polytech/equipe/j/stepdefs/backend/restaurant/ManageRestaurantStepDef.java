@@ -162,12 +162,17 @@ public class ManageRestaurantStepDef {
     @When("Jeanne tries to allocate {int} personnel to this slot")
     public void jeanneTriesToAllocatePersonnelToThisSlot(int newNumberOfPersonnel) {
         Slot slot = findSlotByStartTime(restaurant,"2024-10-08 14:00");
-        restaurantManager.updateNumberOfPersonnel(slot, newNumberOfPersonnel);
+        try {
+            restaurantManager.updateNumberOfPersonnel(slot, newNumberOfPersonnel);
+            fail("Expected an exception to be thrown, but it was not.");
+        } catch (IllegalArgumentException e) {
+            // Si il y a une erreur, le test passe
+        }
     }
 
-    @Then("Jeanne will see that it is impossible")
+    @Then("Jeanne see that it is impossible")
     public void jeanneWillSeeThatItIsImpossible() {
-
+        // Logique implémentée dans le when
     }
 
     @Given("a slot of {int} minutes is created")

@@ -84,4 +84,4 @@ Scenario: Allocate personnel when the restaurant is closed
     | 2024-10-08 13:30 | 0               | 7200        | 4         |
   And Jeanne wants to allocate 4 personnel to the slot starting at "2024-10-08 14:00"
   When Jeanne tries to allocate 4 personnel to this slot
-  Then Jeanne will see that it is impossible
+  Then Jeanne see that it is impossible
