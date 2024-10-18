@@ -1,9 +1,10 @@
 package fr.unice.polytech.equipe.j.restaurant;
 
+import fr.unice.polytech.equipe.j.order.GroupOrder;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class RestaurantServiceManager {
 
@@ -47,7 +48,7 @@ public class RestaurantServiceManager {
         return restaurants.stream()
                 .filter(restaurant -> restaurant.getRestaurantName().toLowerCase().contains(name.toLowerCase()))
                 .distinct()
-                .collect(Collectors.toList());
+                .toList();
     }
 
     // Search restaurants by type of food (based on menu items)
@@ -56,7 +57,7 @@ public class RestaurantServiceManager {
                 .filter(restaurant -> restaurant.getMenu().getItems().stream()
                         .anyMatch(item -> item.getName().contains(foodType)))
                 .distinct()
-                .collect(Collectors.toList());
+                .toList();
     }
 
     // Search restaurants by availability (check if open at a specific time)
@@ -64,7 +65,42 @@ public class RestaurantServiceManager {
         return restaurants.stream()
                 .filter(restaurant -> isOpenAt(restaurant, time))
                 .distinct()
-                .collect(Collectors.toList());
+                .toList();
+    }
+
+    /**
+     * Search for restaurants with a menuItem which, at the end of the preparation time, is shorter than the group order delivery time.
+     *
+     * @param groupOrder the group order for which the restaurants are searched
+     * @return a list of restaurants that can deliver the order on time
+     */
+    public List<Restaurant> searchRestaurantByDeliveryTime(GroupOrder groupOrder) {
+        return restaurants.stream()
+                .filter(restaurant -> restaurant.getMenu().getItems().stream()
+                        .anyMatch(item -> LocalDateTime.now().plusSeconds(item.getPrepTime()).isBefore(groupOrder.getDeliveryDetails().getDeliveryTime().get())))
+                .toList();
+    }
+
+    /**
+     * Search for menu items that can be delivered at a specific time, from a specified restaurant.
+     * The method checks if the restaurant is open at the specified time and if the preparation time of the menu item is shorter than the delivery time.
+     *
+     * @param restaurant the restaurant from which the menu items are selected
+     * @param time       the delivery time
+     * @return a list of menu items that can be delivered on time
+     */
+    public List<MenuItem> searchItemsByDeliveryTime(Restaurant restaurant, LocalDateTime time) {
+        // if no delivery time is specified, return all items
+        if (time == null) {
+            return restaurant.getMenu().getItems();
+        }
+        // if the restaurant is not open at the specified time, return an empty list
+        if (!isOpenAt(restaurant, time)) {
+            return new ArrayList<>();
+        }
+        return restaurant.getMenu().getItems().stream()
+                .filter(item -> LocalDateTime.now().plusSeconds(item.getPrepTime()).isBefore(time))
+                .toList();
     }
 
     // Check if a restaurant is open at a given time
