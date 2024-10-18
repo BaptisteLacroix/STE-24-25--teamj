@@ -5,13 +5,11 @@ public class MenuItem {
     private String description;
     private int prepTime;
     private double price;
-    private int capacity;
 
-    public MenuItem(String name, String description, int prepTime, double price, int capacity) {
+    public MenuItem(String name, String description, int prepTime, double price) {
         this.name = name;
         this.prepTime = prepTime;
         this.price = price;
-        this.capacity = capacity;
         this.description = description;
     }
 
@@ -34,14 +32,6 @@ public class MenuItem {
 
     public void setPrice(double price) {
         this.price = price;
-    }
-
-    public int getCapacity() {
-        return capacity;
-    }
-
-    public void setCapacity(int capacity) {
-        this.capacity = capacity;
     }
 
     public String getDescription() {

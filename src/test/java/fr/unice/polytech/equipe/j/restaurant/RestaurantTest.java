@@ -3,7 +3,10 @@ package fr.unice.polytech.equipe.j.restaurant;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.Clock;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,18 +18,20 @@ class RestaurantTest {
     private MenuItem item1;
     private MenuItem item2;
     private Menu menu;
+    private Clock clock;
 
     @BeforeEach
     void setUp() {
-        item1 = new MenuItem("Burger", "lorem ipsum",40,5.99, 8);
-        item2 = new MenuItem("Fries", "lorem ipsum",1,2.99, 8);
+        clock = Clock.fixed(Instant.parse("2024-10-01T00:00:00Z"), ZoneId.systemDefault());
+        item1 = new MenuItem("Burger", "lorem ipsum",40,5.99);
+        item2 = new MenuItem("Fries", "lorem ipsum",1,2.99);
         menu = new Menu.MenuBuilder().addMenuItems(List.of(item1, item2)).build();
-        restaurant = new Restaurant("Test Restaurant", new ArrayList<>(), LocalDateTime.of(2024, 10, 1, 9, 0), LocalDateTime.of(2024, 10, 1, 21, 0), menu);
+        restaurant = new Restaurant("Test Restaurant", new ArrayList<>(), LocalDateTime.of(2024, 10, 1, 9, 0), LocalDateTime.of(2024, 10, 1, 21, 0), menu, clock);
     }
     
     @Test
     void testChangeMenu() {
-        Menu newMenu = new Menu.MenuBuilder().addMenuItem(new MenuItem("Salad", "lorem ipsum",10,4.99, 8)).build();
+        Menu newMenu = new Menu.MenuBuilder().addMenuItem(new MenuItem("Salad", "lorem ipsum",10,4.99)).build();
         restaurant.changeMenu(newMenu);
         assertEquals(newMenu, restaurant.getMenu());
     }

@@ -39,8 +39,8 @@ public class RestaurantManager extends User {
     }
 
     // Ajouter un nouvel élément au menu via le restaurant
-    public void addMenuItem(String itemName, String description, int prepTimeInSeconds, int price, int capacity) {
-        MenuItem newItem = new MenuItem(itemName, description, prepTimeInSeconds, price, capacity);
+    public void addMenuItem(String itemName, String description, int prepTimeInSeconds, int price) {
+        MenuItem newItem = new MenuItem(itemName, description, prepTimeInSeconds, price);
         this.restaurant.getMenu().addMenuItem(newItem);
     }
 

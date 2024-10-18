@@ -3,6 +3,7 @@ package fr.unice.polytech.equipe.j.order;
 import fr.unice.polytech.equipe.j.restaurant.MenuItem;
 import fr.unice.polytech.equipe.j.restaurant.Restaurant;
 
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,11 +14,13 @@ public class Order {
     private final Restaurant restaurant;
     private final List<MenuItem> items;
     private OrderStatus status;
+    private final Clock clock;
 
-    public Order(Restaurant restaurant) {
+    public Order(Restaurant restaurant, Clock clock) {
         this.restaurant = restaurant;
         items = new ArrayList<>();
         this.status = OrderStatus.PENDING;
+        this.clock = clock;
     }
 
     public Restaurant getRestaurant() {
@@ -52,6 +55,10 @@ public class Order {
 
     public UUID getOrderUUID() {
         return orderUUID;
+    }
+
+    public Clock getClock() {
+        return clock;
     }
 
     @Override

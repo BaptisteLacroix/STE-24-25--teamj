@@ -6,6 +6,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import java.time.Clock;
+import java.time.Instant;
+import java.time.ZoneId;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -13,24 +17,26 @@ class OrderTest {
 
     private Order order;
     private Restaurant restaurant;
+    private Clock clock;
 
     @BeforeEach
     void setUp() {
-        // Mocking RestaurantFacade
+        clock = Clock.fixed(Instant.parse("2024-10-18T12:00:00Z"), ZoneId.systemDefault());
+        // Mocking Restaurant
         restaurant = Mockito.mock(Restaurant.class);
-        order = new Order(restaurant);
+        order = new Order(restaurant, clock);
     }
 
     @Test
     void testAddItem() {
-        MenuItem menuItem = new MenuItem("Pizza", "liorem ipsum", 50, 10.0, 8);
+        MenuItem menuItem = new MenuItem("Pizza", "liorem ipsum", 50, 10.0);
         order.addItem(menuItem);
         assertEquals(1, order.getItems().size());
     }
 
     @Test
     void testRemoveItem() {
-        MenuItem menuItem = new MenuItem("Pizza", "liorem ipsum", 50, 10.0, 8);
+        MenuItem menuItem = new MenuItem("Pizza", "liorem ipsum", 50, 10.0);
         order.addItem(menuItem);
         order.removeItem(menuItem);
         assertEquals(0, order.getItems().size());
@@ -45,7 +51,7 @@ class OrderTest {
     @Test
     void testCannotAddItemAfterValidated() {
         order.setStatus(OrderStatus.VALIDATED);
-        MenuItem menuItem = new MenuItem("Pizza", "liorem ipsum", 50, 10.0, 8);
+        MenuItem menuItem = new MenuItem("Pizza", "liorem ipsum", 50, 10.0);
         assertThrows(IllegalStateException.class, () -> order.addItem(menuItem));
     }
 }

@@ -11,7 +11,7 @@ Feature: Order Details
     Given [OrderDetails]the user is registered
     When [OrderDetails]the user selects the restaurant "Le Petit Nice"
     Then [OrderDetails]the user start a single order by specifying the delivery location from the pre-recorded locations
-    And [OrderDetails]the user choose a delivery date within the restaurant's preparation capabilities
+    And [OrderDetails]the user choose a delivery date within the restaurant's preparation capabilities. 30 minutes before closing time
 
   Scenario: Registered user selects a restaurant and tries to select a delivery location that is not recorded in the restaurant
     Given [OrderDetails]the user is registered

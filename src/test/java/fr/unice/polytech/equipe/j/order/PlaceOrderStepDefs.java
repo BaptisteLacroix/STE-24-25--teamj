@@ -10,6 +10,11 @@ import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import io.cucumber.java.Before;
+
+import java.time.Clock;
+import java.time.Instant;
+import java.time.ZoneId;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
@@ -19,6 +24,12 @@ public class PlaceOrderStepDefs {
 
     private Restaurant restaurant;
     private ConnectedUser connectedUser;
+    private Clock clock;
+
+    @Before
+    public void setUp() {
+        clock = Clock.fixed(Instant.parse("2024-10-18T12:00:00Z"), ZoneId.systemDefault());
+    }
 
     @Given("the restaurant service manager configured the following restaurants:")
     public void the_restaurant_service_manager_configured_the_following_restaurants(io.cucumber.datatable.DataTable dataTable) {
@@ -30,7 +41,7 @@ public class PlaceOrderStepDefs {
      */
     @Given("the user is registered")
     public void the_user_is_registered() {
-        connectedUser = new ConnectedUser("john@example.com", "password", 100.0, new OrderManager());
+        connectedUser = new ConnectedUser("john@example.com", "password", 100.0, new OrderManager(clock));
     }
 
     /**
@@ -40,7 +51,7 @@ public class PlaceOrderStepDefs {
      */
     @Given("the user has selected the restaurant {string}")
     public void the_user_has_selected_the_restaurant(String restaurantName) {
-        restaurant = RestaurantServiceManager.getInstance().searchByName(restaurantName).getFirst();
+        restaurant = RestaurantServiceManager.getInstance(clock).searchByName(restaurantName).getFirst();
     }
 
     @And("the user start and order by specifying the delivery location from the pre-recorded locations")
@@ -86,7 +97,7 @@ public class PlaceOrderStepDefs {
      */
     @When("places the order")
     public void places_the_order() {
-        connectedUser.validateIndividualOrder(restaurant);
+        connectedUser.validateOrder();
     }
 
     /**
@@ -100,7 +111,7 @@ public class PlaceOrderStepDefs {
 
     @When("the user tries to add {string} to their order")
     public void the_user_tries_to_add_to_their_order(String string) {
-        assertThrows(IllegalArgumentException.class, () -> connectedUser.addItemToOrder(restaurant, new MenuItem(string, "lorem ipsum", 10, 0.0, 8)));
+        assertThrows(IllegalArgumentException.class, () -> connectedUser.addItemToOrder(restaurant, new MenuItem(string, "lorem ipsum", 10, 0.0)));
     }
 
     @Then("the user gets an error message {string}")
@@ -121,6 +132,6 @@ public class PlaceOrderStepDefs {
 
     @When("the user tries to place the order without adding any menu items")
     public void the_user_tries_to_place_the_order_without_adding_any_menu_items() {
-        assertThrows(IllegalArgumentException.class, () -> connectedUser.validateIndividualOrder(restaurant));
+        assertThrows(IllegalArgumentException.class, () -> connectedUser.validateOrder());
     }
 }

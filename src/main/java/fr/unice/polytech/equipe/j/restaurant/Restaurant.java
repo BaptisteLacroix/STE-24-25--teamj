@@ -1,10 +1,12 @@
 package fr.unice.polytech.equipe.j.restaurant;
 
+import fr.unice.polytech.equipe.j.order.GroupOrder;
 import fr.unice.polytech.equipe.j.order.Order;
 import fr.unice.polytech.equipe.j.order.OrderStatus;
 import fr.unice.polytech.equipe.j.payment.CheckoutObserver;
 import fr.unice.polytech.equipe.j.slot.Slot;
 
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,13 +23,19 @@ public class Restaurant implements CheckoutObserver {
     private final List<Order> pendingOrders = new ArrayList<>();
     private int capacity = 10; // TODO: Change later (EX2)
     private int numberOfPersonnel;
+    private Clock clock;
 
-    public Restaurant(String name, List<Slot> slots, LocalDateTime openingTime, LocalDateTime closingTime, Menu menu) {
+    public Restaurant(String name, List<Slot> slots, LocalDateTime openingTime, LocalDateTime closingTime, Menu menu, Clock clock) {
         this.restaurantName = name;
         this.openingTime = openingTime;
         this.closingTime = closingTime;
         this.menu = menu;
         this.slots = slots;
+        this.clock = clock;
+    }
+
+    public Clock getClock() {
+        return clock;
     }
 
     public void changeMenu(Menu newMenu) {
@@ -38,7 +46,7 @@ public class Restaurant implements CheckoutObserver {
         return menu;
     }
 
-    public void setMenu(Menu menu){
+    public void setMenu(Menu menu) {
         this.menu = menu;
     }
 
@@ -75,8 +83,6 @@ public class Restaurant implements CheckoutObserver {
      * Check if the restaurant is at full capacity
      * If the restaurant is at full capacity, an IllegalStateException is thrown
      * Otherwise, the capacity is decremented
-     *
-     * @throws IllegalStateException if the restaurant is at full capacity
      */
     public boolean capacityCheck() {
         return getCapacity() > 0;
@@ -111,8 +117,9 @@ public class Restaurant implements CheckoutObserver {
      * @return true if the order is valid, false otherwise
      */
     public boolean isOrderValid(Order order) {
-        // TODO: Improve when the issues restaurant managers are done
-        return order.getItems().stream().allMatch(this::isItemAvailable);
+        // We need to check that the restaurant has all the items in the order, that he can prepare them in time
+        // and that the order is not empty
+        return getMenu().getItems().containsAll(order.getItems()) && order.getItems().size() > 0;
     }
 
     /**
@@ -137,7 +144,7 @@ public class Restaurant implements CheckoutObserver {
     }
 
     public void setNumberOfPersonnel(Slot slotToUpdate, int numberOfPersonnel) {
-         if (slotToUpdate != null) {
+        if (slotToUpdate != null) {
             slotToUpdate.setNumberOfPersonnel(numberOfPersonnel);
         }
     }
@@ -145,4 +152,43 @@ public class Restaurant implements CheckoutObserver {
     public int getNumberOfPersonnel() {
         return numberOfPersonnel;
     }
+
+    /**
+     * Get the preparation time for a list of items
+     *
+     * @param items The list of items
+     * @return The preparation time
+     */
+    public int getPreparationTime(List<MenuItem> items) {
+        int preparationTime = 0;
+        for (MenuItem item : items) {
+            preparationTime += item.getPrepTime();
+        }
+        return preparationTime;
+    }
+
+    /**
+     * Check if the restaurant can prepare any item in time for the delivery
+     *
+     * @param groupOrder The group order
+     * @return true if the restaurant can prepare any item in time, false otherwise
+     */
+    public boolean canPrepareItemForGroupOrderDeliveryTime(GroupOrder groupOrder) {
+        // Check that the delivery time is not empty
+        if (groupOrder.getDeliveryDetails().getDeliveryTime().isEmpty()) {
+            return true;
+        }
+
+        LocalDateTime now = LocalDateTime.now(getClock());
+        LocalDateTime deliveryTime = groupOrder.getDeliveryDetails().getDeliveryTime().get();
+        LocalDateTime closingTime = getClosingTime();
+
+        // Check if the restaurant can prepare any item before the closing time or the delivery time
+        return getMenu().getItems().stream()
+                .anyMatch(item -> {
+                    LocalDateTime preparationEndTime = now.plusSeconds(item.getPrepTime());
+                    return preparationEndTime.isBefore(deliveryTime) && preparationEndTime.isBefore(closingTime);
+                });
+    }
+
 }

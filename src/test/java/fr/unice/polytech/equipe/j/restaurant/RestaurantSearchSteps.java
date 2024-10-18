@@ -10,7 +10,10 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 
+import java.time.Clock;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -23,38 +26,40 @@ import static org.junit.Assert.assertTrue;
 public class RestaurantSearchSteps {
 
     private List<Restaurant> foundRestaurants;  // Store search results
-    private ConnectedUser user = new ConnectedUser("email", "password", 100, new OrderManager());
+    private ConnectedUser user;
     private List<MenuItem> menuItems = new ArrayList<>();
+    private Clock clock;
 
     @Before
     public void setUp() {
         // Initialize the list before each scenario
         foundRestaurants = new ArrayList<>();
-
+        clock = Clock.fixed(Instant.parse("2024-10-18T12:00:00Z"), ZoneId.systemDefault());
+        user = new ConnectedUser("email", "password", 100, new OrderManager(clock));
     }
 
     // When step - search for restaurants by name
     @When("the user searches for restaurants by name {string}")
     public void searchForRestaurantsByName(String restaurantName) {
-        foundRestaurants = RestaurantServiceManager.getInstance().searchByName(restaurantName);
+        foundRestaurants = RestaurantServiceManager.getInstance(clock).searchByName(restaurantName);
         assertFalse("No restaurant found with name: " + restaurantName, foundRestaurants.isEmpty());
     }
 
     @Given("the user searches for restaurants by name {string} that is not in the system")
     public void the_user_searches_for_restaurants_by_name_that_is_not_in_the_system(String string) {
-        foundRestaurants = RestaurantServiceManager.getInstance().searchByName(string);
+        foundRestaurants = RestaurantServiceManager.getInstance(clock).searchByName(string);
         assertTrue("Restaurants found when none were expected", foundRestaurants.isEmpty());
     }
 
     @Given("the user searches for food with name {string} that is not in the system")
     public void the_user_searches_for_food_with_name_that_is_not_in_the_system(String string) {
-        foundRestaurants = RestaurantServiceManager.getInstance().searchByTypeOfFood(string);
+        foundRestaurants = RestaurantServiceManager.getInstance(clock).searchByTypeOfFood(string);
         assertTrue("Restaurants found when none were expected", foundRestaurants.isEmpty());
     }
 
     @When("the user searches for food with name {string}")
     public void searchForRestaurantsByFood(String foodName) {
-        foundRestaurants = RestaurantServiceManager.getInstance().searchByTypeOfFood(foodName);
+        foundRestaurants = RestaurantServiceManager.getInstance(clock).searchByTypeOfFood(foodName);
         assertFalse("No restaurant found with food: " + foodName, foundRestaurants.isEmpty());
     }
 
@@ -89,14 +94,14 @@ public class RestaurantSearchSteps {
     @Given("the user creates a group order with a delivery time of {int} minutes later the current time")
     public void the_user_creates_a_group_order_with_a_delivery_time_of_minutes_later_the_current_time(Integer int1) {
         DeliveryLocation deliveryLocation = DeliveryLocationManager.getInstance().getPredefinedLocations().getFirst();
-        DeliveryDetails deliveryDetails = new DeliveryDetails(deliveryLocation, LocalDateTime.now().plusMinutes(int1));
-        user.startGroupOrder(deliveryDetails);
+        DeliveryDetails deliveryDetails = new DeliveryDetails(deliveryLocation, LocalDateTime.now(clock).plusMinutes(int1));
+        user.createGroupOrder(deliveryDetails);
         assertNotNull("Group order not created", user.getCurrentGroupOrder());
     }
 
     @Given("the user searches for restaurants that can prepare the food before the delivery time")
     public void the_user_searches_for_restaurants_that_can_prepare_the_food_before_the_delivery_time() {
-        foundRestaurants = RestaurantServiceManager.getInstance().searchRestaurantByDeliveryTime(user.getCurrentGroupOrder());
+        foundRestaurants = RestaurantServiceManager.getInstance(clock).searchRestaurantByDeliveryTime(user.getCurrentGroupOrder().getDeliveryDetails().getDeliveryTime());
         assertFalse(foundRestaurants.isEmpty());
     }
 
@@ -110,7 +115,7 @@ public class RestaurantSearchSteps {
             }
         }
 
-        menuItems = RestaurantServiceManager.getInstance().searchItemsByDeliveryTime(restaurant, user.getCurrentGroupOrder().getDeliveryDetails().getDeliveryTime().get());
+        menuItems = RestaurantServiceManager.getInstance(clock).searchItemsByDeliveryTime(restaurant, user.getCurrentGroupOrder().getDeliveryDetails().getDeliveryTime());
         assertFalse(menuItems.isEmpty());
         assertEquals("Number of menu items found does not match", int1.intValue(), menuItems.size());
     }

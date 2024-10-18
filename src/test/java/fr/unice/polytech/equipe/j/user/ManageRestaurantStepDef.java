@@ -4,22 +4,25 @@ import fr.unice.polytech.equipe.j.restaurant.Menu;
 import fr.unice.polytech.equipe.j.restaurant.MenuItem;
 import fr.unice.polytech.equipe.j.restaurant.Restaurant;
 import fr.unice.polytech.equipe.j.slot.Slot;
-import fr.unice.polytech.equipe.j.user.RestaurantManager;
+import io.cucumber.datatable.DataTable;
+import io.cucumber.java.Before;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import io.cucumber.datatable.DataTable;
 
-
+import java.time.Clock;
+import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 public class ManageRestaurantStepDef {
     private RestaurantManager restaurantManager;
@@ -27,6 +30,12 @@ public class ManageRestaurantStepDef {
     private final Menu menu = new Menu(new ArrayList<>());
     private final List<Slot> slots = new ArrayList<>();
     private MenuItem selectedItem;
+    private Clock clock;
+
+    @Before
+    public void setUp() {
+        clock = Clock.fixed(Instant.parse("2024-10-18T12:00:00Z"), ZoneId.systemDefault());
+    }
 
     private Slot findSlotByStartTime(String slotStartTime) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
@@ -41,9 +50,10 @@ public class ManageRestaurantStepDef {
 
     @Given("{string}, a restaurant manager of the {string} restaurant")
     public void aRestaurantManagerOfTheRestaurant(String name, String restaurantName) {
-        restaurant = new Restaurant(restaurantName, slots, LocalDateTime.now(), LocalDateTime.now().plusHours(8), menu);
-        restaurantManager = new RestaurantManager("jeanne@example.com", "password", 100.0,name, restaurant);
+        restaurant = new Restaurant(restaurantName, slots, LocalDateTime.now(clock), LocalDateTime.now(clock).plusHours(8), menu, clock);
+        restaurantManager = new RestaurantManager("jeanne@example.com", "password", 100.0, name, restaurant);
     }
+
     @And("the restaurant has a menu with the following items:")
     public void theRestaurantHasAMenuWithTheFollowingItems(DataTable dataTable) {
         List<Map<String, String>> items = dataTable.asMaps(String.class, String.class);
@@ -53,9 +63,8 @@ public class ManageRestaurantStepDef {
             String description = item.get("description");
             int prepTime = Integer.parseInt(item.get("prepTime"));
             int price = Integer.parseInt(item.get("price"));
-            int capacity = Integer.parseInt(item.get("capacity"));
 
-            restaurantManager.addMenuItem(itemName, description, prepTime, price, capacity);
+            restaurantManager.addMenuItem(itemName, description, prepTime, price);
         }
     }
 
@@ -96,7 +105,7 @@ public class ManageRestaurantStepDef {
 
     @Then("the price of {string} should be {double}")
     public void thePriceOfShouldBe(String item, double price) {
-        assertEquals(price, restaurant.getMenu().findItemByName(item).getPrice(),0.01);
+        assertEquals(price, restaurant.getMenu().findItemByName(item).getPrice(), 0.01);
     }
 
 
@@ -150,10 +159,9 @@ public class ManageRestaurantStepDef {
     }
 
 
-
     @And("Jeanne wants to allocate {int} personnel to the slot starting at {string}")
     public void jeanneWantsToAllocatePersonnelToTheSlotStartingAt(int numberOfPersonnel, String slotStartingTime) {
-        
+
     }
 
     @When("Jeanne tries to allocate {int} personnel to this slot")
