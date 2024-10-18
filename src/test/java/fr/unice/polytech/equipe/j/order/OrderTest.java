@@ -23,14 +23,14 @@ class OrderTest {
 
     @Test
     void testAddItem() {
-        MenuItem menuItem = new MenuItem("Pizza", 10.0);
+        MenuItem menuItem = new MenuItem("Pizza", "liorem ipsum", 50, 10.0, 8);
         order.addItem(menuItem);
         assertEquals(1, order.getItems().size());
     }
 
     @Test
     void testRemoveItem() {
-        MenuItem menuItem = new MenuItem("Pizza", 10.0);
+        MenuItem menuItem = new MenuItem("Pizza", "liorem ipsum", 50, 10.0, 8);
         order.addItem(menuItem);
         order.removeItem(menuItem);
         assertEquals(0, order.getItems().size());
@@ -45,7 +45,7 @@ class OrderTest {
     @Test
     void testCannotAddItemAfterValidated() {
         order.setStatus(OrderStatus.VALIDATED);
-        MenuItem menuItem = new MenuItem("Pizza", 10.0);
+        MenuItem menuItem = new MenuItem("Pizza", "liorem ipsum", 50, 10.0, 8);
         assertThrows(IllegalStateException.class, () -> order.addItem(menuItem));
     }
 }

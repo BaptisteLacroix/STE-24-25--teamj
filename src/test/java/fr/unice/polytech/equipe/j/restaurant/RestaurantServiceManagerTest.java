@@ -1,11 +1,13 @@
 package fr.unice.polytech.equipe.j.restaurant;
 
 import fr.unice.polytech.equipe.j.order.Order;
+import io.cucumber.java.bs.A;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -38,7 +40,7 @@ class RestaurantServiceManagerTest {
     @Test
     void testAddRestaurant() {
         int initialSize = restaurantServiceManager.getRestaurants().size();
-        Restaurant restaurant = new Restaurant("Test Restaurant", LocalDateTime.now(), LocalDateTime.now().plusHours(8), null);
+        Restaurant restaurant = new Restaurant("Test Restaurant", new ArrayList<>(), LocalDateTime.now(), LocalDateTime.now().plusHours(8), null);
         restaurantServiceManager.addRestaurant(restaurant);
         List<Restaurant> restaurants = restaurantServiceManager.getRestaurants();
         Assertions.assertEquals(initialSize + 1, restaurants.size());

@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -17,15 +18,15 @@ class RestaurantTest {
 
     @BeforeEach
     void setUp() {
-        item1 = new MenuItem("Burger", 5.99);
-        item2 = new MenuItem("Fries", 2.99);
+        item1 = new MenuItem("Burger", "lorem ipsum",40,5.99, 8);
+        item2 = new MenuItem("Fries", "lorem ipsum",1,2.99, 8);
         menu = new Menu.MenuBuilder().addMenuItems(List.of(item1, item2)).build();
-        restaurant = new Restaurant("Test Restaurant", LocalDateTime.of(2024, 10, 1, 9, 0), LocalDateTime.of(2024, 10, 1, 21, 0), menu);
+        restaurant = new Restaurant("Test Restaurant", new ArrayList<>(), LocalDateTime.of(2024, 10, 1, 9, 0), LocalDateTime.of(2024, 10, 1, 21, 0), menu);
     }
     
     @Test
     void testChangeMenu() {
-        Menu newMenu = new Menu.MenuBuilder().addMenuItem(new MenuItem("Salad", 4.99)).build();
+        Menu newMenu = new Menu.MenuBuilder().addMenuItem(new MenuItem("Salad", "lorem ipsum",10,4.99, 8)).build();
         restaurant.changeMenu(newMenu);
         assertEquals(newMenu, restaurant.getMenu());
     }

@@ -3,6 +3,7 @@ package fr.unice.polytech.equipe.j.restaurant;
 import fr.unice.polytech.equipe.j.order.Order;
 import fr.unice.polytech.equipe.j.order.OrderStatus;
 import fr.unice.polytech.equipe.j.payment.CheckoutObserver;
+import fr.unice.polytech.equipe.j.slot.Slot;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -14,16 +15,19 @@ public class Restaurant implements CheckoutObserver {
     private final String restaurantName;
     private LocalDateTime openingTime;
     private LocalDateTime closingTime;
+    private List<Slot> slots;
     private Menu menu;
     private final List<Order> ordersHistory = new ArrayList<>();
     private final List<Order> pendingOrders = new ArrayList<>();
     private int capacity = 10; // TODO: Change later (EX2)
+    private int numberOfPersonnel;
 
-    public Restaurant(String name, LocalDateTime openingTime, LocalDateTime closingTime, Menu menu) {
+    public Restaurant(String name, List<Slot> slots, LocalDateTime openingTime, LocalDateTime closingTime, Menu menu) {
         this.restaurantName = name;
         this.openingTime = openingTime;
         this.closingTime = closingTime;
         this.menu = menu;
+        this.slots = slots;
     }
 
     public void changeMenu(Menu newMenu) {
@@ -32,6 +36,10 @@ public class Restaurant implements CheckoutObserver {
 
     public Menu getMenu() {
         return menu;
+    }
+
+    public void setMenu(Menu menu){
+        this.menu = menu;
     }
 
     public String getRestaurantName() {
@@ -126,5 +134,15 @@ public class Restaurant implements CheckoutObserver {
 
     public int getCapacity() {
         return capacity;
+    }
+
+    public void setNumberOfPersonnel(Slot slotToUpdate, int numberOfPersonnel) {
+         if (slotToUpdate != null) {
+            slotToUpdate.setNumberOfPersonnel(numberOfPersonnel);
+        }
+    }
+
+    public int getNumberOfPersonnel() {
+        return numberOfPersonnel;
     }
 }

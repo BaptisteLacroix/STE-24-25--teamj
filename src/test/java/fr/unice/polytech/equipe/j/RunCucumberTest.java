@@ -11,8 +11,7 @@ import static io.cucumber.junit.platform.engine.Constants.PLUGIN_PROPERTY_NAME;
 @Suite
 @IncludeEngines("cucumber")
 
-@SelectClasspathResource("features/orders")
-@SelectClasspathResource("features.restaurants")
+@SelectClasspathResource("features")
 
 @ConfigurationParameter(key = PLUGIN_PROPERTY_NAME, value = "pretty")
 @ConfigurationParameter(key = GLUE_PROPERTY_NAME, value = "fr.unice.polytech.equipe.j")
