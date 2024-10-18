@@ -12,6 +12,7 @@ import io.cucumber.java.en.When;
 import io.cucumber.datatable.DataTable;
 
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -53,12 +54,10 @@ public class ManageRestaurantStepDef {
 
         for (Map<String, String> item : items) {
             String itemName = item.get("itemName");
-            String description = item.get("description");
             int prepTime = Integer.parseInt(item.get("prepTime"));
             int price = Integer.parseInt(item.get("price"));
-            int capacity = Integer.parseInt(item.get("capacity"));
 
-            restaurantManager.addMenuItem(itemName, description, prepTime, price, capacity);
+            restaurantManager.addMenuItem(itemName, prepTime, price);
         }
     }
 
@@ -168,5 +167,36 @@ public class ManageRestaurantStepDef {
     @Then("Jeanne will see that it is impossible")
     public void jeanneWillSeeThatItIsImpossible() {
 
+    }
+
+    @Given("a slot of {int} minutes is created")
+    public void aSlotOfMinutesIsCreated(int duration) {
+        slot = new Slot(0,0,LocalDateTime.now(),0);
+    }
+
+    @When("Jeanne allocates {int} personnel to this slot")
+    public void jeanneAllocatesPersonnelToThisSlot(int personnel) {
+        restaurantManager.updateNumberOfPersonnel(slot,personnel);
+    }
+
+    @Then("the maximum capacity for the slot should be {int} seconds")
+    public void theMaximumCapacityForTheSlotShouldBeMinutes(int duration) {
+        assertEquals(slot.getMaxCapacity(),duration);
+    }
+
+
+    @And("the restaurant receives an order with a {string} at {string}")
+    public void jeanneReceivesAnOrderWithAAt(String menuItem, String slotHours) {
+        selectedItem = restaurant.getMenu().findItemByName(menuItem);
+        slot = findSlotByStartTime(slotHours);
+    }
+
+    @When("the restaurant adds {string} to this slot")
+    public void jeanneAddsToThisSlot(String menuItem) {
+
+    }
+
+    @Then("the new current capacity of this slot should be {int}")
+    public void theNewCurrentCapacityOfThisSlotShouldBe(int arg0) {
     }
 }

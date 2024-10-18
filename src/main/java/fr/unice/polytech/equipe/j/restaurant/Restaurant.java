@@ -107,6 +107,8 @@ public class Restaurant {
         }
     }
 
+    public void addMenuItemToSlot()
+
     public int getNumberOfPersonnel() {
         return numberOfPersonnel;
     }
