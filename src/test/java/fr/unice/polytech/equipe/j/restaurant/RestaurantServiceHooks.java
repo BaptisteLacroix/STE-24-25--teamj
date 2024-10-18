@@ -16,7 +16,7 @@ public class RestaurantServiceHooks {
     public static void setUp() {
         RestaurantServiceManager.resetInstance();
         // Initialize the singleton
-        Clock clock = Clock.fixed(Instant.parse("2024-10-18T12:00:00Z"), ZoneId.systemDefault());
+        Clock clock = Clock.fixed(Instant.parse("2024-10-18T12:00:00Z"), ZoneId.of("Europe/Paris"));
         RestaurantServiceManager manager = RestaurantServiceManager.getInstance(clock);
         LocalDateTime fixedDateTime = LocalDateTime.now(clock);
 

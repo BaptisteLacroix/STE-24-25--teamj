@@ -32,7 +32,7 @@ public class CompleteOrderStepDefs {
 
     @Before
     public void setUp() {
-        clock = Clock.fixed(Instant.parse("2024-10-18T12:00:00Z"), ZoneId.systemDefault());
+        clock = Clock.fixed(Instant.parse("2024-10-18T12:00:00Z"), ZoneId.of("Europe/Paris"));
     }
 
 

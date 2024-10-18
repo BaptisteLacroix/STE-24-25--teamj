@@ -21,7 +21,7 @@ class OrderTest {
 
     @BeforeEach
     void setUp() {
-        clock = Clock.fixed(Instant.parse("2024-10-18T12:00:00Z"), ZoneId.systemDefault());
+        clock = Clock.fixed(Instant.parse("2024-10-18T12:00:00Z"), ZoneId.of("Europe/Paris"));
         // Mocking Restaurant
         restaurant = Mockito.mock(Restaurant.class);
         order = new Order(restaurant, clock);

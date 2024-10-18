@@ -22,7 +22,7 @@ class RestaurantTest {
 
     @BeforeEach
     void setUp() {
-        clock = Clock.fixed(Instant.parse("2024-10-01T00:00:00Z"), ZoneId.systemDefault());
+        clock = Clock.fixed(Instant.parse("2024-10-01T00:00:00Z"), ZoneId.of("Europe/Paris"));
         item1 = new MenuItem("Burger", "lorem ipsum",40,5.99);
         item2 = new MenuItem("Fries", "lorem ipsum",1,2.99);
         menu = new Menu.MenuBuilder().addMenuItems(List.of(item1, item2)).build();
