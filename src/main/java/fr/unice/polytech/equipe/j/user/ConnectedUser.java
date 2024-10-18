@@ -52,7 +52,12 @@ public class ConnectedUser extends User implements CheckoutObserver {
     }
 
     public void addItemToOrder(Restaurant restaurant, MenuItem item) {
-        orderManager.addItemToOrder(getCurrentOrder(), restaurant, item);
+        // TODO: change if the user can be part of multiple group orders
+        if (currentGroupOrder != null) {
+            orderManager.addItemToOrder(getCurrentGroupOrder(), getCurrentOrder(), restaurant, item);
+        } else {
+            orderManager.addItemToOrder(getCurrentOrder(), restaurant, item);
+        }
     }
 
     public void validateOrder() {

@@ -41,6 +41,20 @@ public class OrderManager {
         if (!restaurant.isItemAvailable(menuItem)) {
             throw new IllegalArgumentException("Item is not available.");
         }
+        IndividualOrder individualOrder = (IndividualOrder) order;
+        // Check that the restauratn an prepare the item before teh delivery time
+        if (!restaurant.canPrepareItem(menuItem, individualOrder.getDeliveryDetails().getDeliveryTime())) {
+            throw new IllegalArgumentException("Restaurant cannot prepare the item before the delivery time.");
+        }
+        order.addItem(menuItem);
+    }
+
+    public void addItemToOrder(GroupOrder groupOrder, Order order, Restaurant restaurant, MenuItem menuItem) throws IllegalArgumentException {
+        if (!restaurant.isItemAvailable(menuItem)) {
+            throw new IllegalArgumentException("Item is not available.");
+        }
+        // if the order is from a groupOrder, we need to check that the restaurant can reparare the food before the delivery time
+
         order.addItem(menuItem);
     }
 
