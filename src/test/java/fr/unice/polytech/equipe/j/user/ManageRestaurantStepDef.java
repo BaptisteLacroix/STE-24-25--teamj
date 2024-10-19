@@ -1,54 +1,52 @@
-package fr.unice.polytech.equipe.j.stepdefs.backend.restaurant;
+package fr.unice.polytech.equipe.j.user;
 
 import fr.unice.polytech.equipe.j.restaurant.Menu;
 import fr.unice.polytech.equipe.j.restaurant.MenuItem;
 import fr.unice.polytech.equipe.j.restaurant.Restaurant;
+import fr.unice.polytech.equipe.j.restaurant.RestaurantServiceManager;
 import fr.unice.polytech.equipe.j.slot.Slot;
-import fr.unice.polytech.equipe.j.user.RestaurantManager;
+import io.cucumber.datatable.DataTable;
+import io.cucumber.java.Before;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import io.cucumber.datatable.DataTable;
 
-
-import java.time.Duration;
+import java.time.Clock;
+import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 
 public class ManageRestaurantStepDef {
     private RestaurantManager restaurantManager;
     private Restaurant restaurant;
-    private LocalDateTime openingHour;
-    private LocalDateTime closingHour;
     private final Menu menu = new Menu(new ArrayList<>());
     private final List<Slot> slots = new ArrayList<>();
     private MenuItem selectedItem;
+    private Clock clock;
     private Slot slot;
 
-    private Slot findSlotByStartTime(Restaurant restaurant, String slotStartTime) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-        LocalDateTime startTime = LocalDateTime.parse(slotStartTime, formatter);
-
-        // Recherche le slot correspondant dans les slots du restaurant
-        return restaurant.getSlots().stream()
-                .filter(slot -> slot.getOpeningDate().equals(startTime))
-                .findFirst()
-                .orElse(null);
+    @Before
+    public void setUp() {
+        clock = Clock.fixed(Instant.parse("2024-10-18T12:00:00Z"), ZoneId.of("Europe/Paris"));
     }
-
 
     @Given("{string}, a restaurant manager of the {string} restaurant")
     public void aRestaurantManagerOfTheRestaurant(String name, String restaurantName) {
-        restaurant = new Restaurant(restaurantName, slots, LocalDateTime.now(), LocalDateTime.now().plusHours(8), menu);
-        restaurantManager = new RestaurantManager("jeanne@example.com", "password", 100.0,name, restaurant);
+        restaurant = new Restaurant(restaurantName, LocalDateTime.now(clock), LocalDateTime.now(clock).plusHours(8), menu, clock);
+        restaurantManager = new RestaurantManager("jeanne@example.com", "password", name, restaurant);
     }
+
     @And("the restaurant has a menu with the following items:")
     public void theRestaurantHasAMenuWithTheFollowingItems(DataTable dataTable) {
         List<Map<String, String>> items = dataTable.asMaps(String.class, String.class);
@@ -71,15 +69,15 @@ public class ManageRestaurantStepDef {
     @When("the restaurant manager sets the hours from {string} to {string}")
     public void theRestaurantManagerSetsTheHoursFromTo(String startTime, String endTime) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-        openingHour = LocalDateTime.parse(startTime, formatter);
-        closingHour = LocalDateTime.parse(endTime, formatter);
+        LocalDateTime openingHour = LocalDateTime.parse(startTime, formatter);
+        LocalDateTime closingHour = LocalDateTime.parse(endTime, formatter);
         restaurantManager.updateHours(openingHour, closingHour);
     }
 
     @Then("the opening hours should be {string} to {string}")
     public void theOpeningHoursShouldBeTo(String expectedStartTime, String expectedEndTime) {
         DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-        String actualOpeningHours = restaurant.getOpeningTime().format(outputFormatter) + " to " + restaurant.getClosingTime().format(outputFormatter);
+        String actualOpeningHours = restaurant.getOpeningTime().get().format(outputFormatter) + " to " + restaurant.getClosingTime().get().format(outputFormatter);
         String expectedHours = expectedStartTime + " to " + expectedEndTime;
         assertEquals(expectedHours, actualOpeningHours);
 
@@ -99,7 +97,7 @@ public class ManageRestaurantStepDef {
 
     @Then("the price of {string} should be {double}")
     public void thePriceOfShouldBe(String item, double price) {
-        assertEquals(price, restaurant.getMenu().findItemByName(item).getPrice(),0.01);
+        assertEquals(price, restaurant.getMenu().findItemByName(item).getPrice(), 0.01);
     }
 
 
@@ -125,11 +123,12 @@ public class ManageRestaurantStepDef {
 
         dataTable.asMaps().forEach(row -> {
             LocalDateTime slotStart = LocalDateTime.parse(row.get("slotStart"), formatter);
-            int currentCapacity = Integer.parseInt(row.get("currentCapacity"));
-            int maxCapacity = Integer.parseInt(row.get("maxCapacity"));
             int personnel = Integer.parseInt(row.get("personnel"));
+            int currentCapacity = Integer.parseInt(row.get("currentCapacity"));
 
-            Slot slot = new Slot(currentCapacity, maxCapacity, slotStart, personnel);
+            Slot slot = RestaurantServiceManager.getInstance().findSlotByStartTime(restaurant, slotStart);
+            slot.addCapacity(currentCapacity);
+            slot.setNumberOfPersonnel(personnel);
             slots.add(slot);
         });
 
@@ -137,59 +136,66 @@ public class ManageRestaurantStepDef {
 
     @And("Jeanne wants to update the number of personnel for the slot starting at {string}")
     public void jeanneWantsToUpdateTheNumberOfPersonnelForTheSlotStartingAt(String openingTime) {
-        assertNotNull(findSlotByStartTime(restaurant,openingTime));
+        LocalDateTime slotStart = LocalDateTime.parse(openingTime, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+        assertNotNull(RestaurantServiceManager.getInstance().findSlotByStartTime(restaurant, slotStart));
     }
 
     @When("the restaurant manager updates the personnel for this slot to {int}")
     public void theRestaurantManagerUpdatesThePersonnelForThisSlotTo(int newPersonnelCount) {
-        Slot slotToUpdate = findSlotByStartTime(restaurant,"2024-10-08 13:00");
+        LocalDateTime slotStart = LocalDateTime.parse("2024-10-18 14:30", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+        Slot slotToUpdate = RestaurantServiceManager.getInstance().findSlotByStartTime(restaurant, slotStart);
         restaurantManager.updateNumberOfPersonnel(slotToUpdate, newPersonnelCount);
     }
 
     @Then("the number of personnel for the slot starting at {string} should be {int}")
     public void theNumberOfPersonnelForTheSlotStartingAtShouldBe(String slotStartTime, int expectedPersonnelCount) {
-        Slot slot = findSlotByStartTime(restaurant,slotStartTime);
+        LocalDateTime slotStart = LocalDateTime.parse(slotStartTime, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+        Slot slot = RestaurantServiceManager.getInstance().findSlotByStartTime(restaurant, slotStart);
         assertEquals(expectedPersonnelCount, slot.getNumberOfPersonnel());
     }
 
 
-
     @And("Jeanne wants to allocate {int} personnel to the slot starting at {string}")
     public void jeanneWantsToAllocatePersonnelToTheSlotStartingAt(int numberOfPersonnel, String slotStartingTime) {
-        
+
     }
 
-    @When("Jeanne tries to allocate {int} personnel to this slot")
-    public void jeanneTriesToAllocatePersonnelToThisSlot(int newNumberOfPersonnel) {
-        Slot slot = findSlotByStartTime(restaurant,"2024-10-08 14:00");
+    @When("Jeanne tries to allocate {int} personnel to the slot starting at {string}")
+    public void jeanneTriesToAllocatePersonnelToThisSlot(int newNumberOfPersonnel, String slotStartingTime) {
+        LocalDateTime slotStart = LocalDateTime.parse(slotStartingTime, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+        Slot slot = RestaurantServiceManager.getInstance().findSlotByStartTime(restaurant, slotStart);
         assertThrows(IllegalArgumentException.class, () -> restaurantManager.updateNumberOfPersonnel(slot, newNumberOfPersonnel));
     }
 
-    @Then("Jeanne see that it is impossible")
-    public void jeanneWillSeeThatItIsImpossible() {
-        // Logique implémentée dans le when
+    @Then("Jeanne will see that it is impossible with starting slot at {string}")
+    public void jeanneWillSeeThatItIsImpossible(String slotStartingTime) {
+        LocalDateTime slotStart = LocalDateTime.parse(slotStartingTime, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+        Slot slot = RestaurantServiceManager.getInstance().findSlotByStartTime(restaurant, slotStart);
+        assertNull(slot);
     }
 
     @Given("a slot of {int} minutes is created")
     public void aSlotOfMinutesIsCreated(int duration) {
-        slot = new Slot(0,0,LocalDateTime.now(),0);
+        slot = new Slot(LocalDateTime.now(), 0);
     }
 
     @When("Jeanne allocates {int} personnel to this slot")
     public void jeanneAllocatesPersonnelToThisSlot(int personnel) {
-        restaurantManager.updateNumberOfPersonnel(slot,personnel);
+        restaurantManager.updateNumberOfPersonnel(slot, personnel);
     }
 
     @Then("the maximum capacity for the slot should be {int} seconds")
     public void theMaximumCapacityForTheSlotShouldBeMinutes(int duration) {
-        assertEquals(slot.getMaxCapacity(),duration);
+        assertEquals(slot.getMaxCapacity(), duration);
     }
 
 
     @And("the restaurant receives an order with a {string} at {string}")
     public void jeanneReceivesAnOrderWithAAt(String menuItem, String slotHours) {
         selectedItem = restaurant.getMenu().findItemByName(menuItem);
-        slot = findSlotByStartTime(restaurant,slotHours);
+        LocalDateTime slotStart = LocalDateTime.parse(slotHours, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+        slot = RestaurantServiceManager.getInstance().findSlotByStartTime(restaurant, slotStart);
+        slot.setNumberOfPersonnel(1);
     }
 
     @When("the restaurant adds {string} to this slot")
@@ -209,13 +215,13 @@ public class ManageRestaurantStepDef {
 
     @Then("it would be add to the next slot at {string} with a capacity of {int}")
     public void itWouldBeAddToTheNextSlotAt(String expectedSlotAllocated, int itemCapacity) {
-        assertFalse(slot.UpdateSlotCapacity(selectedItem));
-        Slot newAllocatedSLot = findSlotByStartTime(restaurant,expectedSlotAllocated);
-        assertEquals(itemCapacity, newAllocatedSLot.getCurrentCapacity());
+        LocalDateTime slotStart = LocalDateTime.parse(expectedSlotAllocated, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+        slot = RestaurantServiceManager.getInstance().findSlotByStartTime(restaurant, slotStart);
+        assertEquals(itemCapacity, slot.getCurrentCapacity());
     }
 
     @Then("the item is not added by the restaurant")
     public void theItemIsNotAddedByTheRestaurant() {
-        assertFalse(restaurant.addMenuItemToSlot(slot,selectedItem));
+        assertFalse(restaurant.addMenuItemToSlot(slot, selectedItem));
     }
 }

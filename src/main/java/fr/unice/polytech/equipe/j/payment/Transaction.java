@@ -1,7 +1,7 @@
 package fr.unice.polytech.equipe.j.payment;
 
 import fr.unice.polytech.equipe.j.order.Order;
-import fr.unice.polytech.equipe.j.user.ConnectedUser;
+import fr.unice.polytech.equipe.j.user.CampusUser;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,20 +13,25 @@ public class Transaction {
         observers.add(observer);
     }
 
-    private final ConnectedUser user;
+    public void removeObserver(CheckoutObserver observer) {
+        observers.remove(observer);
+    }
 
-    public Transaction(ConnectedUser user) {
+    private final CampusUser user;
+
+    public Transaction(CampusUser user) {
         this.user = user;
     }
 
-    public void proceedCheckout(Order order) {
-        if (user.getAccountBalance() < order.getTotalPrice()) {
-            throw new IllegalArgumentException("Insufficient funds");
-        }
-        user.setAccountBalance(user.getAccountBalance() - order.getTotalPrice());
-
+    public void proceedCheckout(Order order, double price) throws IllegalArgumentException {
+        // TODO: Logic of the payment
         for (CheckoutObserver observer : observers) {
-            observer.notifyCheckoutSuccess(order);
+            // Call the restaurant and the user so the restaurant set the order as paid and the user can see the order uuid in his history
+            observer.orderPaid(order);
         }
+    }
+
+    public List<CheckoutObserver> getObservers() {
+        return observers;
     }
 }

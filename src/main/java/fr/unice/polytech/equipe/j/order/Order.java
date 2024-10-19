@@ -3,22 +3,24 @@ package fr.unice.polytech.equipe.j.order;
 import fr.unice.polytech.equipe.j.restaurant.MenuItem;
 import fr.unice.polytech.equipe.j.restaurant.Restaurant;
 
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 public class Order {
-    private final UUID orderId;
+    private final UUID orderUUID = UUID.randomUUID();
     private final Restaurant restaurant;
     private final List<MenuItem> items;
     private OrderStatus status;
+    private final Clock clock;
 
-    public Order(Restaurant restaurant, UUID orderId) {
+    public Order(Restaurant restaurant, Clock clock) {
         this.restaurant = restaurant;
         items = new ArrayList<>();
         this.status = OrderStatus.PENDING;
-        this.orderId = orderId;
+        this.clock = clock;
     }
 
     public Restaurant getRestaurant() {
@@ -30,16 +32,17 @@ public class Order {
     }
 
     public void addItem(MenuItem item) {
+        if (getStatus().equals(OrderStatus.VALIDATED)) {
+            throw new IllegalStateException("Cannot add items to an order that is already in preparation.");
+        }
         items.add(item);
     }
 
     public void removeItem(MenuItem item) {
+        if (getStatus().equals(OrderStatus.VALIDATED)) {
+            throw new IllegalStateException("Cannot remove items from an order that is already in preparation.");
+        }
         items.remove(item);
-    }
-
-    // This method now calls the restaurant to calculate the total price of the order
-    public double getTotalPrice() {
-        return restaurant.calculatePrice(this);
     }
 
     public void setStatus(OrderStatus status) {
@@ -50,17 +53,20 @@ public class Order {
         return status;
     }
 
-    public UUID getOrderId() {
-        return orderId;
+    public UUID getOrderUUID() {
+        return orderUUID;
+    }
+
+    public Clock getClock() {
+        return clock;
     }
 
     @Override
     public String toString() {
         return "Order{" +
-                "orderId=" + orderId +
-                ", restaurant=" + restaurant +
+                "orderUUID=" + orderUUID +
+                ", restaurantUUID=" + restaurant +
                 ", items=" + items +
-                ", totalPrice=" + getTotalPrice() +
                 ", status=" + status +
                 '}';
     }

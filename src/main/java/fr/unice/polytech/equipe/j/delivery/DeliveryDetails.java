@@ -1,21 +1,26 @@
-package fr.unice.polytech.equipe.j.order;
+package fr.unice.polytech.equipe.j.delivery;
+
+import fr.unice.polytech.equipe.j.delivery.DeliveryLocation;
+import fr.unice.polytech.equipe.j.delivery.DeliveryLocationManager;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
 
 public class DeliveryDetails {
-    private final String deliveryLocation;
+    private final DeliveryLocation deliveryLocation;
     private Optional<LocalDateTime> deliveryTime;
 
-    public DeliveryDetails(String deliveryLocation, LocalDateTime deliveryTime) {
+    public DeliveryDetails(DeliveryLocation deliveryLocation, LocalDateTime deliveryTime) {
         if (deliveryLocation == null) {
             throw new IllegalArgumentException("The delivery location must be specified.");
         }
+        // Check that the location exists
+        DeliveryLocationManager.getInstance().findLocationByName(deliveryLocation.locationName());
         this.deliveryLocation = deliveryLocation;
-        this.deliveryTime = Optional.ofNullable(deliveryTime);
+        this.deliveryTime = deliveryTime == null ? Optional.empty() : Optional.of(deliveryTime);
     }
 
-    public String getDeliveryLocation() {
+    public DeliveryLocation getDeliveryLocation() {
         return deliveryLocation;
     }
 
