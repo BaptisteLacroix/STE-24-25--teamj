@@ -16,7 +16,7 @@ public class OrderPriceStrategyFactory {
                     .count();
 
             // map order menuItems to their prices
-            var prices = order.getItems().stream().collect(Collectors.toMap((item)->item, MenuItem::price));
+            Map<MenuItem, Double> prices = order.getItems().stream().collect(Collectors.toMap((item)->item, MenuItem::price));
             double totalPrice = prices.values().stream().mapToDouble(Double::doubleValue).sum();
 
             String description = "No discount";
@@ -38,7 +38,7 @@ public class OrderPriceStrategyFactory {
     public static OrderPriceStrategy makeGiveItemForNItems(int n) {
         return (Order order, Restaurant restaurant)-> {
             ConnectedUser user = order.getUser();
-            var prices = order.getItems().stream().collect(Collectors.toMap((item)->item, MenuItem::price));
+            Map<MenuItem, Double> prices = order.getItems().stream().collect(Collectors.toMap((item)->item, MenuItem::price));
             Map.Entry<MenuItem, Double> min = null;
             for (Map.Entry<MenuItem, Double> entry : prices.entrySet()) {
                 if (min == null || min.getValue() > entry.getValue()) {
