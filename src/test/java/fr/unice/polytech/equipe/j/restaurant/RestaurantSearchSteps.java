@@ -4,7 +4,7 @@ import fr.unice.polytech.equipe.j.delivery.DeliveryLocation;
 import fr.unice.polytech.equipe.j.delivery.DeliveryLocationManager;
 import fr.unice.polytech.equipe.j.order.DeliveryDetails;
 import fr.unice.polytech.equipe.j.order.OrderManager;
-import fr.unice.polytech.equipe.j.user.ConnectedUser;
+import fr.unice.polytech.equipe.j.user.CampusUser;
 import io.cucumber.java.Before;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
@@ -26,7 +26,7 @@ import static org.junit.Assert.assertTrue;
 public class RestaurantSearchSteps {
 
     private List<Restaurant> foundRestaurants;  // Store search results
-    private ConnectedUser user;
+    private CampusUser user;
     private List<MenuItem> menuItems = new ArrayList<>();
     private Clock clock;
 
@@ -35,7 +35,7 @@ public class RestaurantSearchSteps {
         // Initialize the list before each scenario
         foundRestaurants = new ArrayList<>();
         clock = Clock.fixed(Instant.parse("2024-10-18T12:00:00Z"), ZoneId.of("Europe/Paris"));
-        user = new ConnectedUser("email", "password", 100, new OrderManager(clock));
+        user = new CampusUser("email", "password", 100, new OrderManager(clock));
     }
 
     // When step - search for restaurants by name

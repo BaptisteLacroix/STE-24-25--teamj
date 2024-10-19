@@ -2,7 +2,7 @@ package fr.unice.polytech.equipe.j.order;
 
 import fr.unice.polytech.equipe.j.delivery.DeliveryLocation;
 import fr.unice.polytech.equipe.j.delivery.DeliveryLocationManager;
-import fr.unice.polytech.equipe.j.user.ConnectedUser;
+import fr.unice.polytech.equipe.j.user.CampusUser;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
@@ -19,7 +19,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
 
 public class GroupOrderStepDefs {
-    private ConnectedUser user;
+    private CampusUser user;
     private Clock clock;
 
     @Before
@@ -29,7 +29,7 @@ public class GroupOrderStepDefs {
 
     @Given("[GroupOrder]the user is registered")
     public void the_user_is_registered() {
-        user = new ConnectedUser("john@example.com", "password123", 100.0, new OrderManager(clock));
+        user = new CampusUser("john@example.com", "password123", 100.0, new OrderManager(clock));
     }
 
     @When("[GroupOrder]the user creates a group order with delivery location {string}")

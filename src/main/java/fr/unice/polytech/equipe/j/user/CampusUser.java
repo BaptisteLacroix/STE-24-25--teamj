@@ -14,14 +14,14 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ConnectedUser extends User implements CheckoutObserver {
+public class CampusUser extends User implements CheckoutObserver {
     private final Transaction transaction;
     private final List<Order> ordersHistory = new ArrayList<>();
     private Order currentOrder;
     private GroupOrder currentGroupOrder;
     private final OrderManager orderManager;
 
-    public ConnectedUser(String email, String password, double accountBalance, OrderManager orderManager) {
+    public CampusUser(String email, String password, double accountBalance, OrderManager orderManager) {
         super(email, password, accountBalance);
         transaction = new Transaction(this);
         transaction.addObserver(this);

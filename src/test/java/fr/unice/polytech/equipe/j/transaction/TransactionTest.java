@@ -3,7 +3,7 @@ package fr.unice.polytech.equipe.j.transaction;
 import fr.unice.polytech.equipe.j.order.Order;
 import fr.unice.polytech.equipe.j.payment.CheckoutObserver;
 import fr.unice.polytech.equipe.j.payment.Transaction;
-import fr.unice.polytech.equipe.j.user.ConnectedUser;
+import fr.unice.polytech.equipe.j.user.CampusUser;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -19,7 +19,7 @@ import static org.mockito.Mockito.when;
 
 class TransactionTest {
 
-    private ConnectedUser user;
+    private CampusUser user;
     private Order order;
     private Transaction transaction;
     private CheckoutObserver observer1;
@@ -27,7 +27,7 @@ class TransactionTest {
 
     @BeforeEach
     void setUp() {
-        user = mock(ConnectedUser.class);
+        user = mock(CampusUser.class);
         order = mock(Order.class);
         observer1 = mock(CheckoutObserver.class);
         observer2 = mock(CheckoutObserver.class);

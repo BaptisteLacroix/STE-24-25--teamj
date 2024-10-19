@@ -5,7 +5,7 @@ import fr.unice.polytech.equipe.j.delivery.DeliveryLocationManager;
 import fr.unice.polytech.equipe.j.restaurant.MenuItem;
 import fr.unice.polytech.equipe.j.restaurant.Restaurant;
 import fr.unice.polytech.equipe.j.restaurant.RestaurantServiceManager;
-import fr.unice.polytech.equipe.j.user.ConnectedUser;
+import fr.unice.polytech.equipe.j.user.CampusUser;
 import io.cucumber.java.Before;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
@@ -24,9 +24,9 @@ import static org.junit.Assert.assertThrows;
 
 public class CompleteOrderStepDefs {
     private Clock clock;
-    private ConnectedUser user1;
-    private ConnectedUser user2;
-    private ConnectedUser user3;
+    private CampusUser user1;
+    private CampusUser user2;
+    private CampusUser user3;
     private GroupOrder groupOrder;
     private Restaurant restaurant;
 
@@ -38,7 +38,7 @@ public class CompleteOrderStepDefs {
 
     @Given("the first user creates a group order with delivery location {string} and delivery time of {int}:{int} PM")
     public void the_first_user_creates_a_group_order_with_delivery_location_and_delivery_time_of_pm(String string, Integer int1, Integer int2) {
-        user1 = new ConnectedUser("user1@user", "password123", 100.0, new OrderManager(clock));
+        user1 = new CampusUser("user1@user", "password123", 100.0, new OrderManager(clock));
         DeliveryLocation location = DeliveryLocationManager.getInstance().findLocationByName(string);
         DeliveryDetails deliveryDetails = new DeliveryDetails(location, LocalDateTime.now(clock).withHour(int1).withMinute(int2));
         user1.createGroupOrder(deliveryDetails);
@@ -86,7 +86,7 @@ public class CompleteOrderStepDefs {
 
     @Given("The second user joins the group order")
     public void the_second_user_joins_the_group_order() {
-        user2 = new ConnectedUser("user2@user", "password", 100.0, new OrderManager(clock));
+        user2 = new CampusUser("user2@user", "password", 100.0, new OrderManager(clock));
         user2.joinGroupOrder(groupOrder);
         assertNotNull(user2.getCurrentGroupOrder());
     }
@@ -111,7 +111,7 @@ public class CompleteOrderStepDefs {
 
     @Given("The third user joins the group order")
     public void the_third_user_joins_the_group_order() {
-        user3 = new ConnectedUser("user3@user", "password", 100.0, new OrderManager(clock));
+        user3 = new CampusUser("user3@user", "password", 100.0, new OrderManager(clock));
         user3.joinGroupOrder(groupOrder);
     }
 
@@ -161,7 +161,7 @@ public class CompleteOrderStepDefs {
 
     @Given("The third user tries to join the group order")
     public void the_third_user_tries_to_join_the_group_order() {
-        user3 = new ConnectedUser("user@user", "password", 100.0, new OrderManager(clock));
+        user3 = new CampusUser("user@user", "password", 100.0, new OrderManager(clock));
         assertThrows(IllegalArgumentException.class, () -> user3.joinGroupOrder(groupOrder));
     }
 
@@ -177,7 +177,7 @@ public class CompleteOrderStepDefs {
 
     @Given("the first user creates an individual order with the restaurant {string} and with delivery location {string} and delivery time of {int}:{int} PM")
     public void the_first_user_creates_an_individual_order_with_the_restaurant_and_with_delivery_location_and_delivery_time_of_pm(String string, String string2, Integer int1, Integer int2) {
-        user1 = new ConnectedUser("user1@user", "password", 100.0, new OrderManager(clock));
+        user1 = new CampusUser("user1@user", "password", 100.0, new OrderManager(clock));
         restaurant = RestaurantServiceManager.getInstance().searchByName(string).getFirst();
         DeliveryLocation location = DeliveryLocationManager.getInstance().findLocationByName(string2);
         DeliveryDetails deliveryDetails = new DeliveryDetails(location, LocalDateTime.now(clock).withHour(int1).withMinute(int2));

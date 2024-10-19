@@ -3,7 +3,7 @@ package fr.unice.polytech.equipe.j.order;
 import fr.unice.polytech.equipe.j.payment.Transaction;
 import fr.unice.polytech.equipe.j.restaurant.MenuItem;
 import fr.unice.polytech.equipe.j.restaurant.Restaurant;
-import fr.unice.polytech.equipe.j.user.ConnectedUser;
+import fr.unice.polytech.equipe.j.user.CampusUser;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
@@ -140,10 +140,10 @@ public class OrderManager {
         return totalPrice;
     }
 
-    public void joinGroupOrder(GroupOrder groupOrder, ConnectedUser connectedUser) {
+    public void joinGroupOrder(GroupOrder groupOrder, CampusUser campusUser) {
         if (groupOrder.getStatus() != OrderStatus.PENDING) {
             throw new IllegalArgumentException("Cannot join group order that is not pending.");
         }
-        connectedUser.setGroupOrder(groupOrder);
+        campusUser.setGroupOrder(groupOrder);
     }
 }

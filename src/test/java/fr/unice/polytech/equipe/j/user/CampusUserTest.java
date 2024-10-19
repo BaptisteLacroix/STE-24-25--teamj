@@ -25,9 +25,9 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-class ConnectedUserTest {
+class CampusUserTest {
 
-    private ConnectedUser connectedUser;
+    private CampusUser campusUser;
     private OrderManager mockOrderManager;
     private Restaurant mockRestaurant;
     private MenuItem mockMenuItem;
@@ -52,7 +52,7 @@ class ConnectedUserTest {
         when(mockRestaurant.isOrderValid(any(Order.class))).thenReturn(true);
 
         // Create ConnectedUser with the mock OrderManager
-        connectedUser = new ConnectedUser("user@example.com", "password123", 100.0, mockOrderManager);
+        campusUser = new CampusUser("user@example.com", "password123", 100.0, mockOrderManager);
 
         // Mock OrderManager behaviors
         when(mockOrderManager.startSingleOrder(mockRestaurant, mockDeliveryDetails)).thenReturn(mockIndividualOrder);
@@ -62,29 +62,29 @@ class ConnectedUserTest {
     @Test
     void testStartIndividualOrder() {
         // Act
-        connectedUser.startIndividualOrder(mockRestaurant, mockDeliveryDetails);
+        campusUser.startIndividualOrder(mockRestaurant, mockDeliveryDetails);
 
         // Assert
-        assertNotNull(connectedUser.getCurrentOrder(), "Order should be initialized");
+        assertNotNull(campusUser.getCurrentOrder(), "Order should be initialized");
     }
 
     @Test
     void testStartGroupOrder() {
         // Act
-        connectedUser.createGroupOrder(mockDeliveryDetails);
+        campusUser.createGroupOrder(mockDeliveryDetails);
 
         // Assert
-        assertNotNull(connectedUser.getCurrentGroupOrder(), "Group order should be initialized");
+        assertNotNull(campusUser.getCurrentGroupOrder(), "Group order should be initialized");
     }
 
     @Test
     void testAddItemToOrder() {
         // Arrange
-        connectedUser.startIndividualOrder(mockRestaurant, mockDeliveryDetails);
+        campusUser.startIndividualOrder(mockRestaurant, mockDeliveryDetails);
         when(mockDeliveryDetails.getDeliveryTime()).thenReturn(java.util.Optional.of(java.time.LocalDateTime.now(clock).plusHours(1)));
 
         // Act
-        connectedUser.addItemToOrder(mockRestaurant, mockMenuItem);
+        campusUser.addItemToOrder(mockRestaurant, mockMenuItem);
 
         // Assert
         verify(mockOrderManager, times(1)).addItemToOrder(any(IndividualOrder.class), eq(mockRestaurant), eq(mockMenuItem));
@@ -96,10 +96,10 @@ class ConnectedUserTest {
         IndividualOrder individualOrder = mock(IndividualOrder.class);
         when(mockOrderManager.startSingleOrder(mockRestaurant, mockDeliveryDetails)).thenReturn(individualOrder);
 
-        connectedUser.startIndividualOrder(mockRestaurant, mockDeliveryDetails);
+        campusUser.startIndividualOrder(mockRestaurant, mockDeliveryDetails);
 
         // Act
-        connectedUser.validateOrder();
+        campusUser.validateOrder();
 
         // Assert
         verify(mockOrderManager, times(1)).validateOrder(any(Transaction.class), eq(individualOrder));
@@ -108,25 +108,25 @@ class ConnectedUserTest {
     @Test
     void testOrderPaid() {
         // Arrange
-        connectedUser.startIndividualOrder(mockRestaurant, mockDeliveryDetails);
+        campusUser.startIndividualOrder(mockRestaurant, mockDeliveryDetails);
         Order mockPaidOrder = mock(Order.class);
 
         // Act
-        connectedUser.orderPaid(mockPaidOrder);
+        campusUser.orderPaid(mockPaidOrder);
 
         // Assert
-        assertEquals(1, connectedUser.getOrdersHistory().size(), "Order history should have one entry after payment");
-        assertTrue(connectedUser.getOrdersHistory().contains(mockPaidOrder), "Order history should contain the paid order");
+        assertEquals(1, campusUser.getOrdersHistory().size(), "Order history should have one entry after payment");
+        assertTrue(campusUser.getOrdersHistory().contains(mockPaidOrder), "Order history should contain the paid order");
     }
 
     @Test
     void testToString() {
         // Arrange
-        connectedUser.startIndividualOrder(mockRestaurant, mockDeliveryDetails);
+        campusUser.startIndividualOrder(mockRestaurant, mockDeliveryDetails);
 
         // Act
-        connectedUser.orderPaid(mockOrder);
-        String result = connectedUser.toString();
+        campusUser.orderPaid(mockOrder);
+        String result = campusUser.toString();
 
         // Assert
         assertTrue(result.contains("1 orders"), "ToString should reflect the number of orders in the history");

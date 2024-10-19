@@ -5,7 +5,7 @@ import fr.unice.polytech.equipe.j.delivery.DeliveryLocationManager;
 import fr.unice.polytech.equipe.j.restaurant.MenuItem;
 import fr.unice.polytech.equipe.j.restaurant.Restaurant;
 import fr.unice.polytech.equipe.j.restaurant.RestaurantServiceManager;
-import fr.unice.polytech.equipe.j.user.ConnectedUser;
+import fr.unice.polytech.equipe.j.user.CampusUser;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
@@ -24,8 +24,8 @@ import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 public class ValidateGroupOrderStepDefs {
-    private ConnectedUser groupOrderCreator;
-    private ConnectedUser groupOrderJoiner;
+    private CampusUser groupOrderCreator;
+    private CampusUser groupOrderJoiner;
     private GroupOrder groupOrder;
     private Clock clock;
 
@@ -36,8 +36,8 @@ public class ValidateGroupOrderStepDefs {
 
     @Given("[ValidateGroupOrder]the user is registered")
     public void validate_group_order_the_user_is_registered() {;
-        groupOrderCreator = new ConnectedUser("test@test.com", "password", 100, new OrderManager(clock));
-        groupOrderJoiner = new ConnectedUser("test2@test.com", "password", 100, new OrderManager(clock));
+        groupOrderCreator = new CampusUser("test@test.com", "password", 100, new OrderManager(clock));
+        groupOrderJoiner = new CampusUser("test2@test.com", "password", 100, new OrderManager(clock));
     }
 
     @Given("[ValidateGroupOrder]the user creates a group order with delivery location {string} and delivery time of {int}:{int} PM")

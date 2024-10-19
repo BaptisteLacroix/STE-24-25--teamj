@@ -1,12 +1,10 @@
 package fr.unice.polytech.equipe.j.payment;
 
 import fr.unice.polytech.equipe.j.order.Order;
-import fr.unice.polytech.equipe.j.restaurant.RestaurantServiceManager;
-import fr.unice.polytech.equipe.j.user.ConnectedUser;
+import fr.unice.polytech.equipe.j.user.CampusUser;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 public class Transaction {
     private final List<CheckoutObserver> observers = new ArrayList<>();
@@ -19,9 +17,9 @@ public class Transaction {
         observers.remove(observer);
     }
 
-    private final ConnectedUser user;
+    private final CampusUser user;
 
-    public Transaction(ConnectedUser user) {
+    public Transaction(CampusUser user) {
         this.user = user;
     }
 
