@@ -28,22 +28,60 @@ Feature: Update restaurant opening hours and menu offerings
 
   Scenario: Update the number of personnel for a slot
     Given the restaurant has slots from "2024-10-08 12:00" to "2024-10-08 14:00"
-      | slotStart           | currentCapacity | maxCapacity | personnel |
-      | 2024-10-08 12:00    | 0               | 50          | 4         |
-      | 2024-10-08 12:30    | 0               | 50          | 4         |
-      | 2024-10-08 13:00    | 0               | 50          | 4         |
-      | 2024-10-08 13:30    | 0               | 50          | 4         |
+      | slotStart        | currentCapacity | maxCapacity | personnel |
+      | 2024-10-08 12:00 | 0               | 7200        | 4         |
+      | 2024-10-08 12:30 | 0               | 7200        | 4         |
+      | 2024-10-08 13:00 | 0               | 7200        | 4         |
+      | 2024-10-08 13:30 | 0               | 7200        | 4         |
     And Jeanne wants to update the number of personnel for the slot starting at "2024-10-08 13:00"
     When the restaurant manager updates the personnel for this slot to 6
     Then the number of personnel for the slot starting at "2024-10-08 13:00" should be 6
 
+
+Scenario: Calculate production capacity
+  Given a slot of 30 minutes is created
+  When Jeanne allocates 5 personnel to this slot
+  Then the maximum capacity for the slot should be 9000 seconds
+
+Scenario: Update slot capacity when adding a new item
+  Given the restaurant has slots from "2024-10-08 12:00" to "2024-10-08 14:00"
+    | slotStart        | currentCapacity | maxCapacity | personnel |
+    | 2024-10-08 12:00 | 0               | 7200        | 4         |
+    | 2024-10-08 12:30 | 0               | 7200        | 4         |
+    | 2024-10-08 13:00 | 0               | 7200        | 4         |
+    | 2024-10-08 13:30 | 0               | 7200        | 4         |
+  And the restaurant receives an order with a "BigMac" at "2024-10-08 12:00"
+  When the restaurant adds "BigMac" to this slot
+  Then the new current capacity of this slot should be 120
+  And the available capacity should be 7080
+
+
+Scenario: Adding an item to a full slot
+  Given the restaurant has slots from "2024-10-08 12:00" to "2024-10-08 13:00"
+    | slotStart        | currentCapacity | maxCapacity | personnel |
+    | 2024-10-08 12:00 | 7100            | 7200        | 4         |
+    | 2024-10-08 12:30 | 0               | 7200        | 4         |
+  And the restaurant receives an order with a "BigMac" at "2024-10-08 12:00"
+  When the restaurant adds "BigMac" to this slot
+  Then it would be add to the next slot at "2024-10-08 12:30" with a capacity of 120
+
+Scenario: Adding an item with no slots available
+  Given the restaurant has slots from "2024-10-08 12:00" to "2024-10-08 13:00"
+    | slotStart        | currentCapacity | maxCapacity | personnel |
+    | 2024-10-08 12:00 | 7200            | 7200        | 4         |
+    | 2024-10-08 12:30 | 7200            | 7200        | 4         |
+  And the restaurant receives an order with a "BigMac" at "2024-10-08 12:00"
+  When the restaurant adds "BigMac" to this slot
+  Then the item is not added by the restaurant
+
+
 Scenario: Allocate personnel when the restaurant is closed
   Given the restaurant has slots from "2024-10-08 12:00" to "2024-10-08 14:00"
-    | slotStart           | currentCapacity | maxCapacity | personnel |
-    | 2024-10-08 12:00    | 0               | 50          | 4         |
-    | 2024-10-08 12:30    | 0               | 50          | 4         |
-    | 2024-10-08 13:00    | 0               | 50          | 4         |
-    | 2024-10-08 13:30    | 0               | 50          | 4         |
+    | slotStart        | currentCapacity | maxCapacity | personnel |
+    | 2024-10-08 12:00 | 0               | 7200        | 4         |
+    | 2024-10-08 12:30 | 0               | 7200        | 4         |
+    | 2024-10-08 13:00 | 0               | 7200        | 4         |
+    | 2024-10-08 13:30 | 0               | 7200        | 4         |
   And Jeanne wants to allocate 4 personnel to the slot starting at "2024-10-08 14:00"
   When Jeanne tries to allocate 4 personnel to this slot
-  Then Jeanne will see that it is impossible
+  Then Jeanne see that it is impossible

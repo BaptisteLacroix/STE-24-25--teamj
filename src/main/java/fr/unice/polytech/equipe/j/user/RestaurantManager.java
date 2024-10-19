@@ -39,7 +39,7 @@ public class RestaurantManager extends User {
     }
 
     // Ajouter un nouvel élément au menu via le restaurant
-    public void addMenuItem(String itemName, String description, int prepTimeInSeconds, int price, int capacity) {
+    public void addMenuItem(String itemName, int prepTimeInSeconds, int price) {
         MenuItem newItem = new MenuItem(itemName, prepTimeInSeconds, price);
         this.restaurant.getMenu().addMenuItem(newItem);
     }
@@ -60,6 +60,9 @@ public class RestaurantManager extends User {
 
     // Mettre à jour le nombre de personnel pour un slot spécifique
     public void updateNumberOfPersonnel(Slot slotToUpdate, int numberOfPersonnel) {
+        if (slotToUpdate == null) {
+            throw new IllegalArgumentException("Slot does not exist. Cannot update personnel.");
+        }
         this.restaurant.setNumberOfPersonnel(slotToUpdate,numberOfPersonnel);
     }
 }
