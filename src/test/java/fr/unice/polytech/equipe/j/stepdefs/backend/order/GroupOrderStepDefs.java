@@ -21,7 +21,7 @@ public class GroupOrderStepDefs {
     private RestaurantProxy restaurantProxy;
 
     public void setUp() {
-        Restaurant restaurant = new Restaurant("McDonald's", LocalDateTime.of(2021, 1, 1, 8, 0), LocalDateTime.of(2021, 1, 1, 22, 0), null);
+        Restaurant restaurant = new Restaurant("McDonald's",null, LocalDateTime.of(2021, 1, 1, 8, 0), LocalDateTime.of(2021, 1, 1, 22, 0), null);
         restaurantProxy = new RestaurantProxy(List.of(restaurant));
     }
 

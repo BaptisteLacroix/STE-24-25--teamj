@@ -4,6 +4,7 @@ import fr.unice.polytech.equipe.j.order.DeliverableOrder;
 import fr.unice.polytech.equipe.j.order.GroupOrder;
 import fr.unice.polytech.equipe.j.order.Order;
 import fr.unice.polytech.equipe.j.order.OrderBuilder;
+import fr.unice.polytech.equipe.j.slot.Slot;
 import fr.unice.polytech.equipe.j.user.ConnectedUser;
 
 import java.time.LocalDateTime;
@@ -18,16 +19,19 @@ public class Restaurant {
     private final String restaurantName;
     private LocalDateTime openingTime;
     private LocalDateTime closingTime;
+    private List<Slot> slots;
     private Menu menu;
     private OrderPriceStrategy orderPriceStrategy;
     private final List<Order> orders = new ArrayList<>();
+    private int numberOfPersonnel;
     private List<Order> orderHistory = new ArrayList<>();
 
-    public Restaurant(String name, LocalDateTime openingTime, LocalDateTime closingTime, Menu menu) {
+    public Restaurant(String name, List<Slot> slots, LocalDateTime openingTime, LocalDateTime closingTime, Menu menu) {
         this.restaurantName = name;
         this.openingTime = openingTime;
         this.closingTime = closingTime;
         this.menu = menu;
+        this.slots = slots;
         this.orderPriceStrategy = OrderPriceStrategyFactory.makeGiveItemForNItems(8);
     }
 
@@ -45,6 +49,10 @@ public class Restaurant {
 
     public Menu getMenu() {
         return menu;
+    }
+
+    public void setMenu(Menu menu){
+        this.menu = menu;
     }
 
     public String getRestaurantName() {
@@ -96,7 +104,7 @@ public class Restaurant {
 
     public double calculatePrice(Order order) {
         return order.getItems().stream()
-                .mapToDouble(MenuItem::price)
+                .mapToDouble(MenuItem::getPrice)
                 .sum();
     }
 
@@ -111,7 +119,7 @@ public class Restaurant {
         if (isItemAvailable(item)) {
             orderBuilder.addMenuItem(item);
         } else {
-            throw new IllegalArgumentException("MenuItem " + item.name() + " is not available.");
+            throw new IllegalArgumentException("MenuItem " + item.getName() + " is not available.");
         }
     }
 
@@ -121,6 +129,16 @@ public class Restaurant {
 
     public void addOrder(Order order) {
         orders.add(order);
+    }
+
+    public void setNumberOfPersonnel(Slot slotToUpdate, int numberOfPersonnel) {
+         if (slotToUpdate != null) {
+            slotToUpdate.setNumberOfPersonnel(numberOfPersonnel);
+        }
+    }
+
+    public int getNumberOfPersonnel() {
+        return numberOfPersonnel;
     }
 
     public void addOrderToHistory(Order order) {

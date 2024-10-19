@@ -38,6 +38,17 @@ public class RestaurantSearchSteps {
         }
     }
 
+    // Helper method to create a Menu from a string of menu items
+    private Menu createMenuFromString(String menuItems) {
+        Menu.MenuBuilder builder = new Menu.MenuBuilder();
+
+        for (String item : menuItems.split("\", ")) {
+            String[] parts = item.replace("\"", "").split(", ");
+            builder.addMenuItem(new MenuItem(parts[0],0,Double.parseDouble(parts[1])));
+        }
+        return builder.build();
+    }
+
     // When step - search for restaurants by name
     @When("I search for restaurants by name {string}")
     public void searchForRestaurantsByName(String restaurantName) {
@@ -74,9 +85,9 @@ public class RestaurantSearchSteps {
 
             // Verify that the found restaurant's menu matches the expected menu
             for (MenuItem expectedMenuItem : expectedMenu.getItems()) {
-                assertTrue("Menu item not found or price mismatch for: " + expectedMenuItem.name(),
+                assertTrue("Menu item not found or price mismatch for: " + expectedMenuItem.getName(),
                         menuItems.stream()
-                                .anyMatch(item -> item.name().equals(expectedMenuItem.name()) && item.price() == expectedMenuItem.price())
+                                .anyMatch(item -> item.getName().equals(expectedMenuItem.getName()) && item.getPrice() == expectedMenuItem.getPrice())
                 );
             }
         }
