@@ -55,7 +55,7 @@ public class RestaurantProxy {
         Restaurant restaurant = getRestaurant(restaurantId);
         OrderBuilder orderBuilder = getOrderBuilder(orderId);
         if (!restaurant.isItemAvailable(menuItem)) {
-            throw new IllegalArgumentException("Item " + menuItem.name() + " is not available.");
+            throw new IllegalArgumentException("Item " + menuItem.getName() + " is not available.");
         }
         restaurant.addItemToOrder(orderBuilder, menuItem);
     }

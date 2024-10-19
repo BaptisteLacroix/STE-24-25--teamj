@@ -31,7 +31,7 @@ public class RestaurantSearchSteps {
             String name = data.get("name");
             String menuItems = data.get("menu items");
             Menu menu = Utils.createMenuFromString(menuItems);
-            Restaurant restaurant = new Restaurant(name, null, null, menu);
+            Restaurant restaurant = new Restaurant(name, List.of(), null, null, menu);
             restaurants.add(restaurant);
             restaurantServiceManager.addRestaurant(restaurant);
             System.out.println(restaurant);

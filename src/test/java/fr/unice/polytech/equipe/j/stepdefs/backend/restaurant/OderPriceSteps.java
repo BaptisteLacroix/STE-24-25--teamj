@@ -34,8 +34,10 @@ public class OderPriceSteps {
 //                var menuItem = new MenuItem(item, price);
 //                menuItems.add(menuItem);
 //            }
+
         this.restaurant = new Restaurant(
                 row.getFirst(),
+                List.of(),
                 LocalDateTime.of(2024, 10, 1, 9, 0),
                 LocalDateTime.of(2024, 10, 1, 21, 0),
                 Utils.createMenuFromString(row.getLast())
@@ -71,7 +73,7 @@ public class OderPriceSteps {
         for (int i = 1; i <= this.indivOrders.size(); i++) {
             var order = indivOrders.get(i-1);
             // manually calculate order totalPrice and reduced price
-            Map<MenuItem, Double> prices = order.getItems().stream().collect(Collectors.toMap((item)->item, MenuItem::price));
+            Map<MenuItem, Double> prices = order.getItems().stream().collect(Collectors.toMap((item)->item, MenuItem::getPrice));
             double totalPrice = prices.values().stream().mapToDouble(Double::doubleValue).sum();
             double reducedPrice = i%this.orderReductionNumber == 0 ? totalPrice - (totalPrice * this.reductionPercentage/100.0) : totalPrice;
             OrderPrice processOrderPrice = restaurant.processOrderPrice(order);
@@ -100,7 +102,7 @@ public class OderPriceSteps {
     public void theLessExpensiveItemFromTheOrderShouldHaveAPriceOf(double price) {
         // get first
         var lowestItem = this.orderWithMoreThatNItems.getItems().stream()
-                .min(Comparator.comparingDouble(MenuItem::price)).orElseThrow();
+                .min(Comparator.comparingDouble(MenuItem::getPrice)).orElseThrow();
 
         OrderPrice processOrderPrice = restaurant.processOrderPrice(this.orderWithMoreThatNItems);
         assertEquals(processOrderPrice.newPrices().get(lowestItem), price);
@@ -120,7 +122,7 @@ public class OderPriceSteps {
     public void theLessExpensiveItemFromTheOrderShouldNotHaveAPriceOf(double price) {
         // get first
         var lowestItem = this.orderWithLessThatNItems.getItems().stream()
-                .min(Comparator.comparingDouble(MenuItem::price)).orElseThrow();
+                .min(Comparator.comparingDouble(MenuItem::getPrice)).orElseThrow();
 
         OrderPrice processOrderPrice = restaurant.processOrderPrice(this.orderWithLessThatNItems);
         assertNotEquals(processOrderPrice.newPrices().get(lowestItem), price);

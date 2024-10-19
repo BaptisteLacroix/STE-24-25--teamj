@@ -76,7 +76,7 @@ public class RestaurantMenuSteps {
 
             // verifier  that the menuItems names' match
             assertTrue(menuItems.stream()
-                    .anyMatch(item -> item.name().equals(name) ));
+                    .anyMatch(item -> item.getName().equals(name) ));
         }
     }
 
@@ -94,7 +94,7 @@ public class RestaurantMenuSteps {
 
             // verification finale
             assertTrue(menuItems.stream()
-                    .anyMatch(item -> item.name().equals(name) && item.price() == price));
+                    .anyMatch(item -> item.getName().equals(name) && item.getPrice() == price));
         }
     }
 

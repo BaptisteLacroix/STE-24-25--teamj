@@ -35,8 +35,9 @@ public class Restaurant {
         this.orderPriceStrategy = OrderPriceStrategyFactory.makeGiveItemForNItems(8);
     }
 
-    public Restaurant(String name, LocalDateTime openingTime, LocalDateTime closingTime, Menu menu, OrderPriceStrategy orderPriceStrategy) {
+    public Restaurant(String name, List<Slot> slots, LocalDateTime openingTime, LocalDateTime closingTime, Menu menu, OrderPriceStrategy orderPriceStrategy) {
         this.restaurantName = name;
+        this.slots = slots;
         this.openingTime = openingTime;
         this.closingTime = closingTime;
         this.menu = menu;
@@ -77,10 +78,6 @@ public class Restaurant {
 
     public List<Order> getOrders() {
         return orders;
-    }
-
-    public void setMenu(Menu menu) {
-        this.menu = menu;
     }
 
     public OrderPriceStrategy getOrderPriceStrategy() {

@@ -2,7 +2,7 @@ Feature: Order Price
   Background:
     Given the following restaurant exists:
       | name               | menu items                                          |
-      | P.diddy restaurant | "Ariana Grande Frite, 11.99", "Lil Nuggets X, 9.99", "Will Smith Shake, 10.49", "Kanye West Burger, 12.99", "Drake Salad, 8.49", "Beyonce Pizza, 14.99", "Rihanna Taco, 7.99"  |
+      | P.diddy restaurant | "Ariana Grande Frite, 11.99, 3", "Lil Nuggets X, 9.99, 4", "Will Smith Shake, 10.49, 2", "Kanye West Burger, 12.99, 5", "Drake Salad, 8.49, 3", "Beyonce Pizza, 14.99, 5", "Rihanna Taco, 7.99, 4"  |
 
   Scenario: Add a n% discount every k commands
     Given The restaurant wants to give a 30% discount every 3 command for each user
