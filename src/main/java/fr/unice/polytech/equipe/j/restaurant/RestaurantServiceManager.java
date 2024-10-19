@@ -1,7 +1,10 @@
 package fr.unice.polytech.equipe.j.restaurant;
 
+import fr.unice.polytech.equipe.j.slot.Slot;
+
 import java.time.Clock;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -111,6 +114,14 @@ public class RestaurantServiceManager {
             return false;
         }
         return time.isAfter(restaurant.getOpeningTime().get()) && time.isBefore(restaurant.getClosingTime().get());
+    }
+
+    public Slot findSlotByStartTime(Restaurant restaurant, LocalDateTime slotStartTime) {
+        // Recherche le slot correspondant dans les slots du restaurant
+        return restaurant.getSlots().stream()
+                .filter(slot -> slot.getOpeningDate().equals(slotStartTime))
+                .findFirst()
+                .orElse(null);
     }
 
     public List<Restaurant> getRestaurants() {

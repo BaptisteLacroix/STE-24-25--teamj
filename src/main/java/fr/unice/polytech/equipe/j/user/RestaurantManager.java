@@ -5,6 +5,7 @@ import fr.unice.polytech.equipe.j.restaurant.Restaurant;
 import fr.unice.polytech.equipe.j.slot.Slot;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class RestaurantManager extends User {
     private Restaurant restaurant;
@@ -60,6 +61,9 @@ public class RestaurantManager extends User {
 
     // Mettre à jour le nombre de personnel pour un slot spécifique
     public void updateNumberOfPersonnel(Slot slotToUpdate, int numberOfPersonnel) {
+        if (slotToUpdate == null) {
+            throw new IllegalArgumentException("Slot does not exist. Cannot update personnel.");
+        }
         this.restaurant.setNumberOfPersonnel(slotToUpdate,numberOfPersonnel);
     }
 }

@@ -312,6 +312,19 @@ public class Restaurant implements CheckoutObserver {
         return getMaxCapacity(); // Dynamically return the current max capacity based on the slots
     }
 
+    public boolean addMenuItemToSlot(Slot slot, MenuItem item) {
+        if (!slot.UpdateSlotCapacity(item)) {
+            int index = slots.indexOf(slot);
+            if (index != -1 && index < slots.size() - 1) {
+                Slot nextSlot = slots.get(index + 1);
+                return addMenuItemToSlot(nextSlot, item);
+            } else {
+                return false;  // Plus de slots disponibles
+            }
+        }
+        return true;  // Slot disponible
+    }
+
     public int getNumberOfPersonnel() {
         return numberOfPersonnel;
     }
