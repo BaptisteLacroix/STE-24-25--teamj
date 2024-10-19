@@ -18,7 +18,10 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class RestaurantTest {
 
@@ -192,5 +195,27 @@ class RestaurantTest {
 
         // Ensure that no further items are added to the order
         assertEquals(0, slot.getCurrentCapacity());
+    }
+
+    @Test
+    void testCancelNonExistentOrder() {
+        // Create an order that hasn't been added to the system
+        Order nonExistentOrder = new Order(restaurant, clock);
+        nonExistentOrder.addItem(item1); // Adding a valid item
+
+        // Attempt to cancel the non-existent order
+        restaurant.cancelOrder(nonExistentOrder);
+
+        // Ensure that the order has not been added to the system
+        assertFalse(restaurant.getPendingOrders().contains(nonExistentOrder));
+
+        // Ensure no changes have been made to the slot's capacity
+        assertEquals(slot.getMaxCapacity(), slot.getAvailableCapacity());
+
+        // Ensure not order history has been created
+        assertFalse(restaurant.getOrdersHistory().contains(nonExistentOrder));
+
+        // Ensure the order status has not been changed
+        assertEquals(OrderStatus.PENDING, nonExistentOrder.getStatus());
     }
 }

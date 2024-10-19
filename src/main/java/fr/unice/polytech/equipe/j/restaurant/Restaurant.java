@@ -116,12 +116,12 @@ public class Restaurant implements CheckoutObserver {
      * @param order the order to cancel
      */
     public void cancelOrder(Order order) {
-        pendingOrders.remove(order);
-
-        // Adjust the capacity for each slot when an order is canceled
-        for (Slot slot : slots) {
-            for (MenuItem item : order.getItems()) {
-                slot.addCapacity(-item.getPrepTime());
+        if (pendingOrders.remove(order)) {
+            // Adjust the capacity for each slot when an order is canceled
+            for (Slot slot : slots) {
+                for (MenuItem item : order.getItems()) {
+                    slot.addCapacity(-item.getPrepTime());
+                }
             }
         }
     }
