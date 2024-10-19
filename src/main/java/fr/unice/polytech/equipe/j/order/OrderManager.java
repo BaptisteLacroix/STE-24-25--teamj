@@ -1,6 +1,9 @@
 package fr.unice.polytech.equipe.j.order;
 
 import fr.unice.polytech.equipe.j.delivery.DeliveryDetails;
+import fr.unice.polytech.equipe.j.payment.PaymentMethod;
+import fr.unice.polytech.equipe.j.payment.PaymentProcessor;
+import fr.unice.polytech.equipe.j.payment.PaymentProcessorFactory;
 import fr.unice.polytech.equipe.j.payment.Transaction;
 import fr.unice.polytech.equipe.j.restaurant.MenuItem;
 import fr.unice.polytech.equipe.j.restaurant.Restaurant;
@@ -13,6 +16,8 @@ import java.util.Optional;
 
 public class OrderManager {
     private final Clock clock;
+
+    private PaymentMethod preferedPaymenMethod = PaymentMethod.CREDIT_CARD;
 
     public Clock getClock() {
         return clock;
@@ -100,8 +105,16 @@ public class OrderManager {
         addItemToOrder(order, restaurant, menuItem, groupOrder.getDeliveryDetails().getDeliveryTime());
     }
 
+    public PaymentMethod getPreferedPaymenMethod() {
+        return preferedPaymenMethod;
+    }
 
-    public void validateOrder(Transaction transaction, Order order) throws IllegalArgumentException {
+    public void setPreferedPaymenMethod(PaymentMethod preferedPaymenMethod) {
+        this.preferedPaymenMethod = preferedPaymenMethod;
+    }
+
+
+    public Transaction validateOrder( Order order) throws IllegalArgumentException {
         if (order.getStatus() != OrderStatus.PENDING) {
             throw new IllegalArgumentException("Cannot validate order that is not pending.");
         }
@@ -111,9 +124,22 @@ public class OrderManager {
         if (!order.getRestaurant().isOrderValid(order)) {
             throw new IllegalArgumentException("Order is not valid.");
         }
-        transaction.addObserver(order.getRestaurant());
-        transaction.proceedCheckout(order, getTotalPrice(order));
-        transaction.removeObserver(order.getRestaurant());
+
+
+        return makePayment(getTotalPrice(order),this.preferedPaymenMethod);
+
+
+    }
+
+    public Transaction makePayment(double amount, PaymentMethod method) {
+        PaymentProcessor processor = PaymentProcessorFactory.createPaymentProcessor(method);
+        boolean success = processor.processPayment(amount);
+        if (success) {
+            String paymentMethod = method.name();
+            return  new Transaction(amount, paymentMethod, LocalDateTime.now());
+        } else {
+            return null;
+        }
     }
 
     public void validateGroupOrder(GroupOrder groupOrder) throws IllegalArgumentException {

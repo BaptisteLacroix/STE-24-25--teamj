@@ -1,37 +1,69 @@
 package fr.unice.polytech.equipe.j.payment;
 
-import fr.unice.polytech.equipe.j.order.Order;
 import fr.unice.polytech.equipe.j.user.CampusUser;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.time.LocalDateTime;
 
+/**
+ * Represents a payment transaction with details such as amount, payment method, and timestamp.
+ */
 public class Transaction {
-    private final List<CheckoutObserver> observers = new ArrayList<>();
+    private final double amount;
+    private final String paymentMethod;
+    private final LocalDateTime timestamp;
+    CampusUser user;
 
-    public void addObserver(CheckoutObserver observer) {
-        observers.add(observer);
+    /**
+     * Constructs a new Transaction with the specified amount, payment method, and timestamp.
+     *
+     * @param amount        the transaction amount
+     * @param paymentMethod the payment method used
+     * @param timestamp     the date and time when the transaction occurred
+     */
+    public Transaction(double amount, String paymentMethod, LocalDateTime timestamp) {
+        this.amount = amount;
+        this.paymentMethod = paymentMethod;
+        this.timestamp = timestamp;
     }
 
-    public void removeObserver(CheckoutObserver observer) {
-        observers.remove(observer);
+    /**
+     * Returns the transaction amount.
+     *
+     * @return the amount of the transaction
+     */
+    public double getAmount() {
+        return amount;
     }
 
-    private final CampusUser user;
-
-    public Transaction(CampusUser user) {
-        this.user = user;
+    /**
+     * Returns the payment method used for the transaction.
+     *
+     * @return the payment method as a String
+     */
+    public String getPaymentMethod() {
+        return paymentMethod;
     }
 
-    public void proceedCheckout(Order order, double price) throws IllegalArgumentException {
-        // TODO: Logic of the payment
-        for (CheckoutObserver observer : observers) {
-            // Call the restaurant and the user so the restaurant set the order as paid and the user can see the order uuid in his history
-            observer.orderPaid(order);
-        }
+    /**
+     * Returns the timestamp when the transaction occurred.
+     *
+     * @return the LocalDateTime of the transaction
+     */
+    public LocalDateTime getTimestamp() {
+        return timestamp;
     }
 
-    public List<CheckoutObserver> getObservers() {
-        return observers;
+    /**
+     * Returns a string representation of the transaction.
+     *
+     * @return a String containing transaction details
+     */
+    @Override
+    public String toString() {
+        return "Transaction{" +
+               "amount=" + amount +
+               ", paymentMethod='" + paymentMethod + '\'' +
+               ", timestamp=" + timestamp +
+               '}';
     }
 }

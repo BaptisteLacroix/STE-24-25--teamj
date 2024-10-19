@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CampusUser extends User implements CheckoutObserver {
-    private final Transaction transaction;
+    private final List<Transaction> transactions;
     private final List<Order> ordersHistory = new ArrayList<>();
     private Order currentOrder;
     private GroupOrder currentGroupOrder;
@@ -23,8 +23,7 @@ public class CampusUser extends User implements CheckoutObserver {
 
     public CampusUser(String email, String password, OrderManager orderManager) {
         super(email, password);
-        transaction = new Transaction(this);
-        transaction.addObserver(this);
+        this.transactions = new ArrayList<>();
         this.orderManager = orderManager;
     }
 
@@ -62,16 +61,16 @@ public class CampusUser extends User implements CheckoutObserver {
     }
 
     public void validateOrder() {
-        orderManager.validateOrder(transaction, getCurrentOrder());
+        transactions.add(orderManager.validateOrder( getCurrentOrder()));
     }
 
     public void validateOrderAndGroupOrder() {
-        orderManager.validateOrder(transaction, getCurrentOrder());
+        transactions.add(orderManager.validateOrder( getCurrentOrder()));
         orderManager.validateGroupOrder(currentGroupOrder);
     }
 
     public void validateOrderAndGroupOrder(LocalDateTime deliveryTime) {
-        orderManager.validateOrder(transaction, getCurrentOrder());
+        transactions.add(orderManager.validateOrder( getCurrentOrder()));
         orderManager.validateGroupOrder(currentGroupOrder, deliveryTime);
     }
 
