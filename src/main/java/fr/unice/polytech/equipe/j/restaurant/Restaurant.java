@@ -88,17 +88,6 @@ public class Restaurant {
         this.orderPriceStrategy = orderPriceStrategy;
     }
 
-
-// TODO : remove this method
-    /**
-     * Create and return an OrderBuilder for the restaurant
-     *
-     * @return The OrderBuilder instance
-     */
-    public OrderBuilder createOrderBuilder() {
-        return new OrderBuilder().setRestaurant(this);
-    }
-
     public double calculatePrice(Order order) {
         return order.getItems().stream()
                 .mapToDouble(MenuItem::getPrice)

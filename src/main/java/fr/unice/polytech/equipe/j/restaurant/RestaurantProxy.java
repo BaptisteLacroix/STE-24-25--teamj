@@ -27,7 +27,8 @@ public class RestaurantProxy {
      * This method requests an OrderBuilder from the Restaurant and manages it internally.
      */
     public UUID startOrder(UUID restaurantId) {
-        OrderBuilder orderBuilder = getRestaurant(restaurantId).createOrderBuilder();
+        OrderBuilder orderBuilder = new OrderBuilder()
+                .setRestaurant(getRestaurant(restaurantId));
         orderBuilders.add(orderBuilder);
         return orderBuilder.getOrderId();
     }
