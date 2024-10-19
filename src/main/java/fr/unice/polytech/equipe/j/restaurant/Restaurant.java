@@ -214,7 +214,7 @@ public class Restaurant implements CheckoutObserver {
      * @param deliveryTime The desired delivery time.
      * @return true if there is a slot available that can prepare the item before the delivery time, false otherwise.
      */
-    public boolean thereIsSlotAvailable(MenuItem menuItem, LocalDateTime deliveryTime) {
+    public boolean slotAvailable(MenuItem menuItem, LocalDateTime deliveryTime) {
         LocalDateTime now = LocalDateTime.now(clock);
 
         for (Slot slot : slots) {

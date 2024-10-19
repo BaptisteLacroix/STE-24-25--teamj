@@ -64,7 +64,7 @@ public class ManageRestaurantStepDef {
             int prepTime = Integer.parseInt(item.get("prepTime"));
             int price = Integer.parseInt(item.get("price"));
 
-            restaurantManager.addMenuItem(itemName, description, prepTime, price);
+            restaurantManager.addMenuItem(itemName, prepTime, price);
         }
     }
 

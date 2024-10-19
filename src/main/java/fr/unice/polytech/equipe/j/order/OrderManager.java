@@ -70,7 +70,7 @@ public class OrderManager {
             throw new IllegalArgumentException("Cannot add item to order, it will not be ready in time.");
         }
 
-        if (deliveryTime.isPresent() && !restaurant.thereIsSlotAvailable(menuItem, deliveryTime.get())) {
+        if (deliveryTime.isPresent() && !restaurant.slotAvailable(menuItem, deliveryTime.get())) {
             throw new IllegalArgumentException("Cannot add item to order, no slot available.");
         }
 
