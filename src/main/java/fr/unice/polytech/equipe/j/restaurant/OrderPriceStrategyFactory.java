@@ -9,14 +9,10 @@ import java.util.stream.Collectors;
 
 public class OrderPriceStrategyFactory {
     public static OrderPriceStrategy makeSubstractKpercentforNOrder(double k, int n) {
-        return (ConnectedUser user, Order order, Restaurant restaurant)-> {
-            // get number of user previous commands
-            // FIXME : one group order could contain multiple command of same user
-            long previousGroupOrders = restaurant.getGroupOrdersHistory().stream()
-                    .filter(groupOrder -> groupOrder.getOrdersToConnectedUser().containsValue(user))
-                    .count();
-            long previousIndividualOrders =  restaurant.getIndividualOrdersHistory().stream()
-                    .filter(individualOrder -> individualOrder.user().equals(user))
+        return (Order order, Restaurant restaurant)-> {
+            ConnectedUser user = order.getUser();
+            long previousOrders =  restaurant.getOrderHistory().stream()
+                    .filter((o) -> o.getUser().equals(user))
                     .count();
 
             // map order menuItems to their prices
@@ -25,10 +21,10 @@ public class OrderPriceStrategyFactory {
 
             String description = "No discount";
             // if the order is dividable by n, apply k% discount
-            if ((previousGroupOrders + previousIndividualOrders + 1) % n == 0) {
+            if ((previousOrders + 1) % n == 0) {
                 totalPrice = totalPrice - totalPrice * (k/100.0);
                 description = "Price is reduced by " + k + " percent since it's " + user +
-                        "'s " + (previousGroupOrders + previousIndividualOrders + 1) + "'th command";
+                        "'s " + (previousOrders + 1) + "'th command";
             }
 
             return new OrderPrice(
@@ -40,7 +36,8 @@ public class OrderPriceStrategyFactory {
     }
 
     public static OrderPriceStrategy makeGiveItemForNItems(int n) {
-        return (ConnectedUser user, Order order, Restaurant restaurant)-> {
+        return (Order order, Restaurant restaurant)-> {
+            ConnectedUser user = order.getUser();
             var prices = order.getItems().stream().collect(Collectors.toMap((item)->item, MenuItem::price));
             Map.Entry<MenuItem, Double> min = null;
             for (Map.Entry<MenuItem, Double> entry : prices.entrySet()) {

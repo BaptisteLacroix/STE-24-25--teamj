@@ -3,6 +3,7 @@ package fr.unice.polytech.equipe.j.tests.order;
 import fr.unice.polytech.equipe.j.order.Order;
 import fr.unice.polytech.equipe.j.restaurant.MenuItem;
 import fr.unice.polytech.equipe.j.restaurant.Restaurant;
+import fr.unice.polytech.equipe.j.user.ConnectedUser;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -30,8 +31,11 @@ class OrderTest {
         // Mock the Restaurant class
         restaurant = mock(Restaurant.class);
 
+        // create an user
+        ConnectedUser user1 = new ConnectedUser("mail", "psw", 40000);
+
         // Create an Order object with the mocked Restaurant
-        order = new Order(restaurant, orderId);
+        order = new Order(restaurant, orderId, user1);
 
         // Create some menu items
         item1 = new MenuItem("Burger", 5.99);

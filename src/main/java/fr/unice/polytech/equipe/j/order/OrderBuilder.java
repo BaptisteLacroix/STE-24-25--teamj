@@ -2,6 +2,7 @@ package fr.unice.polytech.equipe.j.order;
 
 import fr.unice.polytech.equipe.j.restaurant.MenuItem;
 import fr.unice.polytech.equipe.j.restaurant.Restaurant;
+import fr.unice.polytech.equipe.j.user.ConnectedUser;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -12,6 +13,13 @@ public class OrderBuilder {
     private Restaurant restaurant;
     private final List<MenuItem> items = new ArrayList<>();
     private final UUID orderId = UUID.randomUUID();
+
+    public OrderBuilder setUser(ConnectedUser user) {
+        this.user = user;
+        return this;
+    }
+
+    private ConnectedUser user;
 
     /**
      * Set the restaurant for the order
@@ -52,7 +60,7 @@ public class OrderBuilder {
      * @return The Order instance
      */
     public Order build() {
-        Order order = new Order(restaurant, orderId);
+        Order order = new Order(restaurant, orderId, this.user);
         items.forEach(order::addItem);
         return order;
     }

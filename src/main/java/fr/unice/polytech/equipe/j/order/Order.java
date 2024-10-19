@@ -2,6 +2,8 @@ package fr.unice.polytech.equipe.j.order;
 
 import fr.unice.polytech.equipe.j.restaurant.MenuItem;
 import fr.unice.polytech.equipe.j.restaurant.Restaurant;
+import fr.unice.polytech.equipe.j.user.ConnectedUser;
+
 import java.util.List;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -11,13 +13,19 @@ public class Order {
     private final UUID orderId;
     private final Restaurant restaurant;
     private final List<MenuItem> items;
+    private final ConnectedUser user;
     private OrderStatus status;
 
-    public Order(Restaurant restaurant, UUID orderId) {
+    public Order(Restaurant restaurant, UUID orderId, ConnectedUser user) {
         this.restaurant = restaurant;
         items = new ArrayList<>();
         this.status = OrderStatus.PENDING;
         this.orderId = orderId;
+        this.user = user;
+    }
+
+    public ConnectedUser getUser() {
+        return user;
     }
 
     public Restaurant getRestaurant() {

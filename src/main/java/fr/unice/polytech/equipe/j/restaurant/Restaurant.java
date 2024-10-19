@@ -21,8 +21,7 @@ public class Restaurant {
     private Menu menu;
     private OrderPriceStrategy orderPriceStrategy;
     private final List<Order> orders = new ArrayList<>();
-    private List<DeliverableOrder> individualOrdersHistory = new ArrayList<>();
-    private List<GroupOrder> groupOrdersHistory = new ArrayList<>();
+    private List<Order> orderHistory = new ArrayList<>();
 
     public Restaurant(String name, LocalDateTime openingTime, LocalDateTime closingTime, Menu menu) {
         this.restaurantName = name;
@@ -84,21 +83,7 @@ public class Restaurant {
         this.orderPriceStrategy = orderPriceStrategy;
     }
 
-    public List<DeliverableOrder> getIndividualOrdersHistory() {
-        return individualOrdersHistory;
-    }
 
-    public void setIndividualOrdersHistory(List<DeliverableOrder> individualOrdersHistory) {
-        this.individualOrdersHistory = individualOrdersHistory;
-    }
-
-    public List<GroupOrder> getGroupOrdersHistory() {
-        return groupOrdersHistory;
-    }
-
-    public void setGroupOrdersHistory(List<GroupOrder> groupOrdersHistory) {
-        this.groupOrdersHistory = groupOrdersHistory;
-    }
 // TODO : remove this method
     /**
      * Create and return an OrderBuilder for the restaurant
@@ -138,28 +123,16 @@ public class Restaurant {
         orders.add(order);
     }
 
-    public void addOrderToHistory(DeliverableOrder order) {
-        this.individualOrdersHistory.add(order);
+    public void addOrderToHistory(Order order) {
+        this.orderHistory.add(order);
     }
 
-    public void addOrderToHistory(GroupOrder order) {
-        this.groupOrdersHistory.add(order);
+    public OrderPrice processOrderPrice(Order order) {
+        assert order.getRestaurant().equals(this);
+        return this.orderPriceStrategy.processOrderPrice(order, this);
     }
 
-    public OrderPrice processOrderPrice(DeliverableOrder indivOder) {
-        assert indivOder.order().getRestaurant().equals(this);
-        return this.orderPriceStrategy.processOrderPrice(indivOder.user(), indivOder.order(), this);
-    }
-
-    public Map<Order, OrderPrice> processOrderPrice(GroupOrder groupOrder) {
-        return groupOrder.getOrdersToConnectedUser().entrySet().stream()
-                .map((entry)-> {
-                    Order order = entry.getKey();
-                    ConnectedUser user = entry.getValue();
-                    return Map.entry(
-                            order,
-                            this.orderPriceStrategy.processOrderPrice(user, order, this)
-                    );
-                }).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    public List<Order> getOrderHistory() {
+        return orderHistory;
     }
 }

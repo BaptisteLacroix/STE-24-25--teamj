@@ -1,5 +1,4 @@
 package fr.unice.polytech.equipe.j.stepdefs.backend.restaurant;
-import fr.unice.polytech.equipe.j.order.DeliverableOrder;
 import fr.unice.polytech.equipe.j.order.Order;
 import fr.unice.polytech.equipe.j.restaurant.*;
 import fr.unice.polytech.equipe.j.stepdefs.backend.Utils;
@@ -17,10 +16,11 @@ import java.util.stream.Collectors;
 
 public class OderPriceSteps {
     Restaurant restaurant;
-    private List<DeliverableOrder> indivOrders = new ArrayList<>();
+    private List<Order> indivOrders = new ArrayList<>();
     private double reductionPercentage;
     private int orderReductionNumber;
-    private DeliverableOrder orderWithMoreThatNItems;
+    private Order orderWithMoreThatNItems;
+    private Order orderWithLessThatNItems;
 
     @Given("the following restaurant exists:")
     public void createRestaurants(DataTable dataTable) {
@@ -58,11 +58,11 @@ public class OderPriceSteps {
     public void createOrder(int orderReductionNumber) {
         ConnectedUser user1 = new ConnectedUser("mail", "psw", 40000);
         for (int i = 0; i < orderReductionNumber*30; i++) {
-            var order = new Order(restaurant, UUID.randomUUID());
+            var order = new Order(restaurant, UUID.randomUUID(), user1);
             for (MenuItem item : restaurant.getMenu().getItems()) {
                 order.addItem(item);
             }
-            this.indivOrders.add(new DeliverableOrder(order, user1));
+            this.indivOrders.add(order);
         }
     }
 
@@ -71,7 +71,7 @@ public class OderPriceSteps {
         for (int i = 1; i <= this.indivOrders.size(); i++) {
             var order = indivOrders.get(i-1);
             // manually calculate order totalPrice and reduced price
-            Map<MenuItem, Double> prices = order.order().getItems().stream().collect(Collectors.toMap((item)->item, MenuItem::price));
+            Map<MenuItem, Double> prices = order.getItems().stream().collect(Collectors.toMap((item)->item, MenuItem::price));
             double totalPrice = prices.values().stream().mapToDouble(Double::doubleValue).sum();
             double reducedPrice = i%this.orderReductionNumber == 0 ? totalPrice - (totalPrice * this.reductionPercentage/100.0) : totalPrice;
             OrderPrice processOrderPrice = restaurant.processOrderPrice(order);
@@ -89,17 +89,17 @@ public class OderPriceSteps {
     @When("Any user creates an order with more that {int} items")
     public void anyUserCreatesAnOrderWithMoreThatNItems(int n) {
         ConnectedUser user1 = new ConnectedUser("userEmail2", "psw2", 40000);
-        var order = new Order(restaurant, UUID.randomUUID());
+        var order = new Order(restaurant, UUID.randomUUID(), user1);
         for (MenuItem item : restaurant.getMenu().getItems().subList(0, n+1)) {
             order.addItem(item);
         }
-        this.orderWithMoreThatNItems = new DeliverableOrder(order, user1);
+        this.orderWithMoreThatNItems = order;
     }
 
     @Then("The less expensive item from the order should have a price of {double}")
     public void theLessExpensiveItemFromTheOrderShouldHaveAPriceOf(double price) {
         // get first
-        var lowestItem = this.orderWithMoreThatNItems.order().getItems().stream()
+        var lowestItem = this.orderWithMoreThatNItems.getItems().stream()
                 .min(Comparator.comparingDouble(MenuItem::price)).orElseThrow();
 
         OrderPrice processOrderPrice = restaurant.processOrderPrice(this.orderWithMoreThatNItems);
@@ -109,20 +109,20 @@ public class OderPriceSteps {
     @When("Any user creates an order with less than {int} items")
     public void anyUserCreatesAnOrderWithMoreLessItems(int n) {
         ConnectedUser user1 = new ConnectedUser("userEmail3", "psw3", 40000);
-        var order = new Order(restaurant, UUID.randomUUID());
+        var order = new Order(restaurant, UUID.randomUUID(), user1);
         for (MenuItem item : restaurant.getMenu().getItems().subList(0, n-1)) {
             order.addItem(item);
         }
-        this.orderWithMoreThatNItems = new DeliverableOrder(order, user1);
+        this.orderWithLessThatNItems = order;
     }
 
     @Then("The less expensive item from the order should not have a price of {int}")
     public void theLessExpensiveItemFromTheOrderShouldNotHaveAPriceOf(double price) {
         // get first
-        var lowestItem = this.orderWithMoreThatNItems.order().getItems().stream()
+        var lowestItem = this.orderWithLessThatNItems.getItems().stream()
                 .min(Comparator.comparingDouble(MenuItem::price)).orElseThrow();
 
-        OrderPrice processOrderPrice = restaurant.processOrderPrice(this.orderWithMoreThatNItems);
+        OrderPrice processOrderPrice = restaurant.processOrderPrice(this.orderWithLessThatNItems);
         assertNotEquals(processOrderPrice.newPrices().get(lowestItem), price);
     }
 }

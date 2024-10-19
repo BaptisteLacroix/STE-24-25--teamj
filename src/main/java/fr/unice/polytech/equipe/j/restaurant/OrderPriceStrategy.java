@@ -5,5 +5,5 @@ import fr.unice.polytech.equipe.j.user.ConnectedUser;
 
 @FunctionalInterface
 public interface OrderPriceStrategy {
-    OrderPrice processOrderPrice(ConnectedUser user, Order order, Restaurant restaurant);
+    OrderPrice processOrderPrice(Order order, Restaurant restaurant);
 }
