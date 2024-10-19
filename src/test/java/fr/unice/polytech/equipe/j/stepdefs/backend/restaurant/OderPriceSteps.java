@@ -25,15 +25,6 @@ public class OderPriceSteps {
     @Given("the following restaurant exists:")
     public void createRestaurants(DataTable dataTable) {
         List<String> row = dataTable.row(1);
-//            if(restaurantName.equals("name")) continue;
-//            String[] values = row.getValue().split(",");
-//            List<MenuItem> menuItems = new ArrayList<>();
-//            for (String value : values) {
-//                var item = values[0];
-//                var price = Double.valueOf(values[1]);
-//                var menuItem = new MenuItem(item, price);
-//                menuItems.add(menuItem);
-//            }
 
         this.restaurant = new Restaurant(
                 row.getFirst(),
