@@ -162,12 +162,7 @@ public class ManageRestaurantStepDef {
     @When("Jeanne tries to allocate {int} personnel to this slot")
     public void jeanneTriesToAllocatePersonnelToThisSlot(int newNumberOfPersonnel) {
         Slot slot = findSlotByStartTime(restaurant,"2024-10-08 14:00");
-        try {
-            restaurantManager.updateNumberOfPersonnel(slot, newNumberOfPersonnel);
-            fail("Expected an exception to be thrown, but it was not.");
-        } catch (IllegalArgumentException e) {
-            // Si il y a une erreur, le test passe
-        }
+        assertThrows(IllegalArgumentException.class, () -> restaurantManager.updateNumberOfPersonnel(slot, newNumberOfPersonnel));
     }
 
     @Then("Jeanne see that it is impossible")
