@@ -10,13 +10,14 @@ import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public class Restaurant implements CheckoutObserver {
     private final UUID restaurantId = UUID.randomUUID();
     private final String restaurantName;
-    private LocalDateTime openingTime;
-    private LocalDateTime closingTime;
+    private Optional<LocalDateTime> openingTime;
+    private Optional<LocalDateTime> closingTime;
     private List<Slot> slots;
     private Menu menu;
     private final List<Order> ordersHistory = new ArrayList<>();
@@ -26,8 +27,14 @@ public class Restaurant implements CheckoutObserver {
 
     public Restaurant(String name, LocalDateTime openingTime, LocalDateTime closingTime, Menu menu, Clock clock) {
         this.restaurantName = name;
-        this.openingTime = openingTime;
-        this.closingTime = closingTime;
+        this.openingTime = openingTime == null ? Optional.empty() : Optional.of(openingTime);
+        if (closingTime != null && closingTime.isBefore(openingTime)) {
+            throw new IllegalArgumentException("Closing time cannot be before opening time.");
+        }
+        this.closingTime = closingTime == null ? Optional.empty() : Optional.of(closingTime);
+        if (this.openingTime.isPresent() && this.closingTime.isEmpty()) {
+            throw new IllegalArgumentException("Closing time is required if the restaurant is open.");
+        }
         this.menu = menu;
         this.clock = clock;
         generateSlots();
@@ -37,9 +44,12 @@ public class Restaurant implements CheckoutObserver {
      * For every 30 minutes, generate a slot with a duration of 30 minutes. The number of slots is calculated based on the opening and closing time.
      */
     private void generateSlots() {
+        if (openingTime.isEmpty() || closingTime.isEmpty()) {
+            return;
+        }
         slots = new ArrayList<>();
-        LocalDateTime currentTime = openingTime;
-        while (currentTime.isBefore(closingTime)) {
+        LocalDateTime currentTime = openingTime.get();
+        while (currentTime.isBefore(closingTime.get())) {
             slots.add(new Slot(currentTime, 0));
             currentTime = currentTime.plusMinutes(30);
         }
@@ -187,7 +197,7 @@ public class Restaurant implements CheckoutObserver {
 
         LocalDateTime now = LocalDateTime.now(getClock());
         LocalDateTime deliveryTime = groupOrder.getDeliveryDetails().getDeliveryTime().get();
-        LocalDateTime closingTime = getClosingTime();
+        LocalDateTime closingTime = getClosingTime().get();
 
         // Check if the restaurant can prepare any item before the closing time or the delivery time
         return getMenu().getItems().stream()
@@ -250,20 +260,40 @@ public class Restaurant implements CheckoutObserver {
         return restaurantName;
     }
 
-    public LocalDateTime getOpeningTime() {
+    public Optional<LocalDateTime> getOpeningTime() {
         return openingTime;
     }
 
     public void setOpeningTime(LocalDateTime openingTime) {
-        this.openingTime = openingTime;
+        this.openingTime = openingTime == null ? Optional.empty() : Optional.of(openingTime);
+        // if opening time is set, generate slots
+        if (this.openingTime.isPresent() && this.closingTime.isPresent()) {
+            generateSlots();
+        }
+        // if the opening time is empty, clear the slots and set the closing time to empty
+        if (this.openingTime.isEmpty()) {
+            slots.clear();
+            this.closingTime = Optional.empty();
+        }
     }
 
-    public LocalDateTime getClosingTime() {
+    public Optional<LocalDateTime> getClosingTime() {
         return closingTime;
     }
 
     public void setClosingTime(LocalDateTime closingTime) {
-        this.closingTime = closingTime;
+        if (closingTime != null && closingTime.isBefore(openingTime.get())) {
+            throw new IllegalArgumentException("Closing time cannot be before opening time.");
+        }
+        this.closingTime = closingTime == null ? Optional.empty() : Optional.of(closingTime);
+        // if closing time is set, generate slots
+        if (this.openingTime.isPresent() && this.closingTime.isPresent()) {
+            generateSlots();
+        }
+        // if the closing time is empty, clear the slots
+        if (this.closingTime.isEmpty()) {
+            slots.clear();
+        }
     }
 
     public List<Order> getOrdersHistory() {

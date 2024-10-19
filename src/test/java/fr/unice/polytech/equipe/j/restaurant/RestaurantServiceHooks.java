@@ -22,9 +22,9 @@ public class RestaurantServiceHooks {
 
         // add menu items to the restaurant
         List<MenuItem> itemsRestaurant1 = new ArrayList<>();
-        itemsRestaurant1.add(new MenuItem("Salade Nicoise", "lorem ipsum", 60, 12.50));
-        itemsRestaurant1.add(new MenuItem("Bouillabaisse", "lorem ipsum", 500, 25.00));
-        itemsRestaurant1.add(new MenuItem("Tarte Tatin", "lorem ipsum", 1900, 8.00));
+        itemsRestaurant1.add(new MenuItem("Salade Nicoise", 60, 12.50));
+        itemsRestaurant1.add(new MenuItem("Bouillabaisse", 500, 25.00));
+        itemsRestaurant1.add(new MenuItem("Tarte Tatin", 1800, 8.00));
         Restaurant restaurant1 = new Restaurant("Le Petit Nice", fixedDateTime, fixedDateTime.plusHours(2), new Menu(itemsRestaurant1), clock);
         RestaurantManager restaurantManager = new RestaurantManager(
                 "manager@test.com",
@@ -38,9 +38,9 @@ public class RestaurantServiceHooks {
         restaurantManager.updateNumberOfPersonnel(restaurantManager.getRestaurant().getSlots().get(3), 2);
 
         List<MenuItem> itemsRestaurant2 = new ArrayList<>();
-        itemsRestaurant2.add(new MenuItem("Salade de chèvre chaud", "lorem ipsum", 400, 10.00));
-        itemsRestaurant2.add(new MenuItem("Magret de canard", "lorem ipsum", 2000, 20.00));
-        itemsRestaurant2.add(new MenuItem("Crème brûlée", "lorem ipsum", 600, 7.00));
+        itemsRestaurant2.add(new MenuItem("Salade de chèvre chaud", 400, 10.00));
+        itemsRestaurant2.add(new MenuItem("Magret de canard", 1800, 20.00));
+        itemsRestaurant2.add(new MenuItem("Crème brûlée", 600, 7.00));
         Restaurant restaurant2 = new Restaurant("Le Petit Jardin", fixedDateTime, fixedDateTime.plusHours(2), new Menu(itemsRestaurant2), clock);
         RestaurantManager restaurantManager2 = new RestaurantManager(
                 "manager2@test.com",
@@ -49,15 +49,14 @@ public class RestaurantServiceHooks {
                 restaurant2
         );
         restaurantManager2.updateNumberOfPersonnel(restaurantManager2.getRestaurant().getSlots().get(0), 5);
-        restaurantManager2.updateNumberOfPersonnel(restaurantManager2.getRestaurant().getSlots().get(1), 10);
+        restaurantManager2.updateNumberOfPersonnel(restaurantManager2.getRestaurant().getSlots().get(1), 11);
         restaurantManager2.updateNumberOfPersonnel(restaurantManager2.getRestaurant().getSlots().get(2), 3);
         restaurantManager2.updateNumberOfPersonnel(restaurantManager2.getRestaurant().getSlots().get(3), 2);
 
-
         List<MenuItem> itemsRestaurant3 = new ArrayList<>();
-        itemsRestaurant3.add(new MenuItem("Escargots", "lorem ipsum", 1900, 15.00));
-        itemsRestaurant3.add(new MenuItem("Coq au vin", "lorem ipsum", 1840, 22.00));
-        itemsRestaurant3.add(new MenuItem("Mousse au chocolat", "lorem ipsum", 1800, 6.00));
+        itemsRestaurant3.add(new MenuItem("Escargots", 1800, 15.00));
+        itemsRestaurant3.add(new MenuItem("Coq au vin", 1800, 22.00));
+        itemsRestaurant3.add(new MenuItem("Mousse au chocolat", 1800, 6.00));
         Restaurant restaurant3 = new Restaurant("Le Petit Chateau", fixedDateTime, fixedDateTime.plusHours(2), new Menu(itemsRestaurant3), clock);
         RestaurantManager restaurantManager3 = new RestaurantManager(
                 "manager3@test.com",
@@ -70,9 +69,54 @@ public class RestaurantServiceHooks {
         restaurantManager3.updateNumberOfPersonnel(restaurantManager3.getRestaurant().getSlots().get(2), 3);
         restaurantManager3.updateNumberOfPersonnel(restaurantManager3.getRestaurant().getSlots().get(3), 2);
 
-
         manager.addRestaurant(restaurant1);
         manager.addRestaurant(restaurant2);
         manager.addRestaurant(restaurant3);
+
+        // Add a new restaurant that is currently closed
+        List<MenuItem> itemsRestaurantA = new ArrayList<>();
+        itemsRestaurantA.add(new MenuItem("Soupe à l'oignon", 300, 8.50));
+        itemsRestaurantA.add(new MenuItem("Boeuf Bourguignon", 1500, 22.00));
+        itemsRestaurantA.add(new MenuItem("Tarte Tatin", 500, 6.50));
+        Restaurant restaurantA = new Restaurant("Le Gourmet D'Or", null, null, new Menu(itemsRestaurantA), clock);
+        manager.addRestaurant(restaurantA);
+
+        // Add a new restaurant with no personnel
+        List<MenuItem> itemsRestaurantB = new ArrayList<>();
+        itemsRestaurantB.add(new MenuItem("Quiche Lorraine", 400, 9.00));
+        itemsRestaurantB.add(new MenuItem("Ratatouille", 800, 12.00));
+        itemsRestaurantB.add(new MenuItem("Mousse au chocolat", 350, 5.00));
+        Restaurant restaurantB = new Restaurant("Bistro de la Plage", fixedDateTime, fixedDateTime.plusHours(2), new Menu(itemsRestaurantB), clock);
+        manager.addRestaurant(restaurantB);
+
+        // Add a new restaurant with no menu
+        Restaurant restaurantC = new Restaurant("Café de l'Aube", fixedDateTime, fixedDateTime.plusHours(2), new Menu(new ArrayList<>()), clock);
+        RestaurantManager restaurantManagerC = new RestaurantManager(
+                "managerC@email.com",
+                "mypassword",
+                "ManagerC",
+                restaurantC
+        );
+        restaurantManagerC.updateNumberOfPersonnel(restaurantManagerC.getRestaurant().getSlots().get(0), 6);
+        restaurantManagerC.updateNumberOfPersonnel(restaurantManagerC.getRestaurant().getSlots().get(1), 5);
+        restaurantManagerC.updateNumberOfPersonnel(restaurantManagerC.getRestaurant().getSlots().get(2), 2);
+        restaurantManagerC.updateNumberOfPersonnel(restaurantManagerC.getRestaurant().getSlots().get(3), 3);
+        manager.addRestaurant(restaurantC);
+
+        // Add a new restaurant with limited personnel but long preparation times
+        List<MenuItem> itemsRestaurantD = new ArrayList<>();
+        itemsRestaurantD.add(new MenuItem("Coq au Vin", 1200, 18.00));
+        itemsRestaurantD.add(new MenuItem("Bouillabaisse", 1800, 25.00));
+        itemsRestaurantD.add(new MenuItem("Crêpe Suzette", 400, 7.50));
+        Restaurant restaurantD = new Restaurant("La Table Royale", fixedDateTime, fixedDateTime.plusHours(1), new Menu(itemsRestaurantD), clock);
+        RestaurantManager restaurantManagerD = new RestaurantManager(
+                "managerD@email.com",
+                "mypassword123",
+                "ManagerD",
+                restaurantD
+        );
+        restaurantManagerD.updateNumberOfPersonnel(restaurantManagerD.getRestaurant().getSlots().get(0), 2);
+        restaurantManagerD.updateNumberOfPersonnel(restaurantManagerD.getRestaurant().getSlots().get(1), 1);
+        manager.addRestaurant(restaurantD);
     }
 }

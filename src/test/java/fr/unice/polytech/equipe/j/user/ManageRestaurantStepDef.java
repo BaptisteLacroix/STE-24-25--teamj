@@ -85,7 +85,7 @@ public class ManageRestaurantStepDef {
     @Then("the opening hours should be {string} to {string}")
     public void theOpeningHoursShouldBeTo(String expectedStartTime, String expectedEndTime) {
         DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-        String actualOpeningHours = restaurant.getOpeningTime().format(outputFormatter) + " to " + restaurant.getClosingTime().format(outputFormatter);
+        String actualOpeningHours = restaurant.getOpeningTime().get().format(outputFormatter) + " to " + restaurant.getClosingTime().get().format(outputFormatter);
         String expectedHours = expectedStartTime + " to " + expectedEndTime;
         assertEquals(expectedHours, actualOpeningHours);
 

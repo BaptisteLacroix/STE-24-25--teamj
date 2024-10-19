@@ -66,23 +66,24 @@ public class RestaurantSearchSteps {
     @Then("the user should see the following restaurant\\(s):")
     public void the_user_should_see_the_following_restaurant_s(io.cucumber.datatable.DataTable dataTable) {
         List<Map<String, String>> expectedRestaurants = dataTable.asMaps();
+
         assertEquals("Number of restaurants found does not match", expectedRestaurants.size(), foundRestaurants.size());
 
         for (Map<String, String> expectedRestaurant : expectedRestaurants) {
-            boolean found = false;
-            for (Restaurant restaurant : foundRestaurants) {
-                if (restaurant.getRestaurantName().equals(expectedRestaurant.get("name"))) {
-                    found = true;
-                    Menu menu = restaurant.getMenu();
-                    String[] menuItems = expectedRestaurant.get("menu items").split(", ");
-                    String[] prices = expectedRestaurant.get("price").split(", ");
-                    for (int i = 0; i < menuItems.length; i++) {
-                        assertTrue("Menu item not found: " + menuItems[i], menu.findItemByName(menuItems[i]) != null);
-                        assertEquals("Menu item price does not match", Double.parseDouble(prices[i]), menu.findItemByName(menuItems[i]).getPrice(), 0.01);
-                    }
-                }
+            Restaurant restaurant = foundRestaurants.stream()
+                    .filter(r -> r.getRestaurantName().trim().equalsIgnoreCase(expectedRestaurant.get("name").trim()))
+                    .findFirst()
+                    .orElse(null);
+            assertNotNull("Restaurant not found: " + expectedRestaurant.get("name"), restaurant);
+
+            Menu menu = restaurant.getMenu();
+            String[] menuItems = expectedRestaurant.get("menu items").split(", ");
+            String[] prices = expectedRestaurant.get("price").split(", ");
+            for (int i = 0; i < menuItems.length; i++) {
+                MenuItem menuItem = menu.findItemByName(menuItems[i]);
+                assertNotNull("Menu item not found: " + menuItems[i], menuItem);
+                assertEquals("Menu item price does not match", Double.parseDouble(prices[i]), menuItem.getPrice(), 0.01);
             }
-            assertTrue("Restaurant not found: " + expectedRestaurant.get("name"), found);
         }
     }
 
@@ -91,8 +92,8 @@ public class RestaurantSearchSteps {
         assertTrue("Restaurants found when none were expected", foundRestaurants.isEmpty());
     }
 
-    @Given("the user creates a group order with a delivery time of {int} minutes later the current time")
-    public void the_user_creates_a_group_order_with_a_delivery_time_of_minutes_later_the_current_time(Integer int1) {
+    @Given("the user creates a group order with a delivery time of {int} minutes later than the current time")
+    public void the_user_creates_a_group_order_with_a_delivery_time_of_minutes_later_than_the_current_time(Integer int1) {
         DeliveryLocation deliveryLocation = DeliveryLocationManager.getInstance().getPredefinedLocations().getFirst();
         DeliveryDetails deliveryDetails = new DeliveryDetails(deliveryLocation, LocalDateTime.now(clock).plusMinutes(int1));
         user.createGroupOrder(deliveryDetails);
@@ -105,7 +106,7 @@ public class RestaurantSearchSteps {
         assertFalse(foundRestaurants.isEmpty());
     }
 
-    @Then("the user select the restaurant {string} and should see only the {int} menu items that can be prepared before the delivery time")
+    @Then("the user selects the restaurant {string} and should see only the {int} menu items that can be prepared before the delivery time")
     public void the_user_select_the_restaurant_and_should_see_only_the_menu_items_that_can_be_prepared_before_the_delivery_time(String string, Integer int1) {
         Restaurant restaurant = null;
         for (Restaurant r : foundRestaurants) {

@@ -112,7 +112,7 @@ public class PlaceOrderStepDefs {
 
     @When("the user tries to add {string} to their order")
     public void the_user_tries_to_add_to_their_order(String string) {
-        assertThrows(IllegalArgumentException.class, () -> campusUser.addItemToOrder(restaurant, new MenuItem(string, "lorem ipsum", 10, 0.0)));
+        assertThrows(IllegalArgumentException.class, () -> campusUser.addItemToOrder(restaurant, new MenuItem(string, 10, 0.0)));
     }
 
     @Then("the user gets an error message {string}")

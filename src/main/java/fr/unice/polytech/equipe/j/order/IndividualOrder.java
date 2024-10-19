@@ -29,8 +29,13 @@ public class IndividualOrder extends Order {
             throw new UnsupportedOperationException("You cannot specify a delivery time in the past.");
         }
 
+        // Check if the restaurant is open
+        if (restaurant.getOpeningTime().isEmpty() || restaurant.getClosingTime().isEmpty()) {
+            throw new UnsupportedOperationException("The restaurant is not open at this time.");
+        }
+
         // Check if the restaurant is open at the specified delivery time
-        if (deliveryTime.isBefore(restaurant.getOpeningTime()) || deliveryTime.isAfter(restaurant.getClosingTime())) {
+        if (deliveryTime.isBefore(restaurant.getOpeningTime().get()) || deliveryTime.isAfter(restaurant.getClosingTime().get())) {
             throw new UnsupportedOperationException("The restaurant is closed at this time.");
         }
 

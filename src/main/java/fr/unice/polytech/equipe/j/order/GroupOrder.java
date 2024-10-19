@@ -67,7 +67,11 @@ public class GroupOrder {
         }
         // check that all restaurants are open
         for (Order order : getOrders()) {
-            if (deliveryTime.isBefore(order.getRestaurant().getOpeningTime()) || deliveryTime.isAfter(order.getRestaurant().getClosingTime())) {
+            if (order.getRestaurant().getOpeningTime().isEmpty() || order.getRestaurant().getClosingTime().isEmpty()) {
+                throw new UnsupportedOperationException("The restaurant is not open at this time.");
+            }
+
+            if (deliveryTime.isBefore(order.getRestaurant().getOpeningTime().get()) || deliveryTime.isAfter(order.getRestaurant().getClosingTime().get())) {
                 throw new UnsupportedOperationException("The restaurant is closed at this time.");
             }
         }

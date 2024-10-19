@@ -38,8 +38,8 @@ class RestaurantTest {
     @BeforeEach
     void setUp() {
         clock = Clock.fixed(Instant.parse("2024-10-01T07:00:00Z"), ZoneId.of("Europe/Paris"));
-        item1 = new MenuItem("Burger", "lorem ipsum", 40, 5.99);
-        item2 = new MenuItem("Fries", "lorem ipsum", 1, 2.99);
+        item1 = new MenuItem("Burger", 40, 5.99);
+        item2 = new MenuItem("Fries", 1, 2.99);
         menu = new Menu.MenuBuilder().addMenuItems(List.of(item1, item2)).build();
 
         restaurant = new Restaurant("Test Restaurant",
@@ -60,21 +60,21 @@ class RestaurantTest {
 
     @Test
     void testChangeMenu() {
-        Menu newMenu = new Menu.MenuBuilder().addMenuItem(new MenuItem("Salad", "lorem ipsum", 10, 4.99)).build();
+        Menu newMenu = new Menu.MenuBuilder().addMenuItem(new MenuItem("Salad", 10, 4.99)).build();
         restaurant.changeMenu(newMenu);
         assertEquals(newMenu, restaurant.getMenu());
     }
 
     @Test
     void testOpeningAndClosingTime() {
-        assertEquals(LocalDateTime.of(2024, 10, 1, 9, 0), restaurant.getOpeningTime());
-        assertEquals(LocalDateTime.of(2024, 10, 1, 21, 0), restaurant.getClosingTime());
+        assertEquals(LocalDateTime.of(2024, 10, 1, 9, 0), restaurant.getOpeningTime().get());
+        assertEquals(LocalDateTime.of(2024, 10, 1, 21, 0), restaurant.getClosingTime().get());
 
         restaurant.setOpeningTime(LocalDateTime.of(2024, 10, 1, 8, 0));
         restaurant.setClosingTime(LocalDateTime.of(2024, 10, 1, 22, 0));
 
-        assertEquals(LocalDateTime.of(2024, 10, 1, 8, 0), restaurant.getOpeningTime());
-        assertEquals(LocalDateTime.of(2024, 10, 1, 22, 0), restaurant.getClosingTime());
+        assertEquals(LocalDateTime.of(2024, 10, 1, 8, 0), restaurant.getOpeningTime().get());
+        assertEquals(LocalDateTime.of(2024, 10, 1, 22, 0), restaurant.getClosingTime().get());
     }
 
     @Test
@@ -126,7 +126,7 @@ class RestaurantTest {
 
         // Trying to add an order that exceeds max capacity should fail
         Order largeOrder = new Order(restaurant, clock);
-        largeOrder.addItem(new MenuItem("Pizza", "A large pizza", 2000, 10.99)); // 2000 seconds
+        largeOrder.addItem(new MenuItem("Pizza", 2000, 10.99)); // 2000 seconds
         assertFalse(slot.UpdateSlotCapacity(largeOrder.getItems().get(0)));
     }
 
@@ -140,7 +140,7 @@ class RestaurantTest {
 
         // Order with an invalid item (not in the menu)
         Order invalidOrder = new Order(restaurant, clock);
-        invalidOrder.addItem(new MenuItem("Pizza", "lorem ipsum", 30, 9.99));
+        invalidOrder.addItem(new MenuItem("Pizza", 30, 9.99));
         assertFalse(restaurant.isOrderValid(invalidOrder));
     }
 
@@ -164,8 +164,8 @@ class RestaurantTest {
     @Test
     void testAddOrderWhenSlotCapacityIsFull() {
         // Setting up a smaller capacity slot for easier testing
-        MenuItem c_item1 = new MenuItem("Item1", "Test Item 1", 1700, 10.0); // Big item, will almost fill the slot
-        MenuItem c_item2 = new MenuItem("Item2", "Test Item 2", 300, 5.0);   // Another item to fill the slot
+        MenuItem c_item1 = new MenuItem("Item1", 1700, 10.0); // Big item, will almost fill the slot
+        MenuItem c_item2 = new MenuItem("Item2", 300, 5.0);   // Another item to fill the slot
 
         // Change restaurant menu for test items
         Menu testMenu = new Menu.MenuBuilder()
@@ -188,7 +188,7 @@ class RestaurantTest {
         assertEquals(0, slot.getCurrentCapacity());
 
         // Now try to add another item that would exceed the slot capacity
-        MenuItem exceedingItem = new MenuItem("Exceeding Item", "This item will exceed capacity", 100, 10.0);
+        MenuItem exceedingItem = new MenuItem("Exceeding Item", 100, 10.0);
 
         // Check if the order fails to be added due to full capacity
         assertThrows(IllegalArgumentException.class, () -> campusUser.addItemToOrder(restaurant, exceedingItem));

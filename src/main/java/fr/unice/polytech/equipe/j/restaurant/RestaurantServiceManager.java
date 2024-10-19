@@ -1,7 +1,5 @@
 package fr.unice.polytech.equipe.j.restaurant;
 
-import fr.unice.polytech.equipe.j.order.GroupOrder;
-
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -71,14 +69,6 @@ public class RestaurantServiceManager {
                 .toList();
     }
 
-    // Search restaurants by availability (check if open at a specific time)
-    public List<Restaurant> searchByAvailability(LocalDateTime time) {
-        return restaurants.stream()
-                .filter(restaurant -> isOpenAt(restaurant, time))
-                .distinct()
-                .toList();
-    }
-
     /**
      * Search for restaurants with a menuItem which, at the end of the preparation time, is shorter than the specified delivery time.
      *
@@ -86,13 +76,11 @@ public class RestaurantServiceManager {
      * @return a list of restaurants that can deliver the order on time
      */
     public List<Restaurant> searchRestaurantByDeliveryTime(Optional<LocalDateTime> deliveryTime) {
-        if (deliveryTime.isEmpty()) {
-            return restaurants;
-        }
-        return restaurants.stream()
-                .filter(restaurant -> restaurant.getMenu().getItems().stream()
-                        .anyMatch(item -> LocalDateTime.now(clock).plusSeconds(item.getPrepTime()).isBefore(deliveryTime.get())))
-                .toList();
+        return deliveryTime.map(localDateTime -> restaurants.stream()
+                .filter(restaurant -> isOpenAt(restaurant, localDateTime) && restaurant.getMenu().getItems().stream()
+                        .anyMatch(item -> LocalDateTime.now(clock).plusSeconds(item.getPrepTime()).isBefore(localDateTime) &&
+                                restaurant.getSlots().stream().anyMatch(slot -> slot.getAvailableCapacity() >= item.getPrepTime())))
+                .toList()).orElse(restaurants);
     }
 
     /**
@@ -119,7 +107,10 @@ public class RestaurantServiceManager {
 
     // Check if a restaurant is open at a given time
     private boolean isOpenAt(Restaurant restaurant, LocalDateTime time) {
-        return time.isAfter(restaurant.getOpeningTime()) && time.isBefore(restaurant.getClosingTime());
+        if (restaurant.getOpeningTime().isEmpty()) {
+            return false;
+        }
+        return time.isAfter(restaurant.getOpeningTime().get()) && time.isBefore(restaurant.getClosingTime().get());
     }
 
     public List<Restaurant> getRestaurants() {

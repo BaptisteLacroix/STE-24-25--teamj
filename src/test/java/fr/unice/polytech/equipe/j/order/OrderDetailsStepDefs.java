@@ -51,7 +51,7 @@ public class OrderDetailsStepDefs {
 
     @Then("[OrderDetails]the user choose a delivery date within the restaurant's preparation capabilities. {int} minutes before closing time")
     public void order_details_the_user_choose_a_delivery_date_within_the_restaurant_s_preparation_capabilities_minutes_before_closing_time(Integer int1) {
-        LocalDateTime localDateTime = user.getCurrentOrder().getRestaurant().getClosingTime();
+        LocalDateTime localDateTime = user.getCurrentOrder().getRestaurant().getClosingTime().get();
         ((IndividualOrder) user.getCurrentOrder()).getDeliveryDetails().setDeliveryTime(localDateTime.minusMinutes(int1));
     }
 

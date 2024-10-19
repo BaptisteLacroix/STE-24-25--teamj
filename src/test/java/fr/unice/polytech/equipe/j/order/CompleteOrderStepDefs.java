@@ -52,15 +52,15 @@ public class CompleteOrderStepDefs {
         assertNotNull(groupOrder.getGroupOrderId());
     }
 
-    @Given("He search restaurant that are open and can prepare items in time and should see:")
-    public void he_search_restaurant_that_are_open_and_can_prepare_items_in_time_and_should_see(io.cucumber.datatable.DataTable dataTable) {
+    @Given("He searches restaurants that are open and can prepare items in time and should see:")
+    public void he_searches_restaurants_that_are_open_and_can_prepare_items_in_time_and_should_see(io.cucumber.datatable.DataTable dataTable) {
         List<Restaurant> restaurants = RestaurantServiceManager.getInstance().searchRestaurantByDeliveryTime(groupOrder.getDeliveryDetails().getDeliveryTime());
         int expectedSize = dataTable.height() - 1;
         assertEquals(expectedSize, restaurants.size());
     }
 
-    @Given("He select the restaurant {string} and see the items compatible with the group order delivery time preparation:")
-    public void he_select_the_restaurant_and_see_the_items_compatible_with_the_group_order_delivery_time_preparation(String string, io.cucumber.datatable.DataTable dataTable) {
+    @Given("He selects the restaurant {string} and sees the items compatible with the group order delivery time preparation:")
+    public void he_selects_the_restaurant_and_sees_the_items_compatible_with_the_group_order_delivery_time_preparation(String string, io.cucumber.datatable.DataTable dataTable) {
         restaurant = RestaurantServiceManager.getInstance().searchByName(string).getFirst();
         List<MenuItem> items = RestaurantServiceManager.getInstance().searchItemsByDeliveryTime(restaurant, groupOrder.getDeliveryDetails().getDeliveryTime());
         int expectedSize = dataTable.height() - 1;
@@ -187,15 +187,15 @@ public class CompleteOrderStepDefs {
         assertNull(user1.getCurrentGroupOrder());
     }
 
-    @Given("He search restaurant that are open and can prepare items in time for it's individual order and should see:")
-    public void he_search_restaurant_that_are_open_and_can_prepare_items_in_time_for_it_s_individual_order_and_should_see(io.cucumber.datatable.DataTable dataTable) {
+    @Given("He searches restaurants that are open and can prepare items in time for it's individual order and should see:")
+    public void he_searches_restaurants_that_are_open_and_can_prepare_items_in_time_for_it_s_individual_order_and_should_see(io.cucumber.datatable.DataTable dataTable) {
         List<Restaurant> restaurants = RestaurantServiceManager.getInstance().searchRestaurantByDeliveryTime(((IndividualOrder) user1.getCurrentOrder()).getDeliveryDetails().getDeliveryTime());
         int expectedSize = dataTable.height() - 1;
         assertEquals(expectedSize, restaurants.size());
     }
 
-    @Given("He select the restaurant {string} and see the items compatible with the individual order delivery time preparation:")
-    public void he_select_the_restaurant_and_see_the_items_compatible_with_the_individual_order_delivery_time_preparation(String string, io.cucumber.datatable.DataTable dataTable) {
+    @Given("He selects the restaurant {string} and see the items compatible with the individual order delivery time preparation:")
+    public void he_selects_the_restaurant_and_see_the_items_compatible_with_the_individual_order_delivery_time_preparation(String string, io.cucumber.datatable.DataTable dataTable) {
         restaurant = RestaurantServiceManager.getInstance().searchByName(string).getFirst();
         List<MenuItem> items = RestaurantServiceManager.getInstance().searchItemsByDeliveryTime(restaurant, ((IndividualOrder) user1.getCurrentOrder()).getDeliveryDetails().getDeliveryTime());
         int expectedSize = dataTable.height() - 1;
