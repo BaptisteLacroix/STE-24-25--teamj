@@ -38,7 +38,7 @@ public class GroupOrder {
         return deliveryDetails;
     }
 
-    public Optional<LocalDateTime> getDeliveryTimeNotSet() {
+    public Optional<LocalDateTime> getPossibleDeliveryTime() {
         // If the delivery tim is not set return the latest delivery time possible from the orders items
         if (deliveryDetails.getDeliveryTime().isEmpty()) {
             Optional<LocalDateTime> latestDeliveryTime = Optional.empty();

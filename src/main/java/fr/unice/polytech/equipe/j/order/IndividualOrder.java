@@ -54,7 +54,7 @@ public class IndividualOrder extends Order {
                 '}';
     }
 
-    public Optional<LocalDateTime> getDeliveryTimeNotSet() {
+    public Optional<LocalDateTime> getPossibleDeliveryTime() {
         // If the delivery tim is not set return the latest delivery time possible from the order items
         if (deliveryDetails.getDeliveryTime().isEmpty()) {
             Optional<LocalDateTime> latestDeliveryTime = Optional.empty();

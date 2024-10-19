@@ -45,7 +45,7 @@ public class ConnectedUser extends User implements CheckoutObserver {
     }
 
     public void startSubGroupOrder(Restaurant restaurant) {
-        this.currentOrder = orderManager.startSubGroupOrder(restaurant, currentGroupOrder);
+        this.currentOrder = orderManager.startSubGroupOrder(restaurant, getCurrentGroupOrder());
     }
 
     public void joinGroupOrder(GroupOrder groupOrder) {
