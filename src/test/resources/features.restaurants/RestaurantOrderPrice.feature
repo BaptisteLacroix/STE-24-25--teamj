@@ -18,8 +18,3 @@ Feature: Order Price
     Given The restaurant wants to give a free item for every order with more than 5 items
     When Any user creates an order with less than 5 items
     Then The less expensive item from the order should not have a price of 0
-
-
-
-
-
