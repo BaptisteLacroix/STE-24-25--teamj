@@ -1,6 +1,6 @@
 package fr.unice.polytech.equipe.j.user;
 
-import fr.unice.polytech.equipe.j.order.DeliveryDetails;
+import fr.unice.polytech.equipe.j.delivery.DeliveryDetails;
 import fr.unice.polytech.equipe.j.order.GroupOrder;
 import fr.unice.polytech.equipe.j.order.IndividualOrder;
 import fr.unice.polytech.equipe.j.order.Order;
@@ -21,8 +21,8 @@ public class CampusUser extends User implements CheckoutObserver {
     private GroupOrder currentGroupOrder;
     private final OrderManager orderManager;
 
-    public CampusUser(String email, String password, double accountBalance, OrderManager orderManager) {
-        super(email, password, accountBalance);
+    public CampusUser(String email, String password, OrderManager orderManager) {
+        super(email, password);
         transaction = new Transaction(this);
         transaction.addObserver(this);
         this.orderManager = orderManager;

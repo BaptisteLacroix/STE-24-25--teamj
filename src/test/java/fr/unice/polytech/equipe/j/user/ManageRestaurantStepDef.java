@@ -50,8 +50,8 @@ public class ManageRestaurantStepDef {
 
     @Given("{string}, a restaurant manager of the {string} restaurant")
     public void aRestaurantManagerOfTheRestaurant(String name, String restaurantName) {
-        restaurant = new Restaurant(restaurantName, slots, LocalDateTime.now(clock), LocalDateTime.now(clock).plusHours(8), menu, clock);
-        restaurantManager = new RestaurantManager("jeanne@example.com", "password", 100.0, name, restaurant);
+        restaurant = new Restaurant(restaurantName, LocalDateTime.now(clock), LocalDateTime.now(clock).plusHours(8), menu, clock);
+        restaurantManager = new RestaurantManager("jeanne@example.com", "password", name, restaurant);
     }
 
     @And("the restaurant has a menu with the following items:")
@@ -135,7 +135,7 @@ public class ManageRestaurantStepDef {
             int maxCapacity = Integer.parseInt(row.get("maxCapacity"));
             int personnel = Integer.parseInt(row.get("personnel"));
 
-            Slot slot = new Slot(currentCapacity, maxCapacity, slotStart, personnel);
+            Slot slot = new Slot(slotStart, personnel);
             slots.add(slot);
         });
 

@@ -2,7 +2,7 @@ package fr.unice.polytech.equipe.j.restaurant;
 
 import fr.unice.polytech.equipe.j.delivery.DeliveryLocation;
 import fr.unice.polytech.equipe.j.delivery.DeliveryLocationManager;
-import fr.unice.polytech.equipe.j.order.DeliveryDetails;
+import fr.unice.polytech.equipe.j.delivery.DeliveryDetails;
 import fr.unice.polytech.equipe.j.order.OrderManager;
 import fr.unice.polytech.equipe.j.user.CampusUser;
 import io.cucumber.java.Before;
@@ -35,7 +35,7 @@ public class RestaurantSearchSteps {
         // Initialize the list before each scenario
         foundRestaurants = new ArrayList<>();
         clock = Clock.fixed(Instant.parse("2024-10-18T12:00:00Z"), ZoneId.of("Europe/Paris"));
-        user = new CampusUser("email", "password", 100, new OrderManager(clock));
+        user = new CampusUser("email", "password", new OrderManager(clock));
     }
 
     // When step - search for restaurants by name

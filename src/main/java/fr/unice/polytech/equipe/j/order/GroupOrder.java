@@ -1,5 +1,7 @@
 package fr.unice.polytech.equipe.j.order;
 
+import fr.unice.polytech.equipe.j.delivery.DeliveryDetails;
+
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.ArrayList;

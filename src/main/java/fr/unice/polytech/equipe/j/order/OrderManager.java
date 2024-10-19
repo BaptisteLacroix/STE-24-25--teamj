@@ -1,5 +1,6 @@
 package fr.unice.polytech.equipe.j.order;
 
+import fr.unice.polytech.equipe.j.delivery.DeliveryDetails;
 import fr.unice.polytech.equipe.j.payment.Transaction;
 import fr.unice.polytech.equipe.j.restaurant.MenuItem;
 import fr.unice.polytech.equipe.j.restaurant.Restaurant;
@@ -67,6 +68,10 @@ public class OrderManager {
         // Check if the item can be prepared in time for the delivery
         if (deliveryTime.isPresent() && isItemTooLate(menuItem, deliveryTime.get())) {
             throw new IllegalArgumentException("Cannot add item to order, it will not be ready in time.");
+        }
+
+        if (deliveryTime.isPresent() && !restaurant.thereIsSlotAvailable(menuItem, deliveryTime.get())) {
+            throw new IllegalArgumentException("Cannot add item to order, no slot available.");
         }
 
         // Add the item to the order

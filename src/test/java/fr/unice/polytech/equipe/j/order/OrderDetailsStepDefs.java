@@ -1,5 +1,6 @@
 package fr.unice.polytech.equipe.j.order;
 
+import fr.unice.polytech.equipe.j.delivery.DeliveryDetails;
 import fr.unice.polytech.equipe.j.delivery.DeliveryLocation;
 import fr.unice.polytech.equipe.j.delivery.DeliveryLocationManager;
 import fr.unice.polytech.equipe.j.restaurant.Restaurant;
@@ -31,7 +32,7 @@ public class OrderDetailsStepDefs {
 
     @Given("[OrderDetails]the user is registered")
     public void order_details_the_user_is_registered() {
-        user = new CampusUser("john@example.com", "password123", 100.0, new OrderManager(clock));
+        user = new CampusUser("john@example.com", "password123", new OrderManager(clock));
     }
 
     @When("[OrderDetails]the user selects the restaurant {string}")

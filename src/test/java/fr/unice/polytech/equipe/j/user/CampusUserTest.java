@@ -1,6 +1,6 @@
 package fr.unice.polytech.equipe.j.user;
 
-import fr.unice.polytech.equipe.j.order.DeliveryDetails;
+import fr.unice.polytech.equipe.j.delivery.DeliveryDetails;
 import fr.unice.polytech.equipe.j.order.GroupOrder;
 import fr.unice.polytech.equipe.j.order.IndividualOrder;
 import fr.unice.polytech.equipe.j.order.Order;
@@ -52,7 +52,7 @@ class CampusUserTest {
         when(mockRestaurant.isOrderValid(any(Order.class))).thenReturn(true);
 
         // Create ConnectedUser with the mock OrderManager
-        campusUser = new CampusUser("user@example.com", "password123", 100.0, mockOrderManager);
+        campusUser = new CampusUser("user@example.com", "password123", mockOrderManager);
 
         // Mock OrderManager behaviors
         when(mockOrderManager.startSingleOrder(mockRestaurant, mockDeliveryDetails)).thenReturn(mockIndividualOrder);

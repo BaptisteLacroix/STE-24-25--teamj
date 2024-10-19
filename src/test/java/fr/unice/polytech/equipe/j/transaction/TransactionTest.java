@@ -51,38 +51,19 @@ class TransactionTest {
 
     @Test
     void testProceedCheckout_Success() {
-        when(user.getAccountBalance()).thenReturn(100.0);
         transaction.addObserver(observer1);
         transaction.addObserver(observer2);
         transaction.proceedCheckout(order, 50.0);
-        verify(user, times(1)).setAccountBalance(50.0);
         verify(observer1, times(1)).orderPaid(order);
         verify(observer2, times(1)).orderPaid(order);
-    }
-
-    @Test
-    void testProceedCheckout_InsufficientFunds() {
-        when(user.getAccountBalance()).thenReturn(100.0);
-        assertThrows(IllegalArgumentException.class, () -> transaction.proceedCheckout(order, 150.0));
-        verify(user, never()).setAccountBalance(anyDouble());
-        verify(observer1, never()).orderPaid(any(Order.class));
-        verify(observer2, never()).orderPaid(any(Order.class));
     }
 
     @Test
     void testProceedCheckout_ObserversNotified() {
-        when(user.getAccountBalance()).thenReturn(100.0);
         transaction.addObserver(observer1);
         transaction.addObserver(observer2);
         transaction.proceedCheckout(order, 50.0);
         verify(observer1, times(1)).orderPaid(order);
         verify(observer2, times(1)).orderPaid(order);
-    }
-
-    @Test
-    void testProceedCheckout_AccountBalanceNotUpdatedOnFailure() {
-        when(user.getAccountBalance()).thenReturn(100.0);
-        assertThrows(IllegalArgumentException.class, () -> transaction.proceedCheckout(order, 150.0));
-        verify(user, never()).setAccountBalance(anyDouble());
     }
 }

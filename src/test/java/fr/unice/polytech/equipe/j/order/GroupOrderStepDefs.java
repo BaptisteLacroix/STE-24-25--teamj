@@ -1,5 +1,6 @@
 package fr.unice.polytech.equipe.j.order;
 
+import fr.unice.polytech.equipe.j.delivery.DeliveryDetails;
 import fr.unice.polytech.equipe.j.delivery.DeliveryLocation;
 import fr.unice.polytech.equipe.j.delivery.DeliveryLocationManager;
 import fr.unice.polytech.equipe.j.user.CampusUser;
@@ -29,7 +30,7 @@ public class GroupOrderStepDefs {
 
     @Given("[GroupOrder]the user is registered")
     public void the_user_is_registered() {
-        user = new CampusUser("john@example.com", "password123", 100.0, new OrderManager(clock));
+        user = new CampusUser("john@example.com", "password123", new OrderManager(clock));
     }
 
     @When("[GroupOrder]the user creates a group order with delivery location {string}")

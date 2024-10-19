@@ -24,11 +24,7 @@ public class Transaction {
     }
 
     public void proceedCheckout(Order order, double price) throws IllegalArgumentException {
-        if (user.getAccountBalance() < price) {
-            throw new IllegalArgumentException("Insufficient funds");
-        }
-        user.setAccountBalance(user.getAccountBalance() - price);
-
+        // TODO: Logic of the payment
         for (CheckoutObserver observer : observers) {
             // Call the restaurant and the user so the restaurant set the order as paid and the user can see the order uuid in his history
             observer.orderPaid(order);

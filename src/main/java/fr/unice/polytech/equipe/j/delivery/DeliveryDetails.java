@@ -1,4 +1,4 @@
-package fr.unice.polytech.equipe.j.order;
+package fr.unice.polytech.equipe.j.delivery;
 
 import fr.unice.polytech.equipe.j.delivery.DeliveryLocation;
 import fr.unice.polytech.equipe.j.delivery.DeliveryLocationManager;
@@ -17,7 +17,7 @@ public class DeliveryDetails {
         // Check that the location exists
         DeliveryLocationManager.getInstance().findLocationByName(deliveryLocation.locationName());
         this.deliveryLocation = deliveryLocation;
-        this.deliveryTime = Optional.ofNullable(deliveryTime);
+        this.deliveryTime = deliveryTime == null ? Optional.empty() : Optional.of(deliveryTime);
     }
 
     public DeliveryLocation getDeliveryLocation() {

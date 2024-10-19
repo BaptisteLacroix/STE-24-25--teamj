@@ -1,5 +1,6 @@
 package fr.unice.polytech.equipe.j.order;
 
+import fr.unice.polytech.equipe.j.delivery.DeliveryDetails;
 import fr.unice.polytech.equipe.j.delivery.DeliveryLocation;
 import fr.unice.polytech.equipe.j.delivery.DeliveryLocationManager;
 import fr.unice.polytech.equipe.j.restaurant.MenuItem;
@@ -36,8 +37,8 @@ public class ValidateGroupOrderStepDefs {
 
     @Given("[ValidateGroupOrder]the user is registered")
     public void validate_group_order_the_user_is_registered() {;
-        groupOrderCreator = new CampusUser("test@test.com", "password", 100, new OrderManager(clock));
-        groupOrderJoiner = new CampusUser("test2@test.com", "password", 100, new OrderManager(clock));
+        groupOrderCreator = new CampusUser("test@test.com", "password", new OrderManager(clock));
+        groupOrderJoiner = new CampusUser("test2@test.com", "password", new OrderManager(clock));
     }
 
     @Given("[ValidateGroupOrder]the user creates a group order with delivery location {string} and delivery time of {int}:{int} PM")

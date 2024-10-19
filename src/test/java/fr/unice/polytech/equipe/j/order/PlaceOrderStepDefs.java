@@ -1,5 +1,6 @@
 package fr.unice.polytech.equipe.j.order;
 
+import fr.unice.polytech.equipe.j.delivery.DeliveryDetails;
 import fr.unice.polytech.equipe.j.delivery.DeliveryLocation;
 import fr.unice.polytech.equipe.j.delivery.DeliveryLocationManager;
 import fr.unice.polytech.equipe.j.restaurant.MenuItem;
@@ -41,7 +42,7 @@ public class PlaceOrderStepDefs {
      */
     @Given("the user is registered")
     public void the_user_is_registered() {
-        campusUser = new CampusUser("john@example.com", "password", 100.0, new OrderManager(clock));
+        campusUser = new CampusUser("john@example.com", "password", new OrderManager(clock));
     }
 
     /**

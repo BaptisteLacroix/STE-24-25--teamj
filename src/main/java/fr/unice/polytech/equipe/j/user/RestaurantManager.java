@@ -10,8 +10,8 @@ public class RestaurantManager extends User {
     private Restaurant restaurant;
     private String name;
 
-    public RestaurantManager(String email, String password, double accountBalance, String name, Restaurant restaurant) {
-        super(email, password, accountBalance);
+    public RestaurantManager(String email, String password, String name, Restaurant restaurant) {
+        super(email, password);
         this.name = name;
         this.restaurant = restaurant;
     }
