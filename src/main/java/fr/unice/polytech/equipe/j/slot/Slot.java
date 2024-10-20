@@ -99,6 +99,10 @@ public class Slot {
         return currentCapacity;
     }
 
+    public void setCurrentCapacity(int capacity){
+        this.currentCapacity = capacity;
+    }
+
     public LocalDateTime getOpeningDate() {
         return openingDate;
     }
