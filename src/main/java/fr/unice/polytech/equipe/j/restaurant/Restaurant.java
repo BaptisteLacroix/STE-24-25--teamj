@@ -1,11 +1,12 @@
 package fr.unice.polytech.equipe.j.restaurant;
+import fr.unice.polytech.equipe.j.TimeUtils;
 import fr.unice.polytech.equipe.j.order.GroupOrder;
 import fr.unice.polytech.equipe.j.order.Order;
 import fr.unice.polytech.equipe.j.order.OrderStatus;
 import fr.unice.polytech.equipe.j.payment.CheckoutObserver;
 import fr.unice.polytech.equipe.j.slot.Slot;
 
-import java.time.Clock;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,12 +28,12 @@ public class Restaurant implements CheckoutObserver {
     private final List<Order> pendingOrders = new ArrayList<>();
     private int numberOfPersonnel;
     private List<Order> orderHistory = new ArrayList<>();
-    private Clock clock;
+    
 
-    public Restaurant(String name, LocalDateTime openingTime, LocalDateTime closingTime, Menu menu, Clock clock) {
-        this(name, openingTime, closingTime, menu, clock, OrderPriceStrategyFactory.makeGiveItemForNItems(8));
+    public Restaurant(String name, LocalDateTime openingTime, LocalDateTime closingTime, Menu menu) {
+        this(name, openingTime, closingTime, menu, OrderPriceStrategyFactory.makeGiveItemForNItems(8));
     }
-    private Restaurant(String name, LocalDateTime openingTime, LocalDateTime closingTime, Menu menu, Clock clock, OrderPriceStrategy strategy) {
+    private Restaurant(String name, LocalDateTime openingTime, LocalDateTime closingTime, Menu menu, OrderPriceStrategy strategy) {
         this.restaurantName = name;
         this.openingTime = openingTime == null ? Optional.empty() : Optional.of(openingTime);
         if (closingTime != null && closingTime.isBefore(openingTime)) {
@@ -45,7 +46,6 @@ public class Restaurant implements CheckoutObserver {
         this.menu = menu;
         this.slots = slots;
         this.orderPriceStrategy = strategy;
-        this.clock = clock;
         generateSlots();
     }
 
@@ -204,7 +204,7 @@ public class Restaurant implements CheckoutObserver {
             return true;
         }
 
-        LocalDateTime now = LocalDateTime.now(getClock());
+        LocalDateTime now = TimeUtils.getNow();
         LocalDateTime deliveryTime = groupOrder.getDeliveryDetails().getDeliveryTime().get();
         LocalDateTime closingTime = getClosingTime().orElseThrow();
 
@@ -224,7 +224,7 @@ public class Restaurant implements CheckoutObserver {
      * @return true if there is a slot available that can prepare the item before the delivery time, false otherwise.
      */
     public boolean slotAvailable(MenuItem menuItem, LocalDateTime deliveryTime) {
-        LocalDateTime now = LocalDateTime.now(clock);
+        LocalDateTime now = TimeUtils.getNow();
 
         for (Slot slot : slots) {
             // Check if the slot's opening time is before the delivery time and within operating hours
@@ -247,10 +247,6 @@ public class Restaurant implements CheckoutObserver {
         if (slotToUpdate != null) {
             slotToUpdate.setNumberOfPersonnel(numberOfPersonnel);
         }
-    }
-
-    public Clock getClock() {
-        return clock;
     }
 
 

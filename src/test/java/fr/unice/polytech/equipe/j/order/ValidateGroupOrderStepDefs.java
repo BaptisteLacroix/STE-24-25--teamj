@@ -1,5 +1,6 @@
 package fr.unice.polytech.equipe.j.order;
 
+import fr.unice.polytech.equipe.j.TimeUtils;
 import fr.unice.polytech.equipe.j.delivery.DeliveryDetails;
 import fr.unice.polytech.equipe.j.delivery.DeliveryLocation;
 import fr.unice.polytech.equipe.j.delivery.DeliveryLocationManager;
@@ -28,26 +29,29 @@ public class ValidateGroupOrderStepDefs {
     private CampusUser groupOrderCreator;
     private CampusUser groupOrderJoiner;
     private GroupOrder groupOrder;
-    private Clock clock;
+    private Order orderUser1;
+    private Order orderUser2;
 
     @Before
     public void setUp() {
-        clock = Clock.fixed(Instant.parse("2024-10-18T12:00:00Z"), ZoneId.of("Europe/Paris"));
+        TimeUtils.setClock(Clock.fixed(Instant.parse("2024-10-18T12:00:00Z"), ZoneId.of("Europe/Paris")));
     }
 
     @Given("[ValidateGroupOrder]the user is registered")
     public void validate_group_order_the_user_is_registered() {;
-        groupOrderCreator = new CampusUser("test@test.com", "password", new OrderManager(clock));
-        groupOrderJoiner = new CampusUser("test2@test.com", "password", new OrderManager(clock));
+        groupOrderCreator = new CampusUser("test@test.com", "password", new OrderManager());
+        groupOrderJoiner = new CampusUser("test2@test.com", "password", new OrderManager());
     }
 
     @Given("[ValidateGroupOrder]the user creates a group order with delivery location {string} and delivery time of {int}:{int} PM")
     public void validate_group_order_the_user_creates_a_group_order_with_delivery_location_and_delivery_time_of_pm(String string, Integer int1, Integer int2) {
         DeliveryLocation deliveryLocation = DeliveryLocationManager.getInstance().findLocationByName(string);
-        LocalDateTime deliveryTime = LocalDateTime.now(clock).withHour(int1).withMinute(int2);
+        LocalDateTime deliveryTime = TimeUtils.getNow().withHour(int1).withMinute(int2);
         DeliveryDetails deliveryDetails = new DeliveryDetails(deliveryLocation, deliveryTime);
-        groupOrderCreator.createGroupOrder(deliveryDetails);
-        groupOrder = groupOrderCreator.getCurrentGroupOrder();
+
+        this.groupOrder = new GroupOrder(deliveryDetails);
+        this.groupOrderCreator.setCurrentGroupOrder(groupOrder);
+        this.groupOrder.addUser(this.groupOrderCreator);
         assertNotNull(groupOrder);
     }
 
@@ -55,19 +59,19 @@ public class ValidateGroupOrderStepDefs {
     public void validate_group_order_the_user_receives_a_group_order_identifier() {
         assertNotNull(groupOrder.getGroupOrderId());
     }
-    // TODO add back
-//
-//    @Given("[ValidateGroupOrder]the user adds the following items to his order from the restaurant {string}:")
-//    public void validate_group_order_the_user_adds_the_following_items_to_his_order_from_the_restaurant(String string, io.cucumber.datatable.DataTable dataTable) {
-//        Restaurant restaurant = RestaurantServiceManager.getInstance(clock).searchByName(string).getFirst();
-//        groupOrderCreator.startSubGroupOrder(restaurant);
-//        for (int i = 1; i < dataTable.height(); i++) {
-//            String itemName = dataTable.row(i).get(0);
-//            MenuItem item = restaurant.getMenu().findItemByName(itemName);
-//            groupOrderCreator.addItemToOrder(restaurant, item);
-//        }
-//        assertEquals(2, groupOrderCreator.getCurrentOrder().getItems().size());
-//    }
+
+    @Given("[ValidateGroupOrder]the user adds the following items to his order from the restaurant {string}:")
+    public void validate_group_order_the_user_adds_the_following_items_to_his_order_from_the_restaurant(String string, io.cucumber.datatable.DataTable dataTable) {
+        Restaurant restaurant = RestaurantServiceManager.getInstance().searchByName(string).getFirst();
+        this.orderUser1 = new Order(restaurant, groupOrderCreator);
+        this.groupOrder.addOrder(orderUser1);
+        for (int i = 1; i < dataTable.height(); i++) {
+            String itemName = dataTable.row(i).getFirst();
+            MenuItem item = restaurant.getMenu().findItemByName(itemName);
+            this.orderUser1.addItem(item);
+        }
+        assertEquals(2, groupOrderCreator.getCurrentOrder().getItems().size());
+    }
 
     @When("[ValidateGroupOrder]the user validates his order")
     public void validate_group_order_the_user_validates_his_order() {
@@ -90,7 +94,7 @@ public class ValidateGroupOrderStepDefs {
 
     @Then("[ValidateGroupOrder]the user validates his order and validates the group order and specifies a delivery time of {int}:{int} PM")
     public void validate_group_order_the_user_validate_the_group_order_and_the_group_order_delivery_time_is_pm(Integer int1, Integer int2) {
-        LocalDateTime deliveryTime = LocalDateTime.now(clock).withHour(int1).withMinute(int2);
+        LocalDateTime deliveryTime = TimeUtils.getNow().withHour(int1).withMinute(int2);
         groupOrderCreator.validateOrderAndGroupOrder(deliveryTime);
         assertEquals(OrderStatus.VALIDATED, groupOrder.getStatus());
         assertTrue(groupOrder.getDeliveryDetails().getDeliveryTime().isPresent());
@@ -99,7 +103,7 @@ public class ValidateGroupOrderStepDefs {
 
     @Then("[ValidateGroupOrder]the user validates his order and validates the group order and specifies a delivery time of {int}:{int} PM that is not compatible")
     public void validate_group_order_the_user_validate_the_group_order_and_the_group_order_delivery_time_is_pm_that_is_not_compatible(Integer int1, Integer int2) {
-        LocalDateTime deliveryTime = LocalDateTime.now(clock).withHour(int1).withMinute(int2);
+        LocalDateTime deliveryTime = TimeUtils.getNow().withHour(int1).withMinute(int2);
         assertThrows(UnsupportedOperationException.class, () -> groupOrderCreator.validateOrderAndGroupOrder(deliveryTime));
         assertNotEquals(OrderStatus.VALIDATED, groupOrder.getStatus());
         assertFalse(groupOrder.getDeliveryDetails().getDeliveryTime().isPresent());
@@ -114,24 +118,25 @@ public class ValidateGroupOrderStepDefs {
     public void validate_group_order_the_group_order_delivery_time_is_not_set() {
         assertTrue(groupOrder.getDeliveryDetails().getDeliveryTime().isEmpty());
     }
-    // TODO add back
-//
-//    @When("[ValidateGroupOrder]another user joins the group order")
-//    public void validate_group_order_another_user_joins_the_group_order() {
-//        groupOrderJoiner.joinGroupOrder(groupOrder);
-//    }
-//
-//    @When("[ValidateGroupOrder]the other user adds the following items to his order from the restaurant {string}:")
-//    public void validate_group_order_the_other_user_adds_the_following_items_to_his_order(String string, io.cucumber.datatable.DataTable dataTable) {
-//        Restaurant restaurant = RestaurantServiceManager.getInstance(clock).searchByName(string).getFirst();
-//        groupOrderJoiner.startSubGroupOrder(restaurant);
-//        for (int i = 1; i < dataTable.height(); i++) {
-//            MenuItem item = restaurant.getMenu().findItemByName(dataTable.row(i).get(0));
-//            groupOrderJoiner.addItemToOrder(restaurant, item);
-//        }
-//        assertEquals(1, groupOrderJoiner.getCurrentOrder().getItems().size());
-//        assertEquals(2, groupOrder.getOrders().size());
-//    }
+
+    @When("[ValidateGroupOrder]another user joins the group order")
+    public void validate_group_order_another_user_joins_the_group_order() {
+        groupOrder.addUser(groupOrderJoiner);
+        groupOrderJoiner.setCurrentGroupOrder(groupOrder);
+    }
+
+    @When("[ValidateGroupOrder]the other user adds the following items to his order from the restaurant {string}:")
+    public void validate_group_order_the_other_user_adds_the_following_items_to_his_order(String string, io.cucumber.datatable.DataTable dataTable) {
+        Restaurant restaurant = RestaurantServiceManager.getInstance().searchByName(string).getFirst();
+        this.orderUser2 = new Order(restaurant, groupOrderJoiner);
+        this.groupOrder.addOrder(this.orderUser2);
+        for (int i = 1; i < dataTable.height(); i++) {
+            MenuItem item = restaurant.getMenu().findItemByName(dataTable.row(i).get(0));
+            this.orderUser2.addItem(item);
+        }
+        assertEquals(1, orderUser2.getItems().size());
+        assertEquals(2, groupOrder.getOrders().size());
+    }
 
     @When("[ValidateGroupOrder]the other user validate it's order and the group order")
     public void validate_group_order_the_other_user_validates_his_order() {
@@ -147,5 +152,4 @@ public class ValidateGroupOrderStepDefs {
     public void validate_group_order_the_group_order_is_validated() {
         assertEquals(OrderStatus.VALIDATED, groupOrder.getStatus());
     }
-
 }

@@ -119,7 +119,7 @@ public class CampusUser extends User implements CheckoutObserver {
     }
 
     /**
-     * TODO : this method should be in the Order classes
+     * TODO : this method should desctructured into two methds
      */
     @Deprecated
     public void validateOrderAndGroupOrder() {

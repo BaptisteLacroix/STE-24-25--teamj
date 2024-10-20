@@ -1,11 +1,11 @@
 package fr.unice.polytech.equipe.j.order;
 
+import fr.unice.polytech.equipe.j.TimeUtils;
 import fr.unice.polytech.equipe.j.delivery.DeliveryDetails;
 import fr.unice.polytech.equipe.j.restaurant.MenuItem;
 import fr.unice.polytech.equipe.j.restaurant.Restaurant;
 import fr.unice.polytech.equipe.j.user.CampusUser;
 
-import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -15,6 +15,21 @@ public class IndividualOrder extends Order {
     public IndividualOrder(Restaurant restaurant, DeliveryDetails deliveryDetails, CampusUser user) {
         super(restaurant, user);
         this.deliveryDetails = deliveryDetails;
+        this.setOnItemAdded(this::checkOrderUpdate);
+    }
+
+    private void checkOrderUpdate(MenuItem menuItem) {
+        // Check if the item can be prepared in time for the delivery
+        Optional<LocalDateTime> deliveryTime = this.deliveryDetails.getDeliveryTime();
+        LocalDateTime estimatedReadyTime = TimeUtils.getNow().plusSeconds(menuItem.getPrepTime());
+
+        if (deliveryTime.isPresent() && estimatedReadyTime.isAfter(deliveryTime.orElseThrow())){
+            throw new IllegalArgumentException("Cannot add item to order, it will not be ready in time.");
+        }
+
+        if (deliveryTime.isPresent() && !this.getRestaurant().slotAvailable(menuItem, deliveryTime.get())) {
+            throw new IllegalArgumentException("Cannot add item to order, no slot available.");
+        }
     }
 
     public DeliveryDetails getDeliveryDetails() {
@@ -26,7 +41,7 @@ public class IndividualOrder extends Order {
 //     */
 //    public void setDeliveryTime(Restaurant restaurant, LocalDateTime deliveryTime) {
 //        // Check if the delivery time is in the past
-//        if (deliveryTime.isBefore(LocalDateTime.now(getClock()))) {
+//        if (deliveryTime.isBefore(TimeUtils.getNow())) {
 //            throw new UnsupportedOperationException("You cannot specify a delivery time in the past.");
 //        }
 //
@@ -41,7 +56,7 @@ public class IndividualOrder extends Order {
 //        }
 //
 //        // Check if the delivery time is compatible with the preparation time of the items
-//        LocalDateTime earliestPossibleDeliveryTime = LocalDateTime.now(getClock()).plusSeconds(restaurant.getPreparationTime(getItems()));
+//        LocalDateTime earliestPossibleDeliveryTime = TimeUtils.getNow().plusSeconds(restaurant.getPreparationTime(getItems()));
 //        if (deliveryTime.isBefore(earliestPossibleDeliveryTime)) {
 //            throw new UnsupportedOperationException("The delivery time is too soon.");
 //        }
@@ -67,7 +82,7 @@ public class IndividualOrder extends Order {
 //            Optional<LocalDateTime> latestDeliveryTime = Optional.empty();
 //            for (MenuItem item : getItems()) {
 //                int preparationTime = item.getPrepTime();
-//                LocalDateTime orderDeliveryTime = LocalDateTime.now(getClock()).plusSeconds(preparationTime);
+//                LocalDateTime orderDeliveryTime = TimeUtils.getNow().plusSeconds(preparationTime);
 //                if (latestDeliveryTime.isEmpty() || orderDeliveryTime.isAfter(latestDeliveryTime.get())) {
 //                    latestDeliveryTime = Optional.of(orderDeliveryTime);
 //                }

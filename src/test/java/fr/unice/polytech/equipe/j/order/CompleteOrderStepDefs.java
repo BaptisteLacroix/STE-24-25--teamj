@@ -24,8 +24,6 @@ import java.util.List;
 import static org.junit.Assert.*;
 
 public class CompleteOrderStepDefs {
-    public static final RestaurantServiceManager RESTAURANT_SERVICE_MANAGER = RestaurantServiceManager.getInstance();
-    private Clock clock;
     private CampusUser user1;
     private CampusUser user2;
     private CampusUser user3;
@@ -41,15 +39,14 @@ public class CompleteOrderStepDefs {
 
     @Before
     public void setUp() {
-        clock = Clock.fixed(Instant.parse("2024-10-18T12:00:00Z"), ZoneId.of("Europe/Paris"));
-        TimeUtils.setClock(clock);
+        TimeUtils.setClock(Clock.fixed(Instant.parse("2024-10-18T12:00:00Z"), ZoneId.of("Europe/Paris")));
     }
 
     @Given("the first user creates a group order with delivery location {string} and delivery time of {int}:{int} PM")
     public void the_first_user_creates_a_group_order_with_delivery_location_and_delivery_time_of_pm(String string, Integer int1, Integer int2) {
-        user1 = new CampusUser("user1@user", "password123", new OrderManager(clock));
+        user1 = new CampusUser("user1@user", "password123", new OrderManager());
         DeliveryLocation location = DeliveryLocationManager.getInstance().findLocationByName(string);
-        DeliveryDetails deliveryDetails = new DeliveryDetails(location, LocalDateTime.now(clock).withHour(int1).withMinute(int2));
+        DeliveryDetails deliveryDetails = new DeliveryDetails(location, TimeUtils.getNow().withHour(int1).withMinute(int2));
         this.groupOrder = new GroupOrder(deliveryDetails);
         groupOrder.addUser(user1);
         user1.setCurrentGroupOrder(groupOrder);
@@ -63,7 +60,7 @@ public class CompleteOrderStepDefs {
 
     @When("He searches restaurants that are open and can prepare items in time")
     public void heSearchesRestaurantsThatAreOpenAndCanPrepareItemsInTime() {
-        this.foundRestaurants = RESTAURANT_SERVICE_MANAGER.searchRestaurantByDeliveryTime(groupOrder.getDeliveryDetails().getDeliveryTime());
+        this.foundRestaurants = RestaurantServiceManager.getInstance().searchRestaurantByDeliveryTime(groupOrder.getDeliveryDetails().getDeliveryTime());
     }
 
     @Then("He should see:")
@@ -74,12 +71,12 @@ public class CompleteOrderStepDefs {
 
     @When("He selects the restaurant {string}")
     public void heSelectsTheRestaurant(String name) {
-        this.restaurant = RESTAURANT_SERVICE_MANAGER.searchByName(name).getFirst();
+        this.restaurant = RestaurantServiceManager.getInstance().searchByName(name).getFirst();
     }
 
     @Then("He should see the items compatible with the group order delivery time preparation:")
     public void heShouldSeeTheItemsCompatibleWithTheGroupOrderDeliveryTimePreparation(DataTable dataTable) {
-        List<MenuItem> items = RESTAURANT_SERVICE_MANAGER.searchItemsByDeliveryTime(restaurant, groupOrder.getDeliveryDetails().getDeliveryTime());
+        List<MenuItem> items = RestaurantServiceManager.getInstance().searchItemsByDeliveryTime(restaurant, groupOrder.getDeliveryDetails().getDeliveryTime());
         int expectedSize = dataTable.height() - 1;
         assertEquals(expectedSize, items.size());
     }
@@ -110,7 +107,7 @@ public class CompleteOrderStepDefs {
 
     @Given("The second user joins the group order")
     public void theSecondUserJoinsTheGroupCommand() {
-        this.user2 = new CampusUser("user2@user", "password123", new OrderManager(clock));
+        this.user2 = new CampusUser("user2@user", "password123", new OrderManager());
         this.user2.setCurrentGroupOrder(groupOrder);
         this.groupOrder.addUser(user2);
     }
@@ -141,7 +138,7 @@ public class CompleteOrderStepDefs {
 
     @Given("The third user joins the group order")
     public void theThirdUserJoinsTheGroupOrder() {
-        user3 = new CampusUser("user3@user", "password", new OrderManager(clock));
+        user3 = new CampusUser("user3@user", "password", new OrderManager());
         groupOrder.addUser(user3);
         user3.setCurrentGroupOrder(groupOrder);
     }
@@ -183,7 +180,7 @@ public class CompleteOrderStepDefs {
 
     @And("He selects the restaurant {string} that cannot prepare items in time")
     public void heSelectsTheRestaurantThatCannotPrepareItemsInTime(String restaurantName) {
-        restaurant = RESTAURANT_SERVICE_MANAGER.searchByName(restaurantName).getFirst();
+        restaurant = RestaurantServiceManager.getInstance().searchByName(restaurantName).getFirst();
         orderUser2 = new Order(restaurant, user2);
         try {
             this.groupOrder.addOrder(orderUser2);
@@ -195,7 +192,7 @@ public class CompleteOrderStepDefs {
 
     @Given("the second user selects the restaurant {string}")
     public void the_second_user_selects_the_restaurant(String string) {
-        restaurant = RESTAURANT_SERVICE_MANAGER.searchByName(string).getFirst();
+        restaurant = RestaurantServiceManager.getInstance().searchByName(string).getFirst();
     }
 
     @When("The second user tries to create an order with the following items:")
@@ -236,7 +233,7 @@ public class CompleteOrderStepDefs {
 
     @Given("The third user tries to join the group order")
     public void the_third_user_tries_to_join_the_group_order() {
-        user3 = new CampusUser("user@user", "password", new OrderManager(clock));
+        user3 = new CampusUser("user@user", "password", new OrderManager());
         try {
             groupOrder.addUser(user3);
         } catch (Exception e) {

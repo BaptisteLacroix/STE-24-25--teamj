@@ -1,49 +1,20 @@
 package fr.unice.polytech.equipe.j.order;
 
+import fr.unice.polytech.equipe.j.TimeUtils;
 import fr.unice.polytech.equipe.j.delivery.DeliveryDetails;
 import fr.unice.polytech.equipe.j.payment.Transaction;
 import fr.unice.polytech.equipe.j.restaurant.MenuItem;
 import fr.unice.polytech.equipe.j.restaurant.Restaurant;
 import fr.unice.polytech.equipe.j.user.CampusUser;
 
-import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
 
 public class OrderManager {
-    private final Clock clock;
-
-    public Clock getClock() {
-        return clock;
-    }
-
-    public OrderManager(Clock clock) {
-        this.clock = clock;
-    }
-
     public GroupOrder startGroupOrder(DeliveryDetails deliveryDetails) {
         return new GroupOrder(deliveryDetails);
     }
-
-//    public IndividualOrder startSingleOrder(Restaurant restaurant, DeliveryDetails deliveryDetails) {
-//        if (restaurant.capacityCheck()) {
-//            IndividualOrder order = new IndividualOrder(restaurant, deliveryDetails);
-//            restaurant.addOrder(order);
-//            return order;
-//        }
-//        return null;
-//    }
-//
-//    public Order startSubGroupOrder(Restaurant restaurant, GroupOrder groupOrder) {
-//        if (restaurant.capacityCheck() && restaurant.canPrepareItemForGroupOrderDeliveryTime(groupOrder)) {
-//            Order order = new Order(restaurant);
-//            restaurant.addOrder(order);
-//            groupOrder.addOrder(order);
-//            return order;
-//        }
-//        return null;
-//    }
 
     public void cancelOrder(Restaurant restaurant, Order order) {
         restaurant.cancelOrder(order);
@@ -82,7 +53,7 @@ public class OrderManager {
      * Helper method to check if the item's preparation time exceeds the delivery time.
      */
     private boolean isItemTooLate(MenuItem menuItem, LocalDateTime deliveryTime) {
-        LocalDateTime estimatedReadyTime = LocalDateTime.now(getClock()).plusSeconds(menuItem.getPrepTime());
+        LocalDateTime estimatedReadyTime = TimeUtils.getNow().plusSeconds(menuItem.getPrepTime());
         return estimatedReadyTime.isAfter(deliveryTime);
     }
 

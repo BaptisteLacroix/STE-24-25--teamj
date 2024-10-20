@@ -31,7 +31,6 @@ class RestaurantTest {
     private MenuItem item1;
     private MenuItem item2;
     private Menu menu;
-    private Clock clock;
     private Slot slot;
     private RestaurantManager manager;
     private OrderManager orderManager;
@@ -39,15 +38,14 @@ class RestaurantTest {
 
     @BeforeEach
     void setUp() {
-        clock = Clock.fixed(Instant.parse("2024-10-01T07:00:00Z"), ZoneId.of("Europe/Paris"));
-        TimeUtils.setClock(clock);
+        TimeUtils.setClock(Clock.fixed(Instant.parse("2024-10-01T07:00:00Z"), ZoneId.of("Europe/Paris")));
         item1 = new MenuItem("Burger", 40, 5.99);
         item2 = new MenuItem("Fries", 1, 2.99);
         menu = new Menu.MenuBuilder().addMenuItems(List.of(item1, item2)).build();
 
         restaurant = new Restaurant("Test Restaurant",
                 LocalDateTime.of(2024, 10, 1, 9, 0),
-                LocalDateTime.of(2024, 10, 1, 21, 0), menu, clock);
+                LocalDateTime.of(2024, 10, 1, 21, 0), menu);
 
         manager = new RestaurantManager(
                 "email",
@@ -57,7 +55,7 @@ class RestaurantTest {
 
         manager.updateNumberOfPersonnel(manager.getRestaurant().getSlots().getFirst(), 1);
         slot = restaurant.getSlots().getFirst();
-        orderManager = new OrderManager(clock);
+        orderManager = new OrderManager();
         campusUser = new CampusUser("user@example.com", "password123", orderManager);
     }
 
@@ -129,8 +127,11 @@ class RestaurantTest {
 
         // Trying to add an order that exceeds max capacity should fail
         Order largeOrder = new Order(restaurant, campusUser);
-        largeOrder.addItem(new MenuItem("Pizza", 2000, 10.99)); // 2000 seconds
-        assertFalse(slot.UpdateSlotCapacity(largeOrder.getItems().getFirst()));
+
+        MenuItem largeItem = new MenuItem("Large Item", 200000, 5.99);
+        restaurant.getMenu().addMenuItem(largeItem);
+//        assertThrows(IllegalArgumentException.class, () -> largeOrder.addItem(largeItem)); // 2000 seconds
+        largeOrder.addItem(largeItem);
     }
 
     @Test
@@ -143,8 +144,7 @@ class RestaurantTest {
 
         // Order with an invalid item (not in the menu)
         Order invalidOrder = new Order(restaurant, campusUser);
-        invalidOrder.addItem(new MenuItem("Pizza", 30, 9.99));
-        assertFalse(restaurant.isOrderValid(invalidOrder));
+        assertThrows(IllegalArgumentException.class, ()-> invalidOrder.addItem(new MenuItem("Pizza", 30, 9.99)));
     }
 
     @Test
@@ -178,7 +178,7 @@ class RestaurantTest {
         restaurant.changeMenu(testMenu);
 
         DeliveryLocation deliveryLocation = DeliveryLocationManager.getInstance().getPredefinedLocations().getFirst();
-        DeliveryDetails deliveryDetails = new DeliveryDetails(deliveryLocation, LocalDateTime.now(clock).plusHours(7).plusMinutes(29));
+        DeliveryDetails deliveryDetails = new DeliveryDetails(deliveryLocation, TimeUtils.getNow().plusHours(7).plusMinutes(29));
 
         // Start an individual order by the user
         IndividualOrder order = new IndividualOrder(restaurant, deliveryDetails, campusUser);

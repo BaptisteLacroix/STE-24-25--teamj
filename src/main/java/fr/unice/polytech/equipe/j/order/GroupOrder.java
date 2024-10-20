@@ -6,7 +6,6 @@ import fr.unice.polytech.equipe.j.restaurant.MenuItem;
 import fr.unice.polytech.equipe.j.restaurant.Restaurant;
 import fr.unice.polytech.equipe.j.user.CampusUser;
 
-import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -16,7 +15,6 @@ public class GroupOrder {
     private final List<CampusUser> users = new ArrayList<>();
     private final DeliveryDetails deliveryDetails;
     private OrderStatus status = OrderStatus.PENDING;
-    private Clock clock = Clock.systemUTC();
 
 
     public void addUser(CampusUser user) {
@@ -59,6 +57,8 @@ public class GroupOrder {
         }
     }
 
+
+
     // Getters
     public UUID getGroupOrderId() {
         return groupOrderId;
@@ -78,7 +78,7 @@ public class GroupOrder {
             Optional<LocalDateTime> latestDeliveryTime = Optional.empty();
             for (Order order : orders) {
                 int preparationTime = order.getRestaurant().getPreparationTime(order.getItems());
-                LocalDateTime orderDeliveryTime = LocalDateTime.now(clock).plusSeconds(preparationTime);
+                LocalDateTime orderDeliveryTime = TimeUtils.getNow().plusSeconds(preparationTime);
                 if (latestDeliveryTime.isEmpty() || orderDeliveryTime.isAfter(latestDeliveryTime.get())) {
                     latestDeliveryTime = Optional.of(orderDeliveryTime);
                 }
@@ -110,12 +110,12 @@ public class GroupOrder {
 
         // check that the delivery time is compatible with all the preparation time of the orders
         for (Order order : getOrders()) {
-            if (deliveryTime.isBefore(LocalDateTime.now(clock).plusSeconds(order.getRestaurant().getPreparationTime(order.getItems())))) {
+            if (deliveryTime.isBefore(TimeUtils.getNow().plusSeconds(order.getRestaurant().getPreparationTime(order.getItems())))) {
                 throw new UnsupportedOperationException("The delivery time is too soon.");
             }
         }
 
-        if (deliveryTime.isBefore(LocalDateTime.now(clock))) {
+        if (deliveryTime.isBefore(TimeUtils.getNow())) {
             throw new UnsupportedOperationException("You cannot specify a delivery time in the past.");
         }
         deliveryDetails.setDeliveryTime(deliveryTime);

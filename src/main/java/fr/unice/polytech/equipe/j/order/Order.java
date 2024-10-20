@@ -5,11 +5,9 @@ import fr.unice.polytech.equipe.j.restaurant.Restaurant;
 import fr.unice.polytech.equipe.j.user.CampusUser;
 
 import java.util.List;
-import java.time.Clock;
 import java.util.ArrayList;
 import java.util.UUID;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 public class Order {
     private final UUID orderUUID = UUID.randomUUID();
@@ -23,7 +21,6 @@ public class Order {
         this.onItemAdded = onItemAdded;
     }
 
-    //    private final Clock clock;
 
     public Order(Restaurant restaurant, CampusUser user) {
         this.restaurant = restaurant;
@@ -49,6 +46,7 @@ public class Order {
             throw new IllegalStateException("Cannot add items to an order that is already in preparation.");
         if (!restaurant.isItemAvailable(item))
             throw new IllegalArgumentException("Item is not available.");
+
         // call item listener
         this.onItemAdded.accept(item);
         items.add(item);
@@ -72,10 +70,6 @@ public class Order {
     public UUID getOrderUUID() {
         return orderUUID;
     }
-
-//    public Clock getClock() {
-//        return clock;
-//    }
 
     @Override
     public String toString() {
