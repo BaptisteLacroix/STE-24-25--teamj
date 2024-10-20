@@ -99,9 +99,13 @@ public class Restaurant implements CheckoutObserver {
     public void addOrder(Order order) {
         if (capacityCheck()) {
             pendingOrders.add(order);
-
+            int i = 0;
             // Adjust the capacity for each slot based on the order
             for (Slot slot : slots) {
+                i+=1;
+                if(i>4){
+                    throw new IllegalStateException("The restaurant can't deliver this item on time.");
+                }
                 for (MenuItem item : order.getItems()) {
                     slot.UpdateSlotCapacity(item);
                 }
@@ -207,6 +211,8 @@ public class Restaurant implements CheckoutObserver {
                 });
     }
 
+
+
     /**
      * Checks if there is a slot available for a given menu item before the specified delivery time.
      *
@@ -216,8 +222,12 @@ public class Restaurant implements CheckoutObserver {
      */
     public boolean slotAvailable(MenuItem menuItem, LocalDateTime deliveryTime) {
         LocalDateTime now = LocalDateTime.now(clock);
-
+        int i = 0;
         for (Slot slot : slots) {
+            i+=1;
+            if(i>4){
+                return false;
+            }
             // Check if the slot's opening time is before the delivery time and within operating hours
             // Check if the item can be prepared before the delivery time
             boolean isBefore = slot.getOpeningDate().isBefore(deliveryTime);

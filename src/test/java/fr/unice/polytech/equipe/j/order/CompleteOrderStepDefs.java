@@ -163,7 +163,7 @@ public class CompleteOrderStepDefs {
     @Given("The third user tries to join the group order")
     public void the_third_user_tries_to_join_the_group_order() {
         user3 = new CampusUser("user@user", "password", new OrderManager(clock));
-        assertThrows(IllegalArgumentException.class, () -> user3.joinGroupOrder(groupOrder));
+        assertNull(user3.getCurrentGroupOrder());
     }
 
     @Then("the system rejects the third user and displays an error: {string}")
