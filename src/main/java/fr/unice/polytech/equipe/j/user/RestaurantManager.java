@@ -35,7 +35,11 @@ public class RestaurantManager extends User {
             this.restaurant.setOpeningTime(openingHour);
         }
         if (closingHour != null) {
-            this.restaurant.setClosingTime(closingHour);
+            try {
+                this.restaurant.setClosingTime(closingHour);
+            } catch (IllegalArgumentException e){
+                System.out.println(e.getMessage());
+            }
         }
     }
 
@@ -47,16 +51,19 @@ public class RestaurantManager extends User {
 
     // Mettre à jour le temps de préparation d'un élément existant
     public void updateMenuItemPrepTime(String itemName, int newPrepTimeInSeconds) {
-        this.restaurant.getMenu().updateMenuItemPrepTime(itemName, newPrepTimeInSeconds);
+        try {
+            this.restaurant.getMenu().updateMenuItemPrepTime(itemName, newPrepTimeInSeconds);
+        } catch (IllegalArgumentException e){
+            System.out.println(e.getMessage());
+        }
     }
-
-    public void updateMenuItemPrice(String itemName, int newPrice) {
-        this.restaurant.getMenu().updateMenuItemPrice(itemName, newPrice);
-    }
-
     // Supprimer un élément du menu
     public void removeMenuItem(String itemName) {
-        this.restaurant.getMenu().removeMenuItem(itemName);
+        try {
+            this.restaurant.getMenu().removeMenuItem(itemName);
+        } catch (IllegalArgumentException e){
+        System.out.println(e.getMessage());
+        }
     }
 
     // Mettre à jour le nombre de personnel pour un slot spécifique

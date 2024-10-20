@@ -15,7 +15,11 @@ public class DeliveryDetails {
             throw new IllegalArgumentException("The delivery location must be specified.");
         }
         // Check that the location exists
-        DeliveryLocationManager.getInstance().findLocationByName(deliveryLocation.locationName());
+        try {
+            DeliveryLocationManager.getInstance().findLocationByName(deliveryLocation.locationName());
+        } catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());
+        }
         this.deliveryLocation = deliveryLocation;
         this.deliveryTime = deliveryTime == null ? Optional.empty() : Optional.of(deliveryTime);
     }

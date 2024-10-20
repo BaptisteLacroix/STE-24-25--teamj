@@ -29,7 +29,11 @@ public class OrderManager {
     public IndividualOrder startSingleOrder(Restaurant restaurant, DeliveryDetails deliveryDetails) {
         if (restaurant.capacityCheck()) {
             IndividualOrder order = new IndividualOrder(restaurant, deliveryDetails, getClock());
-            restaurant.addOrder(order);
+            try {
+                restaurant.addOrder(order);
+            } catch (IllegalStateException e) {
+                System.out.println(e.getMessage());
+            }
             return order;
         }
         return null;
@@ -38,7 +42,11 @@ public class OrderManager {
     public Order startSubGroupOrder(Restaurant restaurant, GroupOrder groupOrder) {
         if (restaurant.capacityCheck() && restaurant.canPrepareItemForGroupOrderDeliveryTime(groupOrder)) {
             Order order = new Order(restaurant, getClock());
-            restaurant.addOrder(order);
+            try {
+                restaurant.addOrder(order);
+            } catch (IllegalStateException e){
+                System.out.println(e.getMessage());
+            }
             groupOrder.addOrder(order);
             return order;
         }
@@ -75,7 +83,12 @@ public class OrderManager {
         }
 
         // Add the item to the order
-        order.addItem(menuItem);
+        try{
+            order.addItem(menuItem);
+        } catch (IllegalStateException e) {
+            System.out.println(e.getMessage());
+        }
+
     }
 
     /**
@@ -133,7 +146,11 @@ public class OrderManager {
         if (groupOrder.getDeliveryDetails().getDeliveryTime().isPresent()) {
             throw new IllegalArgumentException("You cannot change the delivery time of a group order that is already set.");
         }
-        groupOrder.setDeliveryTime(deliveryTime);
+        try {
+            groupOrder.setDeliveryTime(deliveryTime);
+        } catch (UnsupportedOperationException e) {
+            System.out.println(e.getMessage());
+        }
         groupOrder.setStatus(OrderStatus.VALIDATED);
     }
 

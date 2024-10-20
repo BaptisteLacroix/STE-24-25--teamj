@@ -49,7 +49,11 @@ public class CampusUser extends User implements CheckoutObserver {
     }
 
     public void joinGroupOrder(GroupOrder groupOrder) {
-        orderManager.joinGroupOrder(groupOrder, this);
+        try {
+            orderManager.joinGroupOrder(groupOrder, this);
+        } catch (IllegalArgumentException e){
+            System.out.println(e.getMessage());
+        }
     }
 
     public void addItemToOrder(Restaurant restaurant, MenuItem item) {
@@ -62,17 +66,37 @@ public class CampusUser extends User implements CheckoutObserver {
     }
 
     public void validateOrder() {
-        orderManager.validateOrder(transaction, getCurrentOrder());
+        try {
+            orderManager.validateOrder(transaction, getCurrentOrder());
+        } catch (IllegalArgumentException e){
+            System.out.println(e.getMessage());
+        }
     }
 
     public void validateOrderAndGroupOrder() {
-        orderManager.validateOrder(transaction, getCurrentOrder());
-        orderManager.validateGroupOrder(currentGroupOrder);
+        try {
+            orderManager.validateOrder(transaction, getCurrentOrder());
+        } catch (IllegalArgumentException e){
+            System.out.println(e.getMessage());
+        }
+        try {
+            orderManager.validateGroupOrder(currentGroupOrder);
+        } catch (IllegalArgumentException e){
+            System.out.println(e.getMessage());
+        }
     }
 
     public void validateOrderAndGroupOrder(LocalDateTime deliveryTime) {
-        orderManager.validateOrder(transaction, getCurrentOrder());
-        orderManager.validateGroupOrder(currentGroupOrder, deliveryTime);
+        try {
+            orderManager.validateOrder(transaction, getCurrentOrder());
+        } catch (IllegalArgumentException e){
+            System.out.println(e.getMessage());
+        }
+        try {
+            orderManager.validateGroupOrder(currentGroupOrder, deliveryTime);
+        } catch (IllegalArgumentException e){
+            System.out.println(e.getMessage());
+        }
     }
 
     @Override
