@@ -5,6 +5,7 @@ import fr.unice.polytech.equipe.j.order.GroupOrder;
 import fr.unice.polytech.equipe.j.order.IndividualOrder;
 import fr.unice.polytech.equipe.j.order.Order;
 import fr.unice.polytech.equipe.j.payment.CheckoutObserver;
+import fr.unice.polytech.equipe.j.payment.PaymentMethod;
 import fr.unice.polytech.equipe.j.payment.Transaction;
 import fr.unice.polytech.equipe.j.restaurant.MenuItem;
 import fr.unice.polytech.equipe.j.order.OrderManager;
@@ -15,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CampusUser extends User implements CheckoutObserver {
-    private final Transaction transaction;
+    private final List<Transaction> transactions;
     private final List<Order> ordersHistory = new ArrayList<>();
     @Deprecated
     private Order currentOrder;
@@ -26,12 +27,13 @@ public class CampusUser extends User implements CheckoutObserver {
         return orderManager;
     }
 
+
+    private PaymentMethod defaultPaymentMethod = PaymentMethod.CREDIT_CARD;
     private final OrderManager orderManager;
 
     public CampusUser(String email, String password, OrderManager orderManager) {
         super(email, password);
-        transaction = new Transaction(this);
-        transaction.addObserver(this);
+        this.transactions = new ArrayList<>();
         this.orderManager = orderManager;
     }
 
@@ -93,12 +95,24 @@ public class CampusUser extends User implements CheckoutObserver {
     @Deprecated
     public void setCurrentOrder(Order currentOrder) {
         this.currentOrder = currentOrder;
+
+    }
+    public PaymentMethod getDefaultPaymentMethod() {
+        return defaultPaymentMethod;
     }
 
-//    @Deprecated
-//    public void joinGroupOrder(GroupOrder groupOrder) {
-//        orderManager.joinGroupOrder(groupOrder, this);
-//    }
+    public void setDefaultPaymentMethod(PaymentMethod defaultPaymentMethod) {
+        this.defaultPaymentMethod = defaultPaymentMethod;
+    }
+
+    public List<Transaction> getTransactions() {
+        return transactions;
+    }
+
+    public void joinGroupOrder(GroupOrder groupOrder) {
+        orderManager.joinGroupOrder(groupOrder, this);
+    }
+
 
     @Deprecated
     public void addItemToOrder(Restaurant restaurant, MenuItem item) {
@@ -115,7 +129,9 @@ public class CampusUser extends User implements CheckoutObserver {
      */
     @Deprecated
     public void validateOrder() {
-        orderManager.validateOrder(transaction, getCurrentOrder());
+        orderManager.setPreferedPaymenMethod(defaultPaymentMethod);
+        transactions.add(orderManager.validateOrder( getCurrentOrder()));
+        addOrderToHistory(getCurrentOrder());
     }
 
     /**
@@ -132,7 +148,8 @@ public class CampusUser extends User implements CheckoutObserver {
      */
     @Deprecated
     public void validateOrderAndGroupOrder(LocalDateTime deliveryTime) {
-        orderManager.validateOrder(transaction, getCurrentOrder());
+        transactions.add(orderManager.validateOrder( getCurrentOrder()));
+        addOrderToHistory(getCurrentOrder());
         orderManager.validateGroupOrder(currentGroupOrder, deliveryTime);
     }
 
