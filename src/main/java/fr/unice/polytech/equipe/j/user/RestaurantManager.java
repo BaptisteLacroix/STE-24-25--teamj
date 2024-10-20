@@ -5,13 +5,14 @@ import fr.unice.polytech.equipe.j.restaurant.Restaurant;
 import fr.unice.polytech.equipe.j.slot.Slot;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class RestaurantManager extends User {
     private Restaurant restaurant;
     private String name;
 
-    public RestaurantManager(String email, String password, double accountBalance, String name, Restaurant restaurant) {
-        super(email, password, accountBalance);
+    public RestaurantManager(String email, String password, String name, Restaurant restaurant) {
+        super(email, password);
         this.name = name;
         this.restaurant = restaurant;
     }
@@ -39,7 +40,7 @@ public class RestaurantManager extends User {
     }
 
     // Ajouter un nouvel élément au menu via le restaurant
-    public void addMenuItem(String itemName, String description, int prepTimeInSeconds, int price, int capacity) {
+    public void addMenuItem(String itemName, int prepTimeInSeconds, int price) {
         MenuItem newItem = new MenuItem(itemName, prepTimeInSeconds, price);
         this.restaurant.getMenu().addMenuItem(newItem);
     }
@@ -60,6 +61,9 @@ public class RestaurantManager extends User {
 
     // Mettre à jour le nombre de personnel pour un slot spécifique
     public void updateNumberOfPersonnel(Slot slotToUpdate, int numberOfPersonnel) {
+        if (slotToUpdate == null) {
+            throw new IllegalArgumentException("Slot does not exist. Cannot update personnel.");
+        }
         this.restaurant.setNumberOfPersonnel(slotToUpdate,numberOfPersonnel);
     }
 }

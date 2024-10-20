@@ -1,7 +1,5 @@
-package fr.unice.polytech.equipe.j.tests.restaurant;
+package fr.unice.polytech.equipe.j.restaurant;
 
-import fr.unice.polytech.equipe.j.restaurant.Menu;
-import fr.unice.polytech.equipe.j.restaurant.MenuItem;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
