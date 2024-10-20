@@ -64,13 +64,14 @@ public class ValidateGroupOrderStepDefs {
     public void validate_group_order_the_user_adds_the_following_items_to_his_order_from_the_restaurant(String string, io.cucumber.datatable.DataTable dataTable) {
         Restaurant restaurant = RestaurantServiceManager.getInstance().searchByName(string).getFirst();
         this.orderUser1 = new Order(restaurant, groupOrderCreator);
+        this.groupOrderCreator.setCurrentOrder(this.orderUser1);
         this.groupOrder.addOrder(orderUser1);
         for (int i = 1; i < dataTable.height(); i++) {
             String itemName = dataTable.row(i).getFirst();
             MenuItem item = restaurant.getMenu().findItemByName(itemName);
             this.orderUser1.addItem(item);
         }
-        assertEquals(2, groupOrderCreator.getCurrentOrder().getItems().size());
+        assertEquals(2, orderUser1.getItems().size());
     }
 
     @When("[ValidateGroupOrder]the user validates his order")
@@ -87,8 +88,10 @@ public class ValidateGroupOrderStepDefs {
     public void validate_group_order_the_user_creates_a_group_order_with_delivery_location(String string) {
         DeliveryLocation deliveryLocation = DeliveryLocationManager.getInstance().findLocationByName(string);
         DeliveryDetails deliveryDetails = new DeliveryDetails(deliveryLocation, null);
-        groupOrderCreator.createGroupOrder(deliveryDetails);
-        groupOrder = groupOrderCreator.getCurrentGroupOrder();
+
+        this.groupOrder = new GroupOrder(deliveryDetails);
+        this.groupOrder.addUser(groupOrderCreator);
+        groupOrderCreator.setCurrentGroupOrder(groupOrder);
         assertNotNull(groupOrder);
     }
 
@@ -129,6 +132,7 @@ public class ValidateGroupOrderStepDefs {
     public void validate_group_order_the_other_user_adds_the_following_items_to_his_order(String string, io.cucumber.datatable.DataTable dataTable) {
         Restaurant restaurant = RestaurantServiceManager.getInstance().searchByName(string).getFirst();
         this.orderUser2 = new Order(restaurant, groupOrderJoiner);
+        this.groupOrderJoiner.setCurrentOrder(orderUser2);
         this.groupOrder.addOrder(this.orderUser2);
         for (int i = 1; i < dataTable.height(); i++) {
             MenuItem item = restaurant.getMenu().findItemByName(dataTable.row(i).get(0));
