@@ -13,9 +13,8 @@ public class Transaction {
     private final String paymentMethod;
     private final LocalDateTime timestamp;
 
-    private Order order;
+    final private Order order;
 
-    private CampusUser user;
 
     /**
      * Constructs a new Transaction with the specified amount, payment method, and timestamp.
@@ -62,9 +61,6 @@ public class Transaction {
         return order;
     }
 
-    public void setOrder(Order order) {
-        this.order = order;
-    }
 
     /**
      * Returns a string representation of the transaction.
