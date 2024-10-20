@@ -1,0 +1,38 @@
+Index: src/main/java/fr/unice/polytech/equipe/j/order/DeliverableOrder.java
+===================================================================
+diff --git a/src/main/java/fr/unice/polytech/equipe/j/order/DeliverableOrder.java b/src/main/java/fr/unice/polytech/equipe/j/order/DeliverableOrder.java
+deleted file mode 100644
+--- a/src/main/java/fr/unice/polytech/equipe/j/order/DeliverableOrder.java	
++++ /dev/null	
+@@ -1,30 +0,0 @@
+-package fr.unice.polytech.equipe.j.order;
+-
+-import fr.unice.polytech.equipe.j.delivery.DeliveryDetails;
+-import fr.unice.polytech.equipe.j.restaurant.Restaurant;
+-import fr.unice.polytech.equipe.j.user.CampusUser;
+-
+-import java.time.Clock;
+-import java.util.UUID;
+-
+-public class DeliverableOrder extends Order implements PriceableOrder{
+-    private DeliveryDetails deliveryDetails;
+-
+-    public DeliverableOrder(Restaurant restaurant, Clock clockCampusUser user, DeliveryDetails deliveryDetails,) {
+-        super(restaurant, );
+-        this.deliveryDetails = deliveryDetails;
+-    }
+-
+-    public DeliveryDetails getDeliveryDetails() {
+-        return deliveryDetails;
+-    }
+-
+-    public void setDeliveryDetails(DeliveryDetails deliveryDetails) {
+-        this.deliveryDetails = deliveryDetails;
+-    }
+-
+-    @Override
+-    public double processPrice() {
+-        return 0;
+-    }
+-}
+\ No newline at end of file

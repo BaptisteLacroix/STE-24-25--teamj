@@ -23,27 +23,27 @@ public class OrderManager {
     }
 
     public GroupOrder startGroupOrder(DeliveryDetails deliveryDetails) {
-        return new GroupOrder(deliveryDetails, getClock());
+        return new GroupOrder(deliveryDetails);
     }
 
-    public IndividualOrder startSingleOrder(Restaurant restaurant, DeliveryDetails deliveryDetails) {
-        if (restaurant.capacityCheck()) {
-            IndividualOrder order = new IndividualOrder(restaurant, deliveryDetails, getClock());
-            restaurant.addOrder(order);
-            return order;
-        }
-        return null;
-    }
-
-    public Order startSubGroupOrder(Restaurant restaurant, GroupOrder groupOrder) {
-        if (restaurant.capacityCheck() && restaurant.canPrepareItemForGroupOrderDeliveryTime(groupOrder)) {
-            Order order = new Order(restaurant, getClock());
-            restaurant.addOrder(order);
-            groupOrder.addOrder(order);
-            return order;
-        }
-        return null;
-    }
+//    public IndividualOrder startSingleOrder(Restaurant restaurant, DeliveryDetails deliveryDetails) {
+//        if (restaurant.capacityCheck()) {
+//            IndividualOrder order = new IndividualOrder(restaurant, deliveryDetails);
+//            restaurant.addOrder(order);
+//            return order;
+//        }
+//        return null;
+//    }
+//
+//    public Order startSubGroupOrder(Restaurant restaurant, GroupOrder groupOrder) {
+//        if (restaurant.capacityCheck() && restaurant.canPrepareItemForGroupOrderDeliveryTime(groupOrder)) {
+//            Order order = new Order(restaurant);
+//            restaurant.addOrder(order);
+//            groupOrder.addOrder(order);
+//            return order;
+//        }
+//        return null;
+//    }
 
     public void cancelOrder(Restaurant restaurant, Order order) {
         restaurant.cancelOrder(order);
@@ -143,12 +143,5 @@ public class OrderManager {
             totalPrice += item.getPrice();
         }
         return totalPrice;
-    }
-
-    public void joinGroupOrder(GroupOrder groupOrder, CampusUser campusUser) {
-        if (groupOrder.getStatus() != OrderStatus.PENDING) {
-            throw new IllegalArgumentException("Cannot join group order that is not pending.");
-        }
-        campusUser.setGroupOrder(groupOrder);
     }
 }

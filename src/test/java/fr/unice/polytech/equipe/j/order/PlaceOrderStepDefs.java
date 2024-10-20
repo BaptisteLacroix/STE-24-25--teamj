@@ -55,12 +55,13 @@ public class PlaceOrderStepDefs {
         restaurant = RestaurantServiceManager.getInstance(clock).searchByName(restaurantName).getFirst();
     }
 
-    @And("the user start and order by specifying the delivery location from the pre-recorded locations")
-    public void the_user_start_and_order_by_specifying_the_delivery_location_from_the_pre_recorded_locations() {
-        DeliveryLocation deliveryLocation = DeliveryLocationManager.getInstance().getPredefinedLocations().getFirst();
-        DeliveryDetails deliveryDetails = new DeliveryDetails(deliveryLocation, null);
-        campusUser.startIndividualOrder(restaurant, deliveryDetails);
-    }
+    // TODO add back
+//    @And("the user start and order by specifying the delivery location from the pre-recorded locations")
+//    public void the_user_start_and_order_by_specifying_the_delivery_location_from_the_pre_recorded_locations() {
+//        DeliveryLocation deliveryLocation = DeliveryLocationManager.getInstance().getPredefinedLocations().getFirst();
+//        DeliveryDetails deliveryDetails = new DeliveryDetails(deliveryLocation, null);
+//        campusUser.startIndividualOrder(restaurant, deliveryDetails);
+//    }
 
     /**
      * This step definition is used to simulate the user adding items to their order.

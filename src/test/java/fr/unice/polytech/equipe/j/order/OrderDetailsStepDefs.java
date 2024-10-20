@@ -44,7 +44,8 @@ public class OrderDetailsStepDefs {
     public void order_details_the_user_start_a_single_order_by_specifying_the_delivery_location_from_the_pre_recorded_location() {
         DeliveryLocation deliveryLocation = DeliveryLocationManager.getInstance().getPredefinedLocations().getFirst();
         DeliveryDetails deliveryDetails = new DeliveryDetails(deliveryLocation, null);
-        user.startIndividualOrder(restaurant, deliveryDetails);
+        IndividualOrder individualOrder = new IndividualOrder(restaurant, deliveryDetails, user);
+        user.setCurrentOrder(individualOrder);
         assertEquals(((IndividualOrder) user.getCurrentOrder()).getDeliveryDetails().getDeliveryLocation().locationName(), deliveryLocation.locationName());
         assertEquals(((IndividualOrder) user.getCurrentOrder()).getDeliveryDetails().getDeliveryLocation().address(), deliveryLocation.address());
     }

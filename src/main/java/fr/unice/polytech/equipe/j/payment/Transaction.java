@@ -27,7 +27,7 @@ public class Transaction {
         // TODO: Logic of the payment
         for (CheckoutObserver observer : observers) {
             // Call the restaurant and the user so the restaurant set the order as paid and the user can see the order uuid in his history
-            observer.orderPaid(order);
+            observer.onOrderPaid(order);
         }
     }
 

@@ -10,12 +10,9 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.anyDouble;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 class TransactionTest {
 
@@ -54,8 +51,8 @@ class TransactionTest {
         transaction.addObserver(observer1);
         transaction.addObserver(observer2);
         transaction.proceedCheckout(order, 50.0);
-        verify(observer1, times(1)).orderPaid(order);
-        verify(observer2, times(1)).orderPaid(order);
+        verify(observer1, times(1)).onOrderPaid(order);
+        verify(observer2, times(1)).onOrderPaid(order);
     }
 
     @Test
@@ -63,7 +60,7 @@ class TransactionTest {
         transaction.addObserver(observer1);
         transaction.addObserver(observer2);
         transaction.proceedCheckout(order, 50.0);
-        verify(observer1, times(1)).orderPaid(order);
-        verify(observer2, times(1)).orderPaid(order);
+        verify(observer1, times(1)).onOrderPaid(order);
+        verify(observer2, times(1)).onOrderPaid(order);
     }
 }

@@ -3,13 +3,13 @@ package fr.unice.polytech.equipe.j.order;
 import fr.unice.polytech.equipe.j.restaurant.MenuItem;
 import fr.unice.polytech.equipe.j.restaurant.Restaurant;
 import fr.unice.polytech.equipe.j.user.CampusUser;
-import fr.unice.polytech.equipe.j.user.ConnectedUser;
 
 import java.util.List;
 import java.time.Clock;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.UUID;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 public class Order {
     private final UUID orderUUID = UUID.randomUUID();
@@ -17,13 +17,18 @@ public class Order {
     private final List<MenuItem> items;
     private final CampusUser user;
     private OrderStatus status;
-    private final Clock clock;
+    private Consumer<MenuItem> onItemAdded = (item)->{};
 
-    public Order(Restaurant restaurant, Clock clock, CampusUser user) {
+    public void setOnItemAdded(Consumer<MenuItem> onItemAdded) {
+        this.onItemAdded = onItemAdded;
+    }
+
+    //    private final Clock clock;
+
+    public Order(Restaurant restaurant, CampusUser user) {
         this.restaurant = restaurant;
         items = new ArrayList<>();
         this.status = OrderStatus.PENDING;
-        this.clock = clock;
         this.user = user;
     }
 
@@ -40,9 +45,12 @@ public class Order {
     }
 
     public void addItem(MenuItem item) {
-        if (getStatus().equals(OrderStatus.VALIDATED)) {
+        if (getStatus().equals(OrderStatus.VALIDATED))
             throw new IllegalStateException("Cannot add items to an order that is already in preparation.");
-        }
+        if (!restaurant.isItemAvailable(item))
+            throw new IllegalArgumentException("Item is not available.");
+        // call item listener
+        this.onItemAdded.accept(item);
         items.add(item);
     }
 
@@ -65,9 +73,9 @@ public class Order {
         return orderUUID;
     }
 
-    public Clock getClock() {
-        return clock;
-    }
+//    public Clock getClock() {
+//        return clock;
+//    }
 
     @Override
     public String toString() {

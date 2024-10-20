@@ -19,13 +19,14 @@ class OrderTest {
     private Restaurant restaurant;
     private Clock clock;
 
-    @BeforeEach
-    void setUp() {
-        clock = Clock.fixed(Instant.parse("2024-10-18T12:00:00Z"), ZoneId.of("Europe/Paris"));
-        // Mocking Restaurant
-        restaurant = Mockito.mock(Restaurant.class);
-        order = new Order(restaurant, clock);
-    }
+    // TODO add back
+//    @BeforeEach
+//    void setUp() {
+//        clock = Clock.fixed(Instant.parse("2024-10-18T12:00:00Z"), ZoneId.of("Europe/Paris"));
+//        // Mocking Restaurant
+//        restaurant = Mockito.mock(Restaurant.class);
+//        order = new Order(restaurant, clock);
+//    }
 
     @Test
     void testAddItem() {

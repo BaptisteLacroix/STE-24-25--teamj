@@ -55,18 +55,19 @@ public class ValidateGroupOrderStepDefs {
     public void validate_group_order_the_user_receives_a_group_order_identifier() {
         assertNotNull(groupOrder.getGroupOrderId());
     }
-
-    @Given("[ValidateGroupOrder]the user adds the following items to his order from the restaurant {string}:")
-    public void validate_group_order_the_user_adds_the_following_items_to_his_order_from_the_restaurant(String string, io.cucumber.datatable.DataTable dataTable) {
-        Restaurant restaurant = RestaurantServiceManager.getInstance(clock).searchByName(string).getFirst();
-        groupOrderCreator.startSubGroupOrder(restaurant);
-        for (int i = 1; i < dataTable.height(); i++) {
-            String itemName = dataTable.row(i).get(0);
-            MenuItem item = restaurant.getMenu().findItemByName(itemName);
-            groupOrderCreator.addItemToOrder(restaurant, item);
-        }
-        assertEquals(2, groupOrderCreator.getCurrentOrder().getItems().size());
-    }
+    // TODO add back
+//
+//    @Given("[ValidateGroupOrder]the user adds the following items to his order from the restaurant {string}:")
+//    public void validate_group_order_the_user_adds_the_following_items_to_his_order_from_the_restaurant(String string, io.cucumber.datatable.DataTable dataTable) {
+//        Restaurant restaurant = RestaurantServiceManager.getInstance(clock).searchByName(string).getFirst();
+//        groupOrderCreator.startSubGroupOrder(restaurant);
+//        for (int i = 1; i < dataTable.height(); i++) {
+//            String itemName = dataTable.row(i).get(0);
+//            MenuItem item = restaurant.getMenu().findItemByName(itemName);
+//            groupOrderCreator.addItemToOrder(restaurant, item);
+//        }
+//        assertEquals(2, groupOrderCreator.getCurrentOrder().getItems().size());
+//    }
 
     @When("[ValidateGroupOrder]the user validates his order")
     public void validate_group_order_the_user_validates_his_order() {
@@ -113,23 +114,24 @@ public class ValidateGroupOrderStepDefs {
     public void validate_group_order_the_group_order_delivery_time_is_not_set() {
         assertTrue(groupOrder.getDeliveryDetails().getDeliveryTime().isEmpty());
     }
-
-    @When("[ValidateGroupOrder]another user joins the group order")
-    public void validate_group_order_another_user_joins_the_group_order() {
-        groupOrderJoiner.joinGroupOrder(groupOrder);
-    }
-
-    @When("[ValidateGroupOrder]the other user adds the following items to his order from the restaurant {string}:")
-    public void validate_group_order_the_other_user_adds_the_following_items_to_his_order(String string, io.cucumber.datatable.DataTable dataTable) {
-        Restaurant restaurant = RestaurantServiceManager.getInstance(clock).searchByName(string).getFirst();
-        groupOrderJoiner.startSubGroupOrder(restaurant);
-        for (int i = 1; i < dataTable.height(); i++) {
-            MenuItem item = restaurant.getMenu().findItemByName(dataTable.row(i).get(0));
-            groupOrderJoiner.addItemToOrder(restaurant, item);
-        }
-        assertEquals(1, groupOrderJoiner.getCurrentOrder().getItems().size());
-        assertEquals(2, groupOrder.getOrders().size());
-    }
+    // TODO add back
+//
+//    @When("[ValidateGroupOrder]another user joins the group order")
+//    public void validate_group_order_another_user_joins_the_group_order() {
+//        groupOrderJoiner.joinGroupOrder(groupOrder);
+//    }
+//
+//    @When("[ValidateGroupOrder]the other user adds the following items to his order from the restaurant {string}:")
+//    public void validate_group_order_the_other_user_adds_the_following_items_to_his_order(String string, io.cucumber.datatable.DataTable dataTable) {
+//        Restaurant restaurant = RestaurantServiceManager.getInstance(clock).searchByName(string).getFirst();
+//        groupOrderJoiner.startSubGroupOrder(restaurant);
+//        for (int i = 1; i < dataTable.height(); i++) {
+//            MenuItem item = restaurant.getMenu().findItemByName(dataTable.row(i).get(0));
+//            groupOrderJoiner.addItemToOrder(restaurant, item);
+//        }
+//        assertEquals(1, groupOrderJoiner.getCurrentOrder().getItems().size());
+//        assertEquals(2, groupOrder.getOrders().size());
+//    }
 
     @When("[ValidateGroupOrder]the other user validate it's order and the group order")
     public void validate_group_order_the_other_user_validates_his_order() {

@@ -1,7 +1,7 @@
 package fr.unice.polytech.equipe.j.user;
 
+import fr.unice.polytech.equipe.j.TimeUtils;
 import fr.unice.polytech.equipe.j.delivery.DeliveryDetails;
-import fr.unice.polytech.equipe.j.order.GroupOrder;
 import fr.unice.polytech.equipe.j.order.IndividualOrder;
 import fr.unice.polytech.equipe.j.order.Order;
 import fr.unice.polytech.equipe.j.order.OrderManager;
@@ -18,12 +18,7 @@ import java.time.ZoneId;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 class CampusUserTest {
 
@@ -31,88 +26,56 @@ class CampusUserTest {
     private OrderManager mockOrderManager;
     private Restaurant mockRestaurant;
     private MenuItem mockMenuItem;
-    private Order mockOrder;
+    private Order order;
     private IndividualOrder mockIndividualOrder;
     private DeliveryDetails mockDeliveryDetails;
-    private Clock clock;
 
     @BeforeEach
     void setUp() {
-        clock = Clock.fixed(Instant.parse("2024-10-18T12:00:00Z"), ZoneId.of("Europe/Paris"));
+        // setup time
+        Clock clock = Clock.fixed(Instant.parse("2024-10-18T12:00:00Z"), ZoneId.of("Europe/Paris"));
+        TimeUtils.setClock(clock);
+
+        // Create CampusUser with the mock OrderManager
+        campusUser = new CampusUser("user@example.com", "password123", mockOrderManager);
+        order = spy(new Order(mockRestaurant, campusUser));
+
         // Mocking dependencies
-        mockOrderManager = mock(OrderManager.class);
         mockRestaurant = mock(Restaurant.class);
         mockMenuItem = mock(MenuItem.class);
-        mockOrder = mock(Order.class);
         mockIndividualOrder = mock(IndividualOrder.class);
         mockDeliveryDetails = mock(DeliveryDetails.class);
 
         // Mocking Restaurant behavior
         when(mockRestaurant.capacityCheck()).thenReturn(true);
         when(mockRestaurant.isOrderValid(any(Order.class))).thenReturn(true);
-
-        // Create ConnectedUser with the mock OrderManager
-        campusUser = new CampusUser("user@example.com", "password123", mockOrderManager);
-
-        // Mock OrderManager behaviors
-        when(mockOrderManager.startSingleOrder(mockRestaurant, mockDeliveryDetails)).thenReturn(mockIndividualOrder);
-        when(mockOrderManager.startGroupOrder(mockDeliveryDetails)).thenReturn(mock(GroupOrder.class));
-    }
-
-    @Test
-    void testStartIndividualOrder() {
-        // Act
-        campusUser.startIndividualOrder(mockRestaurant, mockDeliveryDetails);
-
-        // Assert
-        assertNotNull(campusUser.getCurrentOrder(), "Order should be initialized");
-    }
-
-    @Test
-    void testStartGroupOrder() {
-        // Act
-        campusUser.createGroupOrder(mockDeliveryDetails);
-
-        // Assert
-        assertNotNull(campusUser.getCurrentGroupOrder(), "Group order should be initialized");
     }
 
     @Test
     void testAddItemToOrder() {
-        // Arrange
-        campusUser.startIndividualOrder(mockRestaurant, mockDeliveryDetails);
-        when(mockDeliveryDetails.getDeliveryTime()).thenReturn(java.util.Optional.of(java.time.LocalDateTime.now(clock).plusHours(1)));
-
-        // Act
-        campusUser.addItemToOrder(mockRestaurant, mockMenuItem);
-
-        // Assert
-        verify(mockOrderManager, times(1)).addItemToOrder(any(IndividualOrder.class), eq(mockRestaurant), eq(mockMenuItem));
+        order.addItem(mockMenuItem);
+        verify(order, times(1)).addItem(eq(mockMenuItem));
     }
 
     @Test
     void testValidateIndividualOrder() {
         // Arrange
         IndividualOrder individualOrder = mock(IndividualOrder.class);
-        when(mockOrderManager.startSingleOrder(mockRestaurant, mockDeliveryDetails)).thenReturn(individualOrder);
-
-        campusUser.startIndividualOrder(mockRestaurant, mockDeliveryDetails);
-
+        campusUser.setCurrentOrder(individualOrder);
         // Act
         campusUser.validateOrder();
-
         // Assert
         verify(mockOrderManager, times(1)).validateOrder(any(Transaction.class), eq(individualOrder));
     }
 
     @Test
-    void testOrderPaid() {
+    void testOnOrderPaid() {
         // Arrange
-        campusUser.startIndividualOrder(mockRestaurant, mockDeliveryDetails);
+        IndividualOrder individualOrder = mock(IndividualOrder.class);
         Order mockPaidOrder = mock(Order.class);
 
         // Act
-        campusUser.orderPaid(mockPaidOrder);
+        campusUser.onOrderPaid(mockPaidOrder);
 
         // Assert
         assertEquals(1, campusUser.getOrdersHistory().size(), "Order history should have one entry after payment");
@@ -121,11 +84,9 @@ class CampusUserTest {
 
     @Test
     void testToString() {
-        // Arrange
-        campusUser.startIndividualOrder(mockRestaurant, mockDeliveryDetails);
 
         // Act
-        campusUser.orderPaid(mockOrder);
+        campusUser.onOrderPaid(order);
         String result = campusUser.toString();
 
         // Assert

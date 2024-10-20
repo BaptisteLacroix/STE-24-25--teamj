@@ -1,14 +1,9 @@
 package fr.unice.polytech.equipe.j.restaurant;
-
-import fr.unice.polytech.equipe.j.order.DeliverableOrder;
-import fr.unice.polytech.equipe.j.order.GroupOrder;
-import fr.unice.polytech.equipe.j.order.GroupOrder;
 import fr.unice.polytech.equipe.j.order.GroupOrder;
 import fr.unice.polytech.equipe.j.order.Order;
 import fr.unice.polytech.equipe.j.order.OrderStatus;
 import fr.unice.polytech.equipe.j.payment.CheckoutObserver;
 import fr.unice.polytech.equipe.j.slot.Slot;
-import fr.unice.polytech.equipe.j.user.ConnectedUser;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
@@ -68,8 +63,6 @@ public class Restaurant implements CheckoutObserver {
             currentTime = currentTime.plusMinutes(30);
         }
     }
-
-
 
     /**
      * Calculate the average preparation time for the restaurant's menu items.
@@ -179,7 +172,7 @@ public class Restaurant implements CheckoutObserver {
      * @param order The UUID of the order
      */
     @Override
-    public void orderPaid(Order order) {
+    public void onOrderPaid(Order order) {
         order.setStatus(OrderStatus.VALIDATED);
         ordersHistory.add(order);
         pendingOrders.remove(order);
@@ -213,7 +206,7 @@ public class Restaurant implements CheckoutObserver {
 
         LocalDateTime now = LocalDateTime.now(getClock());
         LocalDateTime deliveryTime = groupOrder.getDeliveryDetails().getDeliveryTime().get();
-        LocalDateTime closingTime = getClosingTime().get();
+        LocalDateTime closingTime = getClosingTime().orElseThrow();
 
         // Check if the restaurant can prepare any item before the closing time or the delivery time
         return getMenu().getItems().stream()

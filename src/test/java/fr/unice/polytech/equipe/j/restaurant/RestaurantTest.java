@@ -1,8 +1,10 @@
 package fr.unice.polytech.equipe.j.restaurant;
 
+import fr.unice.polytech.equipe.j.TimeUtils;
 import fr.unice.polytech.equipe.j.delivery.DeliveryDetails;
 import fr.unice.polytech.equipe.j.delivery.DeliveryLocation;
 import fr.unice.polytech.equipe.j.delivery.DeliveryLocationManager;
+import fr.unice.polytech.equipe.j.order.IndividualOrder;
 import fr.unice.polytech.equipe.j.order.Order;
 import fr.unice.polytech.equipe.j.order.OrderManager;
 import fr.unice.polytech.equipe.j.order.OrderStatus;
@@ -38,6 +40,7 @@ class RestaurantTest {
     @BeforeEach
     void setUp() {
         clock = Clock.fixed(Instant.parse("2024-10-01T07:00:00Z"), ZoneId.of("Europe/Paris"));
+        TimeUtils.setClock(clock);
         item1 = new MenuItem("Burger", 40, 5.99);
         item2 = new MenuItem("Fries", 1, 2.99);
         menu = new Menu.MenuBuilder().addMenuItems(List.of(item1, item2)).build();
@@ -67,8 +70,8 @@ class RestaurantTest {
 
     @Test
     void testOpeningAndClosingTime() {
-        assertEquals(LocalDateTime.of(2024, 10, 1, 9, 0), restaurant.getOpeningTime().get());
-        assertEquals(LocalDateTime.of(2024, 10, 1, 21, 0), restaurant.getClosingTime().get());
+        assertEquals(LocalDateTime.of(2024, 10, 1, 9, 0), restaurant.getOpeningTime().orElseThrow());
+        assertEquals(LocalDateTime.of(2024, 10, 1, 21, 0), restaurant.getClosingTime().orElseThrow());
 
         restaurant.setOpeningTime(LocalDateTime.of(2024, 10, 1, 8, 0));
         restaurant.setClosingTime(LocalDateTime.of(2024, 10, 1, 22, 0));
@@ -84,7 +87,7 @@ class RestaurantTest {
         assertEquals(slot.getMaxCapacity(), slot.getAvailableCapacity());
 
         // Add an order to reduce capacity
-        Order order = new Order(restaurant, clock);
+        Order order = new Order(restaurant, campusUser);
         order.addItem(item1); // 40 seconds
         restaurant.addOrder(order);
 
@@ -98,7 +101,7 @@ class RestaurantTest {
 
     @Test
     void testAddAndCancelOrder() {
-        Order order1 = new Order(restaurant, clock);
+        Order order1 = new Order(restaurant, campusUser);
         order1.addItem(item1); // 40 seconds
 
         // Add an order and check that capacity decreases
@@ -112,9 +115,9 @@ class RestaurantTest {
 
     @Test
     void testMaxCapacityReached() {
-        Order order1 = new Order(restaurant, clock);
+        Order order1 = new Order(restaurant, campusUser);
         order1.addItem(item1); // 40 seconds
-        Order order2 = new Order(restaurant, clock);
+        Order order2 = new Order(restaurant, campusUser);
         order2.addItem(item2); // 1 second
 
         restaurant.addOrder(order1);
@@ -125,28 +128,28 @@ class RestaurantTest {
         assertTrue(slot.getAvailableCapacity() < slot.getMaxCapacity());
 
         // Trying to add an order that exceeds max capacity should fail
-        Order largeOrder = new Order(restaurant, clock);
+        Order largeOrder = new Order(restaurant, campusUser);
         largeOrder.addItem(new MenuItem("Pizza", 2000, 10.99)); // 2000 seconds
-        assertFalse(slot.UpdateSlotCapacity(largeOrder.getItems().get(0)));
+        assertFalse(slot.UpdateSlotCapacity(largeOrder.getItems().getFirst()));
     }
 
     @Test
     void testIsOrderValid() {
         // Order with valid items
-        Order validOrder = new Order(restaurant, clock);
+        Order validOrder = new Order(restaurant, campusUser);
         validOrder.addItem(item1);
         validOrder.addItem(item2);
         assertTrue(restaurant.isOrderValid(validOrder));
 
         // Order with an invalid item (not in the menu)
-        Order invalidOrder = new Order(restaurant, clock);
+        Order invalidOrder = new Order(restaurant, campusUser);
         invalidOrder.addItem(new MenuItem("Pizza", 30, 9.99));
         assertFalse(restaurant.isOrderValid(invalidOrder));
     }
 
     @Test
-    void testOrderPaid() {
-        Order order = new Order(restaurant, clock);
+    void testOnOrderPaid() {
+        Order order = new Order(restaurant, campusUser);
         order.addItem(item1);
         restaurant.addOrder(order);
 
@@ -155,7 +158,7 @@ class RestaurantTest {
         assertTrue(restaurant.getPendingOrders().contains(order));
 
         // After payment, it should move to validated and history
-        restaurant.orderPaid(order);
+        restaurant.onOrderPaid(order);
         assertEquals(OrderStatus.VALIDATED, order.getStatus());
         assertFalse(restaurant.getPendingOrders().contains(order));
         assertTrue(restaurant.getOrdersHistory().contains(order));
@@ -178,11 +181,10 @@ class RestaurantTest {
         DeliveryDetails deliveryDetails = new DeliveryDetails(deliveryLocation, LocalDateTime.now(clock).plusHours(7).plusMinutes(29));
 
         // Start an individual order by the user
-        campusUser.startIndividualOrder(restaurant, deliveryDetails);
-
+        IndividualOrder order = new IndividualOrder(restaurant, deliveryDetails, campusUser);
         // Add items to fill the slot capacity
-        campusUser.addItemToOrder(restaurant, c_item1); // 1700 seconds
-        campusUser.addItemToOrder(restaurant, c_item2); // 300 seconds
+        order.addItem(c_item1); // 1700 seconds
+        order.addItem(c_item2); // 300 seconds
 
         // Verify that the slot's capacity is full
         assertEquals(0, slot.getCurrentCapacity());
@@ -191,7 +193,7 @@ class RestaurantTest {
         MenuItem exceedingItem = new MenuItem("Exceeding Item", 100, 10.0);
 
         // Check if the order fails to be added due to full capacity
-        assertThrows(IllegalArgumentException.class, () -> campusUser.addItemToOrder(restaurant, exceedingItem));
+        assertThrows(IllegalArgumentException.class, () -> order.addItem(exceedingItem));
 
         // Ensure that no further items are added to the order
         assertEquals(0, slot.getCurrentCapacity());
@@ -200,7 +202,7 @@ class RestaurantTest {
     @Test
     void testCancelNonExistentOrder() {
         // Create an order that hasn't been added to the system
-        Order nonExistentOrder = new Order(restaurant, clock);
+        Order nonExistentOrder = new Order(restaurant, campusUser);
         nonExistentOrder.addItem(item1); // Adding a valid item
 
         // Attempt to cancel the non-existent order

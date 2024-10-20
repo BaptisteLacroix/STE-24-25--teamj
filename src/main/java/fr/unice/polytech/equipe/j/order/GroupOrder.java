@@ -1,36 +1,62 @@
 package fr.unice.polytech.equipe.j.order;
 
+import fr.unice.polytech.equipe.j.TimeUtils;
 import fr.unice.polytech.equipe.j.delivery.DeliveryDetails;
+import fr.unice.polytech.equipe.j.restaurant.MenuItem;
+import fr.unice.polytech.equipe.j.restaurant.Restaurant;
+import fr.unice.polytech.equipe.j.user.CampusUser;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 public class GroupOrder {
     private final UUID groupOrderId;
     private final List<Order> orders = new ArrayList<>();
-    private final Map<Order, ConnectedUser> ordersToConnectedUser = new HashMap<>();
-    private final List<ConnectedUser> users = new ArrayList<>();
+    private final List<CampusUser> users = new ArrayList<>();
     private final DeliveryDetails deliveryDetails;
     private OrderStatus status = OrderStatus.PENDING;
-    private final Clock clock;
+    private Clock clock = Clock.systemUTC();
 
-    public GroupOrder(DeliveryDetails deliveryDetails, Clock clock) {
+
+    public void addUser(CampusUser user) {
+        if (this.status == OrderStatus.VALIDATED)
+            throw new IllegalStateException("The group order has already been validated.");
+        this.users.add(user);
+    }
+    public GroupOrder(DeliveryDetails deliveryDetails) {
         this.groupOrderId = UUID.randomUUID();
         this.deliveryDetails = deliveryDetails;
-        this.clock = clock;
-    }
-
-    public Map<Order, ConnectedUser> getOrdersToConnectedUser() {
-        return ordersToConnectedUser;
     }
 
     // Add an individual order to the group
-    public void addOrder(Order order, ConnectedUser user) {
-        this.ordersToConnectedUser.put(order, user);
+    public void addOrder(Order order) {
+        if (this.status != OrderStatus.PENDING)
+            throw new IllegalStateException("Cannot join a group order that is not pending");
+        // FIXME adding the order to do the check and remove in case of bad check might not be thread safe
+        this.orders.add(order);
+        Restaurant restaurant = order.getRestaurant();
+        if(!restaurant.capacityCheck() || !restaurant.canPrepareItemForGroupOrderDeliveryTime(this)) {
+            this.orders.remove(order);
+            throw new IllegalStateException("Order cannot be added, restaurant does not have the capacity to deliver in time");
+        }
+        order.setOnItemAdded((menuItem -> {
+            this.checkOrderUpdate(order, menuItem);
+        }));
+    }
+
+    private void checkOrderUpdate(Order order, MenuItem menuItem) {
+        // Check if the item can be prepared in time for the delivery
+        Optional<LocalDateTime> deliveryTime = this.deliveryDetails.getDeliveryTime();
+        LocalDateTime estimatedReadyTime = TimeUtils.getNow().plusSeconds(menuItem.getPrepTime());
+
+        if (deliveryTime.isPresent() && estimatedReadyTime.isAfter(deliveryTime.orElseThrow())){
+            throw new IllegalArgumentException("Cannot add item to order, it will not be ready in time.");
+        }
+
+        if (deliveryTime.isPresent() && !order.getRestaurant().slotAvailable(menuItem, deliveryTime.get())) {
+            throw new IllegalArgumentException("Cannot add item to order, no slot available.");
+        }
     }
 
     // Getters
@@ -38,11 +64,8 @@ public class GroupOrder {
         return groupOrderId;
     }
 
-    /**
-     * You can get the order as an unmodifiableList but please use addOrder to add an order
-     */
     public List<Order> getOrders() {
-        return List.copyOf(this.ordersToConnectedUser.keySet());
+        return this.orders;
     }
 
     public DeliveryDetails getDeliveryDetails() {

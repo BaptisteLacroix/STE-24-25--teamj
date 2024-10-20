@@ -1,5 +1,6 @@
 package fr.unice.polytech.equipe.j.order;
 
+import fr.unice.polytech.equipe.j.TimeUtils;
 import fr.unice.polytech.equipe.j.delivery.DeliveryDetails;
 import fr.unice.polytech.equipe.j.delivery.DeliveryLocation;
 import fr.unice.polytech.equipe.j.delivery.DeliveryLocationManager;
@@ -7,7 +8,9 @@ import fr.unice.polytech.equipe.j.restaurant.MenuItem;
 import fr.unice.polytech.equipe.j.restaurant.Restaurant;
 import fr.unice.polytech.equipe.j.restaurant.RestaurantServiceManager;
 import fr.unice.polytech.equipe.j.user.CampusUser;
+import io.cucumber.datatable.DataTable;
 import io.cucumber.java.Before;
+import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
@@ -18,173 +21,238 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.*;
 
 public class CompleteOrderStepDefs {
+    public static final RestaurantServiceManager RESTAURANT_SERVICE_MANAGER = RestaurantServiceManager.getInstance();
     private Clock clock;
     private CampusUser user1;
     private CampusUser user2;
     private CampusUser user3;
     private GroupOrder groupOrder;
     private Restaurant restaurant;
+    private List<Restaurant> foundRestaurants;
+    private Order orderUser1;
+    private Order orderUser2;
+    private Order orderUser3;
+    private IllegalStateException itemAddException;
+    private IllegalStateException userJoinsValidatedGroupOrderException;
+    private IllegalArgumentException itemAddSlotException;
 
     @Before
     public void setUp() {
         clock = Clock.fixed(Instant.parse("2024-10-18T12:00:00Z"), ZoneId.of("Europe/Paris"));
+        TimeUtils.setClock(clock);
     }
-
 
     @Given("the first user creates a group order with delivery location {string} and delivery time of {int}:{int} PM")
     public void the_first_user_creates_a_group_order_with_delivery_location_and_delivery_time_of_pm(String string, Integer int1, Integer int2) {
         user1 = new CampusUser("user1@user", "password123", new OrderManager(clock));
         DeliveryLocation location = DeliveryLocationManager.getInstance().findLocationByName(string);
         DeliveryDetails deliveryDetails = new DeliveryDetails(location, LocalDateTime.now(clock).withHour(int1).withMinute(int2));
-        user1.createGroupOrder(deliveryDetails);
-        groupOrder = user1.getCurrentGroupOrder();
-        assertNotNull(groupOrder);
+        this.groupOrder = new GroupOrder(deliveryDetails);
+        groupOrder.addUser(user1);
+        user1.setCurrentGroupOrder(groupOrder);
+        assertNotNull( user1.getCurrentGroupOrder());
     }
 
-    @Given("the user receives a group order identifier")
-    public void the_user_receives_a_group_order_identifier() {
+    @Then("the group receives an identifier")
+    public void theGroupReceivesAnIdentifier() {
         assertNotNull(groupOrder.getGroupOrderId());
     }
 
-    @Given("He searches restaurants that are open and can prepare items in time and should see:")
-    public void he_searches_restaurants_that_are_open_and_can_prepare_items_in_time_and_should_see(io.cucumber.datatable.DataTable dataTable) {
-        List<Restaurant> restaurants = RestaurantServiceManager.getInstance().searchRestaurantByDeliveryTime(groupOrder.getDeliveryDetails().getDeliveryTime());
-        int expectedSize = dataTable.height() - 1;
-        assertEquals(expectedSize, restaurants.size());
+    @When("He searches restaurants that are open and can prepare items in time")
+    public void heSearchesRestaurantsThatAreOpenAndCanPrepareItemsInTime() {
+        this.foundRestaurants = RESTAURANT_SERVICE_MANAGER.searchRestaurantByDeliveryTime(groupOrder.getDeliveryDetails().getDeliveryTime());
     }
 
-    @Given("He selects the restaurant {string} and sees the items compatible with the group order delivery time preparation:")
-    public void he_selects_the_restaurant_and_sees_the_items_compatible_with_the_group_order_delivery_time_preparation(String string, io.cucumber.datatable.DataTable dataTable) {
-        restaurant = RestaurantServiceManager.getInstance().searchByName(string).getFirst();
-        List<MenuItem> items = RestaurantServiceManager.getInstance().searchItemsByDeliveryTime(restaurant, groupOrder.getDeliveryDetails().getDeliveryTime());
+    @Then("He should see:")
+    public void he_searches_restaurants_that_are_open_and_can_prepare_items_in_time_and_should_see(DataTable dataTable) {
+        int expectedSize = dataTable.height() - 1;
+        assertEquals(expectedSize, this.foundRestaurants.size());
+    }
+
+    @When("He selects the restaurant {string}")
+    public void heSelectsTheRestaurant(String name) {
+        this.restaurant = RESTAURANT_SERVICE_MANAGER.searchByName(name).getFirst();
+    }
+
+    @Then("He should see the items compatible with the group order delivery time preparation:")
+    public void heShouldSeeTheItemsCompatibleWithTheGroupOrderDeliveryTimePreparation(DataTable dataTable) {
+        List<MenuItem> items = RESTAURANT_SERVICE_MANAGER.searchItemsByDeliveryTime(restaurant, groupOrder.getDeliveryDetails().getDeliveryTime());
         int expectedSize = dataTable.height() - 1;
         assertEquals(expectedSize, items.size());
     }
 
-    @Given("The first user adds the following items to his order:")
-    public void the_first_user_adds_the_following_items_to_his_order(io.cucumber.datatable.DataTable dataTable) {
-        user1.startSubGroupOrder(restaurant);
-        assertNotNull(user1.getCurrentOrder());
+    @When("The first user creates an order with the following items:")
+    public void the_first_user_adds_the_following_items_to_his_order(DataTable dataTable) {
+        this.orderUser1 = new Order(restaurant, user1);
+        this.groupOrder.addOrder(orderUser1);
+        this.user1.setCurrentOrder(orderUser1);
         for (int i = 1; i < dataTable.height(); i++) {
-            String itemName = dataTable.row(i).get(0);
+            String itemName = dataTable.row(i).getFirst();
             MenuItem item = restaurant.getMenu().findItemByName(itemName);
-            user1.addItemToOrder(restaurant, item);
+            this.orderUser1.addItem(item);
         }
-        assertEquals(dataTable.height() - 1, user1.getCurrentOrder().getItems().size());
+        assertEquals(dataTable.height() - 1, this.orderUser1.getItems().size());
     }
 
-    @Then("The first user validates his order")
+    @And("The first user validates his order")
     public void the_first_user_validates_his_order() {
+        user1.setCurrentOrder(orderUser1);
         user1.validateOrder();
+    }
+
+    @Then("The order should be validated")
+    public void theOrderShouldBeValidated() {
         assertEquals(OrderStatus.VALIDATED, user1.getCurrentOrder().getStatus());
     }
 
     @Given("The second user joins the group order")
-    public void the_second_user_joins_the_group_order() {
-        user2 = new CampusUser("user2@user", "password", new OrderManager(clock));
-        user2.joinGroupOrder(groupOrder);
-        assertNotNull(user2.getCurrentGroupOrder());
+    public void theSecondUserJoinsTheGroupCommand() {
+        this.user2 = new CampusUser("user2@user", "password123", new OrderManager(clock));
+        this.user2.setCurrentGroupOrder(groupOrder);
+        this.groupOrder.addUser(user2);
     }
 
-    @Given("The second user adds the following items to his order:")
-    public void the_second_user_adds_the_following_items_to_his_order(io.cucumber.datatable.DataTable dataTable) {
-        user2.startSubGroupOrder(restaurant);
-        assertNotNull(user2.getCurrentOrder());
+    @When("The second user creates an order with the following items:")
+    public void theSecondUserCreatesAnOrderWithTheFollowingItems(DataTable dataTable) {
+        this.orderUser2 = new Order(restaurant, user2);
+        this.groupOrder.addOrder(orderUser2);
+        this.user2.setCurrentOrder(orderUser2);
         for (int i = 1; i < dataTable.height(); i++) {
-            String itemName = dataTable.row(i).get(0);
+            String itemName = dataTable.row(i).getFirst();
             MenuItem item = restaurant.getMenu().findItemByName(itemName);
-            user2.addItemToOrder(restaurant, item);
+            orderUser2.addItem(item);
         }
-        assertEquals(dataTable.height() - 1, user2.getCurrentOrder().getItems().size());
+        assertEquals(dataTable.height() - 1, orderUser2.getItems().size());
     }
 
-    @Then("The second user validates his order")
-    public void the_second_user_validates_his_order() {
+    @And("The second user validates his order")
+    public void theSecondUserValidatesHisOrder() {
+        user2.setCurrentOrder(orderUser2);
         user2.validateOrder();
+    }
+
+    @Then("The second user's order should be validated")
+    public void theSecondUsersOrderShouldBeValidated() {
         assertEquals(OrderStatus.VALIDATED, user2.getCurrentOrder().getStatus());
     }
 
     @Given("The third user joins the group order")
-    public void the_third_user_joins_the_group_order() {
+    public void theThirdUserJoinsTheGroupOrder() {
         user3 = new CampusUser("user3@user", "password", new OrderManager(clock));
-        user3.joinGroupOrder(groupOrder);
+        groupOrder.addUser(user3);
+        user3.setCurrentGroupOrder(groupOrder);
     }
 
-    @Given("The third user adds the following items to his order:")
-    public void the_third_user_adds_the_following_items_to_his_order(io.cucumber.datatable.DataTable dataTable) {
-        user3.startSubGroupOrder(restaurant);
-        assertNotNull(user3.getCurrentOrder());
+    @Given("The third user creates an order with the following items:")
+    public void theThirdUserAddsTheFollowingItemsToHisOrder(DataTable dataTable) {
+        this.orderUser3 = new Order(restaurant, user3);
+        this.groupOrder.addOrder(orderUser3);
+        user3.setCurrentOrder(orderUser3);
         for (int i = 1; i < dataTable.height(); i++) {
-            String itemName = dataTable.row(i).get(0);
+            String itemName = dataTable.row(i).getFirst();
             MenuItem item = restaurant.getMenu().findItemByName(itemName);
-            user3.addItemToOrder(restaurant, item);
+            orderUser3.addItem(item);
         }
+        assertEquals(dataTable.height() - 1, orderUser2.getItems().size());
         assertEquals(dataTable.height() - 1, user3.getCurrentOrder().getItems().size());
     }
 
-    @Then("The third user validates his order and validates the group order")
-    public void the_third_user_validates_his_order_and_validates_the_group_order() {
-        user3.validateOrderAndGroupOrder();
+    @And("The third user validates his order")
+    public void theThirdUserValidatesHisOrder() {
+        user3.validateOrder();
     }
 
-    @When("the second user tries to bypass the restaurant selection by delivery time and selects the restaurant {string} that cannot prepare items in time")
-    public void the_second_user_tries_to_bypass_the_restaurant_selection_by_delivery_time_and_selects_the_restaurant_that_cannot_prepare_items_in_time(String string) {
-        restaurant = RestaurantServiceManager.getInstance().searchByName(string).getFirst();
-        user2.startSubGroupOrder(restaurant);
-        assertNull(user2.getCurrentOrder());
+    @And("The third user validates the group order")
+    public void theThirdUserValidatesTheGroupOrder() {
+        this.user3.getOrderManager().validateGroupOrder(groupOrder);
+    }
+
+    @Then("The third user's order and the group order should be validated")
+    public void theThirdUserSOrderAndTheGroupOrderShouldBeValidated() {
+        assertEquals(OrderStatus.VALIDATED, orderUser3.getStatus());
+        assertEquals(OrderStatus.VALIDATED, groupOrder.getStatus());
+    }
+
+    //////////////// SCENARIO 2 ////////////////
+    @When("The second user tries to bypass the restaurant selection by delivery time")
+    public void theSecondUserTriesToBypassTheRestaurantSelectionByDeliveryTime() {
+    }
+
+    @And("He selects the restaurant {string} that cannot prepare items in time")
+    public void heSelectsTheRestaurantThatCannotPrepareItemsInTime(String restaurantName) {
+        restaurant = RESTAURANT_SERVICE_MANAGER.searchByName(restaurantName).getFirst();
+        orderUser2 = new Order(restaurant, user2);
+        try {
+            this.groupOrder.addOrder(orderUser2);
+        } catch (Exception e) {
+            assertTrue(e instanceof IllegalStateException);
+            this.itemAddException = (IllegalStateException) e;
+        }
     }
 
     @Given("the second user selects the restaurant {string}")
     public void the_second_user_selects_the_restaurant(String string) {
-        restaurant = RestaurantServiceManager.getInstance().searchByName(string).getFirst();
+        restaurant = RESTAURANT_SERVICE_MANAGER.searchByName(string).getFirst();
     }
 
-    @Then("the second user tries to add the following item to their order:")
-    public void the_second_user_tries_to_add_the_following_item_to_their_order(io.cucumber.datatable.DataTable dataTable) {
-        user2.startSubGroupOrder(restaurant);
+    @When("The second user tries to create an order with the following items:")
+    public void theSecondUserTriesToCreateAnOrderWithTheFollowingItems(DataTable dataTable) {
+        this.orderUser2 = new Order(restaurant, user2);
+        this.groupOrder.addOrder(orderUser2);
+        this.user2.setCurrentOrder(orderUser2);
         for (int i = 1; i < dataTable.height(); i++) {
-            String itemName = dataTable.row(i).get(0);
+            String itemName = dataTable.row(i).getFirst();
             MenuItem item = restaurant.getMenu().findItemByName(itemName);
-            assertThrows(IllegalArgumentException.class, () -> user2.addItemToOrder(restaurant, item));
+            try {
+                orderUser2.addItem(item);
+            } catch (Exception e) {
+                assertTrue(e instanceof IllegalArgumentException);
+                this.itemAddSlotException = (IllegalArgumentException) e;
+            }
         }
+        assertEquals(0, orderUser2.getItems().size());
     }
 
     @Then("the system rejects the item and displays an error: {string}")
-    public void the_system_rejects_the_item_and_displays_an_error(String string) {
-        System.out.println(string);
+    public void theSystemRejectsTheItemAndDisplaysAnError(String error) {
+        assertEquals(error, (this.itemAddException == null ? this.itemAddSlotException : this.itemAddException).getMessage());
     }
+    //////////////// SCENARIO 4 ////////////////
+    @And("The first user validates the group order")
+    public void theFirstUserValidatesTheGroupOrder() {
+        this.user1.getOrderManager().validateGroupOrder(groupOrder);
+    }
+
+
+    @Then("The first user's order and the group order should be validated")
+    public void theFirstUserSOrderAndTheGroupOrderShouldBeValidated() {
+        assertEquals(orderUser1.getStatus(), OrderStatus.VALIDATED);
+        assertEquals(groupOrder.getStatus(), OrderStatus.VALIDATED);
+    }
+
 
     @Given("The third user tries to join the group order")
     public void the_third_user_tries_to_join_the_group_order() {
         user3 = new CampusUser("user@user", "password", new OrderManager(clock));
-        assertThrows(IllegalArgumentException.class, () -> user3.joinGroupOrder(groupOrder));
+        try {
+            groupOrder.addUser(user3);
+        } catch (Exception e) {
+            assertTrue(e instanceof IllegalStateException);
+            this.userJoinsValidatedGroupOrderException = (IllegalStateException)e;
+        }
     }
 
     @Then("the system rejects the third user and displays an error: {string}")
     public void the_system_rejects_the_third_user_and_displays_an_error(String string) {
-        System.out.println(string);
+        assertEquals(string, this.userJoinsValidatedGroupOrderException.getMessage());
     }
 
     @Then("The first user validates his order and validates the group order")
     public void the_first_user_validates_his_order_and_validates_the_group_order() {
         user1.validateOrderAndGroupOrder();
-    }
-
-    @Given("the first user creates an individual order with the restaurant {string} and with delivery location {string} and delivery time of {int}:{int} PM")
-    public void the_first_user_creates_an_individual_order_with_the_restaurant_and_with_delivery_location_and_delivery_time_of_pm(String string, String string2, Integer int1, Integer int2) {
-        user1 = new CampusUser("user1@user", "password", new OrderManager(clock));
-        restaurant = RestaurantServiceManager.getInstance().searchByName(string).getFirst();
-        DeliveryLocation location = DeliveryLocationManager.getInstance().findLocationByName(string2);
-        DeliveryDetails deliveryDetails = new DeliveryDetails(location, LocalDateTime.now(clock).withHour(int1).withMinute(int2));
-        user1.startIndividualOrder(restaurant, deliveryDetails);
-        assertNotNull(user1.getCurrentOrder());
-        assertNull(user1.getCurrentGroupOrder());
     }
 
     @Given("He searches restaurants that are open and can prepare items in time for it's individual order and should see:")
