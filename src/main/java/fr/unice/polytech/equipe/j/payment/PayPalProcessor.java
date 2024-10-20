@@ -14,7 +14,7 @@ public class PayPalProcessor implements PaymentProcessor {
      */
     @Override
     public boolean processPayment(double amount) {
-        System.out.println("Processing PayPal payment of $" + amount);
+        System.out.println("Processing PayPal payment of €" + amount);
         // Simulate payment processing logic
         if (amount <= 1000) {
             return true;

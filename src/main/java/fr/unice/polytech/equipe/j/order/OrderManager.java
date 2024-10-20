@@ -115,6 +115,7 @@ public class OrderManager {
 
 
     public Transaction validateOrder( Order order) throws IllegalArgumentException {
+        System.out.println("================="+order.getStatus()+"=================");
         if (order.getStatus() != OrderStatus.PENDING) {
             throw new IllegalArgumentException("Cannot validate order that is not pending.");
         }
@@ -124,7 +125,8 @@ public class OrderManager {
         if (!order.getRestaurant().isOrderValid(order)) {
             throw new IllegalArgumentException("Order is not valid.");
         }
-
+        order.getRestaurant().orderPaid(order);
+        order.setStatus(OrderStatus.VALIDATED);
 
         return makePayment(getTotalPrice(order),this.preferedPaymenMethod);
 

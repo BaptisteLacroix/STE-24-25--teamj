@@ -62,15 +62,19 @@ public class CampusUser extends User implements CheckoutObserver {
 
     public void validateOrder() {
         transactions.add(orderManager.validateOrder( getCurrentOrder()));
+        addOrderToHistory(getCurrentOrder());
     }
 
     public void validateOrderAndGroupOrder() {
         transactions.add(orderManager.validateOrder( getCurrentOrder()));
+        addOrderToHistory(getCurrentOrder());
         orderManager.validateGroupOrder(currentGroupOrder);
+
     }
 
     public void validateOrderAndGroupOrder(LocalDateTime deliveryTime) {
         transactions.add(orderManager.validateOrder( getCurrentOrder()));
+        addOrderToHistory(getCurrentOrder());
         orderManager.validateGroupOrder(currentGroupOrder, deliveryTime);
     }
 

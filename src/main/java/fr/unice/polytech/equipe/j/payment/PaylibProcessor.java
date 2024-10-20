@@ -14,7 +14,7 @@ public class PaylibProcessor implements PaymentProcessor {
      */
     @Override
     public boolean processPayment(double amount) {
-        System.out.println("Processing Paylib payment of $" + amount);
+        System.out.println("Processing Paylib payment of €" + amount);
         // Simulate payment processing logic
         if (amount <= 2000) {
             return true;

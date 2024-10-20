@@ -12,6 +12,9 @@ public class PaymentProcessorFactory {
      * @return a PaymentProcessor instance
      */
     public static PaymentProcessor createPaymentProcessor(PaymentMethod method) {
+        if (method == null){
+            throw new IllegalArgumentException("Invalid payment method: " + method);
+        }
         switch (method) {
             case CREDIT_CARD:
                 return new CreditCardProcessor();

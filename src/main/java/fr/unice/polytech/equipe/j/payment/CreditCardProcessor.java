@@ -14,7 +14,7 @@ public class CreditCardProcessor implements PaymentProcessor {
      */
     @Override
     public boolean processPayment(double amount) {
-        System.out.println("Processing credit card payment of $" + amount);
+        System.out.println("Processing credit card payment of €" + amount);
         // Simulate payment processing logic
         if (amount <= 500) {
             return true;
