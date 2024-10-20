@@ -95,7 +95,7 @@ public class OrderManager {
         if (!order.getRestaurant().isOrderValid(order)) {
             throw new IllegalArgumentException("Order is not valid.");
         }
-        order.getRestaurant().orderPaid(order);
+        order.getRestaurant().onOrderPaid(order);
         order.setStatus(OrderStatus.VALIDATED);
 
         return makePayment(getTotalPrice(order),this.preferedPaymenMethod,order);
@@ -147,6 +147,7 @@ public class OrderManager {
         if (groupOrder.getStatus() != OrderStatus.PENDING) {
             throw new IllegalArgumentException("Cannot join group order that is not pending.");
         }
-        campusUser.setGroupOrder(groupOrder);
+        groupOrder.addUser(campusUser);
+        campusUser.setCurrentGroupOrder(groupOrder);
     }
 }
