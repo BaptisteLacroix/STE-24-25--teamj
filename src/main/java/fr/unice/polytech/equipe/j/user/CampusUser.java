@@ -5,6 +5,7 @@ import fr.unice.polytech.equipe.j.order.GroupOrder;
 import fr.unice.polytech.equipe.j.order.IndividualOrder;
 import fr.unice.polytech.equipe.j.order.Order;
 import fr.unice.polytech.equipe.j.payment.CheckoutObserver;
+import fr.unice.polytech.equipe.j.payment.PaymentMethod;
 import fr.unice.polytech.equipe.j.payment.Transaction;
 import fr.unice.polytech.equipe.j.restaurant.MenuItem;
 import fr.unice.polytech.equipe.j.order.OrderManager;
@@ -19,6 +20,8 @@ public class CampusUser extends User implements CheckoutObserver {
     private final List<Order> ordersHistory = new ArrayList<>();
     private Order currentOrder;
     private GroupOrder currentGroupOrder;
+
+    private PaymentMethod defaultPaymentMethod = PaymentMethod.CREDIT_CARD;
     private final OrderManager orderManager;
 
     public CampusUser(String email, String password, OrderManager orderManager) {
@@ -47,6 +50,20 @@ public class CampusUser extends User implements CheckoutObserver {
         this.currentOrder = orderManager.startSubGroupOrder(restaurant, getCurrentGroupOrder());
     }
 
+    public PaymentMethod getDefaultPaymentMethod() {
+        return defaultPaymentMethod;
+    }
+
+    public void setDefaultPaymentMethod(PaymentMethod defaultPaymentMethod) {
+        this.defaultPaymentMethod = defaultPaymentMethod;
+    }
+
+    public List<Transaction> getTransactions() {
+        return transactions;
+    }
+
+
+
     public void joinGroupOrder(GroupOrder groupOrder) {
         orderManager.joinGroupOrder(groupOrder, this);
     }
@@ -61,6 +78,7 @@ public class CampusUser extends User implements CheckoutObserver {
     }
 
     public void validateOrder() {
+        orderManager.setPreferedPaymenMethod(defaultPaymentMethod);
         transactions.add(orderManager.validateOrder( getCurrentOrder()));
         addOrderToHistory(getCurrentOrder());
     }

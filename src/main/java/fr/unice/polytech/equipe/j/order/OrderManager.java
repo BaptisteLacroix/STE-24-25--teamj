@@ -115,7 +115,6 @@ public class OrderManager {
 
 
     public Transaction validateOrder( Order order) throws IllegalArgumentException {
-        System.out.println("================="+order.getStatus()+"=================");
         if (order.getStatus() != OrderStatus.PENDING) {
             throw new IllegalArgumentException("Cannot validate order that is not pending.");
         }
