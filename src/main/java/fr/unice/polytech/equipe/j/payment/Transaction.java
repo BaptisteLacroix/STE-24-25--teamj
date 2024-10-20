@@ -1,5 +1,6 @@
 package fr.unice.polytech.equipe.j.payment;
 
+import fr.unice.polytech.equipe.j.order.Order;
 import fr.unice.polytech.equipe.j.user.CampusUser;
 
 import java.time.LocalDateTime;
@@ -11,7 +12,10 @@ public class Transaction {
     private final double amount;
     private final String paymentMethod;
     private final LocalDateTime timestamp;
-    CampusUser user;
+
+    private Order order;
+
+    private CampusUser user;
 
     /**
      * Constructs a new Transaction with the specified amount, payment method, and timestamp.
@@ -20,10 +24,11 @@ public class Transaction {
      * @param paymentMethod the payment method used
      * @param timestamp     the date and time when the transaction occurred
      */
-    public Transaction(double amount, String paymentMethod, LocalDateTime timestamp) {
+    public Transaction(double amount, String paymentMethod, LocalDateTime timestamp,Order order) {
         this.amount = amount;
         this.paymentMethod = paymentMethod;
         this.timestamp = timestamp;
+        this.order = order;
     }
 
     /**
@@ -51,6 +56,14 @@ public class Transaction {
      */
     public LocalDateTime getTimestamp() {
         return timestamp;
+    }
+
+    public Order getOrder() {
+        return order;
+    }
+
+    public void setOrder(Order order) {
+        this.order = order;
     }
 
     /**

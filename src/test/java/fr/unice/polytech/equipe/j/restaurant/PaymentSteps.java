@@ -68,6 +68,7 @@ public class PaymentSteps {
     @Given("the user selected the restaurant {string}")
     public void the_user_has_selected_the_restaurant(String restaurantName) {
         restaurant = RestaurantServiceManager.getInstance(clock).searchByName(restaurantName).getFirst();
+        assertNotNull(restaurant);
     }
 
     @And("the user order by specifying the delivery location from the pre-recorded locations")
@@ -75,6 +76,7 @@ public class PaymentSteps {
         DeliveryLocation deliveryLocation = DeliveryLocationManager.getInstance().getPredefinedLocations().getFirst();
         DeliveryDetails deliveryDetails = new DeliveryDetails(deliveryLocation, null);
         campusUser.startIndividualOrder(restaurant, deliveryDetails);
+        assertNotNull(campusUser.getCurrentOrder());
     }
 
     /**

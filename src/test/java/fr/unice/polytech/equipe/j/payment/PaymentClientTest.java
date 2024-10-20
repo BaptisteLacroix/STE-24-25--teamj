@@ -35,7 +35,7 @@ public class PaymentClientTest {
             }
         };
         OrderManager orderManager = new OrderManager(clock);
-        Transaction tr = orderManager.makePayment(100.0, PaymentMethod.CREDIT_CARD);
+        Transaction tr = orderManager.makePayment(100.0, PaymentMethod.CREDIT_CARD,null);
 
         assertEquals(100.0, tr.getAmount(), 0.001);
         assertEquals("CREDIT_CARD", tr.getPaymentMethod());
@@ -60,7 +60,7 @@ public class PaymentClientTest {
             }
         };
         OrderManager orderManager = new OrderManager(clock);
-        Transaction tr = orderManager.makePayment(600.0, PaymentMethod.CREDIT_CARD);
+        Transaction tr = orderManager.makePayment(600.0, PaymentMethod.CREDIT_CARD,null);
 
 
         assertEquals(null, tr, "There should be no transactions recorded for failed payments");
@@ -88,9 +88,9 @@ public class PaymentClientTest {
         OrderManager orderManager = new OrderManager(clock);
         ArrayList<Transaction> transactions = new ArrayList<>();
 
-        transactions.add(orderManager.makePayment(60.0, PaymentMethod.CREDIT_CARD));
-        transactions.add(orderManager.makePayment(250.0, PaymentMethod.PAYPAL));
-        transactions.add(orderManager.makePayment(22.0, PaymentMethod.PAYLIB));
+        transactions.add(orderManager.makePayment(60.0, PaymentMethod.CREDIT_CARD,null));
+        transactions.add(orderManager.makePayment(250.0, PaymentMethod.PAYPAL,null));
+        transactions.add(orderManager.makePayment(22.0, PaymentMethod.PAYLIB,null));
 
 
         assertEquals(3, transactions.size(), "There should be three successful transactions recorded");
@@ -115,7 +115,7 @@ public class PaymentClientTest {
             }
         };
         OrderManager orderManager = new OrderManager(clock);
-        Transaction tr = orderManager.makePayment(60.0, PaymentMethod.PAYPAL);
+        Transaction tr = orderManager.makePayment(60.0, PaymentMethod.PAYPAL,null);
 
         assertEquals(60.0, tr.getAmount(), 0.001);
         assertEquals("PAYPAL", tr.getPaymentMethod());

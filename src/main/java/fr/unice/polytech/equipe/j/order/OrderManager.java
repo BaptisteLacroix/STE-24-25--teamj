@@ -127,17 +127,17 @@ public class OrderManager {
         order.getRestaurant().orderPaid(order);
         order.setStatus(OrderStatus.VALIDATED);
 
-        return makePayment(getTotalPrice(order),this.preferedPaymenMethod);
+        return makePayment(getTotalPrice(order),this.preferedPaymenMethod,order);
 
 
     }
 
-    public Transaction makePayment(double amount, PaymentMethod method) {
+    public Transaction makePayment(double amount, PaymentMethod method,Order order) {
         PaymentProcessor processor = PaymentProcessorFactory.createPaymentProcessor(method);
         boolean success = processor.processPayment(amount);
         if (success) {
             String paymentMethod = method.name();
-            return  new Transaction(amount, paymentMethod, LocalDateTime.now());
+            return  new Transaction(amount, paymentMethod, LocalDateTime.now(),order);
         } else {
             return null;
         }
