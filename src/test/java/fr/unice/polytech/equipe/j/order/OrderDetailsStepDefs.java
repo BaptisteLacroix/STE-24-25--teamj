@@ -1,5 +1,6 @@
 package fr.unice.polytech.equipe.j.order;
 
+import fr.unice.polytech.equipe.j.TimeUtils;
 import fr.unice.polytech.equipe.j.delivery.DeliveryDetails;
 import fr.unice.polytech.equipe.j.delivery.DeliveryLocation;
 import fr.unice.polytech.equipe.j.delivery.DeliveryLocationManager;
@@ -11,6 +12,7 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import io.cucumber.java.Before;
 
+import java.sql.Time;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -23,28 +25,28 @@ import static org.junit.Assert.assertThrows;
 public class OrderDetailsStepDefs {
     private CampusUser user;
     private Restaurant restaurant;
-    private Clock clock;
 
     @Before
     public void setUp() {
-        clock = Clock.fixed(Instant.parse("2024-10-18T12:00:00Z"), ZoneId.of("Europe/Paris"));
+        TimeUtils.setClock(Clock.fixed(Instant.parse("2024-10-18T12:00:00Z"), ZoneId.of("Europe/Paris")));
     }
 
     @Given("[OrderDetails]the user is registered")
     public void order_details_the_user_is_registered() {
-        user = new CampusUser("john@example.com", "password123", new OrderManager(clock));
+        user = new CampusUser("john@example.com", "password123", new OrderManager());
     }
 
     @When("[OrderDetails]the user selects the restaurant {string}")
     public void order_details_the_user_selects_the_restaurant(String string) {
-        restaurant = RestaurantServiceManager.getInstance(clock).searchByName(string).getFirst();
+        restaurant = RestaurantServiceManager.getInstance().searchByName(string).getFirst();
     }
 
     @Then("[OrderDetails]the user start a single order by specifying the delivery location from the pre-recorded locations")
     public void order_details_the_user_start_a_single_order_by_specifying_the_delivery_location_from_the_pre_recorded_location() {
         DeliveryLocation deliveryLocation = DeliveryLocationManager.getInstance().getPredefinedLocations().getFirst();
         DeliveryDetails deliveryDetails = new DeliveryDetails(deliveryLocation, null);
-        user.startIndividualOrder(restaurant, deliveryDetails);
+        IndividualOrder individualOrder = new IndividualOrder(restaurant, deliveryDetails, user);
+        user.setCurrentOrder(individualOrder);
         assertEquals(((IndividualOrder) user.getCurrentOrder()).getDeliveryDetails().getDeliveryLocation().locationName(), deliveryLocation.locationName());
         assertEquals(((IndividualOrder) user.getCurrentOrder()).getDeliveryDetails().getDeliveryLocation().address(), deliveryLocation.address());
     }

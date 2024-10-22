@@ -34,7 +34,7 @@ public class PaymentClientTest {
                 return null;
             }
         };
-        OrderManager orderManager = new OrderManager(clock);
+        OrderManager orderManager = new OrderManager();
         Transaction tr = orderManager.makePayment(100.0, PaymentMethod.CREDIT_CARD,null);
 
         assertEquals(100.0, tr.getAmount(), 0.001);
@@ -59,7 +59,7 @@ public class PaymentClientTest {
                 return null;
             }
         };
-        OrderManager orderManager = new OrderManager(clock);
+        OrderManager orderManager = new OrderManager();
         Transaction tr = orderManager.makePayment(600.0, PaymentMethod.CREDIT_CARD,null);
 
 
@@ -85,7 +85,7 @@ public class PaymentClientTest {
                 return null;
             }
         };
-        OrderManager orderManager = new OrderManager(clock);
+        OrderManager orderManager = new OrderManager();
         ArrayList<Transaction> transactions = new ArrayList<>();
 
         transactions.add(orderManager.makePayment(60.0, PaymentMethod.CREDIT_CARD,null));
@@ -114,7 +114,7 @@ public class PaymentClientTest {
                 return null;
             }
         };
-        OrderManager orderManager = new OrderManager(clock);
+        OrderManager orderManager = new OrderManager();
         Transaction tr = orderManager.makePayment(60.0, PaymentMethod.PAYPAL,null);
 
         assertEquals(60.0, tr.getAmount(), 0.001);

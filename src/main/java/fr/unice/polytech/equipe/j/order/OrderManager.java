@@ -1,5 +1,6 @@
 package fr.unice.polytech.equipe.j.order;
 
+import fr.unice.polytech.equipe.j.TimeUtils;
 import fr.unice.polytech.equipe.j.delivery.DeliveryDetails;
 import fr.unice.polytech.equipe.j.payment.PaymentMethod;
 import fr.unice.polytech.equipe.j.payment.PaymentProcessor;
@@ -9,45 +10,15 @@ import fr.unice.polytech.equipe.j.restaurant.MenuItem;
 import fr.unice.polytech.equipe.j.restaurant.Restaurant;
 import fr.unice.polytech.equipe.j.user.CampusUser;
 
-import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
 
 public class OrderManager {
-    private final Clock clock;
-
     private PaymentMethod preferedPaymenMethod = PaymentMethod.CREDIT_CARD;
 
-    public Clock getClock() {
-        return clock;
-    }
-
-    public OrderManager(Clock clock) {
-        this.clock = clock;
-    }
-
     public GroupOrder startGroupOrder(DeliveryDetails deliveryDetails) {
-        return new GroupOrder(deliveryDetails, getClock());
-    }
-
-    public IndividualOrder startSingleOrder(Restaurant restaurant, DeliveryDetails deliveryDetails) {
-        if (restaurant.capacityCheck()) {
-            IndividualOrder order = new IndividualOrder(restaurant, deliveryDetails, getClock());
-            restaurant.addOrder(order);
-            return order;
-        }
-        return null;
-    }
-
-    public Order startSubGroupOrder(Restaurant restaurant, GroupOrder groupOrder) {
-        if (restaurant.capacityCheck() && restaurant.canPrepareItemForGroupOrderDeliveryTime(groupOrder)) {
-            Order order = new Order(restaurant, getClock());
-            restaurant.addOrder(order);
-            groupOrder.addOrder(order);
-            return order;
-        }
-        return null;
+        return new GroupOrder(deliveryDetails);
     }
 
     public void cancelOrder(Restaurant restaurant, Order order) {
@@ -87,7 +58,7 @@ public class OrderManager {
      * Helper method to check if the item's preparation time exceeds the delivery time.
      */
     private boolean isItemTooLate(MenuItem menuItem, LocalDateTime deliveryTime) {
-        LocalDateTime estimatedReadyTime = LocalDateTime.now(getClock()).plusSeconds(menuItem.getPrepTime());
+        LocalDateTime estimatedReadyTime = TimeUtils.getNow().plusSeconds(menuItem.getPrepTime());
         return estimatedReadyTime.isAfter(deliveryTime);
     }
 
@@ -124,12 +95,10 @@ public class OrderManager {
         if (!order.getRestaurant().isOrderValid(order)) {
             throw new IllegalArgumentException("Order is not valid.");
         }
-        order.getRestaurant().orderPaid(order);
+        order.getRestaurant().onOrderPaid(order);
         order.setStatus(OrderStatus.VALIDATED);
 
         return makePayment(getTotalPrice(order),this.preferedPaymenMethod,order);
-
-
     }
 
     public Transaction makePayment(double amount, PaymentMethod method,Order order) {
@@ -176,6 +145,7 @@ public class OrderManager {
         if (groupOrder.getStatus() != OrderStatus.PENDING) {
             throw new IllegalArgumentException("Cannot join group order that is not pending.");
         }
-        campusUser.setGroupOrder(groupOrder);
+        groupOrder.addUser(campusUser);
+        campusUser.setCurrentGroupOrder(groupOrder);
     }
 }

@@ -1,5 +1,6 @@
 package fr.unice.polytech.equipe.j.restaurant;
 
+import fr.unice.polytech.equipe.j.TimeUtils;
 import io.cucumber.java.Before;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
@@ -18,17 +19,17 @@ import static org.junit.Assert.assertTrue;
 public class RestaurantMenuSteps {
 
     private Restaurant currentRestaurant;
-    private Clock clock;
+
 
     @Before
     public void setUp() {
-        clock = Clock.fixed(Instant.parse("2024-10-18T12:00:00Z"), ZoneId.of("Europe/Paris"));
+        TimeUtils.setClock(Clock.fixed(Instant.parse("2024-10-18T12:00:00Z"), ZoneId.of("Europe/Paris")));
     }
 
     // When step - user visits the specific restaurant
     @When("the user visits the {string} restaurant")
     public void userVisitsRestaurant(String restaurantName) {
-        currentRestaurant = RestaurantServiceManager.getInstance(clock).searchByName(restaurantName).getFirst();
+        currentRestaurant = RestaurantServiceManager.getInstance().searchByName(restaurantName).getFirst();
         assertNotNull(currentRestaurant);
     }
 

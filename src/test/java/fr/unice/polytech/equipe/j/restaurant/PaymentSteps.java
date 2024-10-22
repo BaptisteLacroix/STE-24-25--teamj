@@ -3,6 +3,7 @@ package fr.unice.polytech.equipe.j.restaurant;
 import fr.unice.polytech.equipe.j.delivery.DeliveryDetails;
 import fr.unice.polytech.equipe.j.delivery.DeliveryLocation;
 import fr.unice.polytech.equipe.j.delivery.DeliveryLocationManager;
+import fr.unice.polytech.equipe.j.order.IndividualOrder;
 import fr.unice.polytech.equipe.j.order.OrderManager;
 import fr.unice.polytech.equipe.j.order.OrderStatus;
 import fr.unice.polytech.equipe.j.payment.PaymentMethod;
@@ -12,6 +13,7 @@ import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+
 
 import java.time.*;
 import java.util.Optional;
@@ -57,7 +59,7 @@ public class PaymentSteps {
      */
     @Given("the user is registered in the system")
     public void the_user_is_registered() {
-        campusUser = new CampusUser("john@example.com", "password", new OrderManager(clock));
+        campusUser = new CampusUser("john@example.com", "password", new OrderManager());
     }
 
     /**
@@ -67,7 +69,7 @@ public class PaymentSteps {
      */
     @Given("the user selected the restaurant {string}")
     public void the_user_has_selected_the_restaurant(String restaurantName) {
-        restaurant = RestaurantServiceManager.getInstance(clock).searchByName(restaurantName).getFirst();
+        restaurant = RestaurantServiceManager.getInstance().searchByName(restaurantName).getFirst();
         assertNotNull(restaurant);
     }
 
@@ -75,7 +77,8 @@ public class PaymentSteps {
     public void the_user_start_and_order_by_specifying_the_delivery_location_from_the_pre_recorded_locations() {
         DeliveryLocation deliveryLocation = DeliveryLocationManager.getInstance().getPredefinedLocations().getFirst();
         DeliveryDetails deliveryDetails = new DeliveryDetails(deliveryLocation, null);
-        campusUser.startIndividualOrder(restaurant, deliveryDetails);
+        IndividualOrder individualOrder = new IndividualOrder(restaurant, deliveryDetails, campusUser);
+        campusUser.setCurrentOrder(individualOrder);
         assertNotNull(campusUser.getCurrentOrder());
     }
 
