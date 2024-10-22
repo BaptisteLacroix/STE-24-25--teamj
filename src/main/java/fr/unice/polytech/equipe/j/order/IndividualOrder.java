@@ -35,36 +35,7 @@ public class IndividualOrder extends Order {
     public DeliveryDetails getDeliveryDetails() {
         return deliveryDetails;
     }
-
-//    /**
-//     * Sets the delivery time for an individual order. This validates that the time is compatible with the restaurant's operating hours and item prep time.
-//     */
-//    public void setDeliveryTime(Restaurant restaurant, LocalDateTime deliveryTime) {
-//        // Check if the delivery time is in the past
-//        if (deliveryTime.isBefore(TimeUtils.getNow())) {
-//            throw new UnsupportedOperationException("You cannot specify a delivery time in the past.");
-//        }
-//
-//        // Check if the restaurant is open
-//        if (restaurant.getOpeningTime().isEmpty() || restaurant.getClosingTime().isEmpty()) {
-//            throw new UnsupportedOperationException("The restaurant is not open at this time.");
-//        }
-//
-//        // Check if the restaurant is open at the specified delivery time
-//        if (deliveryTime.isBefore(restaurant.getOpeningTime().get()) || deliveryTime.isAfter(restaurant.getClosingTime().get())) {
-//            throw new UnsupportedOperationException("The restaurant is closed at this time.");
-//        }
-//
-//        // Check if the delivery time is compatible with the preparation time of the items
-//        LocalDateTime earliestPossibleDeliveryTime = TimeUtils.getNow().plusSeconds(restaurant.getPreparationTime(getItems()));
-//        if (deliveryTime.isBefore(earliestPossibleDeliveryTime)) {
-//            throw new UnsupportedOperationException("The delivery time is too soon.");
-//        }
-//
-//        // Set the delivery time if all validations pass
-//        deliveryDetails.setDeliveryTime(deliveryTime);
-//    }
-
+    
     @Override
     public String toString() {
         return "IndividualOrder{" +
