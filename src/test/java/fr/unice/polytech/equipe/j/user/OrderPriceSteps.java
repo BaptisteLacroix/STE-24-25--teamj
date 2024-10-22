@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class OderPriceSteps {
+public class OrderPriceSteps {
     Restaurant restaurant;
     private List<Order> indivOrders = new ArrayList<>();
     private double reductionPercentage;

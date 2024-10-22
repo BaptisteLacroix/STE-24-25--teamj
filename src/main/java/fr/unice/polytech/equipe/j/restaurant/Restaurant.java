@@ -363,7 +363,8 @@ public class Restaurant implements CheckoutObserver {
     }
 
     public OrderPrice processOrderPrice(Order order) {
-        assert order.getRestaurant().equals(this);
+        if(!order.getRestaurant().equals(this))
+            throw new IllegalArgumentException("Order Restaurant is not the same as the current restaurant");
         return this.orderPriceStrategy.processOrderPrice(order, this);
     }
 
