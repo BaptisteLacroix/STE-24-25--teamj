@@ -75,20 +75,4 @@ public class IndividualOrder extends Order {
                 ", status=" + getStatus() +
                 '}';
     }
-//
-//    public Optional<LocalDateTime> getPossibleDeliveryTime() {
-//        // If the delivery tim is not set return the latest delivery time possible from the order items
-//        if (deliveryDetails.getDeliveryTime().isEmpty()) {
-//            Optional<LocalDateTime> latestDeliveryTime = Optional.empty();
-//            for (MenuItem item : getItems()) {
-//                int preparationTime = item.getPrepTime();
-//                LocalDateTime orderDeliveryTime = TimeUtils.getNow().plusSeconds(preparationTime);
-//                if (latestDeliveryTime.isEmpty() || orderDeliveryTime.isAfter(latestDeliveryTime.get())) {
-//                    latestDeliveryTime = Optional.of(orderDeliveryTime);
-//                }
-//            }
-//            return latestDeliveryTime;
-//        }
-//        return deliveryDetails.getDeliveryTime();
-//    }
 }
