@@ -132,9 +132,9 @@ Feature: 3 users are doing a complete group order, specifying delivery location 
     Given The third user tries to join the group order
     Then the system rejects the third user and displays an error: "The group order has already been validated."
 
-#  Scenario: The first user creates an individual order, specifying delivery location and time, choosing restaurant and items.
-#    Given the first user creates an individual order with the restaurant "Le Petit Nice" and with delivery location "Campus Main Gate" and delivery time of 14:30 PM
-#    And The first user adds the following items to his individual order:
-#      | Menu Item     |
-#      | Bouillabaisse |
-#    Then The first user validates his individual order
+  Scenario: The first user creates an individual order, specifying delivery location and time, choosing restaurant and items.
+    Given the first user creates an individual order with the restaurant "Le Petit Nice" and with delivery location "Campus Main Gate" and delivery time of 14:30 PM
+    And The first user adds the following items to his individual order:
+      | Menu Item     |
+      | Bouillabaisse |
+    Then The first user validates his individual order

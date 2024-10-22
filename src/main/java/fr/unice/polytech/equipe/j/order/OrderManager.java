@@ -99,8 +99,6 @@ public class OrderManager {
         order.setStatus(OrderStatus.VALIDATED);
 
         return makePayment(getTotalPrice(order),this.preferedPaymenMethod,order);
-
-
     }
 
     public Transaction makePayment(double amount, PaymentMethod method,Order order) {

@@ -6,9 +6,9 @@ Feature: Update restaurant opening hours and menu offerings
   Background:
     Given "Jeanne", a restaurant manager of the "Chicken Burger" restaurant
     And the restaurant has a menu with the following items:
-      | itemName | prepTime | price | capacity |
-      | BigMac   | 120      | 5     |     2    |
-      | Fries    | 60       | 3     |     2    |
+      | itemName | prepTime | price |
+      | BigMac   | 120      | 5     |
+      | Fries    | 60       | 3     |
 
 
   Scenario: Update opening hours

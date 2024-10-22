@@ -31,7 +31,6 @@ public class GroupOrder {
     public void addOrder(Order order) {
         if (this.status != OrderStatus.PENDING)
             throw new IllegalStateException("Cannot join a group order that is not pending");
-        // FIXME adding the order to do the check and remove in case of bad check might not be thread safe
         this.orders.add(order);
         Restaurant restaurant = order.getRestaurant();
         if(!restaurant.capacityCheck() || !restaurant.canPrepareItemForGroupOrderDeliveryTime(this)) {

@@ -17,7 +17,7 @@ import io.cucumber.java.en.When;
 
 import java.time.Clock;
 import java.time.Instant;
-import java.time.LocalDateTime;
+
 import java.time.ZoneId;
 import java.util.List;
 
@@ -36,6 +36,7 @@ public class CompleteOrderStepDefs {
     private IllegalStateException itemAddException;
     private IllegalStateException userJoinsValidatedGroupOrderException;
     private IllegalArgumentException itemAddSlotException;
+    private IndividualOrder individualOrderUser1;
 
     @Before
     public void setUp() {
@@ -102,7 +103,8 @@ public class CompleteOrderStepDefs {
 
     @Then("The order should be validated")
     public void theOrderShouldBeValidated() {
-        assertEquals(OrderStatus.VALIDATED, user1.getCurrentOrder().getStatus());
+        assertEquals(OrderStatus.VALIDATED, orderUser1.getStatus());
+        assertEquals(user1.getTransactions().getFirst().getOrder(), orderUser1);
     }
 
     @Given("The second user joins the group order")
@@ -133,6 +135,7 @@ public class CompleteOrderStepDefs {
 
     @Then("The second user's order should be validated")
     public void theSecondUsersOrderShouldBeValidated() {
+        assertEquals(orderUser2, user2.getTransactions().getFirst().getOrder());
         assertEquals(OrderStatus.VALIDATED, user2.getCurrentOrder().getStatus());
     }
 
@@ -169,6 +172,7 @@ public class CompleteOrderStepDefs {
 
     @Then("The third user's order and the group order should be validated")
     public void theThirdUserSOrderAndTheGroupOrderShouldBeValidated() {
+        assertEquals(orderUser3, user3.getTransactions().getFirst().getOrder());
         assertEquals(OrderStatus.VALIDATED, orderUser3.getStatus());
         assertEquals(OrderStatus.VALIDATED, groupOrder.getStatus());
     }
@@ -267,20 +271,30 @@ public class CompleteOrderStepDefs {
         assertEquals(expectedSize, items.size());
     }
 
+    @Given("the first user creates an individual order with the restaurant {string} and with delivery location {string} and delivery time of {int}:{int} PM")
+    public void theFirstUserCreatesAnIndividualOrderWithTheRestaurantAndWithDeliveryLocationAndDeliveryTimeOfPM(String restau, String location, int hours, int minutes) {
+        user1 = new CampusUser("user1@user", "password123", new OrderManager());
+        DeliveryLocation deliveryLocation = DeliveryLocationManager.getInstance().findLocationByName(location);
+        DeliveryDetails deliveryDetails = new DeliveryDetails(deliveryLocation, TimeUtils.getNow().withHour(hours).withMinute(minutes));
+        this.restaurant = RestaurantServiceManager.getInstance().searchByName(restau).getFirst();
+        this.individualOrderUser1 = new IndividualOrder(restaurant, deliveryDetails, user1);
+    }
+
     @Given("The first user adds the following items to his individual order:")
     public void the_first_user_adds_the_following_items_to_his_individual_order(io.cucumber.datatable.DataTable dataTable) {
         for (int i = 1; i < dataTable.height(); i++) {
-            String itemName = dataTable.row(i).get(0);
+            String itemName = dataTable.row(i).getFirst();
             MenuItem item = restaurant.getMenu().findItemByName(itemName);
-            user1.addItemToOrder(restaurant, item);
+            individualOrderUser1.addItem(item);
         }
-        assertEquals(dataTable.height() - 1, user1.getCurrentOrder().getItems().size());
+        user1.setCurrentOrder(individualOrderUser1);
+        assertEquals(dataTable.height() - 1, individualOrderUser1.getItems().size());
     }
 
     @Then("The first user validates his individual order")
     public void the_first_user_validates_his_individual_order() {
         user1.validateOrder();
-        assertEquals(OrderStatus.VALIDATED, user1.getCurrentOrder().getStatus());
+        assertEquals(OrderStatus.VALIDATED, individualOrderUser1.getStatus());
         assertEquals(0, restaurant.getPendingOrders().size());
         assertEquals(1, restaurant.getOrdersHistory().size());
     }

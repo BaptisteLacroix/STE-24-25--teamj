@@ -18,9 +18,9 @@ import java.util.List;
 public class CampusUser extends User implements CheckoutObserver {
     private final List<Transaction> transactions;
     private final List<Order> ordersHistory = new ArrayList<>();
-    @Deprecated
+    
     private Order currentOrder;
-    @Deprecated
+    
     private GroupOrder currentGroupOrder;
 
     public OrderManager getOrderManager() {
@@ -55,24 +55,24 @@ public class CampusUser extends User implements CheckoutObserver {
         return super.toString() + " - " + getOrdersHistory().size() + " orders";
     }
 
-    @Deprecated
+    
     public Order getCurrentOrder() {
         return currentOrder;
     }
 
-    @Deprecated
+    
     public GroupOrder getCurrentGroupOrder() {
         return currentGroupOrder;
     }
 
-    @Deprecated
+    
     public void setCurrentGroupOrder(GroupOrder currentGroupOrder) {
         this.currentGroupOrder = currentGroupOrder;
     }
     /**
      * Start an individual order
      */
-//    @Deprecated
+//    
 //    public void startIndividualOrder(Restaurant restaurant, DeliveryDetails deliveryDetails) {
 //        this.currentOrder = orderManager.startSingleOrder(restaurant, deliveryDetails);
 //    }
@@ -82,17 +82,17 @@ public class CampusUser extends User implements CheckoutObserver {
      *
      * @param deliveryDetails The delivery details
      */
-    @Deprecated
+    
     public void createGroupOrder(DeliveryDetails deliveryDetails) {
         this.currentGroupOrder = orderManager.startGroupOrder(deliveryDetails);
     }
 
-//    @Deprecated
+//    
 //    public void startSubGroupOrder(Restaurant restaurant) {
 //        this.currentOrder = orderManager.startSubGroupOrder(restaurant, getCurrentGroupOrder());
 //    }
 
-    @Deprecated
+    
     public void setCurrentOrder(Order currentOrder) {
         this.currentOrder = currentOrder;
 
@@ -114,7 +114,7 @@ public class CampusUser extends User implements CheckoutObserver {
     }
 
 
-    @Deprecated
+    
     public void addItemToOrder(Restaurant restaurant, MenuItem item) {
         // TODO: change if the user can be part of multiple group orders
         if (currentGroupOrder != null) {
@@ -127,7 +127,7 @@ public class CampusUser extends User implements CheckoutObserver {
     /**
      * TODO : this method should be in the Order class
      */
-    @Deprecated
+    
     public void validateOrder() {
         orderManager.setPreferedPaymenMethod(defaultPaymentMethod);
         transactions.add(orderManager.validateOrder( getCurrentOrder()));
@@ -137,7 +137,7 @@ public class CampusUser extends User implements CheckoutObserver {
     /**
      * TODO : this method should desctructured into two methds
      */
-    @Deprecated
+    
     public void validateOrderAndGroupOrder() {
         this.validateOrder();
         orderManager.validateGroupOrder(currentGroupOrder);
@@ -146,7 +146,7 @@ public class CampusUser extends User implements CheckoutObserver {
     /**
      * TODO : this method should be in the Order class
      */
-    @Deprecated
+    
     public void validateOrderAndGroupOrder(LocalDateTime deliveryTime) {
         transactions.add(orderManager.validateOrder( getCurrentOrder()));
         addOrderToHistory(getCurrentOrder());
