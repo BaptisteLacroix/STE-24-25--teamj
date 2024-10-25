@@ -1,5 +1,6 @@
 package fr.unice.polytech.equipe.j.restaurant;
 
+import fr.unice.polytech.equipe.j.TimeUtils;
 import fr.unice.polytech.equipe.j.slot.Slot;
 
 import java.time.Clock;
@@ -17,30 +18,22 @@ public class RestaurantServiceManager {
     // List of restaurants managed by the service
     private final List<Restaurant> restaurants;
 
-    // Clock to control time
-    private final Clock clock;
-
     // Private constructor to prevent external instantiation
-    private RestaurantServiceManager(Clock clock) {
+    private RestaurantServiceManager() {
         this.restaurants = new ArrayList<>();
-        this.clock = clock != null ? clock : Clock.systemDefaultZone(); // Use system clock if none is provided
     }
 
     static void resetInstance() {
         instance = null;
     }
 
-    // Static method to get the single instance (Singleton pattern) with optional Clock parameter
-    public static RestaurantServiceManager getInstance(Clock clock) {
-        if (instance == null) {
-            instance = new RestaurantServiceManager(clock);
-        }
-        return instance;
-    }
-
     // Overloaded method for backward compatibility (uses the system clock by default)
     public static RestaurantServiceManager getInstance() {
-        return getInstance(Clock.systemDefaultZone());
+        if (instance == null) {
+            instance = new RestaurantServiceManager();
+            return instance;
+        }
+        return instance;
     }
 
     // Add restaurant to the manager (Package-Private)
@@ -81,7 +74,7 @@ public class RestaurantServiceManager {
     public List<Restaurant> searchRestaurantByDeliveryTime(Optional<LocalDateTime> deliveryTime) {
         return deliveryTime.map(localDateTime -> restaurants.stream()
                 .filter(restaurant -> isOpenAt(restaurant, localDateTime) && restaurant.getMenu().getItems().stream()
-                        .anyMatch(item -> LocalDateTime.now(clock).plusSeconds(item.getPrepTime()).isBefore(localDateTime) &&
+                        .anyMatch(item -> TimeUtils.getNow().plusSeconds(item.getPrepTime()).isBefore(localDateTime) &&
                                 restaurant.getSlots().stream().anyMatch(slot -> slot.getAvailableCapacity() >= item.getPrepTime())))
                 .toList()).orElse(restaurants);
     }
@@ -104,7 +97,7 @@ public class RestaurantServiceManager {
             return new ArrayList<>();
         }
         return restaurant.getMenu().getItems().stream()
-                .filter(item -> LocalDateTime.now(clock).plusSeconds(item.getPrepTime()).isBefore(time.get()))
+                .filter(item -> TimeUtils.getNow().plusSeconds(item.getPrepTime()).isBefore(time.get()))
                 .toList();
     }
 
@@ -113,7 +106,7 @@ public class RestaurantServiceManager {
         if (restaurant.getOpeningTime().isEmpty()) {
             return false;
         }
-        return time.isAfter(restaurant.getOpeningTime().get()) && time.isBefore(restaurant.getClosingTime().get());
+        return time.isAfter(restaurant.getOpeningTime().get()) && time.isBefore(restaurant.getClosingTime().orElseThrow());
     }
 
     public Slot findSlotByStartTime(Restaurant restaurant, LocalDateTime slotStartTime) {

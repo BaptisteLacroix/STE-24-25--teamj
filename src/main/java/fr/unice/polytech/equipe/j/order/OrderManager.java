@@ -1,56 +1,24 @@
 package fr.unice.polytech.equipe.j.order;
 
+import fr.unice.polytech.equipe.j.TimeUtils;
 import fr.unice.polytech.equipe.j.delivery.DeliveryDetails;
+import fr.unice.polytech.equipe.j.payment.PaymentMethod;
+import fr.unice.polytech.equipe.j.payment.PaymentProcessor;
+import fr.unice.polytech.equipe.j.payment.PaymentProcessorFactory;
 import fr.unice.polytech.equipe.j.payment.Transaction;
 import fr.unice.polytech.equipe.j.restaurant.MenuItem;
 import fr.unice.polytech.equipe.j.restaurant.Restaurant;
 import fr.unice.polytech.equipe.j.user.CampusUser;
 
-import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
 
 public class OrderManager {
-    private final Clock clock;
-
-    public Clock getClock() {
-        return clock;
-    }
-
-    public OrderManager(Clock clock) {
-        this.clock = clock;
-    }
+    private PaymentMethod preferedPaymenMethod = PaymentMethod.CREDIT_CARD;
 
     public GroupOrder startGroupOrder(DeliveryDetails deliveryDetails) {
-        return new GroupOrder(deliveryDetails, getClock());
-    }
-
-    public IndividualOrder startSingleOrder(Restaurant restaurant, DeliveryDetails deliveryDetails) {
-        if (restaurant.capacityCheck()) {
-            IndividualOrder order = new IndividualOrder(restaurant, deliveryDetails, getClock());
-            try {
-                restaurant.addOrder(order);
-            } catch (IllegalStateException e) {
-                System.out.println(e.getMessage());
-            }
-            return order;
-        }
-        return null;
-    }
-
-    public Order startSubGroupOrder(Restaurant restaurant, GroupOrder groupOrder) {
-        if (restaurant.capacityCheck() && restaurant.canPrepareItemForGroupOrderDeliveryTime(groupOrder)) {
-            Order order = new Order(restaurant, getClock());
-            try {
-                restaurant.addOrder(order);
-            } catch (IllegalStateException e){
-                System.out.println(e.getMessage());
-            }
-            groupOrder.addOrder(order);
-            return order;
-        }
-        return null;
+        return new GroupOrder(deliveryDetails);
     }
 
     public void cancelOrder(Restaurant restaurant, Order order) {
@@ -83,19 +51,14 @@ public class OrderManager {
         }
 
         // Add the item to the order
-        try{
-            order.addItem(menuItem);
-        } catch (IllegalStateException e) {
-            System.out.println(e.getMessage());
-        }
-
+        order.addItem(menuItem);
     }
 
     /**
      * Helper method to check if the item's preparation time exceeds the delivery time.
      */
     private boolean isItemTooLate(MenuItem menuItem, LocalDateTime deliveryTime) {
-        LocalDateTime estimatedReadyTime = LocalDateTime.now(getClock()).plusSeconds(menuItem.getPrepTime());
+        LocalDateTime estimatedReadyTime = TimeUtils.getNow().plusSeconds(menuItem.getPrepTime());
         return estimatedReadyTime.isAfter(deliveryTime);
     }
 
@@ -113,8 +76,16 @@ public class OrderManager {
         addItemToOrder(order, restaurant, menuItem, groupOrder.getDeliveryDetails().getDeliveryTime());
     }
 
+    public PaymentMethod getPreferedPaymenMethod() {
+        return preferedPaymenMethod;
+    }
 
-    public void validateOrder(Transaction transaction, Order order) throws IllegalArgumentException {
+    public void setPreferedPaymenMethod(PaymentMethod preferedPaymenMethod) {
+        this.preferedPaymenMethod = preferedPaymenMethod;
+    }
+
+
+    public Transaction validateOrder( Order order) throws IllegalArgumentException {
         if (order.getStatus() != OrderStatus.PENDING) {
             throw new IllegalArgumentException("Cannot validate order that is not pending.");
         }
@@ -124,9 +95,21 @@ public class OrderManager {
         if (!order.getRestaurant().isOrderValid(order)) {
             throw new IllegalArgumentException("Order is not valid.");
         }
-        transaction.addObserver(order.getRestaurant());
-        transaction.proceedCheckout(order, getTotalPrice(order));
-        transaction.removeObserver(order.getRestaurant());
+        order.getRestaurant().onOrderPaid(order);
+        order.setStatus(OrderStatus.VALIDATED);
+
+        return makePayment(getTotalPrice(order),this.preferedPaymenMethod,order);
+    }
+
+    public Transaction makePayment(double amount, PaymentMethod method,Order order) {
+        PaymentProcessor processor = PaymentProcessorFactory.createPaymentProcessor(method);
+        boolean success = processor.processPayment(amount);
+        if (success) {
+            String paymentMethod = method.name();
+            return  new Transaction(amount, paymentMethod, LocalDateTime.now(),order);
+        } else {
+            return null;
+        }
     }
 
     public void validateGroupOrder(GroupOrder groupOrder) throws IllegalArgumentException {
@@ -146,11 +129,7 @@ public class OrderManager {
         if (groupOrder.getDeliveryDetails().getDeliveryTime().isPresent()) {
             throw new IllegalArgumentException("You cannot change the delivery time of a group order that is already set.");
         }
-        try {
-            groupOrder.setDeliveryTime(deliveryTime);
-        } catch (UnsupportedOperationException e) {
-            System.out.println(e.getMessage());
-        }
+        groupOrder.setDeliveryTime(deliveryTime);
         groupOrder.setStatus(OrderStatus.VALIDATED);
     }
 
@@ -166,6 +145,7 @@ public class OrderManager {
         if (groupOrder.getStatus() != OrderStatus.PENDING) {
             throw new IllegalArgumentException("Cannot join group order that is not pending.");
         }
-        campusUser.setGroupOrder(groupOrder);
+        groupOrder.addUser(campusUser);
+        campusUser.setCurrentGroupOrder(groupOrder);
     }
 }

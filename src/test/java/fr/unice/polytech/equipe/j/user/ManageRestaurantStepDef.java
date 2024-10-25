@@ -1,5 +1,6 @@
 package fr.unice.polytech.equipe.j.user;
 
+import fr.unice.polytech.equipe.j.TimeUtils;
 import fr.unice.polytech.equipe.j.restaurant.Menu;
 import fr.unice.polytech.equipe.j.restaurant.MenuItem;
 import fr.unice.polytech.equipe.j.restaurant.Restaurant;
@@ -33,17 +34,16 @@ public class ManageRestaurantStepDef {
     private final Menu menu = new Menu(new ArrayList<>());
     private final List<Slot> slots = new ArrayList<>();
     private MenuItem selectedItem;
-    private Clock clock;
     private Slot slot;
 
     @Before
     public void setUp() {
-        clock = Clock.fixed(Instant.parse("2024-10-18T12:00:00Z"), ZoneId.of("Europe/Paris"));
+        TimeUtils.setClock(Clock.fixed(Instant.parse("2024-10-18T12:00:00Z"), ZoneId.of("Europe/Paris")));
     }
 
     @Given("{string}, a restaurant manager of the {string} restaurant")
     public void aRestaurantManagerOfTheRestaurant(String name, String restaurantName) {
-        restaurant = new Restaurant(restaurantName, LocalDateTime.now(clock), LocalDateTime.now(clock).plusHours(8), menu, clock);
+        restaurant = new Restaurant(restaurantName, TimeUtils.getNow(), TimeUtils.getNow().plusHours(8), menu);
         restaurantManager = new RestaurantManager("jeanne@example.com", "password", name, restaurant);
     }
 
@@ -176,7 +176,7 @@ public class ManageRestaurantStepDef {
 
     @Given("a slot of {int} minutes is created")
     public void aSlotOfMinutesIsCreated(int duration) {
-        slot = new Slot(LocalDateTime.now(), 0);
+        slot = new Slot(TimeUtils.getNow(), 0);
     }
 
     @When("Jeanne allocates {int} personnel to this slot")

@@ -1,31 +1,62 @@
 package fr.unice.polytech.equipe.j.order;
 
+import fr.unice.polytech.equipe.j.TimeUtils;
 import fr.unice.polytech.equipe.j.delivery.DeliveryDetails;
+import fr.unice.polytech.equipe.j.restaurant.MenuItem;
+import fr.unice.polytech.equipe.j.restaurant.Restaurant;
+import fr.unice.polytech.equipe.j.user.CampusUser;
 
-import java.time.Clock;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 public class GroupOrder {
     private final UUID groupOrderId;
     private final List<Order> orders = new ArrayList<>();
+    private final List<CampusUser> users = new ArrayList<>();
     private final DeliveryDetails deliveryDetails;
     private OrderStatus status = OrderStatus.PENDING;
-    private final Clock clock;
 
-    public GroupOrder(DeliveryDetails deliveryDetails, Clock clock) {
+
+    public void addUser(CampusUser user) {
+        if (this.status == OrderStatus.VALIDATED)
+            throw new IllegalStateException("The group order has already been validated.");
+        this.users.add(user);
+    }
+    public GroupOrder(DeliveryDetails deliveryDetails) {
         this.groupOrderId = UUID.randomUUID();
         this.deliveryDetails = deliveryDetails;
-        this.clock = clock;
     }
 
     // Add an individual order to the group
     public void addOrder(Order order) {
-        orders.add(order);
+        if (this.status != OrderStatus.PENDING)
+            throw new IllegalStateException("Cannot join a group order that is not pending");
+        this.orders.add(order);
+        Restaurant restaurant = order.getRestaurant();
+        if(!restaurant.capacityCheck() || !restaurant.canPrepareItemForGroupOrderDeliveryTime(this)) {
+            this.orders.remove(order);
+            throw new IllegalStateException("Order cannot be added, restaurant does not have the capacity to deliver in time");
+        }
+        order.setOnItemAdded((menuItem -> {
+            this.checkOrderUpdate(order, menuItem);
+        }));
     }
+
+    private void checkOrderUpdate(Order order, MenuItem menuItem) {
+        // Check if the item can be prepared in time for the delivery
+        Optional<LocalDateTime> deliveryTime = this.deliveryDetails.getDeliveryTime();
+        LocalDateTime estimatedReadyTime = TimeUtils.getNow().plusSeconds(menuItem.getPrepTime());
+
+        if (deliveryTime.isPresent() && estimatedReadyTime.isAfter(deliveryTime.orElseThrow())){
+            throw new IllegalArgumentException("Cannot add item to order, it will not be ready in time.");
+        }
+
+        if (deliveryTime.isPresent() && !order.getRestaurant().slotAvailable(menuItem, deliveryTime.get())) {
+            throw new IllegalArgumentException("Cannot add item to order, no slot available.");
+        }
+    }
+
+
 
     // Getters
     public UUID getGroupOrderId() {
@@ -33,7 +64,7 @@ public class GroupOrder {
     }
 
     public List<Order> getOrders() {
-        return orders;
+        return this.orders;
     }
 
     public DeliveryDetails getDeliveryDetails() {
@@ -46,7 +77,7 @@ public class GroupOrder {
             Optional<LocalDateTime> latestDeliveryTime = Optional.empty();
             for (Order order : orders) {
                 int preparationTime = order.getRestaurant().getPreparationTime(order.getItems());
-                LocalDateTime orderDeliveryTime = LocalDateTime.now(clock).plusSeconds(preparationTime);
+                LocalDateTime orderDeliveryTime = TimeUtils.getNow().plusSeconds(preparationTime);
                 if (latestDeliveryTime.isEmpty() || orderDeliveryTime.isAfter(latestDeliveryTime.get())) {
                     latestDeliveryTime = Optional.of(orderDeliveryTime);
                 }
@@ -78,12 +109,12 @@ public class GroupOrder {
 
         // check that the delivery time is compatible with all the preparation time of the orders
         for (Order order : getOrders()) {
-            if (deliveryTime.isBefore(LocalDateTime.now(clock).plusSeconds(order.getRestaurant().getPreparationTime(order.getItems())))) {
+            if (deliveryTime.isBefore(TimeUtils.getNow().plusSeconds(order.getRestaurant().getPreparationTime(order.getItems())))) {
                 throw new UnsupportedOperationException("The delivery time is too soon.");
             }
         }
 
-        if (deliveryTime.isBefore(LocalDateTime.now(clock))) {
+        if (deliveryTime.isBefore(TimeUtils.getNow())) {
             throw new UnsupportedOperationException("You cannot specify a delivery time in the past.");
         }
         deliveryDetails.setDeliveryTime(deliveryTime);
@@ -93,16 +124,16 @@ public class GroupOrder {
         this.status = status;
     }
 
-    public OrderStatus getStatus() {
-        return status;
-    }
-
     @Override
     public String toString() {
         return "GroupOrder{" +
                 "groupOrderId=" + groupOrderId +
                 "deliveryDetails=" + deliveryDetails +
-                ", orders=" + orders +
+                ", orders=" + this.getOrders() +
                 '}';
+    }
+
+    public OrderStatus getStatus() {
+        return status;
     }
 }

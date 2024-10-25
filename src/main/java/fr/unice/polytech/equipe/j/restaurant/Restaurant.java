@@ -1,17 +1,19 @@
 package fr.unice.polytech.equipe.j.restaurant;
-
+import fr.unice.polytech.equipe.j.TimeUtils;
 import fr.unice.polytech.equipe.j.order.GroupOrder;
 import fr.unice.polytech.equipe.j.order.Order;
 import fr.unice.polytech.equipe.j.order.OrderStatus;
 import fr.unice.polytech.equipe.j.payment.CheckoutObserver;
 import fr.unice.polytech.equipe.j.slot.Slot;
 
-import java.time.Clock;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class Restaurant implements CheckoutObserver {
     private final UUID restaurantId = UUID.randomUUID();
@@ -20,12 +22,18 @@ public class Restaurant implements CheckoutObserver {
     private Optional<LocalDateTime> closingTime;
     private List<Slot> slots;
     private Menu menu;
+    private OrderPriceStrategy orderPriceStrategy;
+    private final List<Order> orders = new ArrayList<>();
     private final List<Order> ordersHistory = new ArrayList<>();
     private final List<Order> pendingOrders = new ArrayList<>();
     private int numberOfPersonnel;
-    private Clock clock;
+    private List<Order> orderHistory = new ArrayList<>();
+    
 
-    public Restaurant(String name, LocalDateTime openingTime, LocalDateTime closingTime, Menu menu, Clock clock) {
+    public Restaurant(String name, LocalDateTime openingTime, LocalDateTime closingTime, Menu menu) {
+        this(name, openingTime, closingTime, menu, OrderPriceStrategyFactory.makeGiveItemForNItems(8));
+    }
+    private Restaurant(String name, LocalDateTime openingTime, LocalDateTime closingTime, Menu menu, OrderPriceStrategy strategy) {
         this.restaurantName = name;
         this.openingTime = openingTime == null ? Optional.empty() : Optional.of(openingTime);
         if (closingTime != null && closingTime.isBefore(openingTime)) {
@@ -36,7 +44,8 @@ public class Restaurant implements CheckoutObserver {
             throw new IllegalArgumentException("Closing time is required if the restaurant is open.");
         }
         this.menu = menu;
-        this.clock = clock;
+        this.slots = slots;
+        this.orderPriceStrategy = strategy;
         generateSlots();
     }
 
@@ -99,13 +108,9 @@ public class Restaurant implements CheckoutObserver {
     public void addOrder(Order order) {
         if (capacityCheck()) {
             pendingOrders.add(order);
-            int i = 0;
+
             // Adjust the capacity for each slot based on the order
             for (Slot slot : slots) {
-                i+=1;
-                if(i>4){
-                    throw new IllegalStateException("The restaurant can't deliver this item on time.");
-                }
                 for (MenuItem item : order.getItems()) {
                     slot.UpdateSlotCapacity(item);
                 }
@@ -167,7 +172,7 @@ public class Restaurant implements CheckoutObserver {
      * @param order The UUID of the order
      */
     @Override
-    public void orderPaid(Order order) {
+    public void onOrderPaid(Order order) {
         order.setStatus(OrderStatus.VALIDATED);
         ordersHistory.add(order);
         pendingOrders.remove(order);
@@ -199,9 +204,9 @@ public class Restaurant implements CheckoutObserver {
             return true;
         }
 
-        LocalDateTime now = LocalDateTime.now(getClock());
+        LocalDateTime now = TimeUtils.getNow();
         LocalDateTime deliveryTime = groupOrder.getDeliveryDetails().getDeliveryTime().get();
-        LocalDateTime closingTime = getClosingTime().get();
+        LocalDateTime closingTime = getClosingTime().orElseThrow();
 
         // Check if the restaurant can prepare any item before the closing time or the delivery time
         return getMenu().getItems().stream()
@@ -211,8 +216,6 @@ public class Restaurant implements CheckoutObserver {
                 });
     }
 
-
-
     /**
      * Checks if there is a slot available for a given menu item before the specified delivery time.
      *
@@ -221,13 +224,9 @@ public class Restaurant implements CheckoutObserver {
      * @return true if there is a slot available that can prepare the item before the delivery time, false otherwise.
      */
     public boolean slotAvailable(MenuItem menuItem, LocalDateTime deliveryTime) {
-        LocalDateTime now = LocalDateTime.now(clock);
-        int i = 0;
+        LocalDateTime now = TimeUtils.getNow();
+
         for (Slot slot : slots) {
-            i+=1;
-            if(i>4){
-                return false;
-            }
             // Check if the slot's opening time is before the delivery time and within operating hours
             // Check if the item can be prepared before the delivery time
             boolean isBefore = slot.getOpeningDate().isBefore(deliveryTime);
@@ -250,9 +249,6 @@ public class Restaurant implements CheckoutObserver {
         }
     }
 
-    public Clock getClock() {
-        return clock;
-    }
 
     public void changeMenu(Menu newMenu) {
         this.menu = newMenu;
@@ -292,7 +288,7 @@ public class Restaurant implements CheckoutObserver {
     }
 
     public void setClosingTime(LocalDateTime closingTime) {
-        if (closingTime != null && closingTime.isBefore(openingTime.get())) {
+        if (closingTime != null && closingTime.isBefore(openingTime.orElseThrow())) {
             throw new IllegalArgumentException("Closing time cannot be before opening time.");
         }
         this.closingTime = closingTime == null ? Optional.empty() : Optional.of(closingTime);
@@ -304,6 +300,24 @@ public class Restaurant implements CheckoutObserver {
         if (this.closingTime.isEmpty()) {
             slots.clear();
         }
+    }
+
+    public List<Order> getOrders() {
+        return orders;
+    }
+
+    public OrderPriceStrategy getOrderPriceStrategy() {
+        return orderPriceStrategy;
+    }
+
+    public void setOrderPriceStrategy(OrderPriceStrategy orderPriceStrategy) {
+        this.orderPriceStrategy = orderPriceStrategy;
+    }
+
+    public double calculatePrice(Order order) {
+        return order.getItems().stream()
+                .mapToDouble(MenuItem::getPrice)
+                .sum();
     }
 
     public List<Order> getOrdersHistory() {
@@ -343,4 +357,18 @@ public class Restaurant implements CheckoutObserver {
         return slots;
     }
 
+
+    public void addOrderToHistory(Order order) {
+        this.orderHistory.add(order);
+    }
+
+    public OrderPrice processOrderPrice(Order order) {
+        if(!order.getRestaurant().equals(this))
+            throw new IllegalArgumentException("Order Restaurant is not the same as the current restaurant");
+        return this.orderPriceStrategy.processOrderPrice(order, this);
+    }
+
+    public List<Order> getOrderHistory() {
+        return orderHistory;
+    }
 }

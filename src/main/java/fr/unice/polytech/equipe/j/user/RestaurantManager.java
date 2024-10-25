@@ -29,44 +29,41 @@ public class RestaurantManager extends User {
         return this.name;
     }
 
-    // Mettre à jour les heures d'ouverture et de fermeture
+    /**
+     * Mettre à jour les heures d'ouverture et de fermeture
+     */
+    
     public void updateHours(LocalDateTime openingHour, LocalDateTime closingHour) {
         if (openingHour != null) {
             this.restaurant.setOpeningTime(openingHour);
         }
         if (closingHour != null) {
-            try {
-                this.restaurant.setClosingTime(closingHour);
-            } catch (IllegalArgumentException e){
-                System.out.println(e.getMessage());
-            }
+            this.restaurant.setClosingTime(closingHour);
         }
     }
 
-    // Ajouter un nouvel élément au menu via le restaurant
+    /**
+     *
+     * Ajouter un nouvel élément au menu via le restaurant
+     */
+    
     public void addMenuItem(String itemName, int prepTimeInSeconds, int price) {
         MenuItem newItem = new MenuItem(itemName, prepTimeInSeconds, price);
         this.restaurant.getMenu().addMenuItem(newItem);
     }
 
-    // Mettre à jour le temps de préparation d'un élément existant
-    public void updateMenuItemPrepTime(String itemName, int newPrepTimeInSeconds) {
-        try {
-            this.restaurant.getMenu().updateMenuItemPrepTime(itemName, newPrepTimeInSeconds);
-        } catch (IllegalArgumentException e){
-            System.out.println(e.getMessage());
-        }
-    }
-    // Supprimer un élément du menu
+    /**
+     *  Supprimer un élément du menu
+     */
+    
     public void removeMenuItem(String itemName) {
-        try {
-            this.restaurant.getMenu().removeMenuItem(itemName);
-        } catch (IllegalArgumentException e){
-        System.out.println(e.getMessage());
-        }
+        this.restaurant.getMenu().removeMenuItem(itemName);
     }
 
-    // Mettre à jour le nombre de personnel pour un slot spécifique
+    /**
+     * Mettre à jour le nombre de personnel pour un slot spécifique
+      */
+    
     public void updateNumberOfPersonnel(Slot slotToUpdate, int numberOfPersonnel) {
         if (slotToUpdate == null) {
             throw new IllegalArgumentException("Slot does not exist. Cannot update personnel.");

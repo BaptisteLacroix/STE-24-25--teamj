@@ -1,7 +1,10 @@
 package fr.unice.polytech.equipe.j.order;
 
+import fr.unice.polytech.equipe.j.TimeUtils;
 import fr.unice.polytech.equipe.j.restaurant.MenuItem;
 import fr.unice.polytech.equipe.j.restaurant.Restaurant;
+import fr.unice.polytech.equipe.j.restaurant.RestaurantServiceManager;
+import fr.unice.polytech.equipe.j.user.CampusUser;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -17,26 +20,24 @@ class OrderTest {
 
     private Order order;
     private Restaurant restaurant;
-    private Clock clock;
 
     @BeforeEach
     void setUp() {
-        clock = Clock.fixed(Instant.parse("2024-10-18T12:00:00Z"), ZoneId.of("Europe/Paris"));
+        TimeUtils.setClock(Clock.fixed(Instant.parse("2024-10-18T12:00:00Z"), ZoneId.of("Europe/Paris")));
         // Mocking Restaurant
-        restaurant = Mockito.mock(Restaurant.class);
-        order = new Order(restaurant, clock);
+        restaurant = RestaurantServiceManager.getInstance().getRestaurants().getFirst();
+        order = new Order(restaurant, new CampusUser("email", "psw", new OrderManager()));
     }
 
     @Test
     void testAddItem() {
-        MenuItem menuItem = new MenuItem("Pizza", 50, 10.0);
-        order.addItem(menuItem);
+        order.addItem(restaurant.getMenu().getItems().getFirst());
         assertEquals(1, order.getItems().size());
     }
 
     @Test
     void testRemoveItem() {
-        MenuItem menuItem = new MenuItem("Pizza", 50, 10.0);
+        MenuItem menuItem = restaurant.getMenu().getItems().get(1);
         order.addItem(menuItem);
         order.removeItem(menuItem);
         assertEquals(0, order.getItems().size());
