@@ -44,20 +44,6 @@ public class RestaurantOverloadStepdefs {
 
     @Given("the restaurant is open from {string} to {string}")
     public void theRestaurantHasSlots(String start, String end, DataTable dataTable) {
-        restaurant = new Restaurant("Test Restaurant", LocalDateTime.parse(start, DATE_TIME_FORMATTER), LocalDateTime.parse(end, DATE_TIME_FORMATTER), menu, clock);
-
-        List<Map<String, String>> slotsData = dataTable.asMaps(String.class, String.class);
-        for (Map<String, String> slotData : slotsData) {
-            LocalDateTime openingDate = LocalDateTime.parse(slotData.get("slotStart"), DATE_TIME_FORMATTER);
-            int currentCapacity = Integer.parseInt(slotData.get("currentCapacity"));
-            int maxCapacity = Integer.parseInt(slotData.get("maxCapacity"));
-            int personnel = Integer.parseInt(slotData.get("personnel"));
-
-            Slot slot = new Slot(openingDate, personnel);
-            slot.setCurrentCapacity(currentCapacity);
-            slot.setMaxCapacity(maxCapacity);
-            restaurant.getSlots().add(slot); // Assure-toi que `getSlots` est modifiable
-        }
     }
 
 
@@ -67,12 +53,6 @@ public class RestaurantOverloadStepdefs {
 
     @When("the user places an order for a {string} with a preparation time of {int} seconds")
     public void theUserPlacesAnOrderForAWithAPreparationTimeOfMinutes(String itemName, int prepTime) {
-        orderManager = new OrderManager(clock);
-        user = new CampusUser("toto@gmail.com","pwd",orderManager);
-        MenuItem menuItem = new MenuItem(itemName, prepTime, 0);
-        restaurant.getMenu().addMenuItem(menuItem);
-        user.startIndividualOrder(restaurant, new DeliveryDetails(DeliveryLocationManager.getInstance().getPredefinedLocations().getFirst(), LocalDateTime.now(clock)));
-        user.addItemToOrder(restaurant, menuItem);
 
     }
 

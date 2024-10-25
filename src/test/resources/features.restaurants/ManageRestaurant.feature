@@ -12,7 +12,7 @@ Feature: Update restaurant opening hours and menu offerings
 
 
   Scenario: Update opening hours
-    Given Jeanne wants to set its restaurant opening hours
+    Given Jeanne wants to set its restaurant opening hours: opening at "2024-10-18 13:00" and closing at "2024-10-18 15:00"
     When the restaurant manager sets the hours from "2024-10-18 13:00" to "2024-10-18 15:00"
     Then the opening hours should be "2024-10-18 13:00" to "2024-10-18 15:00"
 
@@ -27,29 +27,17 @@ Feature: Update restaurant opening hours and menu offerings
     Then the preparation time of "Fries" should be 45 seconds
 
   Scenario: Update the number of personnel for a slot
-    Given the restaurant has slots from "2024-10-18 14:00" to "2024-10-18 16:00"
-      | slotStart        | currentCapacity | maxCapacity | personnel |
-      | 2024-10-18 14:00 | 0               | 0           | 0         |
-      | 2024-10-18 14:30 | 0               | 0           | 0         |
-      | 2024-10-18 15:00 | 0               | 0           | 0         |
-      | 2024-10-18 15:30 | 0               | 0           | 0         |
-    And Jeanne wants to update the number of personnel for the slot starting at "2024-10-18 14:30"
+    Given Jeanne wants to update the number of personnel for the slot starting at "2024-10-18 12:30"
     When the restaurant manager updates the personnel for this slot to 6
-    Then the number of personnel for the slot starting at "2024-10-18 14:30" should be 6
+    Then the number of personnel for the slot starting at "2024-10-18 12:30" should be 6
 
   Scenario: Calculate production capacity
-    Given a slot of 30 minutes is created
-    When Jeanne allocates 5 personnel to this slot
+    Given Jeanne wants to get the maximum capacity of a slot
+    When Jeanne allocates 5 personnel to te slot starting at "2024-10-18 12:30"
     Then the maximum capacity for the slot should be 9000 seconds
 
   Scenario: Update slot capacity when adding a new item
-    Given the restaurant has slots from "2024-10-18 14:00" to "2024-10-18 16:00"
-      | slotStart        | currentCapacity | maxCapacity | personnel |
-      | 2024-10-18 14:00 | 0               | 1800        | 1         |
-      | 2024-10-18 14:30 | 0               | 0           | 0         |
-      | 2024-10-18 15:00 | 0               | 0           | 0         |
-      | 2024-10-18 15:30 | 0               | 0           | 0         |
-    And the restaurant receives an order with a "BigMac" at "2024-10-18 14:00"
+    Given the restaurant receives an order with a "BigMac" at "2024-10-18 12:00"
     When the restaurant adds "BigMac" to this slot
     Then the new current capacity of this slot should be 120
     And the available capacity should be 1680
