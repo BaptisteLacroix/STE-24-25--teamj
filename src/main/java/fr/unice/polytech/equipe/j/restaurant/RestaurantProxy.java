@@ -56,9 +56,12 @@ public class RestaurantProxy {
     }
 
     // @Override
-    public void cancelOrder(Order order) {
-        getRestaurant().cancelOrder(order);
-        order.setStatus(OrderStatus.CANCELLED);
+    public void cancelOrder(Order order, LocalDateTime deliveryTime) {
+        // If the delivery time is not half an hour before the order, the order is cancelled
+        if (deliveryTime.isBefore(LocalDateTime.now().minusMinutes(30))) {
+            restaurant.cancelOrder(order);
+            order.setStatus(OrderStatus.CANCELLED);
+        }
     }
 
     // @Override

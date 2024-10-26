@@ -1,5 +1,6 @@
 package fr.unice.polytech.equipe.j.order;
 
+import fr.unice.polytech.equipe.j.delivery.DeliveryDetails;
 import fr.unice.polytech.equipe.j.payment.PaymentMethod;
 import fr.unice.polytech.equipe.j.payment.PaymentProcessor;
 import fr.unice.polytech.equipe.j.payment.PaymentProcessorFactory;
@@ -27,9 +28,8 @@ public class OrderManager {
         this.groupOrderProxy = groupOrderProxy;
     }
 
-    public void cancelOrder(Restaurant restaurant, Order order) {
-        restaurant.cancelOrder(order);
-        order.setStatus(OrderStatus.CANCELLED);
+    public void cancelOrder(Order order, LocalDateTime deliveryTime) {
+        restaurantProxy.cancelOrder(order, deliveryTime);
     }
 
     public void addItemToOrder(Order order, MenuItem menuItem, LocalDateTime deliveryTime) throws IllegalArgumentException {
