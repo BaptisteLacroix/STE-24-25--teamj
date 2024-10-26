@@ -29,4 +29,19 @@ public class IndividualOrder extends Order {
                 ", status=" + getStatus() +
                 '}';
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof IndividualOrder that)) return false;
+        if (!super.equals(o)) return false;
+        return getDeliveryDetails().equals(that.getDeliveryDetails());
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + getDeliveryDetails().hashCode();
+        return result;
+    }
 }

@@ -73,8 +73,7 @@ public class Order {
     @Override
     public boolean equals(Object obj) {
         if (obj == this) return true;
-        if (!(obj instanceof Order)) return false;
-        Order order = (Order) obj;
+        if (!(obj instanceof Order order)) return false;
         return orderUUID.equals(order.orderUUID);
     }
 
