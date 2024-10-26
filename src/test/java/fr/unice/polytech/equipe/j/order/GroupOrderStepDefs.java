@@ -20,9 +20,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
 
 public class GroupOrderStepDefs {
     private CampusUser user;
+    private OrderManager orderManager;
+    private GroupOrderProxy groupOrderProxy;
 
     @Before
     public void setUp() {
@@ -31,24 +34,24 @@ public class GroupOrderStepDefs {
 
     @Given("[GroupOrder]the user is registered")
     public void the_user_is_registered() {
-        user = new CampusUser("john@example.com", "password123", new OrderManager());
+        user = new CampusUser("John", 0);
     }
 
     @When("[GroupOrder]the user creates a group order with delivery location {string}")
     public void the_user_creates_a_group_order_with_delivery_location(String deliveryLocation) {
         DeliveryLocation location = DeliveryLocationManager.getInstance().findLocationByName(deliveryLocation);
         DeliveryDetails deliveryDetails = new DeliveryDetails(location, null);
-        user.createGroupOrder(deliveryDetails);
+        groupOrderProxy = new GroupOrderProxy(new GroupOrder(deliveryDetails));
     }
 
     @Then("[GroupOrder]the user receives a group order identifier")
     public void the_user_receives_a_group_order_identifier() {
-        assertNotNull(user.getCurrentGroupOrder());
+        assertNotNull(groupOrderProxy.getGroupOrderId());
     }
 
     @Then("[GroupOrder]the group order delivery location is {string}")
     public void the_group_order_delivery_location_is(String expectedLocation) {
-        assertEquals(expectedLocation, user.getCurrentGroupOrder().getDeliveryDetails().getDeliveryLocation().locationName());
+        assertEquals(expectedLocation, groupOrderProxy.getDeliveryDetails().getDeliveryLocation().locationName());
     }
 
     @Then("[GroupOrder]the group order delivery time is {int}:{int} PM")
@@ -56,13 +59,13 @@ public class GroupOrderStepDefs {
         LocalDateTime expectedTime = TimeUtils.getNow()
                 .withHour(hour)
                 .withMinute(minute);
-        assertEquals(expectedTime.getHour(), user.getCurrentGroupOrder().getDeliveryDetails().getDeliveryTime().get().getHour());
-        assertEquals(expectedTime.getMinute(), user.getCurrentGroupOrder().getDeliveryDetails().getDeliveryTime().get().getMinute());
+        assertEquals(expectedTime.getHour(), groupOrderProxy.getDeliveryDetails().getDeliveryTime().get().getHour());
+        assertEquals(expectedTime.getMinute(), groupOrderProxy.getDeliveryDetails().getDeliveryTime().get().getMinute());
     }
 
     @When("[GroupOrder]the user tries to create a group order without specifying a delivery location")
     public void group_order_the_user_tries_to_create_a_group_order_without_specifying_a_delivery_location() {
-        assertThrows(IllegalArgumentException.class, () -> user.createGroupOrder(new DeliveryDetails(null, null)));
+        assertThrows(IllegalArgumentException.class, () -> new GroupOrderProxy(new GroupOrder(new DeliveryDetails(null, null))));
     }
 
     @Then("[GroupOrder]the user receives an error message {string}")
@@ -72,7 +75,7 @@ public class GroupOrderStepDefs {
 
     @Then("[GroupOrder]the group order is not created")
     public void group_order_the_group_order_is_not_created() {
-        assertNull(user.getCurrentGroupOrder());
+        assertNull(groupOrderProxy);
     }
 
     @When("[GroupOrder]the user creates a group order with delivery location {string} and delivery time of {int}:{int} PM")
@@ -82,7 +85,9 @@ public class GroupOrderStepDefs {
                 .withMinute(int2);
         DeliveryLocation location = DeliveryLocationManager.getInstance().findLocationByName(string);
         DeliveryDetails deliveryDetails = new DeliveryDetails(location, deliveryTime);
-        user.createGroupOrder(deliveryDetails);
-        assertNotNull(user.getCurrentGroupOrder());
+        groupOrderProxy = new GroupOrderProxy(new GroupOrder(deliveryDetails));
+        assertTrue(groupOrderProxy.getDeliveryDetails().getDeliveryTime().isPresent());
+        assertEquals(int1.intValue(), groupOrderProxy.getDeliveryDetails().getDeliveryTime().get().getHour());
+        assertEquals(int2.intValue(), groupOrderProxy.getDeliveryDetails().getDeliveryTime().get().getMinute());
     }
 }

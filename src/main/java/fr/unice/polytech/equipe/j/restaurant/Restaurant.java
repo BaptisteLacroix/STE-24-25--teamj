@@ -1,21 +1,24 @@
 package fr.unice.polytech.equipe.j.restaurant;
+
 import fr.unice.polytech.equipe.j.TimeUtils;
-import fr.unice.polytech.equipe.j.order.GroupOrder;
+import fr.unice.polytech.equipe.j.order.GroupOrderProxy;
 import fr.unice.polytech.equipe.j.order.Order;
 import fr.unice.polytech.equipe.j.order.OrderStatus;
-import fr.unice.polytech.equipe.j.payment.CheckoutObserver;
 import fr.unice.polytech.equipe.j.slot.Slot;
-
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
-public class Restaurant implements CheckoutObserver {
+public class Restaurant implements IRestaurant {
     private final UUID restaurantId = UUID.randomUUID();
     private final String restaurantName;
     private Optional<LocalDateTime> openingTime;
@@ -23,16 +26,15 @@ public class Restaurant implements CheckoutObserver {
     private List<Slot> slots;
     private Menu menu;
     private OrderPriceStrategy orderPriceStrategy;
-    private final List<Order> orders = new ArrayList<>();
     private final List<Order> ordersHistory = new ArrayList<>();
-    private final List<Order> pendingOrders = new ArrayList<>();
-    private int numberOfPersonnel;
-    private List<Order> orderHistory = new ArrayList<>();
-    
+    private final Map<Slot, Set<Order>> pendingOrders = new LinkedHashMap<>();
+    private final List<Order> orderHistory = new ArrayList<>();
+
 
     public Restaurant(String name, LocalDateTime openingTime, LocalDateTime closingTime, Menu menu) {
         this(name, openingTime, closingTime, menu, OrderPriceStrategyFactory.makeGiveItemForNItems(8));
     }
+
     private Restaurant(String name, LocalDateTime openingTime, LocalDateTime closingTime, Menu menu, OrderPriceStrategy strategy) {
         this.restaurantName = name;
         this.openingTime = openingTime == null ? Optional.empty() : Optional.of(openingTime);
@@ -44,7 +46,6 @@ public class Restaurant implements CheckoutObserver {
             throw new IllegalArgumentException("Closing time is required if the restaurant is open.");
         }
         this.menu = menu;
-        this.slots = slots;
         this.orderPriceStrategy = strategy;
         generateSlots();
     }
@@ -59,7 +60,9 @@ public class Restaurant implements CheckoutObserver {
         slots = new ArrayList<>();
         LocalDateTime currentTime = openingTime.get();
         while (currentTime.isBefore(closingTime.get())) {
-            slots.add(new Slot(currentTime, 0));
+            Slot slot = new Slot(currentTime, 0);
+            slots.add(slot);
+            pendingOrders.put(slot, new LinkedHashSet<>());
             currentTime = currentTime.plusMinutes(30);
         }
     }
@@ -85,38 +88,21 @@ public class Restaurant implements CheckoutObserver {
      *
      * @return the maximum capacity of the restaurant.
      */
-    public int getMaxCapacity() {
+    public int getMaxOrdersForSlot(Slot slot) {
         int averagePrepTime = calculateAveragePreparationTime();
-        int totalCapacity = 0;
+        int slotDurationInSeconds = (int) slot.getDurationTime().getSeconds() * slot.getNumberOfPersonnel();
+        double maxOrders = (double) slotDurationInSeconds / averagePrepTime;
 
-        for (Slot slot : slots) {
-            int slotDurationInSeconds = (int) slot.getDurationTime().getSeconds();
-            int slotCapacity = slotDurationInSeconds / averagePrepTime;
-
-            slot.setMaxCapacity(slotCapacity);
-            totalCapacity += slotCapacity;
-        }
-        return totalCapacity;
+        return (int) Math.floor(maxOrders + 0.5);
     }
 
-    /**
-     * Add an order to the restaurant and adjust the capacity of the relevant slot.
-     * Throws an exception if the restaurant has reached full capacity.
-     *
-     * @param order the order to add
-     */
-    public void addOrder(Order order) {
-        if (capacityCheck()) {
-            pendingOrders.add(order);
-
-            // Adjust the capacity for each slot based on the order
-            for (Slot slot : slots) {
-                for (MenuItem item : order.getItems()) {
-                    slot.UpdateSlotCapacity(item);
-                }
-            }
-        } else {
-            throw new IllegalStateException("The restaurant has reached full capacity.");
+    @Override
+    public void checkOrderCanBeValidated(Order order) {
+        if (order.getStatus() != OrderStatus.PENDING) {
+            throw new IllegalArgumentException("Cannot validate order that is not pending.");
+        }
+        if (!isOrderValid(order)) {
+            throw new IllegalArgumentException("Order is not valid.");
         }
     }
 
@@ -126,7 +112,32 @@ public class Restaurant implements CheckoutObserver {
      * @return true if there is capacity, false otherwise.
      */
     public boolean capacityCheck() {
-        return slots.stream().anyMatch(slot -> slot.getAvailableCapacity() > 0);
+        // Check if there is a slot available with enough capacity to prepare the order
+        // and the number of orders is less than the maximum (EX2)
+        return slots.stream().anyMatch(slot -> slot.getAvailableCapacity() > 0 && this.pendingOrders.get(slot).size() < this.getMaxOrdersForSlot(slot));
+    }
+
+    /**
+     * Add an item to an order, either individual or group.
+     *
+     * @param order        the order to which the item is added
+     * @param menuItem     the menu item being added
+     * @param deliveryTime the delivery time for the order (optional)
+     * @throws IllegalArgumentException if the item is not available or cannot be prepared in time
+     */
+    @Override
+    public void addItemToOrder(Order order, MenuItem menuItem, LocalDateTime deliveryTime) {
+        slots.stream()
+                .filter(slot -> {
+                    if (slot.updateSlotCapacity(menuItem)) {
+                        this.pendingOrders.get(slot).add(order);
+                        return true;
+                    }
+                    return false;
+                })
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Cannot add item to order, no slot available."));
+        order.addItem(menuItem);
     }
 
     /**
@@ -134,13 +145,17 @@ public class Restaurant implements CheckoutObserver {
      *
      * @param order the order to cancel
      */
+    @Override
     public void cancelOrder(Order order) {
-        if (pendingOrders.remove(order)) {
-            // Adjust the capacity for each slot when an order is canceled
-            for (Slot slot : slots) {
-                for (MenuItem item : order.getItems()) {
-                    slot.addCapacity(-item.getPrepTime());
-                }
+        // Check order exists
+        if (pendingOrders.values().stream().noneMatch(orders -> orders.contains(order))) {
+            return;
+        }
+        // Adjust the capacity for each slot when an order is canceled
+        for (Slot slot : slots) {
+            for (MenuItem item : order.getItems()) {
+                slot.addCapacity(-item.getPrepTime());
+                pendingOrders.get(slot).remove(order);
             }
         }
     }
@@ -162,9 +177,53 @@ public class Restaurant implements CheckoutObserver {
      * @return true if the order is valid, false otherwise
      */
     public boolean isOrderValid(Order order) {
+        if (!order.getStatus().equals(OrderStatus.PENDING)) {
+            return false;
+        }
         // Check that the restaurant has all the items in the order, and the order is not empty
-        return getMenu().getItems().containsAll(order.getItems()) && order.getItems().size() > 0;
+        return new HashSet<>(getMenu().getItems()).containsAll(order.getItems()) && !order.getItems().isEmpty();
     }
+
+    /**
+     * Checks if there is a slot available for a given menu item before the specified delivery time.
+     *
+     * @param menuItem     The menu item to check.
+     * @param deliveryTime The desired delivery time.
+     * @return true if there is a slot available that can prepare the item before the delivery time, false otherwise.
+     */
+
+    public boolean slotAvailable(MenuItem menuItem, LocalDateTime deliveryTime) {
+        LocalDateTime now = TimeUtils.getNow();
+
+        for (Slot slot : slots) {
+            // Check if the slot's opening time is before the delivery time and within operating hours
+            // Check if the item can be prepared before the delivery time
+            boolean isBefore = slot.getOpeningDate().isBefore(deliveryTime);
+            boolean isAfter = slot.getOpeningDate().isAfter(now);
+            // Check that the slot has enough capacity to prepare the item, and the number of orders is less than the maximum (EX2)
+            boolean isCapacityAvailable = slot.getAvailableCapacity() >= menuItem.getPrepTime() && pendingOrders.get(slot).size() < this.getMaxOrdersForSlot(slot);
+            if (isBefore && !isAfter && isCapacityAvailable) {
+                LocalDateTime preparationEndTime = now.plusSeconds(menuItem.getPrepTime());
+                if (preparationEndTime.isBefore(deliveryTime)) {
+                    return true;
+                }
+            }
+
+        }
+        return false;
+    }
+
+
+    public boolean isOpenAt(LocalDateTime time) {
+        return openingTime.isPresent() && closingTime.isPresent() &&
+                !time.isBefore(openingTime.get()) && !time.isAfter(closingTime.get());
+    }
+
+    public boolean canAccommodateDeliveryTime(List<MenuItem> items, LocalDateTime deliveryTime) {
+        LocalDateTime preparationEndTime = TimeUtils.getNow().plusSeconds(getPreparationTime(items));
+        return deliveryTime.isAfter(preparationEndTime) && isOpenAt(deliveryTime);
+    }
+
 
     /**
      * Mark the order as VALIDATED after payment and move it from pending orders to the order history.
@@ -175,7 +234,7 @@ public class Restaurant implements CheckoutObserver {
     public void onOrderPaid(Order order) {
         order.setStatus(OrderStatus.VALIDATED);
         ordersHistory.add(order);
-        pendingOrders.remove(order);
+        pendingOrders.values().forEach(orders -> orders.remove(order));
     }
 
     /**
@@ -198,7 +257,7 @@ public class Restaurant implements CheckoutObserver {
      * @param groupOrder The group order
      * @return true if the restaurant can prepare any item in time, false otherwise
      */
-    public boolean canPrepareItemForGroupOrderDeliveryTime(GroupOrder groupOrder) {
+    public boolean canPrepareItemForGroupOrderDeliveryTime(GroupOrderProxy groupOrder) {
         // Check that the delivery time is not empty
         if (groupOrder.getDeliveryDetails().getDeliveryTime().isEmpty()) {
             return true;
@@ -216,37 +275,29 @@ public class Restaurant implements CheckoutObserver {
                 });
     }
 
-    /**
-     * Checks if there is a slot available for a given menu item before the specified delivery time.
-     *
-     * @param menuItem     The menu item to check.
-     * @param deliveryTime The desired delivery time.
-     * @return true if there is a slot available that can prepare the item before the delivery time, false otherwise.
-     */
-    public boolean slotAvailable(MenuItem menuItem, LocalDateTime deliveryTime) {
-        LocalDateTime now = TimeUtils.getNow();
-
-        for (Slot slot : slots) {
-            // Check if the slot's opening time is before the delivery time and within operating hours
-            // Check if the item can be prepared before the delivery time
-            boolean isBefore = slot.getOpeningDate().isBefore(deliveryTime);
-            boolean isAfter = slot.getOpeningDate().isAfter(now);
-            boolean isCapacityAvailable = slot.getAvailableCapacity() >= menuItem.getPrepTime();
-            if (isBefore && !isAfter && isCapacityAvailable) {
-                LocalDateTime preparationEndTime = now.plusSeconds(menuItem.getPrepTime());
-                if (preparationEndTime.isBefore(deliveryTime)) {
-                    return true;
-                }
-            }
-
-        }
-        return false;
-    }
-
     public void setNumberOfPersonnel(Slot slotToUpdate, int numberOfPersonnel) {
         if (slotToUpdate != null) {
             slotToUpdate.setNumberOfPersonnel(numberOfPersonnel);
         }
+    }
+
+    public OrderPrice processOrderPrice(Order order) {
+        if (!order.getRestaurant().getRestaurantUUID().equals(this.getRestaurantId()))
+            throw new IllegalArgumentException("Order Restaurant is not the same as the current restaurant");
+        return this.orderPriceStrategy.processOrderPrice(order, this);
+    }
+
+    public boolean addMenuItemToSlot(Slot slot, MenuItem item) {
+        if (!slot.updateSlotCapacity(item)) {
+            int index = slots.indexOf(slot);
+            if (index != -1 && index < slots.size() - 1) {
+                Slot nextSlot = slots.get(index + 1);
+                return addMenuItemToSlot(nextSlot, item);
+            } else {
+                return false;  // Plus de slots disponibles
+            }
+        }
+        return true;  // Slot disponible
     }
 
 
@@ -302,22 +353,12 @@ public class Restaurant implements CheckoutObserver {
         }
     }
 
-    public List<Order> getOrders() {
-        return orders;
-    }
-
     public OrderPriceStrategy getOrderPriceStrategy() {
         return orderPriceStrategy;
     }
 
     public void setOrderPriceStrategy(OrderPriceStrategy orderPriceStrategy) {
         this.orderPriceStrategy = orderPriceStrategy;
-    }
-
-    public double calculatePrice(Order order) {
-        return order.getItems().stream()
-                .mapToDouble(MenuItem::getPrice)
-                .sum();
     }
 
     public List<Order> getOrdersHistory() {
@@ -328,29 +369,8 @@ public class Restaurant implements CheckoutObserver {
         return restaurantId;
     }
 
-    public List<Order> getPendingOrders() {
+    public Map<Slot, Set<Order>> getPendingOrders() {
         return pendingOrders;
-    }
-
-    public int getCapacity() {
-        return getMaxCapacity(); // Dynamically return the current max capacity based on the slots
-    }
-
-    public boolean addMenuItemToSlot(Slot slot, MenuItem item) {
-        if (!slot.UpdateSlotCapacity(item)) {
-            int index = slots.indexOf(slot);
-            if (index != -1 && index < slots.size() - 1) {
-                Slot nextSlot = slots.get(index + 1);
-                return addMenuItemToSlot(nextSlot, item);
-            } else {
-                return false;  // Plus de slots disponibles
-            }
-        }
-        return true;  // Slot disponible
-    }
-
-    public int getNumberOfPersonnel() {
-        return numberOfPersonnel;
     }
 
     public List<Slot> getSlots() {
@@ -362,13 +382,14 @@ public class Restaurant implements CheckoutObserver {
         this.orderHistory.add(order);
     }
 
-    public OrderPrice processOrderPrice(Order order) {
-        if(!order.getRestaurant().equals(this))
-            throw new IllegalArgumentException("Order Restaurant is not the same as the current restaurant");
-        return this.orderPriceStrategy.processOrderPrice(order, this);
-    }
-
     public List<Order> getOrderHistory() {
         return orderHistory;
+    }
+
+    @Override
+    public double getTotalPrice(Order order) {
+        return order.getItems().stream()
+                .mapToDouble(MenuItem::getPrice)
+                .sum();
     }
 }

@@ -14,7 +14,6 @@ public class Slot {
     private LocalDateTime openingDate;
     private Duration durationTime;
     private int numberOfPersonnel;
-    private List<Order> orders;
 
     /**
      * Constructor for the Slot class.
@@ -26,7 +25,6 @@ public class Slot {
         this.currentCapacity = 0;
         this.openingDate = openingDate;
         this.numberOfPersonnel = numberOfPersonnel;
-        this.orders = new ArrayList<>();
         this.durationTime = Duration.ofMinutes(30);
         // Initialize slot capacity based on the personnel and the average preparation time.
         this.calculateCapacityForASlot(this.getNumberOfPersonnel());
@@ -58,7 +56,7 @@ public class Slot {
      * @param item The menu item that will be added to the order.
      * @return true if the item can be added (i.e., capacity is sufficient), false otherwise.
      */
-    public boolean UpdateSlotCapacity(MenuItem item) {
+    public boolean updateSlotCapacity(MenuItem item) {
         int itemPrepTime = item.getPrepTime();
         if (getCurrentCapacity() + itemPrepTime < getMaxCapacity()) {
             addCapacity(itemPrepTime);
@@ -105,14 +103,6 @@ public class Slot {
 
     public void setOpeningDate(LocalDateTime openingDate) {
         this.openingDate = openingDate;
-    }
-
-    public List<Order> getOrders() {
-        return orders;
-    }
-
-    public void setOrders(List<Order> orders) {
-        this.orders = orders;
     }
 
     public Duration getDurationTime() {

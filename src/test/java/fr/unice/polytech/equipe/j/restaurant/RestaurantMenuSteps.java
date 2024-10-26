@@ -20,7 +20,6 @@ public class RestaurantMenuSteps {
 
     private Restaurant currentRestaurant;
 
-
     @Before
     public void setUp() {
         TimeUtils.setClock(Clock.fixed(Instant.parse("2024-10-18T12:00:00Z"), ZoneId.of("Europe/Paris")));
@@ -29,7 +28,7 @@ public class RestaurantMenuSteps {
     // When step - user visits the specific restaurant
     @When("the user visits the {string} restaurant")
     public void userVisitsRestaurant(String restaurantName) {
-        currentRestaurant = RestaurantServiceManager.getInstance().searchByName(restaurantName).getFirst();
+        currentRestaurant = RestaurantServiceManager.getInstance().searchByName(restaurantName).getFirst().getRestaurant();
         assertNotNull(currentRestaurant);
     }
 

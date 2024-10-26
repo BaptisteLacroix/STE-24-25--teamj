@@ -5,7 +5,7 @@ import fr.unice.polytech.equipe.j.delivery.DeliveryDetails;
 import fr.unice.polytech.equipe.j.delivery.DeliveryLocation;
 import fr.unice.polytech.equipe.j.delivery.DeliveryLocationManager;
 import fr.unice.polytech.equipe.j.restaurant.MenuItem;
-import fr.unice.polytech.equipe.j.restaurant.Restaurant;
+import fr.unice.polytech.equipe.j.restaurant.RestaurantProxy;
 import fr.unice.polytech.equipe.j.restaurant.RestaurantServiceManager;
 import fr.unice.polytech.equipe.j.user.CampusUser;
 import io.cucumber.java.en.And;
@@ -16,6 +16,7 @@ import io.cucumber.java.Before;
 
 import java.time.Clock;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 
 import static org.junit.Assert.assertEquals;
@@ -24,9 +25,10 @@ import static org.junit.Assert.assertTrue;
 
 public class PlaceOrderStepDefs {
 
-    private Restaurant restaurant;
+    private RestaurantProxy restaurant;
     private CampusUser campusUser;
     private IndividualOrder individualOrder;
+    private OrderManager orderManager;
 
     @Before
     public void setUp() {
@@ -43,7 +45,7 @@ public class PlaceOrderStepDefs {
      */
     @Given("the user is registered")
     public void the_user_is_registered() {
-        campusUser = new CampusUser("john@example.com", "password", new OrderManager());
+        campusUser = new CampusUser("John", 100.0);
     }
 
     /**
@@ -54,16 +56,15 @@ public class PlaceOrderStepDefs {
     @Given("the user has selected the restaurant {string}")
     public void the_user_has_selected_the_restaurant(String restaurantName) {
         restaurant = RestaurantServiceManager.getInstance().searchByName(restaurantName).getFirst();
+        orderManager = new OrderManager(restaurant);
     }
 
-    @And("the user start and order by specifying the delivery location from the pre-recorded locations")
-
-    public void the_user_start_and_order_by_specifying_the_delivery_location_from_the_pre_recorded_locations() {
+    @Given("the user start and order by specifying the delivery location from the pre-recorded locations and specifying the delivery time as {int}:{int}")
+    public void the_user_start_and_order_by_specifying_the_delivery_location_from_the_pre_recorded_locations_and_specifying_the_delivery_time_as(Integer int1, Integer int2) {
         DeliveryLocation deliveryLocation = DeliveryLocationManager.getInstance().getPredefinedLocations().getFirst();
-        DeliveryDetails deliveryDetails = new DeliveryDetails(deliveryLocation, null);
+        LocalDateTime deliveryTime = LocalDateTime.now().withHour(int1).withMinute(int2);
+        DeliveryDetails deliveryDetails = new DeliveryDetails(deliveryLocation, deliveryTime);
         this.individualOrder = new IndividualOrder(restaurant, deliveryDetails, campusUser);
-        campusUser.setCurrentOrder(individualOrder);
-//        campusUser.startIndividualOrder(restaurant, deliveryDetails);
     }
 
     /**
@@ -74,13 +75,13 @@ public class PlaceOrderStepDefs {
      */
     @When("the user adds {string} and {string} to their order")
     public void the_user_adds_and_to_their_order(String item1, String item2) {
-        MenuItem menuItem1 = restaurant.getMenu().findItemByName(item1);
-        MenuItem menuItem2 = restaurant.getMenu().findItemByName(item2);
+        MenuItem menuItem1 = restaurant.getRestaurant().getMenu().findItemByName(item1);
+        MenuItem menuItem2 = restaurant.getRestaurant().getMenu().findItemByName(item2);
 
-        individualOrder.addItem(menuItem1);
-        individualOrder.addItem(menuItem2);
+        orderManager.addItemToOrder(individualOrder, menuItem1, individualOrder.getDeliveryDetails().getDeliveryTime().orElse(null));
+        orderManager.addItemToOrder(individualOrder, menuItem2, individualOrder.getDeliveryDetails().getDeliveryTime().orElse(null));
 
-        assertEquals(2, campusUser.getCurrentOrder().getItems().size());
+        assertEquals(2, individualOrder.getItems().size());
     }
 
     /**
@@ -90,9 +91,9 @@ public class PlaceOrderStepDefs {
      */
     @When("the user adds {string} to their order")
     public void the_user_adds_to_their_order(String item1) {
-        MenuItem menuItem1 = restaurant.getMenu().findItemByName(item1);
-        campusUser.addItemToOrder(restaurant, menuItem1);
-        assertEquals(1, campusUser.getCurrentOrder().getItems().size());
+        MenuItem menuItem1 = restaurant.getRestaurant().getMenu().findItemByName(item1);
+        orderManager.addItemToOrder(individualOrder, menuItem1, individualOrder.getDeliveryDetails().getDeliveryTime().orElse(null));
+        assertEquals(1, individualOrder.getItems().size());
     }
 
     /**
@@ -100,7 +101,7 @@ public class PlaceOrderStepDefs {
      */
     @When("places the order")
     public void places_the_order() {
-        campusUser.validateOrder();
+        orderManager.validateOrder(individualOrder);
     }
 
     /**
@@ -108,13 +109,12 @@ public class PlaceOrderStepDefs {
      */
     @Then("the order is placed successfully")
     public void the_order_is_placed_successfully() {
-        assertEquals(1, campusUser.getOrdersHistory().size());
-        assertEquals(OrderStatus.VALIDATED, campusUser.getCurrentOrder().getStatus());
+        assertEquals(OrderStatus.VALIDATED, individualOrder.getStatus());
     }
 
     @When("the user tries to add {string} to their order")
     public void the_user_tries_to_add_to_their_order(String string) {
-        assertThrows(IllegalArgumentException.class, () -> campusUser.addItemToOrder(restaurant, new MenuItem(string, 10, 0.0)));
+        assertThrows(IllegalArgumentException.class, () -> orderManager.addItemToOrder(individualOrder, restaurant.getRestaurant().getMenu().findItemByName(string), individualOrder.getDeliveryDetails().getDeliveryTime().orElse(null)));
     }
 
     @Then("the user gets an error message {string}")
@@ -124,17 +124,16 @@ public class PlaceOrderStepDefs {
 
     @Then("the order is not placed")
     public void the_order_is_not_placed() {
-        assertTrue(campusUser.getOrdersHistory().isEmpty());
-        assertEquals(OrderStatus.PENDING, campusUser.getCurrentOrder().getStatus());
+        assertEquals(OrderStatus.PENDING, individualOrder.getStatus());
     }
 
     @Then("the item is not added to the order")
     public void the_item_is_not_added_to_the_order() {
-        assertEquals(0, campusUser.getCurrentOrder().getItems().size());
+        assertTrue(individualOrder.getItems().isEmpty());
     }
 
     @When("the user tries to place the order without adding any menu items")
     public void the_user_tries_to_place_the_order_without_adding_any_menu_items() {
-        assertThrows(IllegalArgumentException.class, () -> campusUser.validateOrder());
+        assertThrows(IllegalArgumentException.class, () -> orderManager.validateOrder(individualOrder));
     }
 }

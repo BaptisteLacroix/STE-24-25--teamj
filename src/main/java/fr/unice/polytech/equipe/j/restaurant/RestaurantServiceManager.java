@@ -3,9 +3,7 @@ package fr.unice.polytech.equipe.j.restaurant;
 import fr.unice.polytech.equipe.j.TimeUtils;
 import fr.unice.polytech.equipe.j.slot.Slot;
 
-import java.time.Clock;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -16,7 +14,7 @@ public class RestaurantServiceManager {
     private static RestaurantServiceManager instance;
 
     // List of restaurants managed by the service
-    private final List<Restaurant> restaurants;
+    private final List<RestaurantProxy> restaurants;
 
     // Private constructor to prevent external instantiation
     private RestaurantServiceManager() {
@@ -37,29 +35,29 @@ public class RestaurantServiceManager {
     }
 
     // Add restaurant to the manager (Package-Private)
-    public void addRestaurant(Restaurant restaurant) {
+    public void addRestaurant(RestaurantProxy restaurant) {
         restaurants.add(restaurant);
     }
 
     // Remove restaurant from the manager (Package-Private)
-    public void removeRestaurant(Restaurant restaurant) {
+    public void removeRestaurant(RestaurantProxy restaurant) {
         restaurants.remove(restaurant);
     }
 
     // --- Public Search Methods ---
 
     // Search restaurants by name (exact or partial match)
-    public List<Restaurant> searchByName(String name) {
+    public List<RestaurantProxy> searchByName(String name) {
         return restaurants.stream()
-                .filter(restaurant -> restaurant.getRestaurantName().toLowerCase().contains(name.toLowerCase()))
+                .filter(restaurant -> restaurant.getRestaurant().getRestaurantName().toLowerCase().contains(name.toLowerCase()))
                 .distinct()
                 .toList();
     }
 
     // Search restaurants by type of food (based on menu items)
-    public List<Restaurant> searchByTypeOfFood(String foodType) {
+    public List<RestaurantProxy> searchByTypeOfFood(String foodType) {
         return restaurants.stream()
-                .filter(restaurant -> restaurant.getMenu().getItems().stream()
+                .filter(restaurant -> restaurant.getRestaurant().getMenu().getItems().stream()
                         .anyMatch(item -> item.getName().contains(foodType)))
                 .distinct()
                 .toList();
@@ -71,11 +69,11 @@ public class RestaurantServiceManager {
      * @param deliveryTime the delivery time to check
      * @return a list of restaurants that can deliver the order on time
      */
-    public List<Restaurant> searchRestaurantByDeliveryTime(Optional<LocalDateTime> deliveryTime) {
+    public List<RestaurantProxy> searchRestaurantByDeliveryTime(Optional<LocalDateTime> deliveryTime) {
         return deliveryTime.map(localDateTime -> restaurants.stream()
-                .filter(restaurant -> isOpenAt(restaurant, localDateTime) && restaurant.getMenu().getItems().stream()
+                .filter(restaurant -> isOpenAt(restaurant, localDateTime) && restaurant.getRestaurant().getMenu().getItems().stream()
                         .anyMatch(item -> TimeUtils.getNow().plusSeconds(item.getPrepTime()).isBefore(localDateTime) &&
-                                restaurant.getSlots().stream().anyMatch(slot -> slot.getAvailableCapacity() >= item.getPrepTime())))
+                                restaurant.getRestaurant().getSlots().stream().anyMatch(slot -> slot.getAvailableCapacity() >= item.getPrepTime())))
                 .toList()).orElse(restaurants);
     }
 
@@ -87,26 +85,26 @@ public class RestaurantServiceManager {
      * @param time       the delivery time
      * @return a list of menu items that can be delivered on time
      */
-    public List<MenuItem> searchItemsByDeliveryTime(Restaurant restaurant, Optional<LocalDateTime> time) {
+    public List<MenuItem> searchItemsByDeliveryTime(RestaurantProxy restaurant, Optional<LocalDateTime> time) {
         // if no delivery time is specified, return all items
         if (time.isEmpty()) {
-            return restaurant.getMenu().getItems();
+            return restaurant.getRestaurant().getMenu().getItems();
         }
         // if the restaurant is not open at the specified time, return an empty list
         if (!isOpenAt(restaurant, time.get())) {
             return new ArrayList<>();
         }
-        return restaurant.getMenu().getItems().stream()
+        return restaurant.getRestaurant().getMenu().getItems().stream()
                 .filter(item -> TimeUtils.getNow().plusSeconds(item.getPrepTime()).isBefore(time.get()))
                 .toList();
     }
 
     // Check if a restaurant is open at a given time
-    private boolean isOpenAt(Restaurant restaurant, LocalDateTime time) {
-        if (restaurant.getOpeningTime().isEmpty()) {
+    private boolean isOpenAt(RestaurantProxy restaurant, LocalDateTime time) {
+        if (restaurant.getRestaurant().getOpeningTime().isEmpty()) {
             return false;
         }
-        return time.isAfter(restaurant.getOpeningTime().get()) && time.isBefore(restaurant.getClosingTime().orElseThrow());
+        return time.isAfter(restaurant.getRestaurant().getOpeningTime().get()) && time.isBefore(restaurant.getRestaurant().getClosingTime().orElseThrow());
     }
 
     public Slot findSlotByStartTime(Restaurant restaurant, LocalDateTime slotStartTime) {
@@ -117,7 +115,7 @@ public class RestaurantServiceManager {
                 .orElse(null);
     }
 
-    public List<Restaurant> getRestaurants() {
+    public List<RestaurantProxy> getRestaurants() {
         return restaurants;
     }
 }

@@ -6,47 +6,41 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * Tests for the PaymentProcessor implementations.
  */
-public class PaymentProcessorTest {
+class PaymentProcessorTest {
 
     @Test
-    public void testCreditCardProcessorSuccess() {
+    void testCreditCardProcessorSuccess() {
         PaymentProcessor processor = new CreditCardProcessor();
-        boolean result = processor.processPayment(100.0);
-        assertTrue(result, "Credit card payment should succeed for amount <= 500");
+        assertDoesNotThrow(() -> processor.processPayment(100.0));
     }
 
     @Test
-    public void testCreditCardProcessorFailure() {
+    void testCreditCardProcessorFailure() {
         PaymentProcessor processor = new CreditCardProcessor();
-        boolean result = processor.processPayment(600.0);
-        assertFalse(result, "Credit card payment should fail for amount > 500");
+        assertThrows(IllegalArgumentException.class, () -> processor.processPayment(600.0));
     }
 
     @Test
-    public void testPayPalProcessorSuccess() {
+    void testPayPalProcessorSuccess() {
         PaymentProcessor processor = new PayPalProcessor();
-        boolean result = processor.processPayment(500.0);
-        assertTrue(result, "PayPal payment should succeed for amount <= 1000");
+        assertDoesNotThrow(() -> processor.processPayment(500.0));
     }
 
     @Test
-    public void testPayPalProcessorFailure() {
+    void testPayPalProcessorFailure() {
         PaymentProcessor processor = new PayPalProcessor();
-        boolean result = processor.processPayment(1500.0);
-        assertFalse(result, "PayPal payment should fail for amount > 1000");
+        assertThrows(IllegalArgumentException.class, () -> processor.processPayment(1500.0));
     }
 
     @Test
-    public void testPaylibProcessorSuccess() {
+    void testPaylibProcessorSuccess() {
         PaymentProcessor processor = new PaylibProcessor();
-        boolean result = processor.processPayment(1000.0);
-        assertTrue(result, "Paylib payment should succeed for amount <= 2000");
+        assertDoesNotThrow(() -> processor.processPayment(1000.0));
     }
 
     @Test
-    public void testPaylibProcessorFailure() {
+    void testPaylibProcessorFailure() {
         PaymentProcessor processor = new PaylibProcessor();
-        boolean result = processor.processPayment(2500.0);
-        assertFalse(result, "Paylib payment should fail for amount > 2000");
+        assertThrows(IllegalArgumentException.class, () -> processor.processPayment(2500.0));
     }
 }

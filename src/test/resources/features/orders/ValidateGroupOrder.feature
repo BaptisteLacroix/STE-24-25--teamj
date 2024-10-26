@@ -2,10 +2,14 @@ Feature: Any member of a group order can validate the group order at the end of 
 
   Background:
     Given the restaurant service manager configured the following restaurants:
-      | Name             | Menu Items                                             | Opening Time     | Closing Time     |
-      | Le Petit Nice    | Salade Nicoise, Bouillabaisse, Tarte Tatin             | 2024-10-18 14:00 | 2024-10-18 16:00 |
-      | Le Petit Jardin  | Salade de chèvre chaud, Magret de canard, Crème brûlée | 2024-10-18 14:00 | 2024-10-18 16:00 |
-      | Le Petit Chateau | Escargots, Coq au vin, Mousse au chocolat              | 2024-10-18 14:00 | 2024-10-18 16:00 |
+      | Name               | Menu Items                                             | Opening Time     | Closing Time     |
+      | Le Petit Nice      | Salade Nicoise, Bouillabaisse, Tarte Tatin             | 2024-10-18 14:00 | 2024-10-18 16:00 |
+      | Le Petit Jardin    | Salade de chèvre chaud, Magret de canard, Crème brûlée | 2024-10-18 14:00 | 2024-10-18 16:00 |
+      | Le Petit Chateau   | Escargots, Coq au vin, Mousse au chocolat              | 2024-10-18 14:00 | 2024-10-18 16:00 |
+      | Le Gourmet D'Or    | Soupe à l'oignon, Boeuf Bourguignon, Tarte Tatin       | Closed           | Closed           |
+      | Bistro de la Plage | Quiche Lorraine, Ratatouille, Mousse au chocolat       | 2024-10-18 14:00 | 2024-10-18 16:00 |
+      | Café de l'Aube     | No menu items available                                | 2024-10-18 14:00 | 2024-10-18 16:00 |
+      | La Table Royale    | Coq au Vin, Bouillabaisse, Crêpe Suzette               | 2024-10-18 14:00 | 2024-10-18 15:00 |
 
   Scenario: The creator of a group order can validate the group order.
     Given [ValidateGroupOrder]the user is registered
@@ -32,9 +36,9 @@ Feature: Any member of a group order can validate the group order at the end of 
     And [ValidateGroupOrder]the user creates a group order with delivery location "Campus Main Gate"
     And [ValidateGroupOrder]the user receives a group order identifier
     When [ValidateGroupOrder]the user adds the following items to his order from the restaurant "Le Petit Chateau":
-      | Menu Item      |
-      | Escargots |
-      | Mousse au chocolat  |
+      | Menu Item          |
+      | Escargots          |
+      | Mousse au chocolat |
     And [ValidateGroupOrder]the user validates his order and validates the group order and specifies a delivery time of 14:10 PM that is not compatible
     Then [ValidateGroupOrder]the user receives an error message "The delivery time is not compatible with all sub-orders"
     And [ValidateGroupOrder]the group order delivery time is not set
