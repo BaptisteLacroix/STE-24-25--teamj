@@ -32,20 +32,6 @@ public class GroupOrder {
         this.orders.add(order);
     }
 
-//    private void checkOrderUpdate(Order order, MenuItem menuItem) {
-//        // Check if the item can be prepared in time for the delivery
-//        Optional<LocalDateTime> deliveryTime = this.deliveryDetails.getDeliveryTime();
-//        LocalDateTime estimatedReadyTime = TimeUtils.getNow().plusSeconds(menuItem.getPrepTime());
-//
-//        if (deliveryTime.isPresent() && estimatedReadyTime.isAfter(deliveryTime.orElseThrow())){
-//            throw new IllegalArgumentException("Cannot add item to order, it will not be ready in time.");
-//        }
-//
-//        if (deliveryTime.isPresent() && !order.getRestaurant().slotAvailable(menuItem, deliveryTime.get())) {
-//            throw new IllegalArgumentException("Cannot add item to order, no slot available.");
-//        }
-//    }
-
 
     // Getters
     public UUID getGroupOrderId() {
