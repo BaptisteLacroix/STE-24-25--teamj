@@ -56,7 +56,7 @@ public class GroupOrderProxy {
         groupOrder.addUser(user);
     }
 
-    public void validateOrder(CampusUser user) {
+    public void validate(CampusUser user) {
         if (groupOrder.getStatus() != OrderStatus.PENDING) {
             throw new IllegalArgumentException("Cannot validate group order that is not pending.");
         }

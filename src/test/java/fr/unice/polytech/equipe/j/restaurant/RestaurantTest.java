@@ -86,8 +86,8 @@ class RestaurantTest {
     }
 
     @Test
-    void testCapacityCheck() {
-        assertTrue(restaurant.capacityCheck());
+    void testIsSlotCapacityAvailable() {
+        assertTrue(restaurant.isSlotCapacityAvailable());
 
         assertEquals(slot.getMaxCapacity(), slot.getAvailableCapacity());
 
@@ -208,8 +208,8 @@ class RestaurantTest {
         orderManager = new OrderManager(restaurantProxy);
 
         // Add items to fill the slot capacity
-        orderManager.addItemToOrder(order, c_item1, deliveryDetails.getDeliveryTime().orElse(null)); // 1400 seconds
-        orderManager.addItemToOrder(order, c_item2, deliveryDetails.getDeliveryTime().orElse(null)); // 300 seconds
+        orderManager.addItemToOrder(order, c_item1); // 1400 seconds
+        orderManager.addItemToOrder(order, c_item2); // 300 seconds
 
         // Verify that the slot's capacity is full
         assertEquals(100, restaurantProxy.getRestaurant().getSlots().getFirst().getAvailableCapacity());
@@ -218,8 +218,7 @@ class RestaurantTest {
         // Check if the order fails to be added due to full capacity
         assertThrows(IllegalArgumentException.class, () -> orderManager.addItemToOrder(
                 order,
-                c_item3,
-                deliveryDetails.getDeliveryTime().orElse(null)
+                c_item3
         ), "Cannot add item to order, no slot available.");
 
         // Ensure that no further items are added to the order

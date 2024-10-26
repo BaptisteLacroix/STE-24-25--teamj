@@ -5,7 +5,6 @@ import fr.unice.polytech.equipe.j.delivery.DeliveryDetails;
 import fr.unice.polytech.equipe.j.delivery.DeliveryLocation;
 import fr.unice.polytech.equipe.j.delivery.DeliveryLocationManager;
 import fr.unice.polytech.equipe.j.restaurant.MenuItem;
-import fr.unice.polytech.equipe.j.restaurant.Restaurant;
 import fr.unice.polytech.equipe.j.restaurant.RestaurantProxy;
 import fr.unice.polytech.equipe.j.restaurant.RestaurantServiceManager;
 import fr.unice.polytech.equipe.j.user.CampusUser;
@@ -75,8 +74,7 @@ public class ValidateGroupOrderStepDefs {
             MenuItem item = restaurant.getMenu().findItemByName(itemName);
             orderManager.addItemToOrder(
                     orderUser1,
-                    item,
-                    groupOrder.getDeliveryDetails().getDeliveryTime().orElse(null)
+                    item
             );
             assertEquals(itemName, orderUser1.getItems().get(i - 1).getName());
         }
@@ -148,7 +146,7 @@ public class ValidateGroupOrderStepDefs {
         this.orderUser2 = new Order(restaurant, groupOrderJoiner);
         for (int i = 1; i < dataTable.height(); i++) {
             MenuItem item = restaurant.getMenu().findItemByName(dataTable.row(i).get(0));
-            orderManager.addItemToOrder(orderUser2, item, groupOrder.getDeliveryDetails().getDeliveryTime().orElse(null));
+            orderManager.addItemToOrder(orderUser2, item);
             assertEquals(item.getName(), orderUser2.getItems().get(i - 1).getName());
         }
         assertEquals(1, orderUser2.getItems().size());

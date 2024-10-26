@@ -8,7 +8,6 @@ import fr.unice.polytech.equipe.j.order.OrderManager;
 import fr.unice.polytech.equipe.j.order.OrderStatus;
 import fr.unice.polytech.equipe.j.payment.PaymentMethod;
 import fr.unice.polytech.equipe.j.user.CampusUser;
-import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
@@ -70,8 +69,8 @@ public class PaymentSteps {
         MenuItem menuItem1 = restaurant.getMenu().findItemByName(item1);
         MenuItem menuItem2 = restaurant.getMenu().findItemByName(item2);
 
-        orderManager.addItemToOrder(individualOrder, menuItem1, individualOrder.getDeliveryDetails().getDeliveryTime().get());
-        orderManager.addItemToOrder(individualOrder, menuItem2, individualOrder.getDeliveryDetails().getDeliveryTime().get());
+        orderManager.addItemToOrder(individualOrder, menuItem1);
+        orderManager.addItemToOrder(individualOrder, menuItem2);
 
         assertEquals(2, individualOrder.getItems().size());
     }

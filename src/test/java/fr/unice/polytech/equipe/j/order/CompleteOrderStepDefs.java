@@ -6,7 +6,6 @@ import fr.unice.polytech.equipe.j.delivery.DeliveryLocation;
 import fr.unice.polytech.equipe.j.delivery.DeliveryLocationManager;
 import fr.unice.polytech.equipe.j.payment.Transaction;
 import fr.unice.polytech.equipe.j.restaurant.MenuItem;
-import fr.unice.polytech.equipe.j.restaurant.Restaurant;
 import fr.unice.polytech.equipe.j.restaurant.RestaurantProxy;
 import fr.unice.polytech.equipe.j.restaurant.RestaurantServiceManager;
 import fr.unice.polytech.equipe.j.user.CampusUser;
@@ -102,7 +101,7 @@ public class CompleteOrderStepDefs {
         for (int i = 1; i < dataTable.height(); i++) {
             String itemName = dataTable.row(i).getFirst();
             MenuItem item = restaurant.getMenu().findItemByName(itemName);
-            orderManager.addItemToOrder(orderUser1, item, null);
+            orderManager.addItemToOrder(orderUser1, item);
             assertEquals(item, this.orderUser1.getItems().get(i - 1));
         }
         assertEquals(1, this.groupOrder.getOrders().size());
@@ -134,7 +133,7 @@ public class CompleteOrderStepDefs {
         for (int i = 1; i < dataTable.height(); i++) {
             String itemName = dataTable.row(i).getFirst();
             MenuItem item = restaurant.getMenu().findItemByName(itemName);
-            orderManager.addItemToOrder(orderUser2, item, null);
+            orderManager.addItemToOrder(orderUser2, item);
             assertEquals(item, orderUser2.getItems().get(i - 1));
         }
         assertEquals(dataTable.height() - 1, orderUser2.getItems().size());
@@ -166,7 +165,7 @@ public class CompleteOrderStepDefs {
         for (int i = 1; i < dataTable.height(); i++) {
             String itemName = dataTable.row(i).getFirst();
             MenuItem item = restaurant.getMenu().findItemByName(itemName);
-            orderManager.addItemToOrder(orderUser3, item, null);
+            orderManager.addItemToOrder(orderUser3, item);
             assertEquals(item, orderUser3.getItems().get(i - 1));
         }
         assertEquals(dataTable.height() - 1, orderUser3.getItems().size());
@@ -202,8 +201,7 @@ public class CompleteOrderStepDefs {
         try {
             orderManager.addItemToOrder(
                     orderUser2,
-                    restaurant.getMenu().findItemByName(itemName),
-                    groupOrder.getDeliveryDetails().getDeliveryTime().get()
+                    restaurant.getMenu().findItemByName(itemName)
             );
         } catch (Exception e) {
             assertTrue(e instanceof IllegalArgumentException);
@@ -225,7 +223,7 @@ public class CompleteOrderStepDefs {
             String itemName = dataTable.row(i).getFirst();
             MenuItem item = restaurant.getMenu().findItemByName(itemName);
             try {
-                orderManager.addItemToOrder(orderUser2, item, null);
+                orderManager.addItemToOrder(orderUser2, item);
             } catch (Exception e) {
                 assertTrue(e instanceof IllegalArgumentException);
                 this.itemAddSlotException = (IllegalArgumentException) e;
@@ -307,7 +305,7 @@ public class CompleteOrderStepDefs {
         for (int i = 1; i < dataTable.height(); i++) {
             String itemName = dataTable.row(i).getFirst();
             MenuItem item = restaurant.getMenu().findItemByName(itemName);
-            orderManager.addItemToOrder(individualOrderUser1, item, individualOrderUser1.getDeliveryDetails().getDeliveryTime().get());
+            orderManager.addItemToOrder(individualOrderUser1, item);
             assertEquals(item, individualOrderUser1.getItems().get(i - 1));
         }
         assertEquals(dataTable.height() - 1, individualOrderUser1.getItems().size());

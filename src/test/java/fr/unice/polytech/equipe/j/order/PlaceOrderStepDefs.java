@@ -8,7 +8,6 @@ import fr.unice.polytech.equipe.j.restaurant.MenuItem;
 import fr.unice.polytech.equipe.j.restaurant.RestaurantProxy;
 import fr.unice.polytech.equipe.j.restaurant.RestaurantServiceManager;
 import fr.unice.polytech.equipe.j.user.CampusUser;
-import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
@@ -78,8 +77,8 @@ public class PlaceOrderStepDefs {
         MenuItem menuItem1 = restaurant.getRestaurant().getMenu().findItemByName(item1);
         MenuItem menuItem2 = restaurant.getRestaurant().getMenu().findItemByName(item2);
 
-        orderManager.addItemToOrder(individualOrder, menuItem1, individualOrder.getDeliveryDetails().getDeliveryTime().orElse(null));
-        orderManager.addItemToOrder(individualOrder, menuItem2, individualOrder.getDeliveryDetails().getDeliveryTime().orElse(null));
+        orderManager.addItemToOrder(individualOrder, menuItem1);
+        orderManager.addItemToOrder(individualOrder, menuItem2);
 
         assertEquals(2, individualOrder.getItems().size());
     }
@@ -92,7 +91,7 @@ public class PlaceOrderStepDefs {
     @When("the user adds {string} to their order")
     public void the_user_adds_to_their_order(String item1) {
         MenuItem menuItem1 = restaurant.getRestaurant().getMenu().findItemByName(item1);
-        orderManager.addItemToOrder(individualOrder, menuItem1, individualOrder.getDeliveryDetails().getDeliveryTime().orElse(null));
+        orderManager.addItemToOrder(individualOrder, menuItem1);
         assertEquals(1, individualOrder.getItems().size());
     }
 
@@ -114,7 +113,7 @@ public class PlaceOrderStepDefs {
 
     @When("the user tries to add {string} to their order")
     public void the_user_tries_to_add_to_their_order(String string) {
-        assertThrows(IllegalArgumentException.class, () -> orderManager.addItemToOrder(individualOrder, restaurant.getRestaurant().getMenu().findItemByName(string), individualOrder.getDeliveryDetails().getDeliveryTime().orElse(null)));
+        assertThrows(IllegalArgumentException.class, () -> orderManager.addItemToOrder(individualOrder, restaurant.getRestaurant().getMenu().findItemByName(string)));
     }
 
     @Then("the user gets an error message {string}")

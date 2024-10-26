@@ -96,22 +96,12 @@ public class Restaurant implements IRestaurant {
         return (int) Math.floor(maxOrders + 0.5);
     }
 
-    @Override
-    public void checkOrderCanBeValidated(Order order) {
-        if (order.getStatus() != OrderStatus.PENDING) {
-            throw new IllegalArgumentException("Cannot validate order that is not pending.");
-        }
-        if (!isOrderValid(order)) {
-            throw new IllegalArgumentException("Order is not valid.");
-        }
-    }
-
     /**
      * Check if the restaurant has enough capacity to accept a new order.
      *
      * @return true if there is capacity, false otherwise.
      */
-    public boolean capacityCheck() {
+    public boolean isSlotCapacityAvailable() {
         // Check if there is a slot available with enough capacity to prepare the order
         // and the number of orders is less than the maximum (EX2)
         return slots.stream().anyMatch(slot -> slot.getAvailableCapacity() > 0 && this.pendingOrders.get(slot).size() < this.getMaxOrdersForSlot(slot));
@@ -127,18 +117,14 @@ public class Restaurant implements IRestaurant {
      */
     @Override
     public void addItemToOrder(Order order, MenuItem menuItem, LocalDateTime deliveryTime) {
-        slots.stream()
-                .filter(slot -> {
-                    if (slot.updateSlotCapacity(menuItem)) {
-                        this.pendingOrders.get(slot).add(order);
-                        return true;
-                    }
-                    return false;
-                })
+        Slot availableSlot = slots.stream()
+                .filter(slot -> slot.updateSlotCapacity(menuItem))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("Cannot add item to order, no slot available."));
+        this.pendingOrders.get(availableSlot).add(order);
         order.addItem(menuItem);
     }
+
 
     /**
      * Cancel an order and free up capacity.

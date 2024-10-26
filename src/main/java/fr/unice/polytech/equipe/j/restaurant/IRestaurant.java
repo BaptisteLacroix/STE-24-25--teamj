@@ -19,8 +19,6 @@ public interface IRestaurant {
 
     void cancelOrder(Order order);
 
-    void checkOrderCanBeValidated(Order order);
-
     void onOrderPaid(Order order);
 
     double getTotalPrice(Order order);
@@ -29,5 +27,5 @@ public interface IRestaurant {
 
     Optional<LocalDateTime> getClosingTime();
 
-    boolean capacityCheck();
+    boolean isSlotCapacityAvailable();
 }

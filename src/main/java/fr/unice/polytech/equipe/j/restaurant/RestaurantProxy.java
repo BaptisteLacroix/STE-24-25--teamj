@@ -23,29 +23,38 @@ public class RestaurantProxy {
      * @param order        the order to which the item is added
      * @param menuItem     the menu item being added
      * @param deliveryTime the delivery time for the order (optional)
-     * @throws IllegalArgumentException if the item is not available or cannot be prepared in time
      */
     // @Override
     public void addItemToOrder(Order order, MenuItem menuItem, LocalDateTime deliveryTime) {
+        validateOrder(order, menuItem, deliveryTime);
+        restaurant.addItemToOrder(order, menuItem, deliveryTime);
+    }
+
+    /**
+     * Validates the order before adding an item to it.
+     * @param order the order to which the item is added
+     * @param menuItem the menu item being added
+     * @param deliveryTime the delivery time for the order (optional)
+     * @throws IllegalArgumentException if the item is not available or cannot be prepared in time
+     */
+    private void validateOrder(Order order, MenuItem menuItem, LocalDateTime deliveryTime) {
         if (order.getStatus() != OrderStatus.PENDING) {
             throw new IllegalArgumentException("Cannot add items to an order that is not pending.");
         }
         if (!getRestaurant().isItemAvailable(menuItem)) {
             throw new IllegalArgumentException("Item is not available.");
         }
-        // Check if the item can be prepared in time for the delivery
         if (deliveryTime != null && isItemTooLate(menuItem, deliveryTime)) {
             throw new IllegalArgumentException("Cannot add item to order, it will not be ready in time.");
         }
         if (deliveryTime != null && !getRestaurant().slotAvailable(menuItem, deliveryTime)) {
             throw new IllegalArgumentException("Cannot add item to order, no slot available.");
         }
-        // If no delivery time set, so it's a group order, and we check that the order can be prepared before the closing time
-        if (deliveryTime == null && isItemTooLate(menuItem, getRestaurant().getClosingTime().get())) {
+        if (deliveryTime == null && isItemTooLate(menuItem, getRestaurant().getClosingTime().orElseThrow())) {
             throw new IllegalArgumentException("Cannot add item to order, restaurant cannot prepare it.");
         }
-        restaurant.addItemToOrder(order, menuItem, deliveryTime);
     }
+
 
     /**
      * Helper method to check if the item's preparation time exceeds the delivery time.
@@ -66,7 +75,12 @@ public class RestaurantProxy {
 
     // @Override
     public void checkOrderCanBeValidated(Order order) {
-        getRestaurant().checkOrderCanBeValidated(order);
+        if (order.getStatus() != OrderStatus.PENDING) {
+            throw new IllegalArgumentException("Cannot validate order that is not pending.");
+        }
+        if (!getRestaurant().isOrderValid(order)) {
+            throw new IllegalArgumentException("Order is not valid.");
+        }
     }
 
     public boolean canAccommodateDeliveryTime(List<MenuItem> items, LocalDateTime deliveryTime) {

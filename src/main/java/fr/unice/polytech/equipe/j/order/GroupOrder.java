@@ -46,23 +46,6 @@ public class GroupOrder {
         return deliveryDetails;
     }
 
-    // TODO: See later
-//    public Optional<LocalDateTime> getPossibleDeliveryTime() {
-//        // If the delivery tim is not set return the latest delivery time possible from the orders items
-//        if (deliveryDetails.getDeliveryTime().isEmpty()) {
-//            Optional<LocalDateTime> latestDeliveryTime = Optional.empty();
-//            for (Order order : orders) {
-//                int preparationTime = order.getRestaurant().getPreparationTime(order.getItems());
-//                LocalDateTime orderDeliveryTime = TimeUtils.getNow().plusSeconds(preparationTime);
-//                if (latestDeliveryTime.isEmpty() || orderDeliveryTime.isAfter(latestDeliveryTime.get())) {
-//                    latestDeliveryTime = Optional.of(orderDeliveryTime);
-//                }
-//            }
-//            return latestDeliveryTime;
-//        }
-//        return deliveryDetails.getDeliveryTime();
-//    }
-
     public void setDeliveryTime(LocalDateTime deliveryTime) {
         deliveryDetails.setDeliveryTime(deliveryTime);
     }

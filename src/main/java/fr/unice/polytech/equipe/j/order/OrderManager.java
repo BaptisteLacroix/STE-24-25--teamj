@@ -1,18 +1,14 @@
 package fr.unice.polytech.equipe.j.order;
 
-import fr.unice.polytech.equipe.j.delivery.DeliveryDetails;
 import fr.unice.polytech.equipe.j.payment.PaymentMethod;
 import fr.unice.polytech.equipe.j.payment.PaymentProcessor;
 import fr.unice.polytech.equipe.j.payment.PaymentProcessorFactory;
 import fr.unice.polytech.equipe.j.payment.Transaction;
-import fr.unice.polytech.equipe.j.restaurant.IRestaurant;
 import fr.unice.polytech.equipe.j.restaurant.MenuItem;
-import fr.unice.polytech.equipe.j.restaurant.Restaurant;
 import fr.unice.polytech.equipe.j.restaurant.RestaurantProxy;
 import fr.unice.polytech.equipe.j.user.CampusUser;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 
 public class OrderManager {
@@ -32,8 +28,8 @@ public class OrderManager {
         restaurantProxy.cancelOrder(order, deliveryTime);
     }
 
-    public void addItemToOrder(Order order, MenuItem menuItem, LocalDateTime deliveryTime) throws IllegalArgumentException {
-        if (order instanceof IndividualOrder && deliveryTime != null) getRestaurantProxy().addItemToOrder(order, menuItem, deliveryTime);
+    public void addItemToOrder(Order order, MenuItem menuItem) throws IllegalArgumentException {
+        if (order instanceof IndividualOrder individualOrder && individualOrder.getDeliveryDetails() != null) getRestaurantProxy().addItemToOrder(order, menuItem, individualOrder.getDeliveryDetails().getDeliveryTime().orElseThrow());
         else if (order instanceof IndividualOrder) {
             throw new IllegalArgumentException("Cannot add item to individual order without delivery time.");
         }
@@ -63,7 +59,7 @@ public class OrderManager {
     }
 
     public void validateGroupOrder(CampusUser campusUser) {
-        groupOrderProxy.validateOrder(campusUser);
+        groupOrderProxy.validate(campusUser);
     }
 
     public void validateGroupOrder(CampusUser campusUser, LocalDateTime deliveryTime) {
