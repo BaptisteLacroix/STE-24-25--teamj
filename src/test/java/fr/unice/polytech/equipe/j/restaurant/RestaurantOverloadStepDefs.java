@@ -129,5 +129,34 @@ public class RestaurantOverloadStepDefs {
         assertFalse(bool);
     }
 
+    @Given("an order is placed with a {string} at {string}")
+    public void anOrderIsPlacedWithAAt(String menuItem, String slotHours) {
+        MenuItem selectedItem = restaurant.getMenu().findItemByName(menuItem);
+        assertNotNull("Menu item should not be null", selectedItem);
+
+        LocalDateTime slotStart = LocalDateTime.parse(slotHours, DATE_TIME_FORMATTER);
+        slot = RestaurantServiceManager.getInstance().findSlotByStartTime(restaurant, slotStart);
+        assertNotNull("Slot should not be null", slot);
+    }
+
+    @When("the restaurant processes the item {string} in the slot")
+    public void theRestaurantProcessesTheItemInTheSlot(String menuItem) {
+        MenuItem selectedItem = restaurant.getMenu().findItemByName(menuItem);
+        assertNotNull("Selected item should not be null", selectedItem);
+
+        slot.setNumberOfPersonnel(1);
+        restaurant.addMenuItemToSlot(slot, selectedItem); // Add item to the slot directly
+    }
+
+    @Then("the slot's current capacity should now be {int}")
+    public void theSlotsCurrentCapacityShouldNowBe(int expectedCurrentCapacity) {
+        assertEquals("Current capacity does not match expected", expectedCurrentCapacity, slot.getCurrentCapacity());
+    }
+
+    @And("the slot's remaining capacity should now be {int}")
+    public void theSlotsRemainingCapacityShouldNowBe(int expectedAvailableCapacity) {
+        assertEquals("Remaining capacity does not match expected", expectedAvailableCapacity, slot.getAvailableCapacity());
+    }
+
 
 }

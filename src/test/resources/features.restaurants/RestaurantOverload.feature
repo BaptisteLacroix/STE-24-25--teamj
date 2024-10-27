@@ -26,5 +26,18 @@ Feature: Restaurant capacity management
     When the restaurant adds an item "BigMac" at "2024-10-18 12:00"
     Then the item is not added by the restaurant
 
+  Scenario: Sequentially adding items and verifying capacity updates
+    Given a restaurant "Chicken Burger" opened from "2024-10-18 12:00" to "2024-10-18 14:00" which has a menu with following items:
+      | itemName | prepTime | price |
+      | BigMac   | 120      | 5     |
+      | Fries    | 60       | 3     |
+    And an order is placed with a "BigMac" at "2024-10-18 12:00"
+    When the restaurant processes the item "BigMac" in the slot
+    Then the slot's current capacity should now be 120
+    And the slot's remaining capacity should now be 1680
 
-
+    # Adding a second item "Fries" to the same slot to see cumulative capacity changes
+    When an order is placed with a "Fries" at "2024-10-18 12:00"
+    And the restaurant processes the item "Fries" in the slot
+    Then the slot's current capacity should now be 180
+    And the slot's remaining capacity should now be 1620
