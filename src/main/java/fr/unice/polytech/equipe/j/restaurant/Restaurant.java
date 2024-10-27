@@ -156,13 +156,17 @@ public class Restaurant implements IRestaurant {
     }
 
     /**
-     * Validates the order before adding an item to it.
-     * @param order the order to which the item is added
-     * @param menuItem the menu item being added
-     * @param deliveryTime the delivery time for the order (optional)
-     * @throws IllegalArgumentException if the item is not available or cannot be prepared in time
+     * Validates whether an item can be added to an existing order.
+     *
+     * @param order the order to which the item is being added
+     * @param menuItem the menu item that is intended to be added
+     * @param deliveryTime the requested delivery time for the order (can be null)
+     * @throws IllegalArgumentException if the order is not pending,
+     *                                  if the item is unavailable,
+     *                                  if the item cannot be prepared in time,
+     *                                  or if there is no available slot for the item.
      */
-    void validateOrder(Order order, MenuItem menuItem, LocalDateTime deliveryTime) {
+    void canAddItemToOrder(Order order, MenuItem menuItem, LocalDateTime deliveryTime) {
         if (order.getStatus() != OrderStatus.PENDING) {
             throw new IllegalArgumentException("Cannot add items to an order that is not pending.");
         }

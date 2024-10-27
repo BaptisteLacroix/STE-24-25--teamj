@@ -28,7 +28,7 @@ public class RestaurantProxy implements IRestaurant {
      */
     // @Override
     public void addItemToOrder(Order order, MenuItem menuItem, LocalDateTime deliveryTime) {
-        ((Restaurant)restaurant).validateOrder(order, menuItem, deliveryTime);
+        ((Restaurant)restaurant).canAddItemToOrder(order, menuItem, deliveryTime);
         restaurant.addItemToOrder(order, menuItem, deliveryTime);
     }
 

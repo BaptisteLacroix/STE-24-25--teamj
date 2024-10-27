@@ -66,7 +66,10 @@ public class GroupOrderProxy {
         if (!groupOrder.getUsers().contains(user)) {
             throw new IllegalArgumentException("Cannot validate group order if you are not part of it.");
         }
-        // TODO: see later, if the user has no order
+        // check if the user has an order, if not throw an exception
+        if (groupOrder.getOrders().stream().noneMatch(order -> order.getUser().equals(user))) {
+            throw new IllegalArgumentException("Cannot validate group order if you have no order.");
+        }
         groupOrder.setStatus(OrderStatus.VALIDATED);
     }
 
