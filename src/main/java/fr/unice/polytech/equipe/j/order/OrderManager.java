@@ -4,22 +4,22 @@ import fr.unice.polytech.equipe.j.payment.PaymentMethod;
 import fr.unice.polytech.equipe.j.payment.PaymentProcessor;
 import fr.unice.polytech.equipe.j.payment.PaymentProcessorFactory;
 import fr.unice.polytech.equipe.j.payment.Transaction;
+import fr.unice.polytech.equipe.j.restaurant.IRestaurant;
 import fr.unice.polytech.equipe.j.restaurant.MenuItem;
-import fr.unice.polytech.equipe.j.restaurant.RestaurantProxy;
 import fr.unice.polytech.equipe.j.user.CampusUser;
 
 import java.time.LocalDateTime;
 
 
 public class OrderManager {
-    private final RestaurantProxy restaurantProxy;
+    private final IRestaurant restaurantProxy;
     private GroupOrderProxy groupOrderProxy;
 
-    public OrderManager(RestaurantProxy restaurantProxy) {
+    public OrderManager(IRestaurant restaurantProxy) {
         this.restaurantProxy = restaurantProxy;
     }
 
-    public OrderManager(RestaurantProxy restaurantProxy, GroupOrderProxy groupOrderProxy) {
+    public OrderManager(IRestaurant restaurantProxy, GroupOrderProxy groupOrderProxy) {
         this(restaurantProxy);
         this.groupOrderProxy = groupOrderProxy;
     }
@@ -46,7 +46,12 @@ public class OrderManager {
 
     // TODO: See later Transaction return
     public Transaction validateOrder(Order order) {
-        getRestaurantProxy().checkOrderCanBeValidated(order);
+        if (order.getStatus() != OrderStatus.PENDING) {
+            throw new IllegalArgumentException("Cannot validate order that is not pending.");
+        }
+        if (!getRestaurantProxy().isOrderValid(order)) {
+            throw new IllegalArgumentException("Order is not valid.");
+        }
         PaymentMethod method = order.getUser().getDefaultPaymentMethod();
         PaymentProcessor processor = PaymentProcessorFactory.createPaymentProcessor(method);
         double totalPrice = getRestaurantProxy().getTotalPrice(order);
@@ -67,7 +72,7 @@ public class OrderManager {
         this.validateGroupOrder(campusUser);
     }
 
-    public RestaurantProxy getRestaurantProxy() {
+    public IRestaurant getRestaurantProxy() {
         return restaurantProxy;
     }
 }

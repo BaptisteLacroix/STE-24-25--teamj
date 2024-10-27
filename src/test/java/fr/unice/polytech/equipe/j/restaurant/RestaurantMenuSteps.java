@@ -2,6 +2,7 @@ package fr.unice.polytech.equipe.j.restaurant;
 
 import fr.unice.polytech.equipe.j.TimeUtils;
 import io.cucumber.java.Before;
+import io.cucumber.java.be.I;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 
@@ -18,7 +19,7 @@ import static org.junit.Assert.assertTrue;
 
 public class RestaurantMenuSteps {
 
-    private Restaurant currentRestaurant;
+    private IRestaurant currentRestaurant;
 
     @Before
     public void setUp() {
@@ -28,7 +29,7 @@ public class RestaurantMenuSteps {
     // When step - user visits the specific restaurant
     @When("the user visits the {string} restaurant")
     public void userVisitsRestaurant(String restaurantName) {
-        currentRestaurant = RestaurantServiceManager.getInstance().searchByName(restaurantName).getFirst().getRestaurant();
+        currentRestaurant = RestaurantServiceManager.getInstance().searchByName(restaurantName).getFirst();
         assertNotNull(currentRestaurant);
     }
 

@@ -4,8 +4,8 @@ import fr.unice.polytech.equipe.j.TimeUtils;
 import fr.unice.polytech.equipe.j.delivery.DeliveryDetails;
 import fr.unice.polytech.equipe.j.delivery.DeliveryLocation;
 import fr.unice.polytech.equipe.j.delivery.DeliveryLocationManager;
+import fr.unice.polytech.equipe.j.restaurant.IRestaurant;
 import fr.unice.polytech.equipe.j.restaurant.MenuItem;
-import fr.unice.polytech.equipe.j.restaurant.RestaurantProxy;
 import fr.unice.polytech.equipe.j.restaurant.RestaurantServiceManager;
 import fr.unice.polytech.equipe.j.user.CampusUser;
 import io.cucumber.java.en.Given;
@@ -24,7 +24,7 @@ import static org.junit.Assert.assertTrue;
 
 public class PlaceOrderStepDefs {
 
-    private RestaurantProxy restaurant;
+    private IRestaurant restaurant;
     private CampusUser campusUser;
     private IndividualOrder individualOrder;
     private OrderManager orderManager;
@@ -74,8 +74,8 @@ public class PlaceOrderStepDefs {
      */
     @When("the user adds {string} and {string} to their order")
     public void the_user_adds_and_to_their_order(String item1, String item2) {
-        MenuItem menuItem1 = restaurant.getRestaurant().getMenu().findItemByName(item1);
-        MenuItem menuItem2 = restaurant.getRestaurant().getMenu().findItemByName(item2);
+        MenuItem menuItem1 = restaurant.getMenu().findItemByName(item1);
+        MenuItem menuItem2 = restaurant.getMenu().findItemByName(item2);
 
         orderManager.addItemToOrder(individualOrder, menuItem1);
         orderManager.addItemToOrder(individualOrder, menuItem2);
@@ -90,7 +90,7 @@ public class PlaceOrderStepDefs {
      */
     @When("the user adds {string} to their order")
     public void the_user_adds_to_their_order(String item1) {
-        MenuItem menuItem1 = restaurant.getRestaurant().getMenu().findItemByName(item1);
+        MenuItem menuItem1 = restaurant.getMenu().findItemByName(item1);
         orderManager.addItemToOrder(individualOrder, menuItem1);
         assertEquals(1, individualOrder.getItems().size());
     }
@@ -113,7 +113,7 @@ public class PlaceOrderStepDefs {
 
     @When("the user tries to add {string} to their order")
     public void the_user_tries_to_add_to_their_order(String string) {
-        assertThrows(IllegalArgumentException.class, () -> orderManager.addItemToOrder(individualOrder, restaurant.getRestaurant().getMenu().findItemByName(string)));
+        assertThrows(IllegalArgumentException.class, () -> orderManager.addItemToOrder(individualOrder, restaurant.getMenu().findItemByName(string)));
     }
 
     @Then("the user gets an error message {string}")

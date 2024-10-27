@@ -8,7 +8,6 @@ import fr.unice.polytech.equipe.j.slot.Slot;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -28,7 +27,6 @@ public class Restaurant implements IRestaurant {
     private OrderPriceStrategy orderPriceStrategy;
     private final List<Order> ordersHistory = new ArrayList<>();
     private final Map<Slot, Set<Order>> pendingOrders = new LinkedHashMap<>();
-    private final List<Order> orderHistory = new ArrayList<>();
 
 
     public Restaurant(String name, LocalDateTime openingTime, LocalDateTime closingTime, Menu menu) {
@@ -101,6 +99,7 @@ public class Restaurant implements IRestaurant {
      *
      * @return true if there is capacity, false otherwise.
      */
+    @Override
     public boolean isSlotCapacityAvailable() {
         // Check if there is a slot available with enough capacity to prepare the order
         // and the number of orders is less than the maximum (EX2)
@@ -132,7 +131,7 @@ public class Restaurant implements IRestaurant {
      * @param order the order to cancel
      */
     @Override
-    public void cancelOrder(Order order) {
+    public void cancelOrder(Order order, LocalDateTime deliveryTime) {
         // Check order exists
         if (pendingOrders.values().stream().noneMatch(orders -> orders.contains(order))) {
             return;
@@ -157,11 +156,45 @@ public class Restaurant implements IRestaurant {
     }
 
     /**
+     * Validates the order before adding an item to it.
+     * @param order the order to which the item is added
+     * @param menuItem the menu item being added
+     * @param deliveryTime the delivery time for the order (optional)
+     * @throws IllegalArgumentException if the item is not available or cannot be prepared in time
+     */
+    void validateOrder(Order order, MenuItem menuItem, LocalDateTime deliveryTime) {
+        if (order.getStatus() != OrderStatus.PENDING) {
+            throw new IllegalArgumentException("Cannot add items to an order that is not pending.");
+        }
+        if (!isItemAvailable(menuItem)) {
+            throw new IllegalArgumentException("Item is not available.");
+        }
+        if (deliveryTime != null && isItemTooLate(menuItem, deliveryTime)) {
+            throw new IllegalArgumentException("Cannot add item to order, it will not be ready in time.");
+        }
+        if (deliveryTime != null && !slotAvailable(menuItem, deliveryTime)) {
+            throw new IllegalArgumentException("Cannot add item to order, no slot available.");
+        }
+        if (deliveryTime == null && isItemTooLate(menuItem, getClosingTime().orElseThrow())) {
+            throw new IllegalArgumentException("Cannot add item to order, restaurant cannot prepare it.");
+        }
+    }
+
+    /**
+     * Helper method to check if the item's preparation time exceeds the delivery time.
+     */
+    private boolean isItemTooLate(MenuItem menuItem, LocalDateTime deliveryTime) {
+        LocalDateTime estimatedReadyTime = TimeUtils.getNow().plusSeconds(menuItem.getPrepTime());
+        return estimatedReadyTime.isAfter(deliveryTime);
+    }
+
+    /**
      * Check if the order is valid.
      *
      * @param order The order to check
      * @return true if the order is valid, false otherwise
      */
+    @Override
     public boolean isOrderValid(Order order) {
         if (!order.getStatus().equals(OrderStatus.PENDING)) {
             return false;
@@ -205,6 +238,7 @@ public class Restaurant implements IRestaurant {
                 !time.isBefore(openingTime.get()) && !time.isAfter(closingTime.get());
     }
 
+    @Override
     public boolean canAccommodateDeliveryTime(List<MenuItem> items, LocalDateTime deliveryTime) {
         LocalDateTime preparationEndTime = TimeUtils.getNow().plusSeconds(getPreparationTime(items));
         return deliveryTime.isAfter(preparationEndTime) && isOpenAt(deliveryTime);
@@ -219,8 +253,8 @@ public class Restaurant implements IRestaurant {
     @Override
     public void onOrderPaid(Order order) {
         order.setStatus(OrderStatus.VALIDATED);
+        pendingOrders.forEach((key, value) -> value.remove(order));
         ordersHistory.add(order);
-        pendingOrders.values().forEach(orders -> orders.remove(order));
     }
 
     /**
@@ -243,6 +277,7 @@ public class Restaurant implements IRestaurant {
      * @param groupOrder The group order
      * @return true if the restaurant can prepare any item in time, false otherwise
      */
+    @Override
     public boolean canPrepareItemForGroupOrderDeliveryTime(GroupOrderProxy groupOrder) {
         // Check that the delivery time is not empty
         if (groupOrder.getDeliveryDetails().getDeliveryTime().isEmpty()) {
@@ -261,18 +296,21 @@ public class Restaurant implements IRestaurant {
                 });
     }
 
+    @Override
     public void setNumberOfPersonnel(Slot slotToUpdate, int numberOfPersonnel) {
         if (slotToUpdate != null) {
             slotToUpdate.setNumberOfPersonnel(numberOfPersonnel);
         }
     }
 
+    @Override
     public OrderPrice processOrderPrice(Order order) {
-        if (!order.getRestaurant().getRestaurantUUID().equals(this.getRestaurantId()))
+        if (!order.getRestaurant().getRestaurantUUID().equals(this.getRestaurantUUID()))
             throw new IllegalArgumentException("Order Restaurant is not the same as the current restaurant");
         return this.orderPriceStrategy.processOrderPrice(order, this);
     }
 
+    @Override
     public boolean addMenuItemToSlot(Slot slot, MenuItem item) {
         if (!slot.updateSlotCapacity(item)) {
             int index = slots.indexOf(slot);
@@ -286,11 +324,12 @@ public class Restaurant implements IRestaurant {
         return true;  // Slot disponible
     }
 
-
+    @Override
     public void changeMenu(Menu newMenu) {
         this.menu = newMenu;
     }
 
+    @Override
     public Menu getMenu() {
         return menu;
     }
@@ -299,14 +338,17 @@ public class Restaurant implements IRestaurant {
         this.menu = menu;
     }
 
+    @Override
     public String getRestaurantName() {
         return restaurantName;
     }
 
+    @Override
     public Optional<LocalDateTime> getOpeningTime() {
         return openingTime;
     }
 
+    @Override
     public void setOpeningTime(LocalDateTime openingTime) {
         this.openingTime = openingTime == null ? Optional.empty() : Optional.of(openingTime);
         // if opening time is set, generate slots
@@ -320,10 +362,12 @@ public class Restaurant implements IRestaurant {
         }
     }
 
+    @Override
     public Optional<LocalDateTime> getClosingTime() {
         return closingTime;
     }
 
+    @Override
     public void setClosingTime(LocalDateTime closingTime) {
         if (closingTime != null && closingTime.isBefore(openingTime.orElseThrow())) {
             throw new IllegalArgumentException("Closing time cannot be before opening time.");
@@ -343,33 +387,35 @@ public class Restaurant implements IRestaurant {
         return orderPriceStrategy;
     }
 
+    @Override
     public void setOrderPriceStrategy(OrderPriceStrategy orderPriceStrategy) {
         this.orderPriceStrategy = orderPriceStrategy;
     }
 
-    public List<Order> getOrdersHistory() {
-        return ordersHistory;
-    }
-
-    public UUID getRestaurantId() {
+    @Override
+    public UUID getRestaurantUUID() {
         return restaurantId;
     }
 
+    @Override
     public Map<Slot, Set<Order>> getPendingOrders() {
         return pendingOrders;
     }
 
+    @Override
     public List<Slot> getSlots() {
         return slots;
     }
 
 
+    @Override
     public void addOrderToHistory(Order order) {
-        this.orderHistory.add(order);
+        this.ordersHistory.add(order);
     }
 
-    public List<Order> getOrderHistory() {
-        return orderHistory;
+    @Override
+    public List<Order> getOrdersHistory() {
+        return ordersHistory;
     }
 
     @Override

@@ -4,8 +4,8 @@ import fr.unice.polytech.equipe.j.TimeUtils;
 import fr.unice.polytech.equipe.j.delivery.DeliveryDetails;
 import fr.unice.polytech.equipe.j.delivery.DeliveryLocation;
 import fr.unice.polytech.equipe.j.delivery.DeliveryLocationManager;
+import fr.unice.polytech.equipe.j.restaurant.IRestaurant;
 import fr.unice.polytech.equipe.j.restaurant.MenuItem;
-import fr.unice.polytech.equipe.j.restaurant.RestaurantProxy;
 import fr.unice.polytech.equipe.j.restaurant.RestaurantServiceManager;
 import fr.unice.polytech.equipe.j.user.CampusUser;
 import io.cucumber.java.en.Given;
@@ -29,7 +29,7 @@ public class ValidateGroupOrderStepDefs {
     private CampusUser groupOrderCreator;
     private CampusUser groupOrderJoiner;
     private GroupOrderProxy groupOrder;
-    private RestaurantProxy restaurant;
+    private IRestaurant restaurant;
     private OrderManager orderManager;
     private Order orderUser1;
     private Order orderUser2;

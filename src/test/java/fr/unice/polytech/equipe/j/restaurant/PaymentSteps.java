@@ -20,9 +20,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 public class PaymentSteps {
-
-
-    private RestaurantProxy restaurant;
+    private IRestaurant restaurant;
     private CampusUser campusUser;
     private OrderManager orderManager;
     private IndividualOrder individualOrder;

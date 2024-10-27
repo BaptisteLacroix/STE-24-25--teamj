@@ -27,33 +27,33 @@ class RestaurantServiceManagerTest {
     @Test
     void noDuplicateRestaurant() {
         RestaurantServiceManager manager = RestaurantServiceManager.getInstance();
-        List<RestaurantProxy> restaurants = manager.searchByName("Le Petit Nice");
+        List<IRestaurant> restaurants = manager.searchByName("Le Petit Nice");
         Assertions.assertEquals(1, restaurants.size());
     }
 
     @Test
     void noDuplicationGetRestaurantByFood() {
         RestaurantServiceManager manager = RestaurantServiceManager.getInstance();
-        List<RestaurantProxy> restaurants = manager.searchByTypeOfFood("Salade");
+        List<IRestaurant> restaurants = manager.searchByTypeOfFood("Salade");
         Assertions.assertEquals(2, restaurants.size());
     }
 
     @Test
     void testAddRestaurant() {
         int initialSize = restaurantServiceManager.getRestaurants().size();
-        RestaurantProxy restaurant = new RestaurantProxy(new Restaurant("Test Restaurant", TimeUtils.getNow(), TimeUtils.getNow().plusHours(8), null));
+        IRestaurant restaurant = new RestaurantProxy(new Restaurant("Test Restaurant", TimeUtils.getNow(), TimeUtils.getNow().plusHours(8), null));
         restaurantServiceManager.addRestaurant(restaurant);
-        List<RestaurantProxy> restaurants = restaurantServiceManager.getRestaurants();
+        List<IRestaurant> restaurants = restaurantServiceManager.getRestaurants();
         Assertions.assertEquals(initialSize + 1, restaurants.size());
     }
 
     @Test
     void testRemoveRestaurant() {
         int initialSize = restaurantServiceManager.getRestaurants().size();
-        RestaurantProxy restaurant = RestaurantServiceManager.getInstance().getRestaurants().getFirst();
+        IRestaurant restaurant = RestaurantServiceManager.getInstance().getRestaurants().getFirst();
         restaurantServiceManager.addRestaurant(restaurant);
         restaurantServiceManager.removeRestaurant(restaurant);
-        List<RestaurantProxy> restaurants = restaurantServiceManager.getRestaurants();
+        List<IRestaurant> restaurants = restaurantServiceManager.getRestaurants();
         if (initialSize > 0) {
             Assertions.assertEquals(initialSize, restaurants.size());
         } else {

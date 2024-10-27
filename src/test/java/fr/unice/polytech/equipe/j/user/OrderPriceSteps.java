@@ -1,16 +1,14 @@
 package fr.unice.polytech.equipe.j.user;
 
 import fr.unice.polytech.equipe.j.order.Order;
-import fr.unice.polytech.equipe.j.order.OrderManager;
+import fr.unice.polytech.equipe.j.restaurant.IRestaurant;
 import fr.unice.polytech.equipe.j.restaurant.MenuItem;
 import fr.unice.polytech.equipe.j.restaurant.OrderPrice;
 import fr.unice.polytech.equipe.j.restaurant.OrderPriceStrategyFactory;
 import fr.unice.polytech.equipe.j.restaurant.Restaurant;
 import fr.unice.polytech.equipe.j.restaurant.RestaurantProxy;
-import fr.unice.polytech.equipe.j.restaurant.RestaurantServiceManager;
 import fr.unice.polytech.equipe.j.stepdefs.backend.Utils;
 import io.cucumber.datatable.DataTable;
-import io.cucumber.java.Before;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
@@ -26,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 public class OrderPriceSteps {
-    private RestaurantProxy restaurantProxy;
+    private IRestaurant restaurantProxy;
     private final List<Order> indivOrders = new ArrayList<>();
     private double reductionPercentage;
     private int orderReductionNumber;
@@ -37,7 +35,7 @@ public class OrderPriceSteps {
     public void createRestaurants(DataTable dataTable) {
         List<String> row = dataTable.row(1);
 
-        Restaurant restaurant = new Restaurant(
+        IRestaurant restaurant = new Restaurant(
                 row.getFirst(),
                 LocalDateTime.of(2024, 10, 1, 9, 0),
                 LocalDateTime.of(2024, 10, 1, 21, 0),
@@ -80,7 +78,7 @@ public class OrderPriceSteps {
             double totalPrice = prices.values().stream().mapToDouble(Double::doubleValue).sum();
             double reducedPrice = i % this.orderReductionNumber == 0 ? totalPrice - (totalPrice * this.reductionPercentage / 100.0) : totalPrice;
             OrderPrice processOrderPrice = this.restaurantProxy.processOrderPrice(order);
-            this.restaurantProxy.getRestaurant().addOrderToHistory(order);
+            this.restaurantProxy.addOrderToHistory(order);
             // compare cumulative price of menuItems with processed total orderPrice
             assertEquals(processOrderPrice.totalPrice(), reducedPrice);
         }

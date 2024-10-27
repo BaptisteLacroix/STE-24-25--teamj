@@ -4,5 +4,5 @@ import fr.unice.polytech.equipe.j.order.Order;
 
 @FunctionalInterface
 public interface OrderPriceStrategy {
-    OrderPrice processOrderPrice(Order order, Restaurant restaurant);
+    OrderPrice processOrderPrice(Order order, IRestaurant restaurant);
 }

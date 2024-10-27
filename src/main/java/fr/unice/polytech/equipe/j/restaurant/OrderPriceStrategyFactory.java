@@ -3,15 +3,14 @@ package fr.unice.polytech.equipe.j.restaurant;
 import fr.unice.polytech.equipe.j.order.Order;
 import fr.unice.polytech.equipe.j.user.CampusUser;
 
-import java.util.Arrays;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 public class OrderPriceStrategyFactory {
     public static OrderPriceStrategy makeSubstractKpercentforNOrder(double k, int n) {
-        return (Order order, Restaurant restaurant)-> {
+        return (Order order, IRestaurant restaurant)-> {
             CampusUser user = order.getUser();
-            long previousOrders =  restaurant.getOrderHistory().stream()
+            long previousOrders =  restaurant.getOrdersHistory().stream()
                     .filter((o) -> o.getUser().equals(user))
                     .count();
 
@@ -36,8 +35,7 @@ public class OrderPriceStrategyFactory {
     }
 
     public static OrderPriceStrategy makeGiveItemForNItems(int n) {
-        return (Order order, Restaurant restaurant)-> {
-            CampusUser user = order.getUser();
+        return (Order order, IRestaurant restaurant)-> {
             Map<MenuItem, Double> prices = order.getItems().stream().collect(Collectors.toMap((item)->item, MenuItem::getPrice));
             Map.Entry<MenuItem, Double> min = null;
             for (Map.Entry<MenuItem, Double> entry : prices.entrySet()) {

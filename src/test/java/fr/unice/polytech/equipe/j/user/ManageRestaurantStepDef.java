@@ -1,6 +1,7 @@
 package fr.unice.polytech.equipe.j.user;
 
 import fr.unice.polytech.equipe.j.TimeUtils;
+import fr.unice.polytech.equipe.j.restaurant.IRestaurant;
 import fr.unice.polytech.equipe.j.restaurant.Menu;
 import fr.unice.polytech.equipe.j.restaurant.MenuItem;
 import fr.unice.polytech.equipe.j.restaurant.Restaurant;
@@ -30,7 +31,7 @@ import static org.junit.Assert.assertThrows;
 
 public class ManageRestaurantStepDef {
     private RestaurantManager restaurantManager;
-    private Restaurant restaurant;
+    private IRestaurant restaurant;
     private final Menu menu = new Menu(new ArrayList<>());
     private final List<Slot> slots = new ArrayList<>();
     private MenuItem selectedItem;

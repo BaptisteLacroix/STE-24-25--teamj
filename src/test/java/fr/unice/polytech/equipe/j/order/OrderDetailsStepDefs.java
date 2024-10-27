@@ -4,7 +4,7 @@ import fr.unice.polytech.equipe.j.TimeUtils;
 import fr.unice.polytech.equipe.j.delivery.DeliveryDetails;
 import fr.unice.polytech.equipe.j.delivery.DeliveryLocation;
 import fr.unice.polytech.equipe.j.delivery.DeliveryLocationManager;
-import fr.unice.polytech.equipe.j.restaurant.RestaurantProxy;
+import fr.unice.polytech.equipe.j.restaurant.IRestaurant;
 import fr.unice.polytech.equipe.j.restaurant.RestaurantServiceManager;
 import fr.unice.polytech.equipe.j.user.CampusUser;
 import io.cucumber.java.Before;
@@ -22,7 +22,7 @@ import static org.junit.Assert.assertThrows;
 
 public class OrderDetailsStepDefs {
     private CampusUser user;
-    private RestaurantProxy restaurant;
+    private IRestaurant restaurant;
     private IndividualOrder individualOrder;
 
     @Before

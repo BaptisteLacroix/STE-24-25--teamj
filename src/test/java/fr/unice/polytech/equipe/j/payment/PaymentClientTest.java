@@ -3,6 +3,7 @@ package fr.unice.polytech.equipe.j.payment;
 import fr.unice.polytech.equipe.j.order.IndividualOrder;
 import fr.unice.polytech.equipe.j.order.OrderManager;
 import fr.unice.polytech.equipe.j.order.OrderStatus;
+import fr.unice.polytech.equipe.j.restaurant.IRestaurant;
 import fr.unice.polytech.equipe.j.restaurant.Restaurant;
 import fr.unice.polytech.equipe.j.restaurant.RestaurantProxy;
 import fr.unice.polytech.equipe.j.user.CampusUser;
@@ -23,8 +24,8 @@ import static org.mockito.Mockito.when;
  */
 class PaymentClientTest {
 
-    private RestaurantProxy restaurantProxyMock;
-    private Restaurant restaurantMock;
+    private IRestaurant restaurantProxyMock;
+    private IRestaurant restaurantMock;
     private OrderManager orderManager;
     private CampusUser campusUserMock;
     private IndividualOrder order;
@@ -33,7 +34,6 @@ class PaymentClientTest {
     void setUp() {
         restaurantProxyMock = mock(RestaurantProxy.class);
         restaurantMock = mock(Restaurant.class);
-        when(restaurantProxyMock.getRestaurant()).thenReturn(restaurantMock);
 
         // Initialize the actual OrderManager instead of mocking it
         orderManager = new OrderManager(restaurantProxyMock);
@@ -44,6 +44,7 @@ class PaymentClientTest {
         when(order.getUser()).thenReturn(campusUserMock);
         when(order.getRestaurant()).thenReturn(restaurantProxyMock);
         when(restaurantMock.isOrderValid(any())).thenReturn(true);
+        when(restaurantProxyMock.isOrderValid(any())).thenReturn(true);
     }
 
     @Test

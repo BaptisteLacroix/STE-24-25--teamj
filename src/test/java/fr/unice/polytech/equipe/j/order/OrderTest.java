@@ -1,6 +1,7 @@
 package fr.unice.polytech.equipe.j.order;
 
 import fr.unice.polytech.equipe.j.TimeUtils;
+import fr.unice.polytech.equipe.j.restaurant.IRestaurant;
 import fr.unice.polytech.equipe.j.restaurant.Menu;
 import fr.unice.polytech.equipe.j.restaurant.MenuItem;
 import fr.unice.polytech.equipe.j.restaurant.Restaurant;
@@ -23,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class OrderTest {
 
     private Order order;
-    private RestaurantProxy restaurant;
+    private IRestaurant restaurant;
 
     @BeforeEach
     void setUp() {
@@ -39,7 +40,7 @@ class OrderTest {
                 "manager@test.com",
                 "password",
                 "Manager",
-                restaurant.getRestaurant()
+                restaurant
         );
         restaurantManager.updateNumberOfPersonnel(restaurantManager.getRestaurant().getSlots().get(0), 5);
         order = new Order(restaurant, new CampusUser("John", 0));

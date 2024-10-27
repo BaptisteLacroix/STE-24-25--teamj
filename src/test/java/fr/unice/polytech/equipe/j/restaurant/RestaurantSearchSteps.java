@@ -1,9 +1,9 @@
 package fr.unice.polytech.equipe.j.restaurant;
 
 import fr.unice.polytech.equipe.j.TimeUtils;
+import fr.unice.polytech.equipe.j.delivery.DeliveryDetails;
 import fr.unice.polytech.equipe.j.delivery.DeliveryLocation;
 import fr.unice.polytech.equipe.j.delivery.DeliveryLocationManager;
-import fr.unice.polytech.equipe.j.delivery.DeliveryDetails;
 import fr.unice.polytech.equipe.j.order.GroupOrder;
 import fr.unice.polytech.equipe.j.order.GroupOrderProxy;
 import io.cucumber.java.Before;
@@ -25,7 +25,7 @@ import static org.junit.Assert.assertTrue;
 
 public class RestaurantSearchSteps {
 
-    private List<RestaurantProxy> foundRestaurants;
+    private List<IRestaurant> foundRestaurants;
     private List<MenuItem> menuItems = new ArrayList<>();
     private GroupOrderProxy groupOrder;
 
@@ -67,8 +67,8 @@ public class RestaurantSearchSteps {
         assertEquals("Number of restaurants found does not match", expectedRestaurants.size(), foundRestaurants.size());
 
         for (Map<String, String> expectedRestaurant : expectedRestaurants) {
-            RestaurantProxy restaurant = foundRestaurants.stream()
-                    .filter(r -> r.getRestaurant().getRestaurantName().trim().equalsIgnoreCase(expectedRestaurant.get("name").trim()))
+            IRestaurant restaurant = foundRestaurants.stream()
+                    .filter(r -> r.getRestaurantName().trim().equalsIgnoreCase(expectedRestaurant.get("name").trim()))
                     .findFirst()
                     .orElse(null);
             assertNotNull("Restaurant not found: " + expectedRestaurant.get("name"), restaurant);
@@ -104,9 +104,9 @@ public class RestaurantSearchSteps {
 
     @Then("the user selects the restaurant {string} and should see only the {int} menu items that can be prepared before the delivery time")
     public void the_user_select_the_restaurant_and_should_see_only_the_menu_items_that_can_be_prepared_before_the_delivery_time(String string, Integer int1) {
-        RestaurantProxy restaurant = null;
-        for (RestaurantProxy r : foundRestaurants) {
-            if (r.getRestaurant().getRestaurantName().equals(string)) {
+        IRestaurant restaurant = null;
+        for (IRestaurant r : foundRestaurants) {
+            if (r.getRestaurantName().equals(string)) {
                 restaurant = r;
                 break;
             }

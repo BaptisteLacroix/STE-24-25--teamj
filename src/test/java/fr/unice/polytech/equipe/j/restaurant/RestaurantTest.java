@@ -27,13 +27,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class RestaurantTest {
 
-    private Restaurant restaurant;
-    private RestaurantProxy restaurantProxy;
+    private IRestaurant restaurant;
+    private IRestaurant restaurantProxy;
     private MenuItem item1;
     private MenuItem item2;
-    private Menu menu;
     private Slot slot;
-    private RestaurantManager manager;
     private OrderManager orderManager;
     private CampusUser campusUser;
     private DeliveryDetails deliveryDetails;
@@ -43,7 +41,7 @@ class RestaurantTest {
         TimeUtils.setClock(Clock.fixed(Instant.parse("2024-10-01T07:00:00Z"), ZoneId.of("Europe/Paris")));
         item1 = new MenuItem("Burger", 40, 5.99);
         item2 = new MenuItem("Fries", 1, 2.99);
-        menu = new Menu.MenuBuilder().addMenuItems(List.of(item1, item2)).build();
+        Menu menu = new Menu.MenuBuilder().addMenuItems(List.of(item1, item2)).build();
 
         restaurant = new Restaurant("Test Restaurant",
                 LocalDateTime.of(2024, 10, 1, 9, 0),
@@ -51,7 +49,7 @@ class RestaurantTest {
 
         restaurantProxy = new RestaurantProxy(restaurant);
 
-        manager = new RestaurantManager(
+        RestaurantManager manager = new RestaurantManager(
                 "email",
                 "password",
                 "Manager",
@@ -103,7 +101,7 @@ class RestaurantTest {
         assertEquals(slot.getMaxCapacity() - item1.getPrepTime(), slot.getAvailableCapacity());
 
         // Cancel the order and check capacity is restored
-        restaurant.cancelOrder(order);
+        restaurant.cancelOrder(order, deliveryDetails.getDeliveryTime().orElse(null));
         assertEquals(slot.getMaxCapacity(), slot.getAvailableCapacity());
     }
 
@@ -120,7 +118,7 @@ class RestaurantTest {
         assertEquals(40, slot.getCurrentCapacity());
 
         // Cancel the order and check that capacity is restored
-        restaurant.cancelOrder(order1);
+        restaurant.cancelOrder(order1, deliveryDetails.getDeliveryTime().orElse(null));
         assertEquals(0, slot.getCurrentCapacity());
     }
 
@@ -171,17 +169,18 @@ class RestaurantTest {
     void testOnOrderPaid() {
         Order order = new Order(restaurantProxy, campusUser);
         order.addItem(item1);
-        restaurant.addItemToOrder(order, item1, deliveryDetails.getDeliveryTime().orElse(null));
+        restaurantProxy.addItemToOrder(order, item1, deliveryDetails.getDeliveryTime().orElse(null));
 
         // Before payment, order is in pending
         assertEquals(OrderStatus.PENDING, order.getStatus());
         assertTrue(restaurant.getPendingOrders().entrySet().stream().anyMatch(entry -> entry.getValue().contains(order)));
 
         // After payment, it should move to validated and history
-        restaurant.onOrderPaid(order);
+        restaurantProxy.onOrderPaid(order);
         assertEquals(OrderStatus.VALIDATED, order.getStatus());
-        assertFalse(restaurant.getPendingOrders().entrySet().stream().anyMatch(entry -> entry.getValue().contains(order)));
-        assertTrue(restaurant.getOrdersHistory().contains(order));
+        assertFalse(restaurantProxy.getPendingOrders().entrySet().stream().anyMatch(entry -> entry.getValue().contains(order)));
+        assertEquals(1, restaurant.getOrdersHistory().size());
+        assertTrue(restaurantProxy.getOrdersHistory().contains(order));
     }
 
     @Test
@@ -212,7 +211,7 @@ class RestaurantTest {
         orderManager.addItemToOrder(order, c_item2); // 300 seconds
 
         // Verify that the slot's capacity is full
-        assertEquals(100, restaurantProxy.getRestaurant().getSlots().getFirst().getAvailableCapacity());
+        assertEquals(100, restaurantProxy.getSlots().getFirst().getAvailableCapacity());
 
 
         // Check if the order fails to be added due to full capacity
@@ -222,7 +221,7 @@ class RestaurantTest {
         ), "Cannot add item to order, no slot available.");
 
         // Ensure that no further items are added to the order
-        assertEquals(100, restaurantProxy.getRestaurant().getSlots().getFirst().getAvailableCapacity());
+        assertEquals(100, restaurantProxy.getSlots().getFirst().getAvailableCapacity());
     }
 
     @Test
@@ -232,7 +231,7 @@ class RestaurantTest {
         nonExistentOrder.addItem(item1); // Adding a valid item
 
         // Attempt to cancel the non-existent order
-        restaurant.cancelOrder(nonExistentOrder);
+        restaurant.cancelOrder(nonExistentOrder, deliveryDetails.getDeliveryTime().orElse(null));
 
         // Ensure that the order has not been added to the system
         assertFalse(restaurant.getPendingOrders().entrySet().stream().anyMatch(entry -> entry.getValue().contains(nonExistentOrder)));

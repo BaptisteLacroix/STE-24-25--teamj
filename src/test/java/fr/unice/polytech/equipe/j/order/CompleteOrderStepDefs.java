@@ -5,8 +5,8 @@ import fr.unice.polytech.equipe.j.delivery.DeliveryDetails;
 import fr.unice.polytech.equipe.j.delivery.DeliveryLocation;
 import fr.unice.polytech.equipe.j.delivery.DeliveryLocationManager;
 import fr.unice.polytech.equipe.j.payment.Transaction;
+import fr.unice.polytech.equipe.j.restaurant.IRestaurant;
 import fr.unice.polytech.equipe.j.restaurant.MenuItem;
-import fr.unice.polytech.equipe.j.restaurant.RestaurantProxy;
 import fr.unice.polytech.equipe.j.restaurant.RestaurantServiceManager;
 import fr.unice.polytech.equipe.j.user.CampusUser;
 import io.cucumber.datatable.DataTable;
@@ -33,8 +33,8 @@ public class CompleteOrderStepDefs {
     private Transaction transactionUser2;
     private Transaction transactionUser3;
     private GroupOrderProxy groupOrder;
-    private RestaurantProxy restaurant;
-    private List<RestaurantProxy> foundRestaurants;
+    private IRestaurant restaurant;
+    private List<IRestaurant> foundRestaurants;
     private Order orderUser1;
     private Order orderUser2;
     private Order orderUser3;
@@ -276,7 +276,7 @@ public class CompleteOrderStepDefs {
 
     @Given("He searches restaurants that are open and can prepare items in time for it's individual order and should see:")
     public void he_searches_restaurants_that_are_open_and_can_prepare_items_in_time_for_it_s_individual_order_and_should_see(io.cucumber.datatable.DataTable dataTable) {
-        List<RestaurantProxy> restaurants = RestaurantServiceManager.getInstance().searchRestaurantByDeliveryTime(individualOrderUser1.getDeliveryDetails().getDeliveryTime());
+        List<IRestaurant> restaurants = RestaurantServiceManager.getInstance().searchRestaurantByDeliveryTime(individualOrderUser1.getDeliveryDetails().getDeliveryTime());
         int expectedSize = dataTable.height() - 1;
         assertEquals(expectedSize, restaurants.size());
     }

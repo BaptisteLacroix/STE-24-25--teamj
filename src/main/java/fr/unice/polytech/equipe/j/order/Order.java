@@ -1,7 +1,7 @@
 package fr.unice.polytech.equipe.j.order;
 
+import fr.unice.polytech.equipe.j.restaurant.IRestaurant;
 import fr.unice.polytech.equipe.j.restaurant.MenuItem;
-import fr.unice.polytech.equipe.j.restaurant.RestaurantProxy;
 import fr.unice.polytech.equipe.j.user.CampusUser;
 
 import java.util.ArrayList;
@@ -10,12 +10,12 @@ import java.util.UUID;
 
 public class Order {
     private final UUID orderUUID = UUID.randomUUID();
-    private final RestaurantProxy restaurant;
+    private final IRestaurant restaurant;
     private final List<MenuItem> items;
     private final CampusUser user;
     private OrderStatus status;
 
-    public Order(RestaurantProxy restaurant, CampusUser user) {
+    public Order(IRestaurant restaurant, CampusUser user) {
         this.restaurant = restaurant;
         items = new ArrayList<>();
         this.status = OrderStatus.PENDING;
@@ -26,7 +26,7 @@ public class Order {
         return user;
     }
 
-    public RestaurantProxy getRestaurant() {
+    public IRestaurant getRestaurant() {
         return restaurant;
     }
 

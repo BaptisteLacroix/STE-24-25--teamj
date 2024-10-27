@@ -26,7 +26,7 @@ public class RestaurantServiceHooks {
         itemsRestaurant1.add(new MenuItem("Salade Nicoise", 60, 12.50));
         itemsRestaurant1.add(new MenuItem("Bouillabaisse", 500, 25.00));
         itemsRestaurant1.add(new MenuItem("Tarte Tatin", 1800, 8.00));
-        Restaurant restaurant1 = new Restaurant("Le Petit Nice", fixedDateTime, fixedDateTime.plusHours(2), new Menu(itemsRestaurant1));
+        IRestaurant restaurant1 = new Restaurant("Le Petit Nice", fixedDateTime, fixedDateTime.plusHours(2), new Menu(itemsRestaurant1));
         RestaurantManager restaurantManager = new RestaurantManager(
                 "manager@test.com",
                 "password",
@@ -42,7 +42,7 @@ public class RestaurantServiceHooks {
         itemsRestaurant2.add(new MenuItem("Salade de chèvre chaud", 400, 10.00));
         itemsRestaurant2.add(new MenuItem("Magret de canard", 1800, 20.00));
         itemsRestaurant2.add(new MenuItem("Crème brûlée", 600, 7.00));
-        Restaurant restaurant2 = new Restaurant("Le Petit Jardin", fixedDateTime, fixedDateTime.plusHours(2), new Menu(itemsRestaurant2));
+        IRestaurant restaurant2 = new Restaurant("Le Petit Jardin", fixedDateTime, fixedDateTime.plusHours(2), new Menu(itemsRestaurant2));
         RestaurantManager restaurantManager2 = new RestaurantManager(
                 "manager2@test.com",
                 "password",
@@ -58,7 +58,7 @@ public class RestaurantServiceHooks {
         itemsRestaurant3.add(new MenuItem("Escargots", 1800, 15.00));
         itemsRestaurant3.add(new MenuItem("Coq au vin", 1800, 22.00));
         itemsRestaurant3.add(new MenuItem("Mousse au chocolat", 1800, 6.00));
-        Restaurant restaurant3 = new Restaurant("Le Petit Chateau", fixedDateTime, fixedDateTime.plusHours(2), new Menu(itemsRestaurant3));
+        IRestaurant restaurant3 = new Restaurant("Le Petit Chateau", fixedDateTime, fixedDateTime.plusHours(2), new Menu(itemsRestaurant3));
         RestaurantManager restaurantManager3 = new RestaurantManager(
                 "manager3@test.com",
                 "password",
@@ -79,7 +79,7 @@ public class RestaurantServiceHooks {
         itemsRestaurantA.add(new MenuItem("Soupe à l'oignon", 300, 8.50));
         itemsRestaurantA.add(new MenuItem("Boeuf Bourguignon", 1500, 22.00));
         itemsRestaurantA.add(new MenuItem("Tarte Tatin", 500, 6.50));
-        Restaurant restaurantA = new Restaurant("Le Gourmet D'Or", null, null, new Menu(itemsRestaurantA));
+        IRestaurant restaurantA = new Restaurant("Le Gourmet D'Or", null, null, new Menu(itemsRestaurantA));
         manager.addRestaurant(new RestaurantProxy(restaurantA));
 
         // Add a new restaurant with no personnel
@@ -87,11 +87,11 @@ public class RestaurantServiceHooks {
         itemsRestaurantB.add(new MenuItem("Quiche Lorraine", 400, 9.00));
         itemsRestaurantB.add(new MenuItem("Ratatouille", 800, 12.00));
         itemsRestaurantB.add(new MenuItem("Mousse au chocolat", 350, 5.00));
-        Restaurant restaurantB = new Restaurant("Bistro de la Plage", fixedDateTime, fixedDateTime.plusHours(2), new Menu(itemsRestaurantB));
+        IRestaurant restaurantB = new Restaurant("Bistro de la Plage", fixedDateTime, fixedDateTime.plusHours(2), new Menu(itemsRestaurantB));
         manager.addRestaurant(new RestaurantProxy(restaurantB));
 
         // Add a new restaurant with no menu
-        Restaurant restaurantC = new Restaurant("Café de l'Aube", fixedDateTime, fixedDateTime.plusHours(2), new Menu(new ArrayList<>()));
+        IRestaurant restaurantC = new Restaurant("Café de l'Aube", fixedDateTime, fixedDateTime.plusHours(2), new Menu(new ArrayList<>()));
         RestaurantManager restaurantManagerC = new RestaurantManager(
                 "managerC@email.com",
                 "mypassword",
@@ -109,7 +109,7 @@ public class RestaurantServiceHooks {
         itemsRestaurantD.add(new MenuItem("Coq au Vin", 1200, 18.00));
         itemsRestaurantD.add(new MenuItem("Bouillabaisse", 1800, 25.00));
         itemsRestaurantD.add(new MenuItem("Crêpe Suzette", 400, 7.50));
-        Restaurant restaurantD = new Restaurant("La Table Royale", fixedDateTime, fixedDateTime.plusHours(1), new Menu(itemsRestaurantD));
+        IRestaurant restaurantD = new Restaurant("La Table Royale", fixedDateTime, fixedDateTime.plusHours(1), new Menu(itemsRestaurantD));
         RestaurantManager restaurantManagerD = new RestaurantManager(
                 "managerD@email.com",
                 "mypassword123",

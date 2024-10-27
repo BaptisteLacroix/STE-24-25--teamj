@@ -1,9 +1,15 @@
 package fr.unice.polytech.equipe.j.restaurant;
 
+import fr.unice.polytech.equipe.j.order.GroupOrderProxy;
 import fr.unice.polytech.equipe.j.order.Order;
+import fr.unice.polytech.equipe.j.slot.Slot;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 
 public interface IRestaurant {
 
@@ -17,8 +23,6 @@ public interface IRestaurant {
      */
     void addItemToOrder(Order order, MenuItem menuItem, LocalDateTime deliveryTime);
 
-    void cancelOrder(Order order);
-
     void onOrderPaid(Order order);
 
     double getTotalPrice(Order order);
@@ -28,4 +32,41 @@ public interface IRestaurant {
     Optional<LocalDateTime> getClosingTime();
 
     boolean isSlotCapacityAvailable();
+
+    boolean canPrepareItemForGroupOrderDeliveryTime(GroupOrderProxy groupOrderProxy);
+
+    UUID getRestaurantUUID();
+
+    void setOrderPriceStrategy(OrderPriceStrategy orderPriceStrategy);
+
+    OrderPrice processOrderPrice(Order order);
+
+    void cancelOrder(Order order, LocalDateTime deliveryTime);
+
+    boolean isOrderValid(Order order);
+
+    boolean canAccommodateDeliveryTime(List<MenuItem> items, LocalDateTime deliveryTime);
+
+    Menu getMenu();
+
+    String getRestaurantName();
+
+    // TODO: See later if we keep this
+    List<Slot> getSlots();
+
+    void setOpeningTime(LocalDateTime openingHour);
+
+    void setClosingTime(LocalDateTime closingHour);
+
+    void setNumberOfPersonnel(Slot slotToUpdate, int numberOfPersonnel);
+
+    void addOrderToHistory(Order order);
+
+    boolean addMenuItemToSlot(Slot slot, MenuItem selectedItem);
+
+    List<Order> getOrdersHistory();
+
+    Map<Slot, Set<Order>> getPendingOrders();
+
+    void changeMenu(Menu testMenu);
 }
