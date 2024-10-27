@@ -4,16 +4,16 @@ import fr.unice.polytech.equipe.j.order.GroupOrder;
 import fr.unice.polytech.equipe.j.order.Order;
 import fr.unice.polytech.equipe.j.order.OrderStatus;
 import fr.unice.polytech.equipe.j.payment.CheckoutObserver;
+import fr.unice.polytech.equipe.j.restaurant.orderpricestrategy.FreeItemFotNItemsOrderPriceStrategy;
+import fr.unice.polytech.equipe.j.restaurant.orderpricestrategy.OrderPriceStrategy;
 import fr.unice.polytech.equipe.j.slot.Slot;
 
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 public class Restaurant implements CheckoutObserver {
     private final UUID restaurantId = UUID.randomUUID();
@@ -31,7 +31,7 @@ public class Restaurant implements CheckoutObserver {
     
 
     public Restaurant(String name, LocalDateTime openingTime, LocalDateTime closingTime, Menu menu) {
-        this(name, openingTime, closingTime, menu, OrderPriceStrategyFactory.makeGiveItemForNItems(8));
+        this(name, openingTime, closingTime, menu, new FreeItemFotNItemsOrderPriceStrategy(8));
     }
     private Restaurant(String name, LocalDateTime openingTime, LocalDateTime closingTime, Menu menu, OrderPriceStrategy strategy) {
         this.restaurantName = name;
