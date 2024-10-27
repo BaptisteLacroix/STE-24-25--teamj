@@ -322,7 +322,7 @@ GroupOrder                 -[#008200,dashed]-^  IGroupOrder
 GroupOrder                "1" *-[#595959,plain]-> "orders\n*" Order
 GroupOrder                "1" *-[#595959,plain]-> "status\n1" OrderStatus
 GroupOrderProxy            -[#008200,dashed]-^  IGroupOrder
-GroupOrderProxy           "1" *-[#595959,plain]-> "groupOrder\n1" IGroupOrder
+GroupOrderProxy           -[#595959,plain]-> "represent\n" GroupOrder
 GroupOrderRepository      "1" *-[#595959,plain]-> "groupOrders\n*" IGroupOrder
 IndividualOrder           "1" *-[#595959,plain]-> "deliveryDetails\n1" DeliveryDetails
 IndividualOrder            -[#000082,plain]-^  Order
@@ -349,7 +349,7 @@ Restaurant                 -[#595959,dashed]->  Slot                      : "«c
 RestaurantManager         "1" *-[#595959,plain]-> "restaurant\n1" IRestaurant
 RestaurantManager          -[#595959,dashed]->  MenuItem                  : "«create»"
 RestaurantProxy            -[#008200,dashed]-^  IRestaurant
-RestaurantProxy           "1" *-[#595959,plain]-> "restaurant\n1" IRestaurant
+RestaurantProxy           -[#595959,plain]-> "represent\n" Restaurant
 RestaurantServiceManager  "1" *-[#595959,plain]-> "restaurants\n*" IRestaurant
 Transaction               "1" *-[#595959,plain]-> "order\n1" Order
 @enduml

@@ -15,7 +15,7 @@ class OrderManager {
 
 GroupOrder                 -[#008200,dashed]-^  IGroupOrder
 GroupOrderProxy            -[#008200,dashed]-^  IGroupOrder
-GroupOrderProxy           "1" *-[#595959,plain]-> "groupOrder\n1" IGroupOrder
+GroupOrderProxy           -[#595959,plain]-> "represent\n"  GroupOrder
 GroupOrderRepository      "1" *-[#595959,plain]-> "groupOrdersProxy\n*" IGroupOrder
 OrderManager              "1" *-[#595959,plain]-> "groupOrderProxy\n1" IGroupOrder
 
