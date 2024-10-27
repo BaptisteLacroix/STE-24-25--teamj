@@ -216,10 +216,6 @@ class RestaurantManager {
   - email: String
   - password: String
   + getName(): String
-  + removeMenuItem(String): void
-  + updateNumberOfPersonnel(Slot, int): void
-  + addMenuItem(String, int, int): void
-  + updateHours(Date, Date): void
   + setRestaurant(IRestaurant): void
   + getRestaurant(): IRestaurant
 }
@@ -346,7 +342,6 @@ Restaurant                "1" *-[#595959,plain]-> "slots\n*" Slot
 Restaurant                "1" *-[#595959,plain]-> "orders\n*" Order
 Restaurant                 -[#595959,dashed]->  Slot                      : "«create»"
 RestaurantManager         "1" *-[#595959,plain]-> "restaurant\n1" IRestaurant
-RestaurantManager          -[#595959,dashed]->  MenuItem                  : "«create»"
 RestaurantProxy            -[#008200,dashed]-^  IRestaurant
 RestaurantProxy           -[#595959,plain]-> "represent\n" Restaurant
 RestaurantServiceManager  "1" *-[#595959,plain]-> "restaurants\n*" IRestaurant
