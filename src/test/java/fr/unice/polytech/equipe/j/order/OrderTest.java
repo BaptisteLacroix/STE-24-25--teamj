@@ -42,7 +42,7 @@ class OrderTest {
                 "Manager",
                 restaurant
         );
-        restaurantManager.updateNumberOfPersonnel(restaurantManager.getRestaurant().getSlots().get(0), 5);
+        restaurant.setNumberOfPersonnel(restaurantManager.getRestaurant().getSlots().get(0), 5);
         order = new Order(restaurant, new CampusUser("John", 0));
     }
 

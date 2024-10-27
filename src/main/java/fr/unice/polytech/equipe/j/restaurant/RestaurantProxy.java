@@ -131,8 +131,8 @@ public class RestaurantProxy implements IRestaurant {
     }
 
     @Override
-    public void setNumberOfPersonnel(Slot slotToUpdate, int numberOfPersonnel) {
-        getRestaurant().setNumberOfPersonnel(slotToUpdate, numberOfPersonnel);
+    public boolean setNumberOfPersonnel(Slot slotToUpdate, int numberOfPersonnel) {
+        return getRestaurant().setNumberOfPersonnel(slotToUpdate, numberOfPersonnel);
     }
 
     @Override

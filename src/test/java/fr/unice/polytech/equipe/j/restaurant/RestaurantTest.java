@@ -57,7 +57,7 @@ class RestaurantTest {
                 "Manager",
                 restaurant);
 
-        manager.updateNumberOfPersonnel(manager.getRestaurant().getSlots().getFirst(), 1);
+        restaurant.setNumberOfPersonnel(manager.getRestaurant().getSlots().getFirst(), 1);
         slot = restaurant.getSlots().getFirst();
         campusUser = new CampusUser("John", 0);
         orderManager = new OrderManager(restaurantProxy);

@@ -62,7 +62,7 @@ public interface IRestaurant {
 
     void setClosingTime(LocalDateTime closingHour);
 
-    void setNumberOfPersonnel(Slot slotToUpdate, int numberOfPersonnel);
+    boolean setNumberOfPersonnel(Slot slotToUpdate, int numberOfPersonnel);
 
     void addOrderToHistory(Order order);
 
