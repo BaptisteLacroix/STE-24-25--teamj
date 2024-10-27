@@ -1,4 +1,4 @@
-package fr.unice.polytech.equipe.j.payment;
+package fr.unice.polytech.equipe.j.payment.strategy;
 
 /**
  * Processes Paylib payments.
@@ -13,14 +13,13 @@ public class PaylibProcessor implements PaymentProcessor {
      * @return true if the payment was successful; false otherwise
      */
     @Override
-    public boolean processPayment(double amount) {
+    public void processPayment(double amount) {
         System.out.println("Processing Paylib payment of €" + amount);
         // Simulate payment processing logic
         if (amount <= 2000) {
-            return true;
+            System.out.println("Paylib payment successful.");
         } else {
-            System.out.println("Paylib payment failed: Amount exceeds limit.");
-            return false;
+            throw new IllegalArgumentException("Paylib payment failed: Amount exceeds limit.");
         }
     }
 }

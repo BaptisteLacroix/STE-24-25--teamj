@@ -1,121 +1,100 @@
 package fr.unice.polytech.equipe.j.payment;
 
-import fr.unice.polytech.equipe.j.order.Order;
-import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
-
-import java.time.Clock;
-import java.time.Instant;
-import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.List;
+import fr.unice.polytech.equipe.j.order.IndividualOrder;
 import fr.unice.polytech.equipe.j.order.OrderManager;
+import fr.unice.polytech.equipe.j.order.OrderStatus;
+import fr.unice.polytech.equipe.j.payment.strategy.PaymentMethod;
+import fr.unice.polytech.equipe.j.restaurant.IRestaurant;
+import fr.unice.polytech.equipe.j.restaurant.Restaurant;
+import fr.unice.polytech.equipe.j.restaurant.RestaurantProxy;
+import fr.unice.polytech.equipe.j.user.CampusUser;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import java.util.ArrayList;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Tests for the PaymentClient class.
  */
-public class PaymentClientTest {
+class PaymentClientTest {
+
+    private IRestaurant restaurantProxyMock;
+    private IRestaurant restaurantMock;
+    private OrderManager orderManager;
+    private CampusUser campusUserMock;
+    private IndividualOrder order;
+
+    @BeforeEach
+    void setUp() {
+        restaurantProxyMock = mock(RestaurantProxy.class);
+        restaurantMock = mock(Restaurant.class);
+
+        // Initialize the actual OrderManager instead of mocking it
+        orderManager = new OrderManager(restaurantProxyMock);
+
+        campusUserMock = mock(CampusUser.class);
+        order = mock(IndividualOrder.class);
+        when(order.getStatus()).thenReturn(OrderStatus.PENDING);
+        when(order.getUser()).thenReturn(campusUserMock);
+        when(order.getRestaurant()).thenReturn(restaurantProxyMock);
+        when(restaurantMock.isOrderValid(any())).thenReturn(true);
+        when(restaurantProxyMock.isOrderValid(any())).thenReturn(true);
+    }
 
     @Test
-    public void testMakePaymentSuccess() {
-        Clock clock = new Clock() {
-            @Override
-            public ZoneId getZone() {
-                return null;
-            }
+    void testMakePaymentSuccess() {
+        when(campusUserMock.getDefaultPaymentMethod()).thenReturn(PaymentMethod.CREDIT_CARD);
+        when(restaurantProxyMock.getTotalPrice(any())).thenReturn(100.0);
 
-            @Override
-            public Clock withZone(ZoneId zone) {
-                return null;
-            }
-
-            @Override
-            public Instant instant() {
-                return null;
-            }
-        };
-        OrderManager orderManager = new OrderManager();
-        Transaction tr = orderManager.makePayment(100.0, PaymentMethod.CREDIT_CARD,null);
+        // Call the real validateOrder method
+        Transaction tr = orderManager.validateOrder(order);
 
         assertEquals(100.0, tr.getAmount(), 0.001);
         assertEquals("CREDIT_CARD", tr.getPaymentMethod());
     }
 
     @Test
-    public void testMakePaymentFailure() {
-        Clock clock = new Clock() {
-            @Override
-            public ZoneId getZone() {
-                return null;
-            }
+    void testMakePaymentFailure() {
+        when(campusUserMock.getDefaultPaymentMethod()).thenReturn(PaymentMethod.CREDIT_CARD);
+        when(restaurantProxyMock.getTotalPrice(any())).thenReturn(600.0);
 
-            @Override
-            public Clock withZone(ZoneId zone) {
-                return null;
-            }
-
-            @Override
-            public Instant instant() {
-                return null;
-            }
-        };
-        OrderManager orderManager = new OrderManager();
-        Transaction tr = orderManager.makePayment(600.0, PaymentMethod.CREDIT_CARD,null);
-
-
-        assertEquals(null, tr, "There should be no transactions recorded for failed payments");
+        // Call the real validateOrder method
+        assertThrows(IllegalArgumentException.class, () -> orderManager.validateOrder(order));
     }
 
     @Test
-    public void testMultiplePayments() {
-
-        Clock clock = new Clock() {
-            @Override
-            public ZoneId getZone() {
-                return null;
-            }
-
-            @Override
-            public Clock withZone(ZoneId zone) {
-                return null;
-            }
-
-            @Override
-            public Instant instant() {
-                return null;
-            }
-        };
-        OrderManager orderManager = new OrderManager();
+    void testMultiplePayments() {
         ArrayList<Transaction> transactions = new ArrayList<>();
 
-        transactions.add(orderManager.makePayment(60.0, PaymentMethod.CREDIT_CARD,null));
-        transactions.add(orderManager.makePayment(250.0, PaymentMethod.PAYPAL,null));
-        transactions.add(orderManager.makePayment(22.0, PaymentMethod.PAYLIB,null));
+        when(campusUserMock.getDefaultPaymentMethod()).thenReturn(PaymentMethod.CREDIT_CARD);
+        when(restaurantProxyMock.getTotalPrice(any())).thenReturn(60.0);
+        transactions.add(orderManager.validateOrder(order));
 
+        when(campusUserMock.getDefaultPaymentMethod()).thenReturn(PaymentMethod.PAYPAL);
+        when(restaurantProxyMock.getTotalPrice(any())).thenReturn(250.0);
+        transactions.add(orderManager.validateOrder(order));
+
+        when(campusUserMock.getDefaultPaymentMethod()).thenReturn(PaymentMethod.PAYLIB);
+        when(restaurantProxyMock.getTotalPrice(any())).thenReturn(22.0);
+        transactions.add(orderManager.validateOrder(order));
 
         assertEquals(3, transactions.size(), "There should be three successful transactions recorded");
     }
 
     @Test
-    public void testTransactionDetails() {
-        Clock clock = new Clock() {
-            @Override
-            public ZoneId getZone() {
-                return null;
-            }
+    void testTransactionDetails() {
+        when(campusUserMock.getDefaultPaymentMethod()).thenReturn(PaymentMethod.PAYPAL);
+        when(restaurantProxyMock.getTotalPrice(any())).thenReturn(60.0);
 
-            @Override
-            public Clock withZone(ZoneId zone) {
-                return null;
-            }
-
-            @Override
-            public Instant instant() {
-                return null;
-            }
-        };
-        OrderManager orderManager = new OrderManager();
-        Transaction tr = orderManager.makePayment(60.0, PaymentMethod.PAYPAL,null);
+        // Call the real validateOrder method
+        Transaction tr = orderManager.validateOrder(order);
 
         assertEquals(60.0, tr.getAmount(), 0.001);
         assertEquals("PAYPAL", tr.getPaymentMethod());

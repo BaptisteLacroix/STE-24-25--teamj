@@ -1,4 +1,4 @@
-package fr.unice.polytech.equipe.j.restaurant;
+package fr.unice.polytech.equipe.j.restaurant.menu;
 
 import org.junit.jupiter.api.Test;
 
@@ -16,6 +16,6 @@ class MenuItemTest {
     @Test
     void testToString() {
         MenuItem item = new MenuItem("Burger", 8,5.99);
-        assertEquals("Burger - 5.99 EUR", item.toString());
+        assertEquals("Burger - 5.99 EUR - 8s", item.toString());
     }
 }
