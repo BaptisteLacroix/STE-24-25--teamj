@@ -3,6 +3,8 @@ package fr.unice.polytech.equipe.j.user;
 import fr.unice.polytech.equipe.j.order.Order;
 import fr.unice.polytech.equipe.j.order.OrderManager;
 import fr.unice.polytech.equipe.j.restaurant.*;
+import fr.unice.polytech.equipe.j.restaurant.orderpricestrategy.FreeItemFotNItemsOrderPriceStrategy;
+import fr.unice.polytech.equipe.j.restaurant.orderpricestrategy.KPercentForNOrderPriceStrategy;
 import fr.unice.polytech.equipe.j.stepdefs.backend.Utils;
 import io.cucumber.datatable.DataTable;
 import io.cucumber.java.en.Given;
@@ -40,7 +42,7 @@ public class OrderPriceSteps {
         this.reductionPercentage = reductionPercentage;
         this.orderReductionNumber = orderReductionNumber;
         this.restaurant.setOrderPriceStrategy(
-                OrderPriceStrategyFactory.makeSubstractKpercentforNOrder(
+                new KPercentForNOrderPriceStrategy(
                         this.reductionPercentage,
                         this.orderReductionNumber
                 )
@@ -67,16 +69,19 @@ public class OrderPriceSteps {
             Map<MenuItem, Double> prices = order.getItems().stream().collect(Collectors.toMap((item)->item, MenuItem::getPrice));
             double totalPrice = prices.values().stream().mapToDouble(Double::doubleValue).sum();
             double reducedPrice = i%this.orderReductionNumber == 0 ? totalPrice - (totalPrice * this.reductionPercentage/100.0) : totalPrice;
-            OrderPrice processOrderPrice = restaurant.processOrderPrice(order);
+            OrderPrice processedOrderPrice = restaurant.processOrderPrice(order);
             restaurant.addOrderToHistory(order);
             // compare cumulative price of menuItems with processed total orderPrice
-            assertEquals(processOrderPrice.totalPrice(), reducedPrice);
+            if(processedOrderPrice.totalPrice() != reducedPrice){
+                System.out.println("temp");
+            }
+            assertEquals(processedOrderPrice.totalPrice(), reducedPrice);
         }
     }
 
     @Given("The restaurant wants to give a free item for every order with more than {int} items")
     public void theRestaurantWantsToGiveAFreeItemForEveryOrderWithMoreThatNItems(int n) {
-        this.restaurant.setOrderPriceStrategy(OrderPriceStrategyFactory.makeGiveItemForNItems(n));
+        this.restaurant.setOrderPriceStrategy(new FreeItemFotNItemsOrderPriceStrategy(n));
     }
 
     @When("Any user creates an order with more that {int} items")
