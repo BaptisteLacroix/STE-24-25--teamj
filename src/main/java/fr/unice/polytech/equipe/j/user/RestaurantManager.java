@@ -6,12 +6,15 @@ import fr.unice.polytech.equipe.j.slot.Slot;
 
 import java.time.LocalDateTime;
 
-public class RestaurantManager extends User {
+public class RestaurantManager {
     private IRestaurant restaurant;
+    private final String email;
+    private final String password;
     private String name;
 
     public RestaurantManager(String email, String password, String name, IRestaurant restaurant) {
-        super(email, password);
+        this.email = email;
+        this.password = password;
         this.name = name;
         this.restaurant = restaurant;
     }
