@@ -1,6 +1,7 @@
 package fr.unice.polytech.equipe.j.restaurant;
 
 import fr.unice.polytech.equipe.j.TimeUtils;
+import fr.unice.polytech.equipe.j.restaurant.menu.MenuItem;
 import fr.unice.polytech.equipe.j.slot.Slot;
 
 import java.time.LocalDateTime;

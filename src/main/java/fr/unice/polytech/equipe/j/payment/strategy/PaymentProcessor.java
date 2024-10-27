@@ -1,4 +1,4 @@
-package fr.unice.polytech.equipe.j.payment;
+package fr.unice.polytech.equipe.j.payment.strategy;
 
 /**
  * The PaymentProcessor interface defines the contract for processing payments.

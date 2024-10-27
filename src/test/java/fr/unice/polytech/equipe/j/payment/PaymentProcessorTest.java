@@ -1,5 +1,9 @@
 package fr.unice.polytech.equipe.j.payment;
 
+import fr.unice.polytech.equipe.j.payment.strategy.CreditCardProcessor;
+import fr.unice.polytech.equipe.j.payment.strategy.PayPalProcessor;
+import fr.unice.polytech.equipe.j.payment.strategy.PaylibProcessor;
+import fr.unice.polytech.equipe.j.payment.strategy.PaymentProcessor;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 

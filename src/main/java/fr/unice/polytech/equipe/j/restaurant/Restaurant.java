@@ -1,9 +1,14 @@
 package fr.unice.polytech.equipe.j.restaurant;
 
 import fr.unice.polytech.equipe.j.TimeUtils;
-import fr.unice.polytech.equipe.j.order.GroupOrderProxy;
 import fr.unice.polytech.equipe.j.order.Order;
 import fr.unice.polytech.equipe.j.order.OrderStatus;
+import fr.unice.polytech.equipe.j.order.grouporder.IGroupOrder;
+import fr.unice.polytech.equipe.j.restaurant.menu.Menu;
+import fr.unice.polytech.equipe.j.restaurant.menu.MenuItem;
+import fr.unice.polytech.equipe.j.restaurant.strategies.order.OrderPrice;
+import fr.unice.polytech.equipe.j.restaurant.strategies.order.OrderPriceStrategy;
+import fr.unice.polytech.equipe.j.restaurant.strategies.order.OrderPriceStrategyFactory;
 import fr.unice.polytech.equipe.j.slot.Slot;
 
 import java.time.LocalDateTime;
@@ -282,7 +287,7 @@ public class Restaurant implements IRestaurant {
      * @return true if the restaurant can prepare any item in time, false otherwise
      */
     @Override
-    public boolean canPrepareItemForGroupOrderDeliveryTime(GroupOrderProxy groupOrder) {
+    public boolean canPrepareItemForGroupOrderDeliveryTime(IGroupOrder groupOrder) {
         // Check that the delivery time is not empty
         if (groupOrder.getDeliveryDetails().getDeliveryTime().isEmpty()) {
             return true;

@@ -1,7 +1,7 @@
 package fr.unice.polytech.equipe.j.user;
 
 import fr.unice.polytech.equipe.j.order.Order;
-import fr.unice.polytech.equipe.j.payment.PaymentMethod;
+import fr.unice.polytech.equipe.j.payment.strategy.PaymentMethod;
 import fr.unice.polytech.equipe.j.payment.Transaction;
 
 import java.util.ArrayList;

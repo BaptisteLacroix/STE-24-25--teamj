@@ -1,19 +1,22 @@
-package fr.unice.polytech.equipe.j.order;
+package fr.unice.polytech.equipe.j.order.grouporder;
 
 import fr.unice.polytech.equipe.j.delivery.DeliveryDetails;
+import fr.unice.polytech.equipe.j.order.Order;
+import fr.unice.polytech.equipe.j.order.OrderStatus;
 import fr.unice.polytech.equipe.j.user.CampusUser;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
-public class GroupOrderProxy {
-    private final GroupOrder groupOrder;
+public class GroupOrderProxy implements IGroupOrder {
+    private final IGroupOrder groupOrder;
 
-    public GroupOrderProxy(GroupOrder groupOrder) {
+    public GroupOrderProxy(IGroupOrder groupOrder) {
         this.groupOrder = groupOrder;
     }
 
+    @Override
     public void setDeliveryTime(LocalDateTime deliveryTime) {
         if (groupOrder.getDeliveryDetails().getDeliveryTime().isPresent()) {
             throw new UnsupportedOperationException("You cannot change the delivery time of a group order.");
@@ -26,6 +29,7 @@ public class GroupOrderProxy {
         groupOrder.setDeliveryTime(deliveryTime);
     }
 
+    @Override
     public void addOrder(Order order) {
         if (groupOrder.getStatus() != OrderStatus.PENDING) {
             throw new IllegalArgumentException("Cannot join a group order that is not pending");
@@ -49,6 +53,7 @@ public class GroupOrderProxy {
                 .allMatch(order -> order.getRestaurant().canAccommodateDeliveryTime(order.getItems(), deliveryTime));
     }
 
+    @Override
     public void addUser(CampusUser user) {
         if (groupOrder.getStatus() != OrderStatus.PENDING) {
             throw new IllegalArgumentException("The group order has already been validated.");
@@ -56,40 +61,50 @@ public class GroupOrderProxy {
         groupOrder.addUser(user);
     }
 
+    @Override
     public void validate(CampusUser user) {
-        if (groupOrder.getStatus() != OrderStatus.PENDING) {
+        if (getStatus() != OrderStatus.PENDING) {
             throw new IllegalArgumentException("Cannot validate group order that is not pending.");
         }
-        if (groupOrder.getDeliveryDetails().getDeliveryTime().isEmpty()) {
+        if (getDeliveryDetails().getDeliveryTime().isEmpty()) {
             throw new IllegalArgumentException("Cannot validate group order with no delivery time.");
         }
-        if (!groupOrder.getUsers().contains(user)) {
+        if (!getUsers().contains(user)) {
             throw new IllegalArgumentException("Cannot validate group order if you are not part of it.");
         }
         // check if the user has an order, if not throw an exception
-        if (groupOrder.getOrders().stream().noneMatch(order -> order.getUser().equals(user))) {
+        if (getOrders().stream().noneMatch(order -> order.getUser().equals(user))) {
             throw new IllegalArgumentException("Cannot validate group order if you have no order.");
         }
-        groupOrder.setStatus(OrderStatus.VALIDATED);
+        groupOrder.validate(user);
     }
 
+    @Override
     public OrderStatus getStatus() {
         return groupOrder.getStatus();
     }
 
+    @Override
+    public void setStatus(OrderStatus status) {
+        groupOrder.setStatus(status);
+    }
+
+    @Override
     public List<CampusUser> getUsers() {
         return groupOrder.getUsers();
     }
 
+    @Override
     public UUID getGroupOrderId() {
         return groupOrder.getGroupOrderId();
     }
 
-    // Delegate other GroupOrder methods
+    @Override
     public DeliveryDetails getDeliveryDetails() {
         return groupOrder.getDeliveryDetails();
     }
 
+    @Override
     public List<Order> getOrders() {
         return groupOrder.getOrders();
     }

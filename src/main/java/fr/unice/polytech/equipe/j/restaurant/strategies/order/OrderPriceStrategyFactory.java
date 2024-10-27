@@ -1,6 +1,8 @@
-package fr.unice.polytech.equipe.j.restaurant;
+package fr.unice.polytech.equipe.j.restaurant.strategies.order;
 
 import fr.unice.polytech.equipe.j.order.Order;
+import fr.unice.polytech.equipe.j.restaurant.IRestaurant;
+import fr.unice.polytech.equipe.j.restaurant.menu.MenuItem;
 import fr.unice.polytech.equipe.j.user.CampusUser;
 
 import java.util.Map;

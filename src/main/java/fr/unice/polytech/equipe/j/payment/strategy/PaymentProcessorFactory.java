@@ -1,4 +1,4 @@
-package fr.unice.polytech.equipe.j.payment;
+package fr.unice.polytech.equipe.j.payment.strategy;
 
 /**
  * Factory class for creating PaymentProcessor instances based on PaymentMethod.

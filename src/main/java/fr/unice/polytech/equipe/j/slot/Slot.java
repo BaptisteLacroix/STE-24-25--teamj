@@ -1,12 +1,9 @@
 package fr.unice.polytech.equipe.j.slot;
 
-import fr.unice.polytech.equipe.j.order.Order;
-import fr.unice.polytech.equipe.j.restaurant.MenuItem;
+import fr.unice.polytech.equipe.j.restaurant.menu.MenuItem;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 public class Slot {
     private int currentCapacity;

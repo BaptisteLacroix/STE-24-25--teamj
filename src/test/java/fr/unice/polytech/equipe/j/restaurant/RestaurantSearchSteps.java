@@ -4,8 +4,11 @@ import fr.unice.polytech.equipe.j.TimeUtils;
 import fr.unice.polytech.equipe.j.delivery.DeliveryDetails;
 import fr.unice.polytech.equipe.j.delivery.DeliveryLocation;
 import fr.unice.polytech.equipe.j.delivery.DeliveryLocationManager;
-import fr.unice.polytech.equipe.j.order.GroupOrder;
-import fr.unice.polytech.equipe.j.order.GroupOrderProxy;
+import fr.unice.polytech.equipe.j.order.grouporder.GroupOrder;
+import fr.unice.polytech.equipe.j.order.grouporder.GroupOrderProxy;
+import fr.unice.polytech.equipe.j.order.grouporder.IGroupOrder;
+import fr.unice.polytech.equipe.j.restaurant.menu.Menu;
+import fr.unice.polytech.equipe.j.restaurant.menu.MenuItem;
 import io.cucumber.java.Before;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
@@ -27,7 +30,7 @@ public class RestaurantSearchSteps {
 
     private List<IRestaurant> foundRestaurants;
     private List<MenuItem> menuItems = new ArrayList<>();
-    private GroupOrderProxy groupOrder;
+    private IGroupOrder groupOrder;
 
     @Before
     public void setUp() {

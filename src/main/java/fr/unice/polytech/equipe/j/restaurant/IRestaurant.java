@@ -1,7 +1,11 @@
 package fr.unice.polytech.equipe.j.restaurant;
 
-import fr.unice.polytech.equipe.j.order.GroupOrderProxy;
 import fr.unice.polytech.equipe.j.order.Order;
+import fr.unice.polytech.equipe.j.order.grouporder.IGroupOrder;
+import fr.unice.polytech.equipe.j.restaurant.menu.Menu;
+import fr.unice.polytech.equipe.j.restaurant.menu.MenuItem;
+import fr.unice.polytech.equipe.j.restaurant.strategies.order.OrderPrice;
+import fr.unice.polytech.equipe.j.restaurant.strategies.order.OrderPriceStrategy;
 import fr.unice.polytech.equipe.j.slot.Slot;
 
 import java.time.LocalDateTime;
@@ -33,7 +37,7 @@ public interface IRestaurant {
 
     boolean isSlotCapacityAvailable();
 
-    boolean canPrepareItemForGroupOrderDeliveryTime(GroupOrderProxy groupOrderProxy);
+    boolean canPrepareItemForGroupOrderDeliveryTime(IGroupOrder groupOrderProxy);
 
     UUID getRestaurantUUID();
 

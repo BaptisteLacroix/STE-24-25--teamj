@@ -1,8 +1,8 @@
 package fr.unice.polytech.equipe.j.restaurant;
 
 import fr.unice.polytech.equipe.j.TimeUtils;
+import fr.unice.polytech.equipe.j.restaurant.menu.MenuItem;
 import io.cucumber.java.Before;
-import io.cucumber.java.be.I;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 

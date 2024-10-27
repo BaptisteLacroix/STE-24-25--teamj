@@ -1,11 +1,11 @@
-package fr.unice.polytech.equipe.j.order;
+package fr.unice.polytech.equipe.j.order.grouporder;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 public class GroupOrderRepository {
-    private final List<GroupOrderProxy> groupOrders;
+    private final List<IGroupOrder> groupOrders;
     private static GroupOrderRepository instance;
 
     private GroupOrderRepository() {
@@ -19,19 +19,19 @@ public class GroupOrderRepository {
         return instance;
     }
 
-    public void addGroupOrder(GroupOrderProxy groupOrder) {
+    public void addGroupOrder(IGroupOrder groupOrder) {
         groupOrders.add(groupOrder);
     }
 
-    public void removeGroupOrder(GroupOrderProxy groupOrder) {
+    public void removeGroupOrder(IGroupOrder groupOrder) {
         groupOrders.remove(groupOrder);
     }
 
-    public List<GroupOrderProxy> getGroupOrders() {
+    public List<IGroupOrder> getGroupOrders() {
         return groupOrders;
     }
 
-    public GroupOrderProxy findGroupOrderById(UUID id) {
+    public IGroupOrder findGroupOrderById(UUID id) {
         return groupOrders.stream()
                 .filter(groupOrder -> groupOrder.getGroupOrderId().equals(id))
                 .findFirst()

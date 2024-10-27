@@ -1,4 +1,4 @@
-package fr.unice.polytech.equipe.j.payment;
+package fr.unice.polytech.equipe.j.payment.strategy;
 
 /**
  * Processes PayPal payments.

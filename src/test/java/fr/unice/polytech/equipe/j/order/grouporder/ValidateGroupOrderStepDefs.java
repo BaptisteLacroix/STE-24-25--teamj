@@ -1,17 +1,21 @@
-package fr.unice.polytech.equipe.j.order;
+package fr.unice.polytech.equipe.j.order.grouporder;
 
 import fr.unice.polytech.equipe.j.TimeUtils;
 import fr.unice.polytech.equipe.j.delivery.DeliveryDetails;
 import fr.unice.polytech.equipe.j.delivery.DeliveryLocation;
 import fr.unice.polytech.equipe.j.delivery.DeliveryLocationManager;
+import fr.unice.polytech.equipe.j.order.Order;
+import fr.unice.polytech.equipe.j.order.OrderManager;
+import fr.unice.polytech.equipe.j.order.OrderStatus;
 import fr.unice.polytech.equipe.j.restaurant.IRestaurant;
-import fr.unice.polytech.equipe.j.restaurant.MenuItem;
+import fr.unice.polytech.equipe.j.restaurant.menu.MenuItem;
 import fr.unice.polytech.equipe.j.restaurant.RestaurantServiceManager;
 import fr.unice.polytech.equipe.j.user.CampusUser;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import io.cucumber.java.Before;
+import org.junit.Assert;
 
 import java.time.Clock;
 import java.time.Instant;
@@ -28,7 +32,7 @@ import static org.junit.Assert.assertTrue;
 public class ValidateGroupOrderStepDefs {
     private CampusUser groupOrderCreator;
     private CampusUser groupOrderJoiner;
-    private GroupOrderProxy groupOrder;
+    private IGroupOrder groupOrder;
     private IRestaurant restaurant;
     private OrderManager orderManager;
     private Order orderUser1;
@@ -110,7 +114,7 @@ public class ValidateGroupOrderStepDefs {
         LocalDateTime deliveryTime = TimeUtils.getNow().withHour(int1).withMinute(int2);
         orderManager.validateOrder(orderUser1);
         orderManager.validateGroupOrder(groupOrderCreator, deliveryTime);
-        assertEquals(OrderStatus.VALIDATED, groupOrder.getStatus());
+        Assert.assertEquals(OrderStatus.VALIDATED, groupOrder.getStatus());
         assertTrue(groupOrder.getDeliveryDetails().getDeliveryTime().isPresent());
         assertEquals(deliveryTime, groupOrder.getDeliveryDetails().getDeliveryTime().get());
     }

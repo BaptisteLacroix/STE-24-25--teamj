@@ -1,0 +1,8 @@
+package fr.unice.polytech.equipe.j.restaurant.strategies.order;
+import fr.unice.polytech.equipe.j.restaurant.menu.MenuItem;
+
+import java.util.Map;
+
+public record OrderPrice(Map<MenuItem, Double> newPrices, double totalPrice, String description){
+
+}

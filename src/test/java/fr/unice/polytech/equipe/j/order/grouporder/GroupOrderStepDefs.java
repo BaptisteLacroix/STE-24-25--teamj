@@ -1,16 +1,16 @@
-package fr.unice.polytech.equipe.j.order;
+package fr.unice.polytech.equipe.j.order.grouporder;
 
 import fr.unice.polytech.equipe.j.TimeUtils;
 import fr.unice.polytech.equipe.j.delivery.DeliveryDetails;
 import fr.unice.polytech.equipe.j.delivery.DeliveryLocation;
 import fr.unice.polytech.equipe.j.delivery.DeliveryLocationManager;
+import fr.unice.polytech.equipe.j.order.OrderManager;
 import fr.unice.polytech.equipe.j.user.CampusUser;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import io.cucumber.java.Before;
 
-import java.sql.Time;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -25,7 +25,7 @@ import static org.junit.Assert.assertTrue;
 public class GroupOrderStepDefs {
     private CampusUser user;
     private OrderManager orderManager;
-    private GroupOrderProxy groupOrderProxy;
+    private IGroupOrder groupOrderProxy;
 
     @Before
     public void setUp() {

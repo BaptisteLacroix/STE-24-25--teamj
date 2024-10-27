@@ -8,6 +8,8 @@ import fr.unice.polytech.equipe.j.order.IndividualOrder;
 import fr.unice.polytech.equipe.j.order.Order;
 import fr.unice.polytech.equipe.j.order.OrderManager;
 import fr.unice.polytech.equipe.j.order.OrderStatus;
+import fr.unice.polytech.equipe.j.restaurant.menu.Menu;
+import fr.unice.polytech.equipe.j.restaurant.menu.MenuItem;
 import fr.unice.polytech.equipe.j.slot.Slot;
 import fr.unice.polytech.equipe.j.user.CampusUser;
 import fr.unice.polytech.equipe.j.user.RestaurantManager;

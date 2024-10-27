@@ -1,4 +1,4 @@
-package fr.unice.polytech.equipe.j.restaurant;
+package fr.unice.polytech.equipe.j.restaurant.menu;
 
 public class MenuItem {
     private final String name;

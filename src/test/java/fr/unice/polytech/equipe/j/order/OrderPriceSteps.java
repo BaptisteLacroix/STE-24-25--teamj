@@ -1,13 +1,13 @@
-package fr.unice.polytech.equipe.j.user;
+package fr.unice.polytech.equipe.j.order;
 
-import fr.unice.polytech.equipe.j.order.Order;
 import fr.unice.polytech.equipe.j.restaurant.IRestaurant;
-import fr.unice.polytech.equipe.j.restaurant.MenuItem;
-import fr.unice.polytech.equipe.j.restaurant.OrderPrice;
-import fr.unice.polytech.equipe.j.restaurant.OrderPriceStrategyFactory;
+import fr.unice.polytech.equipe.j.restaurant.menu.MenuItem;
+import fr.unice.polytech.equipe.j.restaurant.strategies.order.OrderPrice;
+import fr.unice.polytech.equipe.j.restaurant.strategies.order.OrderPriceStrategyFactory;
 import fr.unice.polytech.equipe.j.restaurant.Restaurant;
 import fr.unice.polytech.equipe.j.restaurant.RestaurantProxy;
 import fr.unice.polytech.equipe.j.stepdefs.backend.Utils;
+import fr.unice.polytech.equipe.j.user.CampusUser;
 import io.cucumber.datatable.DataTable;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
