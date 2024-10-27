@@ -1,0 +1,22 @@
+@startuml
+!theme mars
+top to bottom direction
+skinparam linetype ortho
+
+class GroupOrder {
+}
+class GroupOrderProxy {}
+class GroupOrderRepository {
+}
+interface IGroupOrder << interface >> {
+}
+class OrderManager {
+}
+
+GroupOrder                 -[#008200,dashed]-^  IGroupOrder
+GroupOrderProxy            -[#008200,dashed]-^  IGroupOrder
+GroupOrderProxy           "1" *-[#595959,plain]-> "groupOrder\n1" IGroupOrder
+GroupOrderRepository      "1" *-[#595959,plain]-> "groupOrdersProxy\n*" IGroupOrder
+OrderManager              "1" *-[#595959,plain]-> "groupOrderProxy\n1" IGroupOrder
+
+@enduml

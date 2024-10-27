@@ -1,0 +1,19 @@
+@startuml
+!theme mars
+top to bottom direction
+skinparam linetype ortho
+
+class GroupOrderRepository {
+  - instance: GroupOrderRepository
+  - GroupOrderRepository() // Private constructor
+  + addGroupOrder(IGroupOrder): void
+  + getInstance(): GroupOrderRepository
+  + getGroupOrders(): List<IGroupOrder>
+  + findGroupOrderById(UUID): IGroupOrder
+  + removeGroupOrder(IGroupOrder): void
+}
+
+GroupOrderRepository      "1" *-[#595959,plain]-> "groupOrders\n*" IGroupOrder
+GroupOrderRepository --> "instance\n" GroupOrderRepository
+
+@enduml

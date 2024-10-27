@@ -1,0 +1,25 @@
+@startuml
+!theme mars
+top to bottom direction
+skinparam linetype ortho
+
+class RestaurantServiceManager {
+  - instance: RestaurantServiceManager
+  - RestaurantServiceManager() // Private constructor
+  + searchItemsByDeliveryTime(IRestaurant, Date): List<MenuItem>
+  + getRestaurants(): List<IRestaurant>
+  + searchByTypeOfFood(String): List<IRestaurant>
+  ~ resetInstance(): void
+  + getInstance(): RestaurantServiceManager
+  - isOpenAt(IRestaurant, Date): boolean
+  + addRestaurant(IRestaurant): void
+  + searchRestaurantByDeliveryTime(Date): List<IRestaurant>
+  + findSlotByStartTime(IRestaurant, Date): Slot
+  + removeRestaurant(IRestaurant): void
+  + searchByName(String): List<IRestaurant>
+}
+
+RestaurantServiceManager --> "instance\n" RestaurantServiceManager
+RestaurantServiceManager "1" *--> "restaurants\n*" IRestaurant
+
+@enduml
