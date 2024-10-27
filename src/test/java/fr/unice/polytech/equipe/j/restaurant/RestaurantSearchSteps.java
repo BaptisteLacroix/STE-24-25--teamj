@@ -1,11 +1,14 @@
 package fr.unice.polytech.equipe.j.restaurant;
 
 import fr.unice.polytech.equipe.j.TimeUtils;
+import fr.unice.polytech.equipe.j.delivery.DeliveryDetails;
 import fr.unice.polytech.equipe.j.delivery.DeliveryLocation;
 import fr.unice.polytech.equipe.j.delivery.DeliveryLocationManager;
-import fr.unice.polytech.equipe.j.delivery.DeliveryDetails;
-import fr.unice.polytech.equipe.j.order.OrderManager;
-import fr.unice.polytech.equipe.j.user.CampusUser;
+import fr.unice.polytech.equipe.j.order.grouporder.GroupOrder;
+import fr.unice.polytech.equipe.j.order.grouporder.GroupOrderProxy;
+import fr.unice.polytech.equipe.j.order.grouporder.IGroupOrder;
+import fr.unice.polytech.equipe.j.restaurant.menu.Menu;
+import fr.unice.polytech.equipe.j.restaurant.menu.MenuItem;
 import io.cucumber.java.Before;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
@@ -13,7 +16,6 @@ import io.cucumber.java.en.When;
 
 import java.time.Clock;
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,19 +28,17 @@ import static org.junit.Assert.assertTrue;
 
 public class RestaurantSearchSteps {
 
-    private List<Restaurant> foundRestaurants;  // Store search results
-    private CampusUser user;
+    private List<IRestaurant> foundRestaurants;
     private List<MenuItem> menuItems = new ArrayList<>();
+    private IGroupOrder groupOrder;
 
     @Before
     public void setUp() {
         TimeUtils.setClock(Clock.fixed(Instant.parse("2024-10-18T12:00:00Z"), ZoneId.of("Europe/Paris")));
         // Initialize the list before each scenario
         foundRestaurants = new ArrayList<>();
-        user = new CampusUser("email", "password", new OrderManager());
     }
 
-    // When step - search for restaurants by name
     @When("the user searches for restaurants by name {string}")
     public void searchForRestaurantsByName(String restaurantName) {
         foundRestaurants = RestaurantServiceManager.getInstance().searchByName(restaurantName);
@@ -70,7 +70,7 @@ public class RestaurantSearchSteps {
         assertEquals("Number of restaurants found does not match", expectedRestaurants.size(), foundRestaurants.size());
 
         for (Map<String, String> expectedRestaurant : expectedRestaurants) {
-            Restaurant restaurant = foundRestaurants.stream()
+            IRestaurant restaurant = foundRestaurants.stream()
                     .filter(r -> r.getRestaurantName().trim().equalsIgnoreCase(expectedRestaurant.get("name").trim()))
                     .findFirst()
                     .orElse(null);
@@ -96,27 +96,26 @@ public class RestaurantSearchSteps {
     public void the_user_creates_a_group_order_with_a_delivery_time_of_minutes_later_than_the_current_time(Integer int1) {
         DeliveryLocation deliveryLocation = DeliveryLocationManager.getInstance().getPredefinedLocations().getFirst();
         DeliveryDetails deliveryDetails = new DeliveryDetails(deliveryLocation, TimeUtils.getNow().plusMinutes(int1));
-        user.createGroupOrder(deliveryDetails);
-        assertNotNull("Group order not created", user.getCurrentGroupOrder());
+        groupOrder = new GroupOrderProxy(new GroupOrder(deliveryDetails));
     }
 
     @Given("the user searches for restaurants that can prepare the food before the delivery time")
     public void the_user_searches_for_restaurants_that_can_prepare_the_food_before_the_delivery_time() {
-        foundRestaurants = RestaurantServiceManager.getInstance().searchRestaurantByDeliveryTime(user.getCurrentGroupOrder().getDeliveryDetails().getDeliveryTime());
+        foundRestaurants = RestaurantServiceManager.getInstance().searchRestaurantByDeliveryTime(groupOrder.getDeliveryDetails().getDeliveryTime());
         assertFalse(foundRestaurants.isEmpty());
     }
 
     @Then("the user selects the restaurant {string} and should see only the {int} menu items that can be prepared before the delivery time")
     public void the_user_select_the_restaurant_and_should_see_only_the_menu_items_that_can_be_prepared_before_the_delivery_time(String string, Integer int1) {
-        Restaurant restaurant = null;
-        for (Restaurant r : foundRestaurants) {
+        IRestaurant restaurant = null;
+        for (IRestaurant r : foundRestaurants) {
             if (r.getRestaurantName().equals(string)) {
                 restaurant = r;
                 break;
             }
         }
 
-        menuItems = RestaurantServiceManager.getInstance().searchItemsByDeliveryTime(restaurant, user.getCurrentGroupOrder().getDeliveryDetails().getDeliveryTime());
+        menuItems = RestaurantServiceManager.getInstance().searchItemsByDeliveryTime(restaurant, groupOrder.getDeliveryDetails().getDeliveryTime());
         assertFalse(menuItems.isEmpty());
         assertEquals("Number of menu items found does not match", int1.intValue(), menuItems.size());
     }

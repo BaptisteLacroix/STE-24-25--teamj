@@ -1,8 +1,9 @@
 package fr.unice.polytech.equipe.j.user;
 
 import fr.unice.polytech.equipe.j.TimeUtils;
-import fr.unice.polytech.equipe.j.restaurant.Menu;
-import fr.unice.polytech.equipe.j.restaurant.MenuItem;
+import fr.unice.polytech.equipe.j.restaurant.IRestaurant;
+import fr.unice.polytech.equipe.j.restaurant.menu.Menu;
+import fr.unice.polytech.equipe.j.restaurant.menu.MenuItem;
 import fr.unice.polytech.equipe.j.restaurant.Restaurant;
 import fr.unice.polytech.equipe.j.restaurant.RestaurantServiceManager;
 import fr.unice.polytech.equipe.j.slot.Slot;
@@ -25,12 +26,8 @@ import java.util.Map;
 import static org.junit.Assert.*;
 
 public class ManageRestaurantStepDef {
-    private RestaurantManager restaurantManager;
-    private Restaurant restaurant;
-    private final Menu menu = new Menu(new ArrayList<>());
-    private final List<Slot> slots = new ArrayList<>();
-    private MenuItem selectedItem;
-    private Slot slot;
+    private IRestaurant restaurant;
+    private final Menu menu = new Menu.MenuBuilder().build();
     private boolean bool;
 
     @Before
@@ -42,7 +39,7 @@ public class ManageRestaurantStepDef {
     public void aRestaurantManagerOfTheRestaurantOpenedFromTo(String name, String restaurantName, String opening, String closing) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         restaurant = new Restaurant(restaurantName, LocalDateTime.parse(opening,formatter), LocalDateTime.parse(closing,formatter), menu);
-        restaurantManager = new RestaurantManager("jeanne@example.com", "password", name, restaurant);
+        RestaurantManager restaurantManager = new RestaurantManager("jeanne@example.com", "password", name, restaurant);
     }
 
     @And("the restaurant has a menu with the following items:")
@@ -145,7 +142,7 @@ public class ManageRestaurantStepDef {
     public void jeanneTriesToAllocatePersonnelToThisSlot(int newNumberOfPersonnel, String slotStartingTime) {
         LocalDateTime slotStart = LocalDateTime.parse(slotStartingTime, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
         Slot slot = RestaurantServiceManager.getInstance().findSlotByStartTime(restaurant, slotStart);
-        bool = restaurantManager.updateNumberOfPersonnel(slot, newNumberOfPersonnel);
+        bool = restaurant.setNumberOfPersonnel(slot, newNumberOfPersonnel);
     }
 
     @Then("Jeanne will see that it is impossible with starting slot at {string}")

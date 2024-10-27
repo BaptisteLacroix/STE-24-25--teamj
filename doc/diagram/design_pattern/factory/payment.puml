@@ -1,0 +1,29 @@
+@startuml
+!theme mars
+top to bottom direction
+skinparam linetype ortho
+
+class PayPalProcessor {
+  + processPayment(double): void
+}
+class PaylibProcessor {
+  + processPayment(double): void
+}
+enum PaymentMethod << enumeration >> {
+  + PAYPAL:
+  + CREDIT_CARD:
+  + PAYLIB:
+}
+interface PaymentProcessor << interface >> {
+  + processPayment(double): void
+}
+class PaymentProcessorFactory {
+  + createPaymentProcessor(PaymentMethod): PaymentProcessor
+}
+CreditCardProcessor        -[#008200,dashed]-^  PaymentProcessor
+PayPalProcessor            -[#008200,dashed]-^  PaymentProcessor
+PaylibProcessor            -[#008200,dashed]-^  PaymentProcessor
+PaymentProcessorFactory    -[#595959,dashed]->  CreditCardProcessor       : "«create»"
+PaymentProcessorFactory    -[#595959,dashed]->  PayPalProcessor           : "«create»"
+PaymentProcessorFactory    -[#595959,dashed]->  PaylibProcessor           : "«create»"
+@enduml

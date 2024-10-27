@@ -2,11 +2,14 @@ Feature: Search for Restaurants
 
   Background:
     Given the restaurant service manager configured the following restaurants:
-      | Name             | Menu Items                                             | Opening Time     | Closing Time     |
-      | Le Petit Nice    | Salade Nicoise, Bouillabaisse, Tarte Tatin             | 2024-10-18 12:00 | 2024-10-18 14:00 |
-      | Le Petit Jardin  | Salade de chèvre chaud, Magret de canard, Crème brûlée | 2024-10-18 11:00 | 2024-10-18 15:00 |
-      | Le Petit Chateau | Escargots, Coq au vin, Mousse au chocolat              | 2024-10-18 09:00 | 2024-10-18 13:00 |
-      | La Table Royale  | Bouillabaisse, Coq au Vin, Crêpe Suzette               | 2024-10-18 12:00 | 2024-10-18 13:30 |
+      | Name               | Menu Items                                             | Opening Time     | Closing Time     |
+      | Le Petit Nice      | Salade Nicoise, Bouillabaisse, Tarte Tatin             | 2024-10-18 14:00 | 2024-10-18 16:00 |
+      | Le Petit Jardin    | Salade de chèvre chaud, Magret de canard, Crème brûlée | 2024-10-18 14:00 | 2024-10-18 16:00 |
+      | Le Petit Chateau   | Escargots, Coq au vin, Mousse au chocolat              | 2024-10-18 14:00 | 2024-10-18 16:00 |
+      | Le Gourmet D'Or    | Soupe à l'oignon, Boeuf Bourguignon, Tarte Tatin       | Closed           | Closed           |
+      | Bistro de la Plage | Quiche Lorraine, Ratatouille, Mousse au chocolat       | 2024-10-18 14:00 | 2024-10-18 16:00 |
+      | Café de l'Aube     | No menu items available                                | 2024-10-18 14:00 | 2024-10-18 16:00 |
+      | La Table Royale    | Coq au Vin, Bouillabaisse, Crêpe Suzette               | 2024-10-18 14:00 | 2024-10-18 15:00 |
 
   Scenario: Search for a restaurant by name
     Given the user searches for restaurants by name "Le Petit Nice"

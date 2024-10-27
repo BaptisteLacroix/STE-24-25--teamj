@@ -1,0 +1,21 @@
+@startuml
+!theme mars
+top to bottom direction
+skinparam linetype ortho
+
+interface IRestaurant << interface >> {
+}
+class Restaurant {
+}
+class RestaurantManager {
+}
+class RestaurantProxy {
+}
+
+Restaurant                 -[#008200,dashed]-^  IRestaurant
+RestaurantManager         "1" *-[#595959,plain]-> "restaurantsProxy\n1" IRestaurant
+RestaurantProxy            -[#008200,dashed]-^  IRestaurant
+RestaurantProxy           -[#595959,plain]-> "represent\n" Restaurant
+OrderManager              "1" *-[#595959,plain]-> "restaurantProxy\n1" IRestaurant
+
+@enduml

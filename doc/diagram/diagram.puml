@@ -1,0 +1,361 @@
+@startuml
+!theme mars
+top to bottom direction
+skinparam linetype ortho
+
+class CampusUser {
+  - balance: double
+  - name: String
+  + addOrderToHistory(Order): void
+  + setDefaultPaymentMethod(PaymentMethod): void
+  + getTransactions(): List<Transaction>
+  + onOrderPaid(Order): void
+  + toString(): String
+  + getOrdersHistory(): List<Order>
+  + getDefaultPaymentMethod(): PaymentMethod
+  + addTransactionToHistory(Transaction): void
+}
+class CreditCardProcessor {
+  + processPayment(double): void
+}
+class DeliveryDetails {
+  - deliveryTime: Date
+  + toString(): String
+  + setDeliveryTime(Date): void
+  + getDeliveryLocation(): DeliveryLocation
+  + getDeliveryTime(): Date
+}
+entity DeliveryLocation << record >> {
+  - address: String
+  - locationName: String
+  + address(): String
+  + locationName(): String
+}
+class DeliveryLocationManager {
+  - instance: DeliveryLocationManager
+  + getPredefinedLocations(): List<DeliveryLocation>
+  + getInstance(): DeliveryLocationManager
+  + findLocationByName(String): DeliveryLocation
+}
+class GroupOrder {
+  - groupOrderId: string
+  + setStatus(OrderStatus): void
+  + getStatus(): OrderStatus
+  + getDeliveryDetails(): DeliveryDetails
+  + getGroupOrderId(): UUID
+  + setDeliveryTime(Date): void
+  + addUser(CampusUser): void
+  + addOrder(Order): void
+  + validate(CampusUser): void
+  + getOrders(): List<Order>
+  + toString(): String
+  + getUsers(): List<CampusUser>
+}
+class GroupOrderProxy {
+  + addOrder(Order): void
+  - isDeliveryTimeValid(Date): boolean
+  + getGroupOrderId(): UUID
+  + setDeliveryTime(Date): void
+  + addUser(CampusUser): void
+  + validate(CampusUser): void
+  + getStatus(): OrderStatus
+  + getDeliveryDetails(): DeliveryDetails
+  + setStatus(OrderStatus): void
+  + getOrders(): List<Order>
+  + getUsers(): List<CampusUser>
+}
+class GroupOrderRepository {
+  - instance: GroupOrderRepository
+  + addGroupOrder(IGroupOrder): void
+  + getInstance(): GroupOrderRepository
+  + getGroupOrders(): List<IGroupOrder>
+  + findGroupOrderById(UUID): IGroupOrder
+  + removeGroupOrder(IGroupOrder): void
+}
+interface IGroupOrder << interface >> {
+  + addOrder(Order): void
+  + getOrders(): List<Order>
+  + getGroupOrderId(): UUID
+  + toString(): String
+  + getUsers(): List<CampusUser>
+  + validate(CampusUser): void
+  + addUser(CampusUser): void
+  + setStatus(OrderStatus): void
+  + getStatus(): OrderStatus
+  + setDeliveryTime(Date): void
+  + getDeliveryDetails(): DeliveryDetails
+}
+interface IRestaurant << interface >> {
+  + getRestaurantName(): String
+  + getRestaurantUUID(): UUID
+  + addMenuItemToSlot(Slot, MenuItem): boolean
+  + getClosingTime(): Date
+  + canAccommodateDeliveryTime(List<MenuItem>, Date): boolean
+  + setOpeningTime(Date): void
+  + addItemToOrder(Order, MenuItem, Date): void
+  + processOrderPrice(Order): OrderPrice
+  + addOrderToHistory(Order): void
+  + setNumberOfPersonnel(Slot, int): void
+  + isOrderValid(Order): boolean
+  + canPrepareItemForGroupOrderDeliveryTime(IGroupOrder): boolean
+  + setOrderPriceStrategy(OrderPriceStrategy): void
+  + cancelOrder(Order, Date): void
+  + getOrdersHistory(): List<Order>
+  + changeMenu(Menu): void
+  + getSlots(): List<Slot>
+  + setClosingTime(Date): void
+  + onOrderPaid(Order): void
+  + getTotalPrice(Order): double
+  + getOpeningTime(): Date
+  + isSlotCapacityAvailable(): boolean
+  + getMenu(): Menu
+}
+class IndividualOrder {
+  + getDeliveryDetails(): DeliveryDetails
+  + hashCode(): int
+  + equals(Object): boolean
+  + toString(): String
+}
+class Menu {
+  + updateMenuItemPrepTime(String, int): void
+  + findItemByName(String): MenuItem
+  + updateMenuItemPrice(String, double): void
+  + addMenuItem(MenuItem): void
+  + getItems(): List<MenuItem>
+  + toString(): String
+  + removeMenuItem(String): void
+}
+class MenuBuilder {
+  + addMenuItem(MenuItem): MenuBuilder
+  + addMenuItems(List<MenuItem>): MenuBuilder
+  + build(): Menu
+}
+class MenuItem {
+  - name: String
+  - prepTime: int
+  - price: double
+  + toString(): String
+  + getPrepTime(): int
+  + getName(): String
+  + setPrepTime(int): void
+  + setPrice(double): void
+  + getPrice(): double
+}
+class Order {
+  - orderUUID: string
+  + getItems(): List<MenuItem>
+  + addItem(MenuItem): void
+  + removeItem(MenuItem): void
+  + setStatus(OrderStatus): void
+  + getRestaurant(): IRestaurant
+  + toString(): String
+  + getUser(): CampusUser
+  + getStatus(): OrderStatus
+  + hashCode(): int
+  + getOrderUUID(): UUID
+  + equals(Object): boolean
+}
+class OrderManager {
+  + validateOrder(Order): Transaction
+  + validateGroupOrder(CampusUser, Date): void
+  + addItemToOrder(Order, MenuItem): void
+  + validateGroupOrder(CampusUser): void
+  + getRestaurantProxy(): IRestaurant
+  + cancelOrder(Order, Date): void
+}
+enum OrderStatus << enumeration >> {
+  + PENDING:
+  + VALIDATED:
+  + DELIVERED:
+  + CANCELLED:
+}
+class Restaurant {
+  - closingTime: Date
+  - openingTime: Date
+  - restaurantId: string
+  - menu: Menu
+  - restaurantName: String
+  + addOrderToHistory(Order): void
+  + addItemToOrder(Order, MenuItem, Date): void
+  - generateSlots(): void
+  + changeMenu(Menu): void
+  + isSlotCapacityAvailable(): boolean
+  + isOpenAt(Date): boolean
+  + getClosingTime(): Date
+  + cancelOrder(Order, Date): void
+  + getMenu(): Menu
+  + setOpeningTime(Date): void
+  + getRestaurantUUID(): UUID
+  + getMaxOrdersForSlot(Slot): int
+  + canPrepareItemForGroupOrderDeliveryTime(IGroupOrder): boolean
+  + getTotalPrice(Order): double
+  - isItemTooLate(MenuItem, Date): boolean
+  + onOrderPaid(Order): void
+  + setMenu(Menu): void
+  + canAccommodateDeliveryTime(List<MenuItem>, Date): boolean
+  + isOrderValid(Order): boolean
+  + slotAvailable(MenuItem, Date): boolean
+  + getRestaurantName(): String
+  + getPendingOrders(): Map<Slot, Set<Order>>
+  + addMenuItemToSlot(Slot, MenuItem): boolean
+  + getPreparationTime(List<MenuItem>): int
+  + getOpeningTime(): Date
+  + calculateAveragePreparationTime(): int
+  + setNumberOfPersonnel(Slot, int): void
+  + setClosingTime(Date): void
+  + setOrderPriceStrategy(OrderPriceStrategy): void
+  + getOrdersHistory(): List<Order>
+  + isItemAvailable(MenuItem): boolean
+  + processOrderPrice(Order): OrderPrice
+  ~ canAddItemToOrder(Order, MenuItem, Date): void
+  + getOrderPriceStrategy(): OrderPriceStrategy
+  + getSlots(): List<Slot>
+}
+class RestaurantManager {
+  - name: String
+  - email: String
+  - password: String
+  + getName(): String
+  + removeMenuItem(String): void
+  + updateNumberOfPersonnel(Slot, int): void
+  + addMenuItem(String, int, int): void
+  + updateHours(Date, Date): void
+  + setRestaurant(IRestaurant): void
+  + getRestaurant(): IRestaurant
+}
+class RestaurantProxy {
+  + getClosingTime(): Date
+  + getSlots(): List<Slot>
+  + cancelOrder(Order, Date): void
+  + onOrderPaid(Order): void
+  + canPrepareItemForGroupOrderDeliveryTime(IGroupOrder): boolean
+  + setClosingTime(Date): void
+  + getRestaurantName(): String
+  + getPendingOrders(): Map<Slot, Set<Order>>
+  + setOpeningTime(Date): void
+  + addOrderToHistory(Order): void
+  + getTotalPrice(Order): double
+  + getRestaurantUUID(): UUID
+  + canAccommodateDeliveryTime(List<MenuItem>, Date): boolean
+  + processOrderPrice(Order): OrderPrice
+  + getOrdersHistory(): List<Order>
+  + getMenu(): Menu
+  + getOpeningTime(): Date
+  + addItemToOrder(Order, MenuItem, Date): void
+  + getRestaurant(): IRestaurant
+  + changeMenu(Menu): void
+  + isOrderValid(Order): boolean
+  + setOrderPriceStrategy(OrderPriceStrategy): void
+  + setNumberOfPersonnel(Slot, int): void
+  + addMenuItemToSlot(Slot, MenuItem): boolean
+  + isSlotCapacityAvailable(): boolean
+}
+class RestaurantServiceManager {
+  - instance: RestaurantServiceManager
+  + searchItemsByDeliveryTime(IRestaurant, Date): List<MenuItem>
+  + getRestaurants(): List<IRestaurant>
+  + searchByTypeOfFood(String): List<IRestaurant>
+  ~ resetInstance(): void
+  + getInstance(): RestaurantServiceManager
+  - isOpenAt(IRestaurant, Date): boolean
+  + addRestaurant(IRestaurant): void
+  + searchRestaurantByDeliveryTime(Date): List<IRestaurant>
+  + findSlotByStartTime(IRestaurant, Date): Slot
+  + removeRestaurant(IRestaurant): void
+  + searchByName(String): List<IRestaurant>
+}
+class Slot {
+  - currentCapacity: int
+  - openingDate: Date
+  - durationTime: int
+  - numberOfPersonnel: int
+  - maxCapacity: int
+  + updateSlotCapacity(MenuItem): boolean
+  + getDurationTime(): Duration
+  + calculateCapacityForASlot(int): void
+  + setOpeningDate(Date): void
+  + getCurrentCapacity(): int
+  + getAvailableCapacity(): int
+  + addCapacity(int): void
+  + setMaxCapacity(int): void
+  + getMaxCapacity(): int
+  + getNumberOfPersonnel(): int
+  + getOpeningDate(): Date
+  + setNumberOfPersonnel(int): void
+}
+class Transaction {
+  - amount: double
+  - paymentMethod: String
+  - timestamp: Date
+  - order: Order
+  + getAmount(): double
+  + getPaymentMethod(): String
+  + getTimestamp(): Date
+  + getOrder(): Order
+  + toString(): String
+}
+class FreeItemFotNItemsOrderPriceStrategy {
+  + FreeItemFotNItemsOrderPriceStrategy(int):
+  + processOrderPrice(Order, IRestaurant): OrderPrice
+}
+class KPercentForNOrderPriceStrategy {
+  + KPercentForNOrderPriceStrategy(double, int):
+  + processOrderPrice(Order, IRestaurant): OrderPrice
+}
+entity OrderPrice << record >> {
+  + newPrices(): Map<MenuItem, Double>
+  + totalPrice(): double
+  + description(): String
+}
+interface OrderPriceStrategy << interface >> {
+  + processOrderPrice(Order, IRestaurant): OrderPrice
+}
+
+CampusUser                "1" *-[#595959,plain]-> "ordersHistory\n*" Order
+CampusUser                "1" *-[#595959,plain]-> "preferredPaymentMethod\n1" PaymentMethod
+CampusUser                "1" *-[#595959,plain]-> "defautlPayementMethod\n1" PaymentMethod
+CampusUser                "1" *-[#595959,plain]-> "transactions\n*" Transaction
+DeliveryDetails           "1" *-[#595959,plain]-> "deliveryLocation\n1" DeliveryLocation
+DeliveryLocationManager   "1" *-[#595959,plain]-> "predefinedLocations\n*" DeliveryLocation
+DeliveryLocationManager    -[#595959,dashed]->  DeliveryLocation          : "«create»"
+GroupOrder                "1" *-[#595959,plain]-> "users\n*" CampusUser
+GroupOrder                "1" *-[#595959,plain]-> "deliveryDetails\n1" DeliveryDetails
+GroupOrder                 -[#008200,dashed]-^  IGroupOrder
+GroupOrder                "1" *-[#595959,plain]-> "orders\n*" Order
+GroupOrder                "1" *-[#595959,plain]-> "status\n1" OrderStatus
+GroupOrderProxy            -[#008200,dashed]-^  IGroupOrder
+GroupOrderProxy           -[#595959,plain]-> "represent\n" GroupOrder
+GroupOrderRepository      "1" *-[#595959,plain]-> "groupOrders\n*" IGroupOrder
+IndividualOrder           "1" *-[#595959,plain]-> "deliveryDetails\n1" DeliveryDetails
+IndividualOrder            -[#000082,plain]-^  Order
+Menu                      "1" *-[#595959,plain]-> "items\n*" MenuItem
+MenuBuilder                +-[#820000,plain]-  Menu
+MenuBuilder                -[#595959,dashed]->  Menu                      : "«create»"
+MenuBuilder               "1" *-[#595959,plain]-> "items\n*" MenuItem
+Order                     "1" *-[#595959,plain]-> "user\n1" CampusUser
+Order                     "1" *-[#595959,plain]-> "restaurant\n1" IRestaurant
+Order                     "1" *-[#595959,plain]-> "items\n*" MenuItem
+Order                     "1" *-[#595959,plain]-> "status\n1" OrderStatus
+OrderManager              "1" *-[#595959,plain]-> "groupOrderProxy\n1" IGroupOrder
+OrderManager              "1" *-[#595959,plain]-> "restaurantProxy\n1" IRestaurant
+OrderManager               -[#595959,dashed]->  Transaction               : "«create»"
+Restaurant                 -[#008200,dashed]-^  IRestaurant
+Restaurant                "1" *-[#595959,plain]-> "menu\n1" Menu
+Restaurant                "1" *-[#595959,plain]-> "ordersHistory\n*" Order
+Restaurant                "1" *-[#595959,plain]-> "slots\n*" Slot
+Restaurant                "1" *-[#595959,plain]-> "orders\n*" Order
+Restaurant                 -[#595959,dashed]->  Slot                      : "«create»"
+RestaurantManager         "1" *-[#595959,plain]-> "restaurant\n1" IRestaurant
+RestaurantManager          -[#595959,dashed]->  MenuItem                  : "«create»"
+RestaurantProxy            -[#008200,dashed]-^  IRestaurant
+RestaurantProxy           -[#595959,plain]-> "represent\n" Restaurant
+RestaurantServiceManager  "1" *-[#595959,plain]-> "restaurants\n*" IRestaurant
+Transaction               "1" *-[#595959,plain]-> "order\n1" Order
+FreeItemFotNItemsOrderPriceStrategy  -[#595959,dashed]->  OrderPrice                          : "«create»"
+FreeItemFotNItemsOrderPriceStrategy  -[#008200,dashed]-^  OrderPriceStrategy
+KPercentForNOrderPriceStrategy       -[#595959,dashed]->  OrderPrice                          : "«create»"
+KPercentForNOrderPriceStrategy       -[#008200,dashed]-^  OrderPriceStrategy
+Restaurant                "1" *-[#595959,plain]-> "orderPriceStrategy\n1" OrderPriceStrategy
+@enduml
+
+

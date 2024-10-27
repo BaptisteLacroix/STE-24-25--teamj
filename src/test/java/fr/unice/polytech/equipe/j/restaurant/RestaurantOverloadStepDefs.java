@@ -2,6 +2,8 @@ package fr.unice.polytech.equipe.j.restaurant;
 
 import fr.unice.polytech.equipe.j.order.Order;
 import fr.unice.polytech.equipe.j.order.OrderManager;
+import fr.unice.polytech.equipe.j.restaurant.menu.Menu;
+import fr.unice.polytech.equipe.j.restaurant.menu.MenuItem;
 import fr.unice.polytech.equipe.j.slot.Slot;
 import fr.unice.polytech.equipe.j.user.RestaurantManager;
 import io.cucumber.datatable.DataTable;
@@ -28,7 +30,7 @@ public class RestaurantOverloadStepDefs {
     private Clock clock;
     private Restaurant restaurant;
     private Slot slot;
-    private final Menu menu = new Menu(new ArrayList<>());
+    private final Menu menu = new Menu.MenuBuilder().build();
     private Order order;
     private OrderManager orderManager;
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
@@ -157,6 +159,4 @@ public class RestaurantOverloadStepDefs {
     public void theSlotsRemainingCapacityShouldNowBe(int expectedAvailableCapacity) {
         assertEquals("Remaining capacity does not match expected", expectedAvailableCapacity, slot.getAvailableCapacity());
     }
-
-
 }
