@@ -39,10 +39,10 @@ public class RestaurantOverloadStepDefs {
         clock = Clock.fixed(Instant.parse("2024-10-18T12:00:00Z"), ZoneId.of("Europe/Paris"));
     }
 
-    @Given("a restaurant {string} which has a menu with following items:")
-    public void aRestaurantWhichHasAMenuWithFollowingItems(String restaurantName,DataTable dataTable) {
+    @Given("a restaurant {string} opened from {string} to {string} which has a menu with following items:")
+    public void aRestaurantOpenedFromToWhichHasAMenuWithFollowingItems(String restaurantName,String opening, String closing,DataTable dataTable) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-        restaurant = new Restaurant(restaurantName, LocalDateTime.parse("2024-10-18 12:00",formatter), LocalDateTime.parse("2024-10-18 14:00",formatter), menu);
+        restaurant = new Restaurant(restaurantName, LocalDateTime.parse(opening,formatter), LocalDateTime.parse(closing,formatter), menu);
 
         List<Map<String, String>> items = dataTable.asMaps(String.class, String.class);
 

@@ -4,7 +4,7 @@ Feature: Update restaurant opening hours and menu offerings
   so that I can inform people who are ordering the price and the preparation time of a meal, our capacity and our opening time.
 
   Background:
-    Given "Jeanne", a restaurant manager of the "Chicken Burger" restaurant
+    Given "Jeanne", a restaurant manager of the "Chicken Burger" restaurant opened from "2024-10-18 12:00" to "2024-10-18 14:00"
     And the restaurant has a menu with the following items:
       | itemName | prepTime | price |
       | BigMac   | 120      | 5     |

@@ -38,10 +38,10 @@ public class ManageRestaurantStepDef {
         TimeUtils.setClock(Clock.fixed(Instant.parse("2024-10-18T12:00:00Z"), ZoneId.of("Europe/Paris")));
     }
 
-    @Given("{string}, a restaurant manager of the {string} restaurant")
-    public void aRestaurantManagerOfTheRestaurant(String name, String restaurantName) {
+    @Given("{string}, a restaurant manager of the {string} restaurant opened from {string} to {string}")
+    public void aRestaurantManagerOfTheRestaurantOpenedFromTo(String name, String restaurantName, String opening, String closing) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-        restaurant = new Restaurant(restaurantName, LocalDateTime.parse("2024-10-18 12:00",formatter), LocalDateTime.parse("2024-10-18 14:00",formatter), menu);
+        restaurant = new Restaurant(restaurantName, LocalDateTime.parse(opening,formatter), LocalDateTime.parse(closing,formatter), menu);
         restaurantManager = new RestaurantManager("jeanne@example.com", "password", name, restaurant);
     }
 

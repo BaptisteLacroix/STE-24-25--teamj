@@ -3,7 +3,7 @@ Feature: Restaurant capacity management
   As a restaurant,  I want to deal with the the coming orders so that I can inform people if I can take their order or not.
 
   Background:
-    Given a restaurant "Chicken Burger" which has a menu with following items:
+    Given a restaurant "Chicken Burger" opened from "2024-10-18 12:00" to "2024-10-18 14:00" which has a menu with following items:
       | itemName | prepTime | price |
       | BigMac   | 120      | 5     |
       | Fries    | 60       | 3     |
@@ -25,5 +25,6 @@ Feature: Restaurant capacity management
     And the restaurant is full from its opening to its closing
     When the restaurant adds an item "BigMac" at "2024-10-18 12:00"
     Then the item is not added by the restaurant
+
 
 
