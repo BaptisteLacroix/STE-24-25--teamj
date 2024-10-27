@@ -1,0 +1,18 @@
+@startuml
+!theme mars
+top to bottom direction
+skinparam linetype ortho
+
+class OrderManager {
+}
+class Transaction {
+}
+interface IRestaurant << interface >> {
+}
+interface IGroupOrder << interface >> {
+}
+
+OrderManager              "1" *-[#595959,plain]-> "groupOrderProxy\n1" IGroupOrder
+OrderManager              "1" *-[#595959,plain]-> "restaurantProxy\n1" IRestaurant
+OrderManager               -[#595959,dashed]->  Transaction               : "«create»"
+@enduml
