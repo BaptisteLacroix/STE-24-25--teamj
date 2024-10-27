@@ -1,4 +1,4 @@
-package fr.unice.polytech.equipe.j.restaurant;
+package fr.unice.polytech.equipe.j.restaurant.menu;
 
 public class MenuItem {
     private final String name;
@@ -35,6 +35,6 @@ public class MenuItem {
 
     @Override
     public String toString() {
-        return name + " - " + price + " EUR";
+        return name + " - " + price + " EUR" + " - " + prepTime + "s";
     }
 }
