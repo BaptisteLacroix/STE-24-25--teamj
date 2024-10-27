@@ -1,0 +1,17 @@
+@startuml
+!theme mars
+top to bottom direction
+skinparam linetype ortho
+
+class Menu {
+}
+class MenuBuilder {
+}
+class MenuItem {
+}
+
+Menu                      "1" *-[#595959,plain]-> "items\n*" MenuItem
+MenuBuilder                +-[#820000,plain]-  Menu
+MenuBuilder                -[#595959,dashed]->  Menu                      : "«create»"
+MenuBuilder               "1" *-[#595959,plain]-> "items\n*" MenuItem
+@enduml

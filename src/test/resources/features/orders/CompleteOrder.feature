@@ -1,13 +1,25 @@
 Feature: 3 users are doing a complete group order, specifying delivery location and time, choosing restaurant and items.
+
+  Background:
+    Given the restaurant service manager configured the following restaurants:
+      | Name               | Menu Items                                             | Opening Time     | Closing Time     |
+      | Le Petit Nice      | Salade Nicoise, Bouillabaisse, Tarte Tatin             | 2024-10-18 14:00 | 2024-10-18 16:00 |
+      | Le Petit Jardin    | Salade de chèvre chaud, Magret de canard, Crème brûlée | 2024-10-18 14:00 | 2024-10-18 16:00 |
+      | Le Petit Chateau   | Escargots, Coq au vin, Mousse au chocolat              | 2024-10-18 14:00 | 2024-10-18 16:00 |
+      | Le Gourmet D'Or    | Soupe à l'oignon, Boeuf Bourguignon, Tarte Tatin       | Closed           | Closed           |
+      | Bistro de la Plage | Quiche Lorraine, Ratatouille, Mousse au chocolat       | 2024-10-18 14:00 | 2024-10-18 16:00 |
+      | Café de l'Aube     | No menu items available                                | 2024-10-18 14:00 | 2024-10-18 16:00 |
+      | La Table Royale    | Coq au Vin, Bouillabaisse, Crêpe Suzette               | 2024-10-18 14:00 | 2024-10-18 15:00 |
+
   Scenario: The first user creates a group order with delivery location and time, and adds items to his order
     Given the first user creates a group order with delivery location "Campus Main Gate" and delivery time of 14:30 PM
     Then the group receives an identifier
     When He searches restaurants that are open and can prepare items in time
     Then He should see:
-      | Name             |
-      | Le Petit Nice    |
-      | Le Petit Jardin  |
-      | La Table Royale  |
+      | Name            |
+      | Le Petit Nice   |
+      | Le Petit Jardin |
+      | La Table Royale |
     When He selects the restaurant "Le Petit Nice"
     Then He should see the items compatible with the group order delivery time preparation:
       | Menu Item      |
@@ -22,10 +34,10 @@ Feature: 3 users are doing a complete group order, specifying delivery location 
     Given The second user joins the group order
     And He searches restaurants that are open and can prepare items in time
     Then He should see:
-      | Name             |
-      | Le Petit Nice    |
-      | Le Petit Jardin  |
-      | La Table Royale  |
+      | Name            |
+      | Le Petit Nice   |
+      | Le Petit Jardin |
+      | La Table Royale |
     When He selects the restaurant "Le Petit Jardin"
     Then He should see the items compatible with the group order delivery time preparation:
       | Menu Item              |
@@ -40,10 +52,10 @@ Feature: 3 users are doing a complete group order, specifying delivery location 
     Given The third user joins the group order
     When He searches restaurants that are open and can prepare items in time
     Then He should see:
-      | Name             |
-      | Le Petit Nice    |
-      | Le Petit Jardin  |
-      | La Table Royale  |
+      | Name            |
+      | Le Petit Nice   |
+      | Le Petit Jardin |
+      | La Table Royale |
     When He selects the restaurant "Le Petit Jardin"
     Then He should see the items compatible with the group order delivery time preparation:
       | Menu Item              |
@@ -62,10 +74,10 @@ Feature: 3 users are doing a complete group order, specifying delivery location 
     Then the group receives an identifier
     When He searches restaurants that are open and can prepare items in time
     Then He should see:
-      | Name             |
-      | Le Petit Nice    |
-      | Le Petit Jardin  |
-      | La Table Royale  |
+      | Name            |
+      | Le Petit Nice   |
+      | Le Petit Jardin |
+      | La Table Royale |
     When He selects the restaurant "Le Petit Nice"
     Then He should see the items compatible with the group order delivery time preparation:
       | Menu Item      |
@@ -79,18 +91,18 @@ Feature: 3 users are doing a complete group order, specifying delivery location 
 
     Given The second user joins the group order
     When The second user tries to bypass the restaurant selection by delivery time
-    And He selects the restaurant "Le Petit Chateau" that cannot prepare items in time
-    Then the system rejects the item and displays an error: "Order cannot be added, restaurant does not have the capacity to deliver in time"
+    And He selects the restaurant "Le Petit Chateau" and add the item "Escargots" that cannot be prepared in time
+    Then the system rejects the item and displays an error: "Cannot add item to order, no slot available."
 
   Scenario: The second user tries to add a menu item that cannot be prepared in time
     Given the first user creates a group order with delivery location "Campus Main Gate" and delivery time of 14:30 PM
     Then the group receives an identifier
     When He searches restaurants that are open and can prepare items in time
     Then He should see:
-      | Name             |
-      | Le Petit Nice    |
-      | Le Petit Jardin  |
-      | La Table Royale  |
+      | Name            |
+      | Le Petit Nice   |
+      | Le Petit Jardin |
+      | La Table Royale |
     When He selects the restaurant "Le Petit Nice"
     Then He should see the items compatible with the group order delivery time preparation:
       | Menu Item      |
@@ -113,10 +125,10 @@ Feature: 3 users are doing a complete group order, specifying delivery location 
     Then the group receives an identifier
     When He searches restaurants that are open and can prepare items in time
     Then He should see:
-      | Name             |
-      | Le Petit Nice    |
-      | Le Petit Jardin  |
-      | La Table Royale  |
+      | Name            |
+      | Le Petit Nice   |
+      | Le Petit Jardin |
+      | La Table Royale |
     When He selects the restaurant "Le Petit Nice"
     Then He should see the items compatible with the group order delivery time preparation:
       | Menu Item      |
@@ -138,3 +150,4 @@ Feature: 3 users are doing a complete group order, specifying delivery location 
       | Menu Item     |
       | Bouillabaisse |
     Then The first user validates his individual order
+    And The individual order should be validated

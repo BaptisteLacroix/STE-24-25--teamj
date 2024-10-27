@@ -1,9 +1,9 @@
 package fr.unice.polytech.equipe.j.restaurant.orderpricestrategy;
 
 import fr.unice.polytech.equipe.j.order.Order;
-import fr.unice.polytech.equipe.j.restaurant.MenuItem;
-import fr.unice.polytech.equipe.j.restaurant.OrderPrice;
+import fr.unice.polytech.equipe.j.restaurant.IRestaurant;
 import fr.unice.polytech.equipe.j.restaurant.Restaurant;
+import fr.unice.polytech.equipe.j.restaurant.menu.MenuItem;
 import fr.unice.polytech.equipe.j.user.CampusUser;
 
 import java.util.Map;
@@ -18,8 +18,7 @@ public class FreeItemFotNItemsOrderPriceStrategy implements OrderPriceStrategy{
     }
 
     @Override
-    public OrderPrice processOrderPrice(Order order, Restaurant restaurant) {
-        CampusUser user = order.getUser();
+    public OrderPrice processOrderPrice(Order order, IRestaurant restaurant) {
         Map<MenuItem, Double> prices = order.getItems().stream().collect(Collectors.toMap((item)->item, MenuItem::getPrice));
         Map.Entry<MenuItem, Double> min = null;
         for (Map.Entry<MenuItem, Double> entry : prices.entrySet()) {
