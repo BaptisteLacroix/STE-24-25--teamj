@@ -35,10 +35,10 @@ public class RestaurantServiceHooks {
                 "Manager",
                 restaurant1
         );
-        restaurantManager.updateNumberOfPersonnel(restaurantManager.getRestaurant().getSlots().get(0), 5);
-        restaurantManager.updateNumberOfPersonnel(restaurantManager.getRestaurant().getSlots().get(1), 10);
-        restaurantManager.updateNumberOfPersonnel(restaurantManager.getRestaurant().getSlots().get(2), 3);
-        restaurantManager.updateNumberOfPersonnel(restaurantManager.getRestaurant().getSlots().get(3), 2);
+        restaurant1.setNumberOfPersonnel(restaurantManager.getRestaurant().getSlots().get(0), 5);
+        restaurant1.setNumberOfPersonnel(restaurantManager.getRestaurant().getSlots().get(1), 10);
+        restaurant1.setNumberOfPersonnel(restaurantManager.getRestaurant().getSlots().get(2), 3);
+        restaurant1.setNumberOfPersonnel(restaurantManager.getRestaurant().getSlots().get(3), 2);
 
         List<MenuItem> itemsRestaurant2 = new ArrayList<>();
         itemsRestaurant2.add(new MenuItem("Salade de chèvre chaud", 400, 10.00));
@@ -51,10 +51,10 @@ public class RestaurantServiceHooks {
                 "Manager2",
                 restaurant2
         );
-        restaurantManager2.updateNumberOfPersonnel(restaurantManager2.getRestaurant().getSlots().get(0), 5);
-        restaurantManager2.updateNumberOfPersonnel(restaurantManager2.getRestaurant().getSlots().get(1), 11);
-        restaurantManager2.updateNumberOfPersonnel(restaurantManager2.getRestaurant().getSlots().get(2), 3);
-        restaurantManager2.updateNumberOfPersonnel(restaurantManager2.getRestaurant().getSlots().get(3), 2);
+        restaurant2.setNumberOfPersonnel(restaurantManager2.getRestaurant().getSlots().get(0), 5);
+        restaurant2.setNumberOfPersonnel(restaurantManager2.getRestaurant().getSlots().get(1), 11);
+        restaurant2.setNumberOfPersonnel(restaurantManager2.getRestaurant().getSlots().get(2), 3);
+        restaurant2.setNumberOfPersonnel(restaurantManager2.getRestaurant().getSlots().get(3), 2);
 
         List<MenuItem> itemsRestaurant3 = new ArrayList<>();
         itemsRestaurant3.add(new MenuItem("Escargots", 1800, 15.00));
@@ -67,10 +67,10 @@ public class RestaurantServiceHooks {
                 "Manager3",
                 restaurant3
         );
-        restaurantManager3.updateNumberOfPersonnel(restaurantManager3.getRestaurant().getSlots().get(0), 5);
-        restaurantManager3.updateNumberOfPersonnel(restaurantManager3.getRestaurant().getSlots().get(1), 10);
-        restaurantManager3.updateNumberOfPersonnel(restaurantManager3.getRestaurant().getSlots().get(2), 3);
-        restaurantManager3.updateNumberOfPersonnel(restaurantManager3.getRestaurant().getSlots().get(3), 2);
+        restaurant3.setNumberOfPersonnel(restaurantManager3.getRestaurant().getSlots().get(0), 5);
+        restaurant3.setNumberOfPersonnel(restaurantManager3.getRestaurant().getSlots().get(1), 10);
+        restaurant3.setNumberOfPersonnel(restaurantManager3.getRestaurant().getSlots().get(2), 3);
+        restaurant3.setNumberOfPersonnel(restaurantManager3.getRestaurant().getSlots().get(3), 2);
 
         manager.addRestaurant(new RestaurantProxy(restaurant1));
         manager.addRestaurant(new RestaurantProxy(restaurant2));
@@ -100,10 +100,10 @@ public class RestaurantServiceHooks {
                 "ManagerC",
                 restaurantC
         );
-        restaurantManagerC.updateNumberOfPersonnel(restaurantManagerC.getRestaurant().getSlots().get(0), 6);
-        restaurantManagerC.updateNumberOfPersonnel(restaurantManagerC.getRestaurant().getSlots().get(1), 5);
-        restaurantManagerC.updateNumberOfPersonnel(restaurantManagerC.getRestaurant().getSlots().get(2), 2);
-        restaurantManagerC.updateNumberOfPersonnel(restaurantManagerC.getRestaurant().getSlots().get(3), 3);
+        restaurantC.setNumberOfPersonnel(restaurantManagerC.getRestaurant().getSlots().get(0), 6);
+        restaurantC.setNumberOfPersonnel(restaurantManagerC.getRestaurant().getSlots().get(1), 5);
+        restaurantC.setNumberOfPersonnel(restaurantManagerC.getRestaurant().getSlots().get(2), 2);
+        restaurantC.setNumberOfPersonnel(restaurantManagerC.getRestaurant().getSlots().get(3), 3);
         manager.addRestaurant(new RestaurantProxy(restaurantC));
 
         // Add a new restaurant with limited personnel but long preparation times
@@ -118,8 +118,8 @@ public class RestaurantServiceHooks {
                 "ManagerD",
                 restaurantD
         );
-        restaurantManagerD.updateNumberOfPersonnel(restaurantManagerD.getRestaurant().getSlots().get(0), 2);
-        restaurantManagerD.updateNumberOfPersonnel(restaurantManagerD.getRestaurant().getSlots().get(1), 1);
+        restaurantD.setNumberOfPersonnel(restaurantManagerD.getRestaurant().getSlots().get(0), 2);
+        restaurantD.setNumberOfPersonnel(restaurantManagerD.getRestaurant().getSlots().get(1), 1);
         manager.addRestaurant(new RestaurantProxy(restaurantD));
     }
 }

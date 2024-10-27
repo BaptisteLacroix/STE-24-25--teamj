@@ -306,10 +306,12 @@ public class Restaurant implements IRestaurant {
     }
 
     @Override
-    public void setNumberOfPersonnel(Slot slotToUpdate, int numberOfPersonnel) {
+    public boolean setNumberOfPersonnel(Slot slotToUpdate, int numberOfPersonnel) {
         if (slotToUpdate != null) {
             slotToUpdate.setNumberOfPersonnel(numberOfPersonnel);
+            return true;
         }
+        return false;
     }
 
     @Override
