@@ -163,20 +163,6 @@ class OrderManager {
   + getRestaurantProxy(): IRestaurant
   + cancelOrder(Order, Date): void
 }
-entity OrderPrice << record >> {
-  - description: String
-  - totalPrice: double
-  + totalPrice(): double
-  + description(): String
-  + newPrices(): Map<MenuItem, Double>
-}
-interface OrderPriceStrategy << interface >> {
-  + processOrderPrice(Order, IRestaurant): OrderPrice
-}
-class OrderPriceStrategyFactory {
-  + makeSubstractKpercentforNOrder(double, int): OrderPriceStrategy
-  + makeGiveItemForNItems(int): OrderPriceStrategy
-}
 enum OrderStatus << enumeration >> {
   + PENDING:
   + VALIDATED:
@@ -308,6 +294,22 @@ class Transaction {
   + getOrder(): Order
   + toString(): String
 }
+class FreeItemFotNItemsOrderPriceStrategy {
+  + FreeItemFotNItemsOrderPriceStrategy(int):
+  + processOrderPrice(Order, IRestaurant): OrderPrice
+}
+class KPercentForNOrderPriceStrategy {
+  + KPercentForNOrderPriceStrategy(double, int):
+  + processOrderPrice(Order, IRestaurant): OrderPrice
+}
+entity OrderPrice << record >> {
+  + newPrices(): Map<MenuItem, Double>
+  + totalPrice(): double
+  + description(): String
+}
+interface OrderPriceStrategy << interface >> {
+  + processOrderPrice(Order, IRestaurant): OrderPrice
+}
 
 CampusUser                "1" *-[#595959,plain]-> "ordersHistory\n*" Order
 CampusUser                "1" *-[#595959,plain]-> "preferredPaymentMethod\n1" PaymentMethod
@@ -337,12 +339,9 @@ Order                     "1" *-[#595959,plain]-> "status\n1" OrderStatus
 OrderManager              "1" *-[#595959,plain]-> "groupOrderProxy\n1" IGroupOrder
 OrderManager              "1" *-[#595959,plain]-> "restaurantProxy\n1" IRestaurant
 OrderManager               -[#595959,dashed]->  Transaction               : "«create»"
-OrderPrice                "1" *-[#595959,plain]-> "newPrices\n*" MenuItem
-OrderPriceStrategyFactory  -[#595959,dashed]->  OrderPrice                : "«create»"
 Restaurant                 -[#008200,dashed]-^  IRestaurant
 Restaurant                "1" *-[#595959,plain]-> "menu\n1" Menu
 Restaurant                "1" *-[#595959,plain]-> "ordersHistory\n*" Order
-Restaurant                "1" *-[#595959,plain]-> "orderPriceStrategy\n1" OrderPriceStrategy
 Restaurant                "1" *-[#595959,plain]-> "slots\n*" Slot
 Restaurant                "1" *-[#595959,plain]-> "orders\n*" Order
 Restaurant                 -[#595959,dashed]->  Slot                      : "«create»"
@@ -352,6 +351,11 @@ RestaurantProxy            -[#008200,dashed]-^  IRestaurant
 RestaurantProxy           -[#595959,plain]-> "represent\n" Restaurant
 RestaurantServiceManager  "1" *-[#595959,plain]-> "restaurants\n*" IRestaurant
 Transaction               "1" *-[#595959,plain]-> "order\n1" Order
+FreeItemFotNItemsOrderPriceStrategy  -[#595959,dashed]->  OrderPrice                          : "«create»"
+FreeItemFotNItemsOrderPriceStrategy  -[#008200,dashed]-^  OrderPriceStrategy
+KPercentForNOrderPriceStrategy       -[#595959,dashed]->  OrderPrice                          : "«create»"
+KPercentForNOrderPriceStrategy       -[#008200,dashed]-^  OrderPriceStrategy
+Restaurant                "1" *-[#595959,plain]-> "orderPriceStrategy\n1" OrderPriceStrategy
 @enduml
 
 

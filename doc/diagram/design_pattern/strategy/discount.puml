@@ -1,7 +1,27 @@
 @startuml
-!theme plain
+!theme mars
 top to bottom direction
 skinparam linetype ortho
 
+class FreeItemFotNItemsOrderPriceStrategy {
+  + FreeItemFotNItemsOrderPriceStrategy(int):
+  + processOrderPrice(Order, IRestaurant): OrderPrice
+}
+class KPercentForNOrderPriceStrategy {
+  + KPercentForNOrderPriceStrategy(double, int):
+  + processOrderPrice(Order, IRestaurant): OrderPrice
+}
+entity OrderPrice << record >> {
+  + newPrices(): Map<MenuItem, Double>
+  + totalPrice(): double
+  + description(): String
+}
+interface OrderPriceStrategy << interface >> {
+  + processOrderPrice(Order, IRestaurant): OrderPrice
+}
 
+FreeItemFotNItemsOrderPriceStrategy  -[#595959,dashed]->  OrderPrice                          : "«create»"
+FreeItemFotNItemsOrderPriceStrategy  -[#008200,dashed]-^  OrderPriceStrategy
+KPercentForNOrderPriceStrategy       -[#595959,dashed]->  OrderPrice                          : "«create»"
+KPercentForNOrderPriceStrategy       -[#008200,dashed]-^  OrderPriceStrategy
 @enduml
