@@ -31,6 +31,7 @@ public class ManageRestaurantStepDef {
     private final List<Slot> slots = new ArrayList<>();
     private MenuItem selectedItem;
     private Slot slot;
+    private boolean bool;
 
     @Before
     public void setUp() {
@@ -135,7 +136,7 @@ public class ManageRestaurantStepDef {
     }
 
 
-    @And("Jeanne wants to allocate {int} personnel to the slot starting at {string}")
+    @Given("Jeanne wants to allocate {int} personnel to the slot starting at {string}")
     public void jeanneWantsToAllocatePersonnelToTheSlotStartingAt(int numberOfPersonnel, String slotStartingTime) {
             //Nothing here
     }
@@ -144,18 +145,17 @@ public class ManageRestaurantStepDef {
     public void jeanneTriesToAllocatePersonnelToThisSlot(int newNumberOfPersonnel, String slotStartingTime) {
         LocalDateTime slotStart = LocalDateTime.parse(slotStartingTime, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
         Slot slot = RestaurantServiceManager.getInstance().findSlotByStartTime(restaurant, slotStart);
-        assertThrows(IllegalArgumentException.class, () -> restaurantManager.updateNumberOfPersonnel(slot, newNumberOfPersonnel));
+        bool = restaurantManager.updateNumberOfPersonnel(slot, newNumberOfPersonnel);
     }
 
     @Then("Jeanne will see that it is impossible with starting slot at {string}")
     public void jeanneWillSeeThatItIsImpossible(String slotStartingTime) {
-        LocalDateTime slotStart = LocalDateTime.parse(slotStartingTime, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
-        Slot slot = RestaurantServiceManager.getInstance().findSlotByStartTime(restaurant, slotStart);
-        assertNull(slot);
+        assertFalse(bool);
     }
 
     @Given("Jeanne wants to get the maximum capacity of a slot")
     public void jeanneWantsToGetTheMaximumCapacityOfASlot() {
+        // Nothing to write here
     }
 
     @When("Jeanne allocates {int} personnel to te slot starting at {string}")
@@ -172,47 +172,4 @@ public class ManageRestaurantStepDef {
         assertEquals(selectedSlot.getMaxCapacity(), duration);
     }
 
-
-    @Given("the restaurant receives an order with a {string} at {string}")
-    public void jeanneReceivesAnOrderWithAAt(String menuItem, String slotHours) {
-        selectedItem = restaurant.getMenu().findItemByName(menuItem);
-        assertNotNull(selectedItem);
-        LocalDateTime slotStart = LocalDateTime.parse(slotHours, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
-        slot = RestaurantServiceManager.getInstance().findSlotByStartTime(restaurant, slotStart);
-        assertNotNull(slot);
-    }
-
-    @When("the restaurant adds {string} to this slot")
-    public void jeanneAddsToThisSlot(String menuItem) {
-        // On associe un personnel au slot arbitrairement pour regarder ce que donne le test
-        slot.setNumberOfPersonnel(1);
-        restaurant.addMenuItemToSlot(slot, restaurant.getMenu().findItemByName(menuItem));
-    }
-
-    @Then("the new current capacity of this slot should be {int}")
-    public void theNewCurrentCapacityOfThisSlotShouldBe(int expectedCurrentCapacity) {
-        assertEquals(expectedCurrentCapacity, slot.getCurrentCapacity());
-    }
-
-    @And("the available capacity should be {int}")
-    public void theAvailableCapacityShouldBe(int expectedAvailableCapacity) {
-        assertEquals(expectedAvailableCapacity, slot.getAvailableCapacity());
-    }
-
-    @Then("it would be add to the next slot at {string} with a capacity of {int}")
-    public void itWouldBeAddToTheNextSlotAt(String expectedSlotAllocated, int itemCapacity) {
-        LocalDateTime slotStart = LocalDateTime.parse(expectedSlotAllocated, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
-        slot = RestaurantServiceManager.getInstance().findSlotByStartTime(restaurant, slotStart);
-        assertEquals(itemCapacity, slot.getCurrentCapacity());
-    }
-
-    @Then("the item is not added by the restaurant")
-    public void theItemIsNotAddedByTheRestaurant() {
-        assertFalse(restaurant.addMenuItemToSlot(slot, selectedItem));
-    }
-
-
-    @Given("the restaurant has slots from {string} to {string}")
-    public void theRestaurantHasSlotsFromTo(String arg0, String arg1) {
-    }
 }

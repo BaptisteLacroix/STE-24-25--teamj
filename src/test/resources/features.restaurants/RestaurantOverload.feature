@@ -1,14 +1,29 @@
 Feature: Restaurant capacity management
 
-  Scenario: Order accepted when preparation can be completed within available slots
-    Given the restaurant is open from "2024-10-18 14:00" to "2024-10-18 16:00"
-      | slotStart        | currentCapacity | maxCapacity | personnel |
-      | 2024-10-18 14:00 | 0               | 7200        | 4         |
-      | 2024-10-18 14:30 | 0               | 7200        | 4         |
-      | 2024-10-18 15:00 | 0               | 7200        | 4         |
-      | 2024-10-18 15:30 | 0               | 7200        | 4         |
-      | 2024-10-18 16:00 | 0               | 7200        | 4         |
-    And the current time is "2024-10-18 14:00"
-    When the user places an order for a "BigMac" with a preparation time of 60 seconds
-    Then the system checks for available slots within the next 4 slots
-    And the order should be accepted because preparation can be completed by "2024-10-18 14:00"
+  As a restaurant,  I want to deal with the the coming orders so that I can inform people if I can take their order or not.
+
+  Background:
+    Given a restaurant "Chicken Burger" which has a menu with following items:
+      | itemName | prepTime | price |
+      | BigMac   | 120      | 5     |
+      | Fries    | 60       | 3     |
+
+  Scenario: Update slot capacity when adding a new item
+    Given the restaurant receives an order with a "BigMac" at "2024-10-18 12:00"
+    When the restaurant adds "BigMac" to this slot
+    Then the new current capacity of this slot should be 120
+    And the available capacity should be 1680
+
+  Scenario: Adding an item to a full slot
+    Given the restaurant has 1 personnel for each slot
+    And the restaurant has a slot with full capacity at "2024-10-18 12:00"
+    When the restaurant adds an item "BigMac" at "2024-10-18 12:00"
+    Then it should be add to the next slot at "2024-10-18 12:30" with a capacity of 120
+
+  Scenario: Adding an item with no slots available
+    Given the restaurant has 1 personnel for each slot
+    And the restaurant is full from its opening to its closing
+    When the restaurant adds an item "BigMac" at "2024-10-18 12:00"
+    Then the item is not added by the restaurant
+
+

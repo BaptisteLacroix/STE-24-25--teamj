@@ -64,10 +64,12 @@ public class RestaurantManager extends User {
      * Mettre à jour le nombre de personnel pour un slot spécifique
       */
     
-    public void updateNumberOfPersonnel(Slot slotToUpdate, int numberOfPersonnel) {
+    public boolean updateNumberOfPersonnel(Slot slotToUpdate, int numberOfPersonnel) {
         if (slotToUpdate == null) {
-            throw new IllegalArgumentException("Slot does not exist. Cannot update personnel.");
+            System.out.println("The slot isn't existing.");
+            return false;
         }
         this.restaurant.setNumberOfPersonnel(slotToUpdate,numberOfPersonnel);
+        return true;
     }
 }
