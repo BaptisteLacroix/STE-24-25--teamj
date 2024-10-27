@@ -12,8 +12,8 @@
 
 ## Doc
 
-Rapport : [TeamJ-renduD1.pdf](doc/TeamJ-renduD1.pdf)
-Conception : [README.md](doc/README.md)
+Rapport : [TeamJ-renduD1.pdf](./doc/TeamJ-renduD1.pdf)<br>
+Conception : [README.md](./doc/README.md)
 
 ---
 
@@ -52,7 +52,7 @@ Conception : [README.md](doc/README.md)
 As a registered user, I want to validate the group order at the end of my individual order and, if necessary, specify a compatible delivery time so that the group order can be finalized and closed.
 
 **Feature Demonstration**:  
-The behavior of this user story is demonstrated in `ValidateGroupOrder.feature` located in `src/test/resources/features/orders`. The scenarios include validation of a group order, setting delivery times, and handling incompatible delivery times.
+The behavior of this user story is demonstrated in [ValidateGroupOrder.feature](./src/test/resources/features/orders/ValidateGroupOrder.feature). The scenarios include validation of a group order, setting delivery times, and handling incompatible delivery times.
 
 
 <!-- ## Ce que fait votre projet
