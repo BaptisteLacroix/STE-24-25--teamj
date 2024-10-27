@@ -32,7 +32,7 @@ import static org.junit.Assert.assertThrows;
 public class ManageRestaurantStepDef {
     private RestaurantManager restaurantManager;
     private IRestaurant restaurant;
-    private final Menu menu = new Menu(new ArrayList<>());
+    private final Menu menu = new Menu.MenuBuilder().build();
     private final List<Slot> slots = new ArrayList<>();
     private MenuItem selectedItem;
     private Slot slot;

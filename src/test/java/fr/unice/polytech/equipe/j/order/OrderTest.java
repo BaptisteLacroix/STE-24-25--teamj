@@ -35,7 +35,7 @@ class OrderTest {
         itemsRestaurant1.add(new MenuItem("Salade Nicoise", 60, 12.50));
         itemsRestaurant1.add(new MenuItem("Bouillabaisse", 500, 25.00));
         itemsRestaurant1.add(new MenuItem("Tarte Tatin", 1800, 8.00));
-        restaurant = new RestaurantProxy(new Restaurant("Le Petit Nice", fixedDateTime, fixedDateTime.plusHours(2), new Menu(itemsRestaurant1)));
+        restaurant = new RestaurantProxy(new Restaurant("Le Petit Nice", fixedDateTime, fixedDateTime.plusHours(2), new Menu.MenuBuilder().addMenuItems(itemsRestaurant1).build()));
         RestaurantManager restaurantManager = new RestaurantManager(
                 "manager@test.com",
                 "password",
