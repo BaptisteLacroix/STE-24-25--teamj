@@ -101,6 +101,27 @@ exit 0
 
 ---
 
+### Project Structure
+This part provides an overview of the project structure, designed to ensure clear organization and easy maintenance.
+
+
+- **.git/**: Contains version control data managed by Git, tracking changes to the codebase over time.
+- **.github/**: Contains GitHub-specific configurations, including templates for issues and workflows for continuous integration.
+- **.idea/**: Stores configuration files specific to the IntelliJ IDEA development environment.
+- **doc/**: Holds technical documentation, project reports, and other related resources.
+- **src/**: The core source code of the application, organized into functional packages.
+  - **main/**: Primary application code, organized by core functionalities.
+    - **Restaurant/**: Contains modules for managing restaurant data and functionality, including restaurant creation, menu management, and related operations.
+    - **Slot/**: Handles scheduling and time slots, supporting features such as reservation management and availability tracking.
+    - **Order/**: Manages order processing, including order creation, updates, and tracking.
+    - **Payment/**: Implements payment processing features, such as payment initiation, validation, and transaction management.
+    - **Delivery/**: Contains modules related to delivery management.
+  - **test/**: Contains testing files, definitions, and resources to validate application features, ensuring reliable and functional code.
+- **pom.xml**: The Project Object Model file for Maven. It manages project dependencies, plugins, and build configurations, essential for compiling and packaging the application.
+- **README.md**: Provides an overview of the project, including setup instructions and usage guidelines.
+- **LICENSE**: Details the licensing terms governing the project.
+- **target/**: Directory for build outputs, such as compiled code and packaged artifacts.
+
 ### User Story Reference
 
 **User Story ID**: [#25](https://github.com/PNS-Conception/STE-24-25--teamj/issues/25)  
