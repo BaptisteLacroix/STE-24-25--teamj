@@ -5,8 +5,8 @@ import fr.unice.polytech.equipe.j.order.OrderStatus;
 import fr.unice.polytech.equipe.j.order.grouporder.IGroupOrder;
 import fr.unice.polytech.equipe.j.restaurant.menu.Menu;
 import fr.unice.polytech.equipe.j.restaurant.menu.MenuItem;
-import fr.unice.polytech.equipe.j.restaurant.strategies.order.OrderPrice;
-import fr.unice.polytech.equipe.j.restaurant.strategies.order.OrderPriceStrategy;
+import fr.unice.polytech.equipe.j.restaurant.orderpricestrategy.OrderPrice;
+import fr.unice.polytech.equipe.j.restaurant.orderpricestrategy.OrderPriceStrategy;
 import fr.unice.polytech.equipe.j.slot.Slot;
 
 import java.time.LocalDateTime;
@@ -85,6 +85,7 @@ public class RestaurantProxy implements IRestaurant {
         getRestaurant().onOrderPaid(order);
     }
 
+    // for Mock testing
     public IRestaurant getRestaurant() {
         return restaurant;
     }

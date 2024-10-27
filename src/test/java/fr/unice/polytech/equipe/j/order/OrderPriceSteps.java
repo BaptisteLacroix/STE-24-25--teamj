@@ -2,8 +2,9 @@ package fr.unice.polytech.equipe.j.order;
 
 import fr.unice.polytech.equipe.j.restaurant.IRestaurant;
 import fr.unice.polytech.equipe.j.restaurant.menu.MenuItem;
-import fr.unice.polytech.equipe.j.restaurant.strategies.order.OrderPrice;
-import fr.unice.polytech.equipe.j.restaurant.strategies.order.OrderPriceStrategyFactory;
+import fr.unice.polytech.equipe.j.restaurant.orderpricestrategy.FreeItemFotNItemsOrderPriceStrategy;
+import fr.unice.polytech.equipe.j.restaurant.orderpricestrategy.KPercentForNOrderPriceStrategy;
+import fr.unice.polytech.equipe.j.restaurant.orderpricestrategy.OrderPrice;
 import fr.unice.polytech.equipe.j.restaurant.Restaurant;
 import fr.unice.polytech.equipe.j.restaurant.RestaurantProxy;
 import fr.unice.polytech.equipe.j.stepdefs.backend.Utils;
@@ -50,7 +51,7 @@ public class OrderPriceSteps {
         this.reductionPercentage = reductionPercentage;
         this.orderReductionNumber = orderReductionNumber;
         this.restaurantProxy.setOrderPriceStrategy(
-                OrderPriceStrategyFactory.makeSubstractKpercentforNOrder(
+                new KPercentForNOrderPriceStrategy(
                         this.reductionPercentage,
                         this.orderReductionNumber
                 )
@@ -86,7 +87,7 @@ public class OrderPriceSteps {
 
     @Given("The restaurant wants to give a free item for every order with more than {int} items")
     public void theRestaurantWantsToGiveAFreeItemForEveryOrderWithMoreThatNItems(int n) {
-        this.restaurantProxy.setOrderPriceStrategy(OrderPriceStrategyFactory.makeGiveItemForNItems(n));
+        this.restaurantProxy.setOrderPriceStrategy(new FreeItemFotNItemsOrderPriceStrategy(n));
     }
 
     @When("Any user creates an order with more that {int} items")

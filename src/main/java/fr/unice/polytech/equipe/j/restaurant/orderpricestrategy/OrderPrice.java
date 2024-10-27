@@ -1,4 +1,4 @@
-package fr.unice.polytech.equipe.j.restaurant.strategies.order;
+package fr.unice.polytech.equipe.j.restaurant.orderpricestrategy;
 import fr.unice.polytech.equipe.j.restaurant.menu.MenuItem;
 
 import java.util.Map;
