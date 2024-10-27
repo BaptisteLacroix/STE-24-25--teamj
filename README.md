@@ -5,12 +5,13 @@
 
 ---
 
-## Team Members:
+## Team Members and Roles
 
-- [Baptiste Lacroix](https://github.com/BaptisteLacroix) - PO
-- [Tom Toupence](https://github.com/tom-toupence) - QA
-- [Antoine Maïstre-Rice](https://github.com/Antoine-MR) - AL
-- [Abderrahmen Tlili ](https://github.com/AbdouTlili) - OPS
+- **PO (Product Owner)**: [Baptiste Lacroix](https://github.com/BaptisteLacroix) - Defines the product vision
+- **Architect**: [Antoine Maïstre-Rice](https://github.com/Antoine-MR) - Designs the system architecture
+- **QA (Quality Assurance)**: [Tom Toupence](https://github.com/tom-toupence) - Oversees quality assurance and testing
+- **Ops (Operations)**: [Abderrahmen Tlili](https://github.com/AbdouTlili) - Manages PRs,infrastructure, deployment and automation
+
 
 ---
 
