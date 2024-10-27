@@ -1,0 +1,149 @@
+@startuml
+!theme plain
+actor User
+participant "Backend" as B
+participant ":GroupOrderProxy" as GOP
+participant ":GroupOrder" as GO
+participant ":RestaurantManagerService" as RMS
+participant ":DeliveryDetails" as DD
+participant ":RestaurantProxy" as RP
+participant ":Restaurant" as R
+participant ":Slot" as S
+participant ":CampusUser" as CU
+participant ":PaymentMethod" as PM
+
+User -> B : join(groupUuid)
+activate B
+B -> GOP : addUser(user)
+activate GOP
+GOP -> GO : addUser(user)
+activate GO
+GO --> GOP : Success
+deactivate GO
+GOP --> B : Success
+deactivate GOP
+B --> User : Success
+deactivate B
+
+B -> GOP : getDeliveryDetails()
+activate GOP
+GOP -> GO : getDeliveryDetails()
+activate GO
+GO --> GOP : deliveryDetails
+deactivate GO
+GOP --> B : deliveryDetails
+deactivate GOP
+
+User -> B : getRestaurants()
+activate B
+B -> RMS : getInstance()
+activate RMS
+RMS --> B : restaurantService
+deactivate RMS
+activate DD
+B -> DD : getDeliveryTime()
+DD --> B : deliveryTime
+deactivate DD
+B -> RMS : searchRestaurantByDeliveryTime(deliveryTime)
+activate RMS
+RMS --> B : restaurants
+deactivate RMS
+deactivate B
+B --> User : restaurants
+
+User -> B : startOrder(restaurant)
+activate B
+create participant "OrderManager" as OM
+B -> OM : new OrderManager(restaurantProxy, groupOrderProxy)
+activate OM
+OM --> B : orderManager
+deactivate OM
+create participant "Order" as O
+B -> O : new Order(restaurant, user)
+activate O
+O --> B : order
+deactivate O
+B -> RMS : searchItemsByDeliveryTime(restaurant, deliveryDetails)
+activate RMS
+RMS --> B : menuItems
+deactivate RMS
+B --> User : menuItems
+deactivate B
+
+User -> B : addItemsToOrder(items)
+activate B
+loop while items remain
+    B -> OM : addItemToOrder(order, item)
+    activate OM
+    alt order not IndividualOrder
+        OM -> RP : addItemToOrder(order, item, deliveryTime)
+        activate RP
+        RP -> R : addItemToOrder(order, item, deliveryTime)
+        activate R
+        R -> S : updateSlotCapacity(item)
+        activate S
+        S --> R : Success
+        deactivate S
+        R --> RP : Success
+        deactivate R
+        RP --> OM : Success
+        deactivate RP
+        OM -> GOP : addOrder(order)
+activate GOP
+GOP --> OM : Success
+deactivate GOP
+    else order not in GroupOrder
+        OM -> GOP : addOrder(order)
+activate GOP
+GOP --> OM : Success
+deactivate GOP
+    end
+    deactivate OM
+end
+deactivate B
+
+User -> B : validateOrder(Order)
+activate B
+B -> OM : validateOrder(Order)
+activate OM
+OM -> CU : getDefaultPaymentMethod()
+activate CU
+CU --> OM : paymentMethod
+deactivate CU
+create participant "PaymentProcessor" as PP
+OM -> PP : createPaymentProcessor(paymentMethod)
+activate PP
+PP --> OM : processor
+deactivate PP
+OM -> RP : getTotalPrice(order)
+activate RP
+RP --> OM : totalPrice
+deactivate RP
+OM -> PP : processPayment(totalPrice)
+activate PP
+PP --> OM : Success
+deactivate PP
+OM -> RP : onOrderPaid(order)
+activate RP
+RP --> OM : Success
+deactivate RP
+OM -> GOP : addOrderToHistory(order)
+activate GOP
+GOP --> OM : Success
+deactivate GOP
+create participant "Transaction" as T
+OM -> T : new Transaction(totalPrice, paymentMethod, date, order)
+activate T
+T --> OM : transaction
+deactivate T
+activate OM
+OM -> O : addTransactionToHistory(transaction)
+activate O
+O --> OM : Success
+deactivate O
+deactivate OM
+OM --> B : Success
+deactivate OM
+B --> User : Success
+deactivate B
+@enduml
