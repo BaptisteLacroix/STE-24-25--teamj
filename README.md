@@ -1,37 +1,58 @@
-# SopiaTech Eats-Team-24-25 #template
-_Template for classroom SI4-COO_
+# SopiaTech Eats-Team-24-25
 
->. CETTE PAGE DOIT ETRE MISE A JOUR POUR CORRESPONDRE A VOTRE PROJET.  
->. C'est seulement un modèle !!
->. Vous l'organisez comme bon vous semble, mais comme un vrai projet.
-> **Il ne reste donc à la fin aucun commentaire présent ici pour vous guider !! **
+---
 
+## Team Members:
+- [Baptiste Lacroix](https://github.com/BaptisteLacroix) - PO
+- [Tom Toupence](https://github.com/tom-toupence) - QA
+- [Antoine Maïstre-Rice](https://github.com/Antoine-MR) - AL
+- [Abderrahmen Tlili ](https://github.com/AbdouTlili) - OPS
 
-## TEAM
+---
 
-Présentez vous! 
+## Doc
 
-## doc
-Contient vos rapports et les documents qui présentent votre projet.
-Précisez le chemin dans votre structure.
+Rapport : [TeamJ-renduD1.pdf](doc/TeamJ-renduD1.pdf)
+Conception : [README.md](doc/README.md)
 
+---
 
-## .github
-   1. Contient sous workflows/maven.yml, une version d'un fichier d'actions qui est déclenché dès que vous poussez du code. 
-Sur cette version initiale seule un test Junit5 est déclenché pour vérifier que tout fonctionne.
+## Installation & Launch Instructions
 
-  2. Contient sous ISSUE_TEMPLATE, les modèles pour les issues user_story et bug. Vous pouvez le compléter à votre guise.
+1. **Requirements:**
+    - Java JDK 21
+    - Maven (version 3.6.3 or higher)
+    - Git
 
-## src
- - pom.xml :  
-       - Cucumber 7 et JUnit 5  
-       - JDK 21
-       - Etc.  
-   Ce pom.xml sera mis à jour avec la démonstration qui vous sera donnée ultérieurement.
+2. **Setup**:
+    - Clone the repository:
+      ```bash
+      git clone https://github.com/PNS-Conception/STE-24-25--teamj.git
+      cd STE-24-25--teamj
+      ```
+    - Install dependencies with Maven:
+      ```bash
+      mvn clean install
+      ```
 
-Lorsque vous passerez en développement, les codes donnés ici peuvent être éliminés.   
+3. **Testing**:
+    - Run tests:
+      ```bash
+      mvn clean test
+      ```
 
-Nous les laissons cependant pour votre permettre de vérifier que vous n'avez pas de problème d'intégration continue.
+---
+
+### User Story Reference
+
+**User Story ID**: [#25](https://github.com/PNS-Conception/STE-24-25--teamj/issues/25)  
+**Title**: Validation of group orders by members
+
+**Description**:  
+As a registered user, I want to validate the group order at the end of my individual order and, if necessary, specify a compatible delivery time so that the group order can be finalized and closed.
+
+**Feature Demonstration**:  
+The behavior of this user story is demonstrated in `ValidateGroupOrder.feature` located in `src/test/resources/features/orders`. The scenarios include validation of a group order, setting delivery times, and handling incompatible delivery times.
 
 
 <!-- ## Ce que fait votre projet
