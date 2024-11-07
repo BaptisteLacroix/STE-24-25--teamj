@@ -1,4 +1,4 @@
-package fr.unice.polytech.equipe.j.order.grouporder;
+package fr.unice.polytech.equipe.j.grouporder;
 
 import java.util.ArrayList;
 import java.util.List;

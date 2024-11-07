@@ -1,12 +1,12 @@
 package fr.unice.polytech.equipe.j.order;
 
-import fr.unice.polytech.equipe.j.restaurant.IRestaurant;
-import fr.unice.polytech.equipe.j.restaurant.menu.MenuItem;
-import fr.unice.polytech.equipe.j.restaurant.orderpricestrategy.FreeItemFotNItemsOrderPriceStrategy;
-import fr.unice.polytech.equipe.j.restaurant.orderpricestrategy.KPercentForNOrderPriceStrategy;
-import fr.unice.polytech.equipe.j.restaurant.orderpricestrategy.OrderPrice;
-import fr.unice.polytech.equipe.j.restaurant.Restaurant;
-import fr.unice.polytech.equipe.j.restaurant.RestaurantProxy;
+import fr.unice.polytech.equipe.j.restaurant.backend.IRestaurant;
+import fr.unice.polytech.equipe.j.restaurant.backend.menu.MenuItem;
+import fr.unice.polytech.equipe.j.restaurant.backend.orderpricestrategy.FreeItemFotNItemsOrderPriceStrategy;
+import fr.unice.polytech.equipe.j.restaurant.backend.orderpricestrategy.KPercentForNOrderPriceStrategy;
+import fr.unice.polytech.equipe.j.restaurant.backend.orderpricestrategy.OrderPrice;
+import fr.unice.polytech.equipe.j.restaurant.backend.Restaurant;
+import fr.unice.polytech.equipe.j.restaurant.backend.RestaurantProxy;
 import fr.unice.polytech.equipe.j.stepdefs.backend.Utils;
 import fr.unice.polytech.equipe.j.user.CampusUser;
 import io.cucumber.datatable.DataTable;

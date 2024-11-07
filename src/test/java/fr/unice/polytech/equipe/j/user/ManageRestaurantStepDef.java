@@ -1,12 +1,12 @@
 package fr.unice.polytech.equipe.j.user;
 
 import fr.unice.polytech.equipe.j.TimeUtils;
-import fr.unice.polytech.equipe.j.restaurant.IRestaurant;
-import fr.unice.polytech.equipe.j.restaurant.menu.Menu;
-import fr.unice.polytech.equipe.j.restaurant.menu.MenuItem;
-import fr.unice.polytech.equipe.j.restaurant.Restaurant;
-import fr.unice.polytech.equipe.j.restaurant.RestaurantServiceManager;
-import fr.unice.polytech.equipe.j.slot.Slot;
+import fr.unice.polytech.equipe.j.restaurant.backend.IRestaurant;
+import fr.unice.polytech.equipe.j.restaurant.backend.menu.Menu;
+import fr.unice.polytech.equipe.j.restaurant.backend.menu.MenuItem;
+import fr.unice.polytech.equipe.j.restaurant.backend.Restaurant;
+import fr.unice.polytech.equipe.j.restaurant.backend.RestaurantServiceManager;
+import fr.unice.polytech.equipe.j.restaurant.backend.slot.Slot;
 import io.cucumber.datatable.DataTable;
 import io.cucumber.java.Before;
 import io.cucumber.java.en.And;
@@ -19,7 +19,6 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 

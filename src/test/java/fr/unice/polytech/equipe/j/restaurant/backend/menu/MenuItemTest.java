@@ -1,4 +1,4 @@
-package fr.unice.polytech.equipe.j.restaurant.menu;
+package fr.unice.polytech.equipe.j.restaurant.backend.menu;
 
 import org.junit.jupiter.api.Test;
 

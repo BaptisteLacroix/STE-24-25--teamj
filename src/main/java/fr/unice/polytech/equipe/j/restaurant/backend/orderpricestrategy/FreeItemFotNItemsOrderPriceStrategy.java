@@ -1,10 +1,8 @@
-package fr.unice.polytech.equipe.j.restaurant.orderpricestrategy;
+package fr.unice.polytech.equipe.j.restaurant.backend.orderpricestrategy;
 
 import fr.unice.polytech.equipe.j.order.Order;
-import fr.unice.polytech.equipe.j.restaurant.IRestaurant;
-import fr.unice.polytech.equipe.j.restaurant.Restaurant;
-import fr.unice.polytech.equipe.j.restaurant.menu.MenuItem;
-import fr.unice.polytech.equipe.j.user.CampusUser;
+import fr.unice.polytech.equipe.j.restaurant.backend.IRestaurant;
+import fr.unice.polytech.equipe.j.restaurant.backend.menu.MenuItem;
 
 import java.util.Map;
 import java.util.stream.Collectors;

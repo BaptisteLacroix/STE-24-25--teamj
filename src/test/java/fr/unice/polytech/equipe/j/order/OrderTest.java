@@ -1,11 +1,11 @@
 package fr.unice.polytech.equipe.j.order;
 
 import fr.unice.polytech.equipe.j.TimeUtils;
-import fr.unice.polytech.equipe.j.restaurant.IRestaurant;
-import fr.unice.polytech.equipe.j.restaurant.menu.Menu;
-import fr.unice.polytech.equipe.j.restaurant.menu.MenuItem;
-import fr.unice.polytech.equipe.j.restaurant.Restaurant;
-import fr.unice.polytech.equipe.j.restaurant.RestaurantProxy;
+import fr.unice.polytech.equipe.j.restaurant.backend.IRestaurant;
+import fr.unice.polytech.equipe.j.restaurant.backend.menu.Menu;
+import fr.unice.polytech.equipe.j.restaurant.backend.menu.MenuItem;
+import fr.unice.polytech.equipe.j.restaurant.backend.Restaurant;
+import fr.unice.polytech.equipe.j.restaurant.backend.RestaurantProxy;
 import fr.unice.polytech.equipe.j.user.CampusUser;
 import fr.unice.polytech.equipe.j.user.RestaurantManager;
 import org.junit.jupiter.api.BeforeEach;

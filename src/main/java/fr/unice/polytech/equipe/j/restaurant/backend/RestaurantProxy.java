@@ -1,13 +1,13 @@
-package fr.unice.polytech.equipe.j.restaurant;
+package fr.unice.polytech.equipe.j.restaurant.backend;
 
 import fr.unice.polytech.equipe.j.order.Order;
 import fr.unice.polytech.equipe.j.order.OrderStatus;
-import fr.unice.polytech.equipe.j.order.grouporder.IGroupOrder;
-import fr.unice.polytech.equipe.j.restaurant.menu.Menu;
-import fr.unice.polytech.equipe.j.restaurant.menu.MenuItem;
-import fr.unice.polytech.equipe.j.restaurant.orderpricestrategy.OrderPrice;
-import fr.unice.polytech.equipe.j.restaurant.orderpricestrategy.OrderPriceStrategy;
-import fr.unice.polytech.equipe.j.slot.Slot;
+import fr.unice.polytech.equipe.j.grouporder.IGroupOrder;
+import fr.unice.polytech.equipe.j.restaurant.backend.menu.Menu;
+import fr.unice.polytech.equipe.j.restaurant.backend.menu.MenuItem;
+import fr.unice.polytech.equipe.j.restaurant.backend.orderpricestrategy.OrderPrice;
+import fr.unice.polytech.equipe.j.restaurant.backend.orderpricestrategy.OrderPriceStrategy;
+import fr.unice.polytech.equipe.j.restaurant.backend.slot.Slot;
 
 import java.time.LocalDateTime;
 import java.util.List;

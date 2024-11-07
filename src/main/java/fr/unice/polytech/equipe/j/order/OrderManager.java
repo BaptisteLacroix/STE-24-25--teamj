@@ -1,12 +1,12 @@
 package fr.unice.polytech.equipe.j.order;
 
-import fr.unice.polytech.equipe.j.order.grouporder.IGroupOrder;
+import fr.unice.polytech.equipe.j.grouporder.IGroupOrder;
 import fr.unice.polytech.equipe.j.payment.strategy.PaymentMethod;
 import fr.unice.polytech.equipe.j.payment.strategy.PaymentProcessor;
 import fr.unice.polytech.equipe.j.payment.strategy.PaymentProcessorFactory;
 import fr.unice.polytech.equipe.j.payment.Transaction;
-import fr.unice.polytech.equipe.j.restaurant.IRestaurant;
-import fr.unice.polytech.equipe.j.restaurant.menu.MenuItem;
+import fr.unice.polytech.equipe.j.restaurant.backend.IRestaurant;
+import fr.unice.polytech.equipe.j.restaurant.backend.menu.MenuItem;
 import fr.unice.polytech.equipe.j.user.CampusUser;
 
 import java.time.LocalDateTime;

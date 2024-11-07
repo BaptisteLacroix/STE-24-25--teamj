@@ -1,4 +1,4 @@
-package fr.unice.polytech.equipe.j.order.grouporder;
+package fr.unice.polytech.equipe.j.grouporder;
 
 import fr.unice.polytech.equipe.j.delivery.DeliveryDetails;
 import fr.unice.polytech.equipe.j.order.Order;

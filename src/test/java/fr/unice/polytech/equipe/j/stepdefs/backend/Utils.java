@@ -1,7 +1,7 @@
 package fr.unice.polytech.equipe.j.stepdefs.backend;
 
-import fr.unice.polytech.equipe.j.restaurant.menu.Menu;
-import fr.unice.polytech.equipe.j.restaurant.menu.MenuItem;
+import fr.unice.polytech.equipe.j.restaurant.backend.menu.Menu;
+import fr.unice.polytech.equipe.j.restaurant.backend.menu.MenuItem;
 
 public class Utils {
     public static Menu createMenuFromString(String menuItems) {

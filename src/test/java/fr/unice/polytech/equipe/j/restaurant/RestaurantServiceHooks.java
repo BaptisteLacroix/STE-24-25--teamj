@@ -1,8 +1,12 @@
 package fr.unice.polytech.equipe.j.restaurant;
 
 import fr.unice.polytech.equipe.j.TimeUtils;
-import fr.unice.polytech.equipe.j.restaurant.menu.Menu;
-import fr.unice.polytech.equipe.j.restaurant.menu.MenuItem;
+import fr.unice.polytech.equipe.j.restaurant.backend.IRestaurant;
+import fr.unice.polytech.equipe.j.restaurant.backend.Restaurant;
+import fr.unice.polytech.equipe.j.restaurant.backend.RestaurantProxy;
+import fr.unice.polytech.equipe.j.restaurant.backend.RestaurantServiceManager;
+import fr.unice.polytech.equipe.j.restaurant.backend.menu.Menu;
+import fr.unice.polytech.equipe.j.restaurant.backend.menu.MenuItem;
 import fr.unice.polytech.equipe.j.user.RestaurantManager;
 import io.cucumber.java.Before;
 
