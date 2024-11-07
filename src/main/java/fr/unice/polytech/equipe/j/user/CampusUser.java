@@ -6,12 +6,39 @@ import fr.unice.polytech.equipe.j.payment.Transaction;
 
 import java.util.ArrayList;
 import java.util.List;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 public class CampusUser {
     private PaymentMethod preferredPaymentMethod = PaymentMethod.CREDIT_CARD;
-    private final List<Transaction> transactions;
-    private final List<Order> ordersHistory = new ArrayList<>();
+    private List<Transaction> transactions;
+    private List<Order> ordersHistory = new ArrayList<>();
     private double balance;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public double getBalance() {
+        return balance;
+    }
+
+    public void setBalance(double balance) {
+        this.balance = balance;
+    }
+
+    public PaymentMethod getPreferredPaymentMethod() {
+        return preferredPaymentMethod;
+    }
+
+    public void setPreferredPaymentMethod(PaymentMethod preferredPaymentMethod) {
+        this.preferredPaymentMethod = preferredPaymentMethod;
+    }
+
     private String name;
     private PaymentMethod defaultPaymentMethod = PaymentMethod.CREDIT_CARD;
 
@@ -58,5 +85,17 @@ public class CampusUser {
 
     public void addTransactionToHistory(Transaction transaction) {
         transactions.add(transaction);
+    }
+
+    // Convert CampusUser instance to JSON
+    public String toJson() {
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        return gson.toJson(this);
+    }
+
+    // Create CampusUser instance from JSON
+    public static CampusUser fromJson(String json) {
+        Gson gson = new Gson();
+        return gson.fromJson(json, CampusUser.class);
     }
 }

@@ -22,7 +22,7 @@ public class RestaurantServiceManager {
         this.restaurants = new ArrayList<>();
     }
 
-    static void resetInstance() {
+    public static void resetInstance() {
         instance = null;
     }
 
