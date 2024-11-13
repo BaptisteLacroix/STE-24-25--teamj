@@ -56,8 +56,7 @@ public class PaymentServer {
                 PaymentProcessor processor = PaymentProcessorFactory.createPaymentProcessor(request.getPaymentMethod());
 
                 // just a place holder
-                boolean processingResult = true ;
-                processor.processPayment(request.getAmount());
+                boolean processingResult = processor.processPayment(request.getAmount());
 
                 if (processingResult) {
                     PaymentResult result = new PaymentResult();

@@ -13,12 +13,13 @@ public class CreditCardProcessor implements PaymentProcessor {
      * @return true if the payment was successful; false otherwise
      */
     @Override
-    public void processPayment(double amount) {
+    public boolean processPayment(double amount) {
         System.out.println("Processing credit card payment of €" + amount);
         // Simulate payment processing logic
         if (amount <= 500) {
             // Payment successful
             System.out.println("Credit card payment successful.");
+            return true;
         } else {
             throw new IllegalArgumentException("Credit card payment failed: Amount exceeds limit.");
         }

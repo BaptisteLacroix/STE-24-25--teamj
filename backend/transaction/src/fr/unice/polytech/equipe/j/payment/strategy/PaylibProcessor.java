@@ -13,11 +13,12 @@ public class PaylibProcessor implements PaymentProcessor {
      * @return true if the payment was successful; false otherwise
      */
     @Override
-    public void processPayment(double amount) {
+    public boolean processPayment(double amount) {
         System.out.println("Processing Paylib payment of €" + amount);
         // Simulate payment processing logic
         if (amount <= 2000) {
             System.out.println("Paylib payment successful.");
+            return true;
         } else {
             throw new IllegalArgumentException("Paylib payment failed: Amount exceeds limit.");
         }

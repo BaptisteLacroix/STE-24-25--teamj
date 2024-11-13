@@ -10,5 +10,5 @@ public interface PaymentProcessor {
      * @param amount the amount to be processed
      * @return true if the payment was processed successfully; false otherwise
      */
-    void processPayment(double amount);
+    boolean processPayment(double amount);
 }

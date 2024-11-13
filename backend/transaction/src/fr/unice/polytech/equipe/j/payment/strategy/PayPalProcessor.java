@@ -13,11 +13,12 @@ public class PayPalProcessor implements PaymentProcessor {
      * @return true if the payment was successful; false otherwise
      */
     @Override
-    public void processPayment(double amount) {
+    public boolean processPayment(double amount) {
         System.out.println("Processing PayPal payment of €" + amount);
         // Simulate payment processing logic
         if (amount <= 1000) {
             System.out.println("PayPal payment successful.");
+            return true;
         } else {
             throw new IllegalArgumentException("PayPal payment failed: Amount exceeds limit.");
         }
