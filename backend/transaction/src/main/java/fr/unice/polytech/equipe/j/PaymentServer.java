@@ -1,3 +1,4 @@
+package fr.unice.polytech.equipe.j;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.net.httpserver.HttpServer;
