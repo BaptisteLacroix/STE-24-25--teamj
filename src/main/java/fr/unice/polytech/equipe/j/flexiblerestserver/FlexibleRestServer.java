@@ -3,7 +3,8 @@ package fr.unice.polytech.equipe.j.flexiblerestserver;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.net.httpserver.HttpServer;
 import com.sun.net.httpserver.HttpHandler;
-import com.sun.net.httpserver.HttpExchange;
+import fr.unice.polytech.equipe.j.flexiblerestserver.httpresponse.HttpResponse;
+import fr.unice.polytech.equipe.j.flexiblerestserver.httpresponse.ResponseUtils;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -109,22 +110,30 @@ public class FlexibleRestServer {
                 }
             }
 
+            exchange.getResponseHeaders().set("Content-Type", "application/json");
+            String jsonResponse = null;
+            int code = 200;
+
             // invoke route handler and get its result
             Object result;
             try {
                 result = method.invoke(controller, methodParams);
             } catch (IllegalAccessException | InvocationTargetException e) {
-                throw new RuntimeException(e);
+                jsonResponse = ResponseUtils.createErrorMessage("route handler crashed", e);
+                code = 500;
+                return;
+            }
+            if (result instanceof HttpResponse<?> httpResponse) {
+                jsonResponse = new ObjectMapper().writeValueAsString((httpResponse.getContent()));
+                code = httpResponse.getCode();
             }
 
-            // serialize handler result and send it as a json response
-            String jsonResponse = new ObjectMapper().writeValueAsString(result);
-            exchange.getResponseHeaders().set("Content-Type", "application/json");
-            exchange.sendResponseHeaders(200, jsonResponse.length());
-
+            jsonResponse = jsonResponse != null? jsonResponse : new ObjectMapper().writeValueAsString(result);
+            exchange.sendResponseHeaders(code, jsonResponse.length());
             try (OutputStream os = exchange.getResponseBody()) {
                 os.write(jsonResponse.getBytes());
             }
+            exchange.close();
         });
     }
 
