@@ -1,7 +1,7 @@
 package fr.unice.polytech.equipe.j.restaurant.backend;
 
 import fr.unice.polytech.equipe.j.order.Order;
-import fr.unice.polytech.equipe.j.grouporder.IGroupOrder;
+import fr.unice.polytech.equipe.j.grouporder.backend.IGroupOrder;
 import fr.unice.polytech.equipe.j.restaurant.backend.menu.Menu;
 import fr.unice.polytech.equipe.j.restaurant.backend.menu.MenuItem;
 import fr.unice.polytech.equipe.j.restaurant.backend.orderpricestrategy.OrderPrice;

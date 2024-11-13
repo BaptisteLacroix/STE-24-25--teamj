@@ -1,6 +1,6 @@
 package fr.unice.polytech.equipe.j.order;
 
-import fr.unice.polytech.equipe.j.grouporder.IGroupOrder;
+import fr.unice.polytech.equipe.j.grouporder.backend.IGroupOrder;
 import fr.unice.polytech.equipe.j.payment.strategy.PaymentMethod;
 import fr.unice.polytech.equipe.j.payment.strategy.PaymentProcessor;
 import fr.unice.polytech.equipe.j.payment.strategy.PaymentProcessorFactory;
