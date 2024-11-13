@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
@@ -77,7 +78,7 @@ public class FlexibleRestServer {
             Object controller = this.controllerInstances.compute(controllerClass, (k, v) -> {
                 if (v == null) {
                     try {
-                        var newInstance = controllerClass.getDeclaredConstructor().newInstance();
+                        Object newInstance = controllerClass.getDeclaredConstructor().newInstance();
                         this.controllerInstances.put(controllerClass, newInstance);
                         return newInstance;
                     } catch (NoSuchMethodException | InstantiationException | IllegalAccessException |
@@ -93,13 +94,13 @@ public class FlexibleRestServer {
             });
 
             // get request parameters
-            var linkParameters = this.getQueryToMap(exchange.getRequestURI().getQuery());
-            var bodyParameters = this.getQueryToMap(new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8));
-            var parameters = List.of(method.getParameters());
+            Map<String, String> linkParameters = this.getQueryToMap(exchange.getRequestURI().getQuery());
+            Map<String, String> bodyParameters = this.getQueryToMap(new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8));
+            List<Parameter> parameters = List.of(method.getParameters());
 
             Object[] methodParams = new Object[parameters.size()];
             for (int i = 0; i < parameters.size(); i++) {
-                var param = parameters.get(i);
+                Parameter param = parameters.get(i);
                 // or handle default values
                 if (linkParameters.containsKey(param.getName())) {
                     methodParams[i] = linkParameters.get(param.getName());
