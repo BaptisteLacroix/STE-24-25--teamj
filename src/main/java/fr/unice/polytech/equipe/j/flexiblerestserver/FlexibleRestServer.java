@@ -2,6 +2,8 @@ package fr.unice.polytech.equipe.j.flexiblerestserver;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.net.httpserver.HttpServer;
+import com.sun.net.httpserver.HttpHandler;
+import com.sun.net.httpserver.HttpExchange;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -17,6 +19,7 @@ public class FlexibleRestServer {
     private int port;
     private String serverRoot;
     private Map<Class<?>, Object> controllerInstances = new HashMap<>();
+    private Map<String, Map<HttpMethod, HttpHandler>> contextHandlers = new HashMap<>();
 
     public FlexibleRestServer(String serverRoot, int port) {
         this.port = port;
@@ -47,8 +50,20 @@ public class FlexibleRestServer {
                 String fullPath = basePath + routeAnnotation.value();
                 HttpMethod httpMethod = routeAnnotation.method();
 
-                createContext(controllerClass, method, server, fullPath, httpMethod);
+                addContextHandler(controllerClass, method, fullPath, httpMethod);
             }
+        }
+
+        for (Map.Entry<String, Map<HttpMethod, HttpHandler>> entry : contextHandlers.entrySet()) {
+            server.createContext(entry.getKey(), (exchange) -> {
+                HttpMethod requestMethod = HttpMethod.valueOf(exchange.getRequestMethod());
+                HttpHandler handler = entry.getValue().get(requestMethod);
+                if (handler != null) {
+                    handler.handle(exchange);
+                } else {
+                    exchange.sendResponseHeaders(405, -1); // Method Not Allowed
+                }
+            });
         }
 
         server.setExecutor(null);
@@ -56,16 +71,10 @@ public class FlexibleRestServer {
         server.start();
     }
 
-    private void createContext(Class<?> controllerClass, Method method, HttpServer server, String fullPath, HttpMethod httpMethod) {
-        server.createContext(fullPath, (exchange) -> {
-            // assert request mode is correct
-            if (!exchange.getRequestMethod().equals(httpMethod.name())) {
-                exchange.sendResponseHeaders(405, -1);
-                return;
-            }
-
+    private void addContextHandler(Class<?> controllerClass, Method method, String fullPath, HttpMethod httpMethod) {
+        contextHandlers.computeIfAbsent(fullPath, k -> new HashMap<>()).put(httpMethod, (exchange) -> {
             // get controller instance (put it in the controller map if non-existent)
-            Object controller = this.controllerInstances.compute(controllerClass, (k, v)-> {
+            Object controller = this.controllerInstances.compute(controllerClass, (k, v) -> {
                 if (v == null) {
                     try {
                         var newInstance = controllerClass.getDeclaredConstructor().newInstance();
@@ -84,9 +93,6 @@ public class FlexibleRestServer {
             });
 
             // get request parameters
-
-
-            // method parameters
             var linkParameters = this.getQueryToMap(exchange.getRequestURI().getQuery());
             var bodyParameters = this.getQueryToMap(new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8));
             var parameters = List.of(method.getParameters());
@@ -97,11 +103,13 @@ public class FlexibleRestServer {
                 // or handle default values
                 if (linkParameters.containsKey(param.getName())) {
                     methodParams[i] = linkParameters.get(param.getName());
-                } else methodParams[i] = bodyParameters.getOrDefault(param.getName(), null);
+                } else {
+                    methodParams[i] = bodyParameters.getOrDefault(param.getName(), null);
+                }
             }
 
             // invoke route handler and get its result
-            Object result = null;
+            Object result;
             try {
                 result = method.invoke(controller, methodParams);
             } catch (IllegalAccessException | InvocationTargetException e) {
@@ -120,24 +128,21 @@ public class FlexibleRestServer {
     }
 
     public Map<String, String> getQueryToMap(String query) {
-        if(query == null) {
-            return new HashMap<>() {};
+        if (query == null) {
+            return new HashMap<>();
         }
         Map<String, String> result = new HashMap<>();
         for (String param : query.split("&")) {
             String[] entry = param.split("=");
             if (entry.length > 1) {
                 result.put(entry[0], entry[1]);
-            }else{
+            } else {
                 result.put(entry[0], "");
             }
         }
         return result;
     }
 
-    /*
-    exemple server
-     */
     public static void main(String[] args) {
         new FlexibleRestServer("fr.unice.polytech.equipe.j", 5003).start();
     }
