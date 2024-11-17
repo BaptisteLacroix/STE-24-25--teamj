@@ -1,0 +1,30 @@
+replicaCount: 2
+
+global:
+  namespace: sophia-eats
+
+services:
+  paymentServer:
+    image: "sophia-eats-payment-server"
+    tag: "latest"
+    port: 8080
+    jarFile: payment-server.jar
+    resources:
+      limits:
+        memory: "512Mi"
+        cpu: "500m"
+      requests:
+        memory: "256Mi"
+        cpu: "250m"
+
+
+ingress:
+  enabled: true
+  host: sophia-eats.local
+  annotations: {}
+  tls: []
+  paths:
+    - path: /api/payment
+      pathType: Prefix
+      backendService: payment-server
+      backendPort: 8080

@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-payment-server
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    app: {{ .Chart.Name }}
+    component: payment-server
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Chart.Name }}
+      component: payment-server
+  template:
+    metadata:
+      labels:
+        app: {{ .Chart.Name }}
+        component: payment-server
+    spec:
+      containers:
+        - name: payment-server
+          image: "{{ .Values.services.paymentServer.image }}:{{ .Values.services.paymentServer.tag }}"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: {{ .Values.services.paymentServer.port }}
+          command:
+            - "java"
+            - "-jar"
+            - "{{ .Values.services.paymentServer.jarFile }}"
+          resources:
+            limits:
+              memory: "{{ .Values.services.paymentServer.resources.limits.memory }}"
+              cpu: "{{ .Values.services.paymentServer.resources.limits.cpu }}"
+            requests:
+              memory: "{{ .Values.services.paymentServer.resources.requests.memory }}"
+              cpu: "{{ .Values.services.paymentServer.resources.requests.cpu }}"
