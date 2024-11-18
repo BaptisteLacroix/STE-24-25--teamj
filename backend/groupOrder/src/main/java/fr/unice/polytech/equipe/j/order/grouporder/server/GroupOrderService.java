@@ -1,4 +1,4 @@
-package fr.unice.polytech.equipe.j.grouporder.server;
+package java.fr.unice.polytech.equipe.j.order.grouporder.server;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
