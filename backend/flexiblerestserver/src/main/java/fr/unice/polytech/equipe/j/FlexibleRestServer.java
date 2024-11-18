@@ -1,10 +1,15 @@
-package fr.unice.polytech.equipe.j.flexiblerestserver;
+package fr.unice.polytech.equipe.j;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.net.httpserver.HttpServer;
 import com.sun.net.httpserver.HttpHandler;
-import fr.unice.polytech.equipe.j.flexiblerestserver.httpresponse.HttpResponse;
-import fr.unice.polytech.equipe.j.flexiblerestserver.httpresponse.ResponseUtils;
+import fr.unice.polytech.equipe.j.annotations.BeanParam;
+import fr.unice.polytech.equipe.j.annotations.Controller;
+import fr.unice.polytech.equipe.j.annotations.PathParam;
+import fr.unice.polytech.equipe.j.annotations.QueryParam;
+import fr.unice.polytech.equipe.j.annotations.Route;
+import fr.unice.polytech.equipe.j.httpresponse.HttpResponse;
+import fr.unice.polytech.equipe.j.httpresponse.ResponseUtils;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -16,8 +21,12 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class FlexibleRestServer {
+    private HttpServer server;
     private int port;
     private String serverRoot;
     private Map<Class<?>, Object> controllerInstances = new HashMap<>();
@@ -29,7 +38,6 @@ public class FlexibleRestServer {
     }
 
     public void start() {
-        HttpServer server;
         try {
             server = HttpServer.create(new InetSocketAddress(port), 0);
         } catch (IOException e) {
@@ -75,67 +83,102 @@ public class FlexibleRestServer {
 
     private void addContextHandler(Class<?> controllerClass, Method method, String fullPath, HttpMethod httpMethod) {
         contextHandlers.computeIfAbsent(fullPath, k -> new HashMap<>()).put(httpMethod, (exchange) -> {
-            // get controller instance (put it in the controller map if non-existent)
-            Object controller = this.controllerInstances.compute(controllerClass, (k, v) -> {
-                if (v == null) {
-                    try {
-                        Object newInstance = controllerClass.getDeclaredConstructor().newInstance();
-                        this.controllerInstances.put(controllerClass, newInstance);
-                        return newInstance;
-                    } catch (NoSuchMethodException | InstantiationException | IllegalAccessException |
-                             InvocationTargetException e) {
-                        try {
-                            exchange.sendResponseHeaders(500, -1);
-                        } catch (IOException ex) {
-                            throw new RuntimeException(ex);
-                        }
-                    }
+            // Extract controller instance
+            Object controller = this.controllerInstances.computeIfAbsent(controllerClass, k -> {
+                try {
+                    return controllerClass.getDeclaredConstructor().newInstance();
+                } catch (Exception e) {
+                    throw new RuntimeException("Failed to create controller instance", e);
                 }
-                return this.controllerInstances.get(controllerClass);
             });
 
-            // get request parameters
-            Map<String, String> linkParameters = this.getQueryToMap(exchange.getRequestURI().getQuery());
-            Map<String, String> bodyParameters = this.getQueryToMap(new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8));
-            List<Parameter> parameters = List.of(method.getParameters());
+            // Parse URI and extract path/query parameters
+            String requestPath = exchange.getRequestURI().getPath();
+            Map<String, String> pathParams = extractPathParams(requestPath, fullPath);
+            Map<String, String> queryParams = this.getQueryToMap(exchange.getRequestURI().getQuery());
 
-            Object[] methodParams = new Object[parameters.size()];
-            for (int i = 0; i < parameters.size(); i++) {
-                Parameter param = parameters.get(i);
-                // or handle default values
-                if (linkParameters.containsKey(param.getName())) {
-                    methodParams[i] = linkParameters.get(param.getName());
+            // Read and parse request body
+            String requestBody = new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
+
+            // Prepare method arguments
+            Object[] methodParams = new Object[method.getParameterCount()];
+            Parameter[] parameters = method.getParameters();
+            for (int i = 0; i < parameters.length; i++) {
+                Parameter param = parameters[i];
+                Class<?> paramType = param.getType();
+
+                // Process annotations
+                if (param.isAnnotationPresent(QueryParam.class)) {
+                    String paramName = param.getAnnotation(QueryParam.class).value();
+                    methodParams[i] = convertType(queryParams.get(paramName), paramType);
+                } else if (param.isAnnotationPresent(PathParam.class)) {
+                    String paramName = param.getAnnotation(PathParam.class).value();
+                    methodParams[i] = convertType(pathParams.get(paramName), paramType);
+                } else if (param.isAnnotationPresent(BeanParam.class)) {
+                    if (!requestBody.isBlank()) {
+                        methodParams[i] = new ObjectMapper().readValue(requestBody, paramType);
+                    }
                 } else {
-                    methodParams[i] = bodyParameters.getOrDefault(param.getName(), null);
+                    methodParams[i] = null; // Default to null for unannotated parameters
                 }
             }
 
-            exchange.getResponseHeaders().set("Content-Type", "application/json");
-            String jsonResponse = null;
-            int code = 200;
-
-            // invoke route handler and get its result
-            Object result;
+            // Invoke the method and return the response
             try {
-                result = method.invoke(controller, methodParams);
-            } catch (IllegalAccessException | InvocationTargetException e) {
-                jsonResponse = ResponseUtils.createErrorMessage("route handler crashed", e);
-                code = 500;
-                return;
-            }
-            if (result instanceof HttpResponse<?> httpResponse) {
-                jsonResponse = new ObjectMapper().writeValueAsString((httpResponse.getContent()));
-                code = httpResponse.getCode();
-            }
+                Object result = method.invoke(controller, methodParams);
 
-            jsonResponse = jsonResponse != null? jsonResponse : new ObjectMapper().writeValueAsString(result);
-            exchange.sendResponseHeaders(code, jsonResponse.length());
-            try (OutputStream os = exchange.getResponseBody()) {
-                os.write(jsonResponse.getBytes());
+                if (result instanceof HttpResponse<?> response) {
+                    String jsonResponse = new ObjectMapper().writeValueAsString(response.getContent());
+                    exchange.sendResponseHeaders(response.getCode(), jsonResponse.getBytes(StandardCharsets.UTF_8).length);
+                    try (OutputStream os = exchange.getResponseBody()) {
+                        os.write(jsonResponse.getBytes(StandardCharsets.UTF_8));
+                    }
+                }
+            } catch (Exception e) {
+                exchange.sendResponseHeaders(500, -1);
+                e.printStackTrace();
             }
-            exchange.close();
         });
     }
+
+    private Map<String, String> extractPathParams(String path, String routePattern) {
+        String regex = routePattern.replaceAll("\\{([^/}]+)}", "(?<$1>[^/]+)");
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(path);
+
+        Map<String, String> params = new HashMap<>();
+        if (matcher.matches()) {
+            Pattern namedGroupPattern = Pattern.compile("\\{([^/}]+)}");
+            Matcher namedGroupMatcher = namedGroupPattern.matcher(routePattern);
+            while (namedGroupMatcher.find()) {
+                String groupName = namedGroupMatcher.group(1);
+                String value = matcher.group(groupName);
+                if (value != null) params.put(groupName, value);
+            }
+        }
+        return params;
+    }
+
+    private Object convertType(String value, Class<?> type) {
+        if (value == null) return null;
+
+        if (type.equals(String.class)) {
+            return value;
+        } else if (type.equals(Integer.class) || type.equals(int.class)) {
+            return Integer.parseInt(value);
+        } else if (type.equals(Long.class) || type.equals(long.class)) {
+            return Long.parseLong(value);
+        } else if (type.equals(UUID.class)) {
+            return UUID.fromString(value);
+        } else if (type.equals(Double.class) || type.equals(double.class)) {
+            return Double.parseDouble(value);
+        } else if (type.equals(Boolean.class) || type.equals(boolean.class)) {
+            return Boolean.parseBoolean(value);
+        }
+        throw new IllegalArgumentException("Unsupported type: " + type.getName());
+    }
+
+
 
     public Map<String, String> getQueryToMap(String query) {
         if (query == null) {
@@ -151,6 +194,10 @@ public class FlexibleRestServer {
             }
         }
         return result;
+    }
+
+    public void stop() {
+        server.stop(0);
     }
 
     public static void main(String[] args) {

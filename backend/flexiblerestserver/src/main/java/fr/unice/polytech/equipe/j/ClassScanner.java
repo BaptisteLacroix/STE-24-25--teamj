@@ -1,4 +1,4 @@
-package fr.unice.polytech.equipe.j.flexiblerestserver;
+package fr.unice.polytech.equipe.j;
 
 import java.io.File;
 import java.util.ArrayList;

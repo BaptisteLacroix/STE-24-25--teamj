@@ -1,4 +1,4 @@
-package fr.unice.polytech.equipe.j.flexiblerestserver.httpresponse;
+package fr.unice.polytech.equipe.j.httpresponse;
 
 public class HttpResponse<T>{
     private HttpCode code;

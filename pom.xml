@@ -11,6 +11,7 @@
 
     <modules>
         <module>backend/bdd</module>
+        <module>backend/flexiblerestserver</module>
     </modules>
 
     <repositories>
@@ -67,7 +68,6 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-
         </dependencies>
     </dependencyManagement>
 

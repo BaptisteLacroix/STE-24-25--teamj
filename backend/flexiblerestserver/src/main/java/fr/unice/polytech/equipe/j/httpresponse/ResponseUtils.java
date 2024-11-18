@@ -1,4 +1,4 @@
-package fr.unice.polytech.equipe.j.flexiblerestserver.httpresponse;
+package fr.unice.polytech.equipe.j.httpresponse;
 
 public class ResponseUtils {
     public static String createErrorMessage(String message) {

@@ -1,7 +1,9 @@
-package fr.unice.polytech.equipe.j.flexiblerestserver;
+package fr.unice.polytech.equipe.j;
 
-import fr.unice.polytech.equipe.j.flexiblerestserver.httpresponse.HttpCode;
-import fr.unice.polytech.equipe.j.flexiblerestserver.httpresponse.HttpResponse;
+import fr.unice.polytech.equipe.j.annotations.Controller;
+import fr.unice.polytech.equipe.j.annotations.Route;
+import fr.unice.polytech.equipe.j.httpresponse.HttpCode;
+import fr.unice.polytech.equipe.j.httpresponse.HttpResponse;
 
 
 @Controller("/tempController")
