@@ -1,0 +1,40 @@
+<!DOCTYPE hibernate-configuration PUBLIC
+        "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+        "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+
+<hibernate-configuration>
+    <session-factory>
+        <!-- Database connection settings -->
+        <property name="hibernate.connection.driver_class">org.hsqldb.jdbc.JDBCDriver</property>
+        <property name="hibernate.connection.url">jdbc:hsqldb:file:src/main/resources/bdd.db</property>
+        <property name="hibernate.dialect">org.hibernate.dialect.HSQLDialect</property>
+        <property name="hibernate.hbm2ddl.auto">update</property>
+
+        <!-- JDBC connection pool settings -->
+        <property name="hibernate.connection.pool_size">10</property>
+
+        <!-- SQL logging -->
+        <property name="hibernate.show_sql">true</property>
+        <property name="hibernate.format_sql">true</property>
+
+        <!-- Annotated classes -->
+
+        <!-- Restaurant entities -->
+        <mapping class="fr.unice.polytech.equipe.j.restaurant.entities.RestaurantEntity"/>
+        <mapping class="fr.unice.polytech.equipe.j.restaurant.entities.MenuEntity"/>
+        <mapping class="fr.unice.polytech.equipe.j.restaurant.entities.MenuItemEntity"/>
+        <mapping class="fr.unice.polytech.equipe.j.restaurant.entities.SlotEntity"/>
+
+        <!-- User entities -->
+        <mapping class="fr.unice.polytech.equipe.j.user.entities.CampusUserEntity"/>
+        <mapping class="fr.unice.polytech.equipe.j.user.entities.RestaurantManagerEntity"/>
+
+        <!-- Order entities -->
+        <mapping class="fr.unice.polytech.equipe.j.order.entities.OrderEntity"/>
+        <mapping class="fr.unice.polytech.equipe.j.order.entities.DeliveryDetailsEntity"/>
+        <mapping class="fr.unice.polytech.equipe.j.order.entities.DeliveryLocationEntity"/>
+        <mapping class="fr.unice.polytech.equipe.j.order.entities.GroupOrderEntity"/>
+        <mapping class="fr.unice.polytech.equipe.j.order.entities.IndividualOrderEntity"/>
+        <mapping class="fr.unice.polytech.equipe.j.order.entities.TransactionEntity"/>
+    </session-factory>
+</hibernate-configuration>

@@ -1,14 +1,16 @@
 package fr.unice.polytech.equipe.j.restaurant;
 
+import fr.unice.polytech.equipe.j.restaurant.dao.RestaurantDAO;
 import fr.unice.polytech.equipe.j.restaurant.dto.MenuDTO;
 import fr.unice.polytech.equipe.j.restaurant.dto.MenuItemDTO;
 import fr.unice.polytech.equipe.j.restaurant.dto.RestaurantDTO;
+import fr.unice.polytech.equipe.j.restaurant.mapper.RestaurantMapper;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class DatabaseSeeder {
+public class RestaurantDatabaseSeeder {
 
     public static void seedDatabase() {
         // Restaurant 1
@@ -20,7 +22,7 @@ public class DatabaseSeeder {
         MenuDTO menuDTO = new MenuDTO();
         menuDTO.setItems(itemsRestaurant1);
         RestaurantDTO restaurantDTO = new RestaurantDTO(UUID.randomUUID(), "Le Petit Nice", null, null, new ArrayList<>(), menuDTO);
-
+        RestaurantDAO.save(RestaurantMapper.toEntity(restaurantDTO));
 
         // Restaurant 2
         List<MenuItemDTO> itemsRestaurant2 = List.of(
@@ -31,6 +33,7 @@ public class DatabaseSeeder {
         menuDTO = new MenuDTO();
         menuDTO.setItems(itemsRestaurant2);
         restaurantDTO = new RestaurantDTO(UUID.randomUUID(), "Le Petit Jardin", null, null, new ArrayList<>(), menuDTO);
+        RestaurantDAO.save(RestaurantMapper.toEntity(restaurantDTO));
 
         // Restaurant 3
         List<MenuItemDTO> itemsRestaurant3 = List.of(
@@ -41,6 +44,7 @@ public class DatabaseSeeder {
         menuDTO = new MenuDTO();
         menuDTO.setItems(itemsRestaurant3);
         restaurantDTO = new RestaurantDTO(UUID.randomUUID(), "Le Petit Chateau", null, null, new ArrayList<>(), menuDTO);
+        RestaurantDAO.save(RestaurantMapper.toEntity(restaurantDTO));
 
         // Restaurant A (closed)
         List<MenuItemDTO> itemsRestaurantA = List.of(
@@ -51,6 +55,7 @@ public class DatabaseSeeder {
         menuDTO = new MenuDTO();
         menuDTO.setItems(itemsRestaurantA);
         restaurantDTO = new RestaurantDTO(UUID.randomUUID(), "Le Gourmet D'Or", null, null, new ArrayList<>(), menuDTO);
+        RestaurantDAO.save(RestaurantMapper.toEntity(restaurantDTO));
 
         // Restaurant B (no personnel)
         List<MenuItemDTO> itemsRestaurantB = List.of(
@@ -61,10 +66,12 @@ public class DatabaseSeeder {
         menuDTO = new MenuDTO();
         menuDTO.setItems(itemsRestaurantB);
         restaurantDTO = new RestaurantDTO(UUID.randomUUID(), "Bistro de la Plage", null, null, new ArrayList<>(), menuDTO);
+        RestaurantDAO.save(RestaurantMapper.toEntity(restaurantDTO));
 
         // Restaurant C (no menu)
         menuDTO = new MenuDTO();
         restaurantDTO = new RestaurantDTO(UUID.randomUUID(), "Café de l'Aube", null, null, new ArrayList<>(), menuDTO);
+        RestaurantDAO.save(RestaurantMapper.toEntity(restaurantDTO));
 
         // Restaurant D (limited personnel)
         List<MenuItemDTO> itemsRestaurantD = List.of(
@@ -75,5 +82,6 @@ public class DatabaseSeeder {
         menuDTO = new MenuDTO();
         menuDTO.setItems(itemsRestaurantD);
         restaurantDTO = new RestaurantDTO(UUID.randomUUID(), "La Table Royale", null, null, new ArrayList<>(), menuDTO);
+        RestaurantDAO.save(RestaurantMapper.toEntity(restaurantDTO));
     }
 }

@@ -1,6 +1,7 @@
 package fr.unice.polytech.equipe.j.order.entities;
 
 import fr.unice.polytech.equipe.j.order.dto.OrderStatus;
+import fr.unice.polytech.equipe.j.order.mapper.OrderStatusConverter;
 import fr.unice.polytech.equipe.j.restaurant.entities.MenuItemEntity;
 import fr.unice.polytech.equipe.j.restaurant.entities.RestaurantEntity;
 import fr.unice.polytech.equipe.j.user.entities.CampusUserEntity;
@@ -36,8 +37,11 @@ public class OrderEntity {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<MenuItemEntity> items = new ArrayList<>();
 
-    @Enumerated(EnumType.STRING)
+    @Convert(converter = OrderStatusConverter.class)
+    @Column(name = "status", nullable = false)
     private OrderStatus status;
+
+
 
     public OrderEntity() {
         this.status = OrderStatus.PENDING;

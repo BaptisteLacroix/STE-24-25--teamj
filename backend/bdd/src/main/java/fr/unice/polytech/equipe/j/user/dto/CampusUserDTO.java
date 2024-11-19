@@ -1,6 +1,7 @@
 package fr.unice.polytech.equipe.j.user.dto;
 
 import fr.unice.polytech.equipe.j.order.dto.OrderDTO;
+import fr.unice.polytech.equipe.j.order.dto.PaymentMethod;
 import fr.unice.polytech.equipe.j.order.dto.TransactionDTO;
 import lombok.Getter;
 import lombok.Setter;

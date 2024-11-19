@@ -8,6 +8,8 @@ import fr.unice.polytech.equipe.j.restaurant.entities.MenuEntity;
 import fr.unice.polytech.equipe.j.restaurant.entities.MenuItemEntity;
 import fr.unice.polytech.equipe.j.restaurant.entities.RestaurantEntity;
 
+import java.util.ArrayList;
+
 public class RestaurantMapper {
     public static RestaurantDTO toDTO(RestaurantEntity restaurantEntity) {
         MenuDTO menuDTO = new MenuDTO();
@@ -34,15 +36,20 @@ public class RestaurantMapper {
 
     public static RestaurantEntity toEntity(RestaurantDTO dto) {
         MenuEntity menuEntity = new MenuEntity();
-        menuEntity.setItems(dto.getMenu().getItems().stream()
-                .map(item -> {
-                    MenuItemEntity menuItemEntity = new MenuItemEntity();
-                    menuItemEntity.setName(item.getName());
-                    menuItemEntity.setPrepTime(item.getPrepTime());
-                    menuItemEntity.setPrice(item.getPrice());
-                    menuItemEntity.setMenuEntity(menuEntity);
-                    return menuItemEntity;
-                }).toList());
+        if (dto.getMenu().getItems() != null) {
+            menuEntity.setItems(dto.getMenu().getItems().stream()
+                    .map(item -> {
+                        MenuItemEntity menuItemEntity = new MenuItemEntity();
+                        menuItemEntity.setName(item.getName());
+                        menuItemEntity.setPrepTime(item.getPrepTime());
+                        menuItemEntity.setPrice(item.getPrice());
+                        menuItemEntity.setMenuEntity(menuEntity);
+                        return menuItemEntity;
+                    }).toList());
+        } else {
+            menuEntity.setItems(new ArrayList<>());
+        }
+
 
         RestaurantEntity restaurantEntity = new RestaurantEntity();
         restaurantEntity.setId(dto.getRestaurantId());

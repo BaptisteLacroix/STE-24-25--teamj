@@ -11,7 +11,7 @@ public class CampusUserDAO {
     public static void save(CampusUserEntity user) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             Transaction tx = session.beginTransaction();
-            session.saveOrUpdate(user);
+            session.merge(user);
             tx.commit();
         }
     }

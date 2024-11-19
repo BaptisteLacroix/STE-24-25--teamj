@@ -12,4 +12,13 @@ public class DeliveryDetailsDTO {
     private UUID id;
     private DeliveryLocationDTO deliveryLocation;
     private LocalDateTime deliveryTime;
+
+    public DeliveryDetailsDTO() {
+    }
+
+    public DeliveryDetailsDTO(UUID id, DeliveryLocationDTO deliveryLocation, LocalDateTime deliveryTime) {
+        this.id = id;
+        this.deliveryLocation = deliveryLocation;
+        this.deliveryTime = deliveryTime;
+    }
 }

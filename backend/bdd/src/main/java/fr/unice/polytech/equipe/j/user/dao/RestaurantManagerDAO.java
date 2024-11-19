@@ -11,7 +11,7 @@ public class RestaurantManagerDAO {
     public static void save(RestaurantManagerEntity manager) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             Transaction tx = session.beginTransaction();
-            session.saveOrUpdate(manager);
+            session.merge(manager);
             tx.commit();
         }
     }

@@ -11,7 +11,7 @@ import java.util.UUID;
 public class RestaurantDAO {
     public static List<RestaurantEntity> getAllRestaurants() {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            return session.createQuery("FROM Restaurant", RestaurantEntity.class).list();
+            return session.createQuery("FROM RestaurantEntity", RestaurantEntity.class).list();
         }
     }
 
@@ -21,15 +21,16 @@ public class RestaurantDAO {
         }
     }
 
-    public static void saveRestaurant(RestaurantEntity restaurantEntity) {
+    public static void save(RestaurantEntity restaurantEntity) {
+        System.out.println("Saving restaurant: " + restaurantEntity.getName());
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             Transaction transaction = session.beginTransaction();
-            session.saveOrUpdate(restaurantEntity);
+            session.merge(restaurantEntity);
             transaction.commit();
         }
     }
 
-    public static void deleteRestaurant(UUID id) {
+    public static void delete(UUID id) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             Transaction transaction = session.beginTransaction();
             RestaurantEntity restaurantEntity = session.get(RestaurantEntity.class, id);

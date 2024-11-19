@@ -9,6 +9,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Version;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
@@ -33,4 +34,6 @@ public class DeliveryDetailsEntity {
 
     @Column(name = "delivery_time")
     private LocalDateTime deliveryTime;
+
+
 }

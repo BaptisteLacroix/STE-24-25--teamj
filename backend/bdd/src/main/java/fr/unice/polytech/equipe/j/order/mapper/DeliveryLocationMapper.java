@@ -5,10 +5,18 @@ import fr.unice.polytech.equipe.j.order.entities.DeliveryLocationEntity;
 
 public class DeliveryLocationMapper {
     public static DeliveryLocationDTO toDTO(DeliveryLocationEntity entity) {
-        return new DeliveryLocationDTO(entity.getId(), entity.getLocationName(), entity.getAddress());
+        DeliveryLocationDTO deliveryLocationDTO = new DeliveryLocationDTO();
+        deliveryLocationDTO.setId(entity.getId());
+        deliveryLocationDTO.setLocationName(entity.getLocationName());
+        deliveryLocationDTO.setAddress(entity.getAddress());
+        return deliveryLocationDTO;
     }
 
     public static DeliveryLocationEntity toEntity(DeliveryLocationDTO dto) {
-        return new DeliveryLocationEntity(dto.getId(), dto.getLocationName(), dto.getAddress());
+        DeliveryLocationEntity deliveryLocationEntity = new DeliveryLocationEntity();
+        deliveryLocationEntity.setId(dto.getId());
+        deliveryLocationEntity.setLocationName(dto.getLocationName());
+        deliveryLocationEntity.setAddress(dto.getAddress());
+        return deliveryLocationEntity;
     }
 }

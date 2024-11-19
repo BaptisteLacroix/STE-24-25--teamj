@@ -17,4 +17,15 @@ public class OrderDTO {
     private CampusUserDTO user;
     private List<MenuItemDTO> items;
     private String status;
+
+    public OrderDTO() {
+    }
+
+    public OrderDTO(UUID orderUUID, RestaurantDTO restaurant, CampusUserDTO user, List<MenuItemDTO> items, String status) {
+        this.orderUUID = orderUUID;
+        this.restaurant = restaurant;
+        this.user = user;
+        this.items = items;
+        this.status = status;
+    }
 }

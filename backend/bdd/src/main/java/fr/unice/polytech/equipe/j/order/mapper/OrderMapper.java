@@ -3,6 +3,7 @@ package fr.unice.polytech.equipe.j.order.mapper;
 import fr.unice.polytech.equipe.j.order.dto.OrderDTO;
 import fr.unice.polytech.equipe.j.order.dto.OrderStatus;
 import fr.unice.polytech.equipe.j.order.entities.OrderEntity;
+import fr.unice.polytech.equipe.j.restaurant.mapper.MenuItemMapper;
 import fr.unice.polytech.equipe.j.restaurant.mapper.RestaurantMapper;
 import fr.unice.polytech.equipe.j.user.mapper.CampusUserMapper;
 

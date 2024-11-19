@@ -3,6 +3,7 @@ package fr.unice.polytech.equipe.j.restaurant.entities;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
@@ -26,6 +27,8 @@ public class MenuEntity {
     @Column(name = "id", updatable = false, nullable = false, unique = true)
     private UUID id;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "menu")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "menuEntity", fetch = FetchType.EAGER)
     private List<MenuItemEntity> items = new ArrayList<>();
+
+
 }

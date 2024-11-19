@@ -15,4 +15,15 @@ public class TransactionDTO {
     private OrderDTO order;
     private double amount;
     private LocalDateTime timestamp;
+
+    public TransactionDTO() {
+    }
+
+    public TransactionDTO(UUID id, CampusUserDTO user, OrderDTO order, double amount, LocalDateTime timestamp) {
+        this.id = id;
+        this.user = user;
+        this.order = order;
+        this.amount = amount;
+        this.timestamp = timestamp;
+    }
 }

@@ -13,7 +13,6 @@ public class MenuItemDTO {
     private int prepTime;
     private double price;
 
-    // Constructors, Getters, and Setters
     public MenuItemDTO() {
     }
 

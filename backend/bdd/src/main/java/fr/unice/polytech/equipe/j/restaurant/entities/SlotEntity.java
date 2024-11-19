@@ -44,4 +44,5 @@ public class SlotEntity {
     @ManyToOne
     @JoinColumn(name = "restaurant_id")
     private RestaurantEntity restaurantEntity;
+
 }

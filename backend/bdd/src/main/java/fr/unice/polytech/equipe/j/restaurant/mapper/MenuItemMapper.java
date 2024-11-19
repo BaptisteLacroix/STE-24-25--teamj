@@ -5,7 +5,7 @@ import fr.unice.polytech.equipe.j.restaurant.entities.MenuItemEntity;
 
 public class MenuItemMapper {
 
-    public MenuItemDTO toDTO(MenuItemEntity entity) {
+    public static MenuItemDTO toDTO(MenuItemEntity entity) {
         MenuItemDTO menuItemDTO = new MenuItemDTO();
         menuItemDTO.setId(entity.getId());
         menuItemDTO.setName(entity.getName());
@@ -14,7 +14,7 @@ public class MenuItemMapper {
         return menuItemDTO;
     }
 
-    public MenuItemEntity toEntity(MenuItemDTO dto) {
+    public static MenuItemEntity toEntity(MenuItemDTO dto) {
         MenuItemEntity menuItemEntity = new MenuItemEntity();
         menuItemEntity.setId(dto.getId());
         menuItemEntity.setName(dto.getName());

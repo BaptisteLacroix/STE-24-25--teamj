@@ -18,6 +18,9 @@ public class RestaurantDTO {
     private MenuDTO menu;
     private OrderPriceStrategyDTO orOrderPriceStrategy;
 
+    public RestaurantDTO() {
+    }
+
     public RestaurantDTO(UUID restaurantId, String restaurantName, LocalDateTime openingTime, LocalDateTime closingTime, List<SlotDTO> slots, MenuDTO menu) {
         this.restaurantId = restaurantId;
         this.restaurantName = restaurantName;

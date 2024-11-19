@@ -12,7 +12,6 @@ public class MenuDTO {
     private UUID id;
     private List<MenuItemDTO> items;
 
-    // Constructors, Getters, and Setters
     public MenuDTO() {
     }
 

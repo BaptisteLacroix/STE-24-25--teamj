@@ -1,8 +1,14 @@
 package fr.unice.polytech.equipe.j.order.dto;
 
 public enum OrderStatus {
-    PENDING,
-    VALIDATED,
-    DELIVERED,
-    CANCELLED
+    PENDING("pending"),
+    VALIDATED("validated"),
+    DELIVERED("delivered"),
+    CANCELLED("cancelled");
+
+    private final String status;
+
+    OrderStatus(String status) {
+        this.status = status;
+    }
 }

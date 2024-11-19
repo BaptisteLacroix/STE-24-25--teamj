@@ -7,4 +7,12 @@ import lombok.Setter;
 @Setter
 public class IndividualOrderDTO extends OrderDTO {
     private DeliveryDetailsDTO deliveryDetails;
+
+    public IndividualOrderDTO() {
+    }
+
+    public IndividualOrderDTO(OrderDTO orderDTO, DeliveryDetailsDTO deliveryDetails) {
+        super(orderDTO.getOrderUUID(), orderDTO.getRestaurant(), orderDTO.getUser(), orderDTO.getItems(), orderDTO.getStatus());
+        this.deliveryDetails = deliveryDetails;
+    }
 }

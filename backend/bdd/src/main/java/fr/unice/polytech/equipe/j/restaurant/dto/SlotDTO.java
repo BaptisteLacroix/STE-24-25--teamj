@@ -17,7 +17,6 @@ public class SlotDTO {
     private Duration durationTime;
     private int numberOfPersonnel;
 
-    // Constructors, Getters, and Setters
     public SlotDTO() {
     }
 
