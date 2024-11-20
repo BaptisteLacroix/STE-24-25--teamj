@@ -19,7 +19,7 @@ services:
 
 
 ingress:
-  enabled: false
+  enabled: true
   host: payment.sophia-eats.food
   annotations: {}
   tls: []
