@@ -37,31 +37,12 @@ public class HibernateUtil {
     private HibernateUtil() {
     }
 
-    public static void main(String[] args) throws IOException, InterruptedException {
+    public static void main(String[] args) {
         FlexibleRestServer server = new FlexibleRestServer("fr.unice.polytech.equipe.j", 5003);
         server.start();
-//        RestaurantDatabaseSeeder.seedDatabase();
-//        UserDatabaseSeeder.seedDatabase();
-//        DeliveryLocationDatabaseSeeder.seedDatabase();
-//
-//        System.out.println(CampusUserDAO.getAll().size());
-//        System.out.println(RestaurantManagerDAO.getAll().size());
-//        System.out.println(DeliveryLocationDAO.getAllDeliveryLocations().size());
-//        System.out.println(RestaurantDAO.getAllRestaurants().size());
-        System.out.println(RestaurantDAO.getAllRestaurants());
-        HttpClient client = HttpClient.newHttpClient();
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("http://localhost:5003/api/restaurants/all"))
-                .GET()
-                .build();
-
-        java.net.http.HttpResponse<String> response = client.send(request, java.net.http.HttpResponse.BodyHandlers.ofString());
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        List<RestaurantDTO> restaurantDTO = objectMapper.readValue(response.body(), List.class);
-        System.out.println(restaurantDTO);
-
-        System.out.println(200 + " = " + response.statusCode());
+        RestaurantDatabaseSeeder.seedDatabase();
+        UserDatabaseSeeder.seedDatabase();
+        DeliveryLocationDatabaseSeeder.seedDatabase();
     }
 
     public static void shutdown() {

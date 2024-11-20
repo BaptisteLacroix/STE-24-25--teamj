@@ -8,7 +8,7 @@ import fr.unice.polytech.equipe.j.order.dto.OrderDTO;
 
 import java.util.List;
 
-@Controller("/api/orders")
+@Controller("/api/database/orders")
 public class OrderController {
 
     @Route(value = "/all", method = HttpMethod.GET)

@@ -35,7 +35,7 @@ class RestaurantControllerTest {
     void testGetAllRestaurants() throws Exception {
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("http://localhost:5003/api/restaurants/all"))
+                .uri(URI.create("http://localhost:5003/api/database/restaurants/all"))
                 .GET()
                 .build();
 
@@ -56,7 +56,7 @@ class RestaurantControllerTest {
         System.out.println(id);
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("http://localhost:5003/api/restaurants/" + id))
+                .uri(URI.create("http://localhost:5003/api/database/restaurants/" + id))
                 .GET()
                 .build();
 
@@ -88,7 +88,7 @@ class RestaurantControllerTest {
         ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
         String json = ow.writeValueAsString(restaurantDTO);
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("http://localhost:5003/api/restaurants/create"))
+                .uri(URI.create("http://localhost:5003/api/database/restaurants/create"))
                 .header("Content-Type", "application/json")
                 .POST(HttpRequest.BodyPublishers.ofString(json))
                 .build();

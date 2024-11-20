@@ -19,6 +19,7 @@ import java.lang.reflect.Parameter;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -70,7 +71,8 @@ public class FlexibleRestServer {
         }
 
         for (Map.Entry<String, Map<HttpMethod, HttpHandler>> entry : contextHandlers.entrySet()) {
-            server.createContext(entry.getKey(), (exchange) -> {
+            server.createContext(entry.getKey(), exchange -> {
+                System.out.println("Handling request for path: " + entry.getKey());
                 HttpMethod requestMethod = HttpMethod.valueOf(exchange.getRequestMethod());
                 HttpHandler handler = entry.getValue().get(requestMethod);
                 if (handler != null) {
@@ -100,10 +102,6 @@ public class FlexibleRestServer {
 
                 // Extract path parameters from the request
                 Map<String, String> pathParams = extractPathParams(requestPath, normalizedRoutePattern);
-                if (pathParams == null) {
-                    exchange.sendResponseHeaders(404, -1); // Not Found
-                    return;
-                }
 
                 // Extract query parameters from the request
                 Map<String, String> queryParams = getQueryToMap(exchange.getRequestURI().getQuery());
@@ -121,17 +119,14 @@ public class FlexibleRestServer {
                 handleResponse(exchange, result);
 
             } catch (IllegalArgumentException e) {
-                // Handle invalid path parameter types (e.g., invalid UUID)
                 e.printStackTrace();
                 exchange.sendResponseHeaders(400, -1); // Bad Request
             } catch (Exception e) {
-                // General error handling
                 e.printStackTrace();
                 exchange.sendResponseHeaders(500, -1); // Internal Server Error
             }
         });
     }
-
 
     private Object getControllerInstance(Class<?> controllerClass) {
         return controllerInstances.computeIfAbsent(controllerClass, k -> {
@@ -179,8 +174,7 @@ public class FlexibleRestServer {
             Object responseContent = response.getContent();
 
             // If the content is already a string, don't serialize it again
-            if (responseContent instanceof String) {
-                String jsonResponse = (String) responseContent;
+            if (responseContent instanceof String jsonResponse) {
                 exchange.sendResponseHeaders(response.getCode(), jsonResponse.getBytes(StandardCharsets.UTF_8).length);
                 try (OutputStream os = exchange.getResponseBody()) {
                     os.write(jsonResponse.getBytes(StandardCharsets.UTF_8));
@@ -196,19 +190,21 @@ public class FlexibleRestServer {
         }
     }
 
-
+    private String normalizePath(String path) {
+        if (path == null || path.isBlank()) {
+            return "/";
+        }
+        return path.replaceAll("\\{[^/]+}", "([^/?]+)");
+    }
 
     private Map<String, String> extractPathParams(String requestPath, String routePattern) {
-        String regex = routePattern.replaceAll("\\{([^/}]+)}", "(?<$1>[^/]+)");
-        Pattern pattern = Pattern.compile("^" + regex + "$");
-        Matcher matcher = pattern.matcher(requestPath);
+        Pattern routePatternRegex = Pattern.compile(routePattern);
+        Matcher matcher = routePatternRegex.matcher(requestPath);
 
         // If no match, return null (route does not apply)
         if (!matcher.matches()) {
-            return null;
+            return Collections.emptyMap();
         }
-
-        System.out.println("Matched route: " + routePattern);
 
         // Extract named groups
         Map<String, String> params = new HashMap<>();
@@ -229,15 +225,6 @@ public class FlexibleRestServer {
             throw new IllegalArgumentException("Invalid UUID format: " + idParam, e);
         }
     }
-
-
-    private String normalizePath(String path) {
-        if (path == null || path.isBlank()) {
-            return "/";
-        }
-        return path.replaceAll("/+", "/").replaceFirst("/$", "");
-    }
-
 
     private Object convertType(String value, Class<?> type) {
         if (value == null) return null;

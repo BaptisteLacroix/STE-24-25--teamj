@@ -10,7 +10,7 @@ import fr.unice.polytech.equipe.j.user.mapper.RestaurantManagerMapper;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Controller("/api/managers")
+@Controller("/api/database/managers")
 public class RestaurantManagerController {
 
     @Route(value = "/create", method = HttpMethod.POST)

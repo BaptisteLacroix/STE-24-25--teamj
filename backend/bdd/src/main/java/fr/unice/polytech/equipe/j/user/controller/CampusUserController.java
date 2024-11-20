@@ -11,7 +11,7 @@ import fr.unice.polytech.equipe.j.httpresponse.HttpResponse;
 
 import java.util.stream.Collectors;
 
-@Controller("/api/users")
+@Controller("/api/database/users")
 public class CampusUserController {
     @Route(value = "/create", method = HttpMethod.POST)
     public void createUser(CampusUserDTO dto) {

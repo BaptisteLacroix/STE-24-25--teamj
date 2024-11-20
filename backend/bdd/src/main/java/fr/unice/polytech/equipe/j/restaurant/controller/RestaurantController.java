@@ -17,7 +17,7 @@ import fr.unice.polytech.equipe.j.restaurant.mapper.RestaurantMapper;
 import java.util.List;
 import java.util.UUID;
 
-@Controller("/api/restaurants")
+@Controller("/api/database/restaurants")
 public class RestaurantController {
 
     @Route(value = "/all", method = HttpMethod.GET)
