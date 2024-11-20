@@ -16,15 +16,7 @@ public class ClassScanner {
         // Get the location of a class from the current module
         String classFileLocation = classLoader.getResource(path + "/").getPath();
 
-        // The location will be something like "file:/path/to/project/target/classes/fr/unice/polytech/equipe/j"
-        // We need to extract the target directory for the current module.
-
-        // Extract the path of the classes directory (i.e., target/classes/)
-        String targetDir = classFileLocation.substring(0, classFileLocation.indexOf("target/classes/")) + "target/classes/";
-
-        System.out.println("Looking for classes in: " + targetDir);
-
-        File directory = new File(targetDir + path);
+        File directory = new File(classFileLocation);
 
         List<Class<?>> classes = new ArrayList<>();
 
