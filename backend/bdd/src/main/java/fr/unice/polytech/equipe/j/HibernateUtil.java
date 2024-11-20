@@ -1,14 +1,24 @@
 package fr.unice.polytech.equipe.j;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.unice.polytech.equipe.j.order.DeliveryLocationDatabaseSeeder;
 import fr.unice.polytech.equipe.j.order.dao.DeliveryLocationDAO;
 import fr.unice.polytech.equipe.j.restaurant.RestaurantDatabaseSeeder;
 import fr.unice.polytech.equipe.j.restaurant.dao.RestaurantDAO;
+import fr.unice.polytech.equipe.j.restaurant.dto.RestaurantDTO;
+import fr.unice.polytech.equipe.j.restaurant.entities.RestaurantEntity;
 import fr.unice.polytech.equipe.j.user.UserDatabaseSeeder;
 import fr.unice.polytech.equipe.j.user.dao.CampusUserDAO;
+import fr.unice.polytech.equipe.j.user.dao.RestaurantManagerDAO;
 import lombok.Getter;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
+
+import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.util.List;
 
 public class HibernateUtil {
     @Getter
@@ -17,6 +27,7 @@ public class HibernateUtil {
     static {
         try {
             sessionFactory = new Configuration().configure().buildSessionFactory();
+            System.out.println("Database URL: " + sessionFactory.getProperties().get("hibernate.connection.url"));
         } catch (Throwable ex) {
             System.err.println("Initial SessionFactory creation failed." + ex);
             throw new ExceptionInInitializerError(ex);
@@ -26,18 +37,34 @@ public class HibernateUtil {
     private HibernateUtil() {
     }
 
-    public static void populateDatabase() {
-        RestaurantDatabaseSeeder.seedDatabase();
-        UserDatabaseSeeder.seedDatabase();
-        DeliveryLocationDatabaseSeeder.seedDatabase();
+    public static void main(String[] args) throws IOException, InterruptedException {
+        FlexibleRestServer server = new FlexibleRestServer("fr.unice.polytech.equipe.j", 5003);
+        server.start();
+//        RestaurantDatabaseSeeder.seedDatabase();
+//        UserDatabaseSeeder.seedDatabase();
+//        DeliveryLocationDatabaseSeeder.seedDatabase();
+//
+//        System.out.println(CampusUserDAO.getAll().size());
+//        System.out.println(RestaurantManagerDAO.getAll().size());
+//        System.out.println(DeliveryLocationDAO.getAllDeliveryLocations().size());
+//        System.out.println(RestaurantDAO.getAllRestaurants().size());
+        System.out.println(RestaurantDAO.getAllRestaurants());
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("http://localhost:5003/api/restaurants/all"))
+                .GET()
+                .build();
+
+        java.net.http.HttpResponse<String> response = client.send(request, java.net.http.HttpResponse.BodyHandlers.ofString());
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        List<RestaurantDTO> restaurantDTO = objectMapper.readValue(response.body(), List.class);
+        System.out.println(restaurantDTO);
+
+        System.out.println(200 + " = " + response.statusCode());
     }
 
     public static void shutdown() {
         getSessionFactory().close();
-    }
-
-    public static void main(String[] args) {
-        HibernateUtil.populateDatabase();
-        HibernateUtil.shutdown();
     }
 }

@@ -29,6 +29,4 @@ public class MenuEntity {
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "menuEntity", fetch = FetchType.EAGER)
     private List<MenuItemEntity> items = new ArrayList<>();
-
-
 }

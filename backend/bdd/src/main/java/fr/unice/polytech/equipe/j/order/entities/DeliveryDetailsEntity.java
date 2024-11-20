@@ -34,6 +34,4 @@ public class DeliveryDetailsEntity {
 
     @Column(name = "delivery_time")
     private LocalDateTime deliveryTime;
-
-
 }

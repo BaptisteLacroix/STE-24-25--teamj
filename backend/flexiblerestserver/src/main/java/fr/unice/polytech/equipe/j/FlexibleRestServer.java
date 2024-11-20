@@ -1,23 +1,24 @@
 package fr.unice.polytech.equipe.j;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sun.net.httpserver.HttpServer;
+import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+import com.sun.net.httpserver.HttpServer;
 import fr.unice.polytech.equipe.j.annotations.BeanParam;
 import fr.unice.polytech.equipe.j.annotations.Controller;
 import fr.unice.polytech.equipe.j.annotations.PathParam;
 import fr.unice.polytech.equipe.j.annotations.QueryParam;
 import fr.unice.polytech.equipe.j.annotations.Route;
 import fr.unice.polytech.equipe.j.httpresponse.HttpResponse;
-import fr.unice.polytech.equipe.j.httpresponse.ResponseUtils;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,14 +28,18 @@ import java.util.regex.Pattern;
 
 public class FlexibleRestServer {
     private HttpServer server;
-    private int port;
-    private String serverRoot;
-    private Map<Class<?>, Object> controllerInstances = new HashMap<>();
-    private Map<String, Map<HttpMethod, HttpHandler>> contextHandlers = new HashMap<>();
+    private final int port;
+    private final String serverRoot;
+    private final Map<Class<?>, Object> controllerInstances = new HashMap<>();
+    private final Map<String, Map<HttpMethod, HttpHandler>> contextHandlers = new HashMap<>();
 
     public FlexibleRestServer(String serverRoot, int port) {
         this.port = port;
         this.serverRoot = serverRoot;
+    }
+
+    public void stop() {
+        server.stop(0);
     }
 
     public void start() {
@@ -82,82 +87,157 @@ public class FlexibleRestServer {
     }
 
     private void addContextHandler(Class<?> controllerClass, Method method, String fullPath, HttpMethod httpMethod) {
-        contextHandlers.computeIfAbsent(fullPath, k -> new HashMap<>()).put(httpMethod, (exchange) -> {
-            // Extract controller instance
-            Object controller = this.controllerInstances.computeIfAbsent(controllerClass, k -> {
-                try {
-                    return controllerClass.getDeclaredConstructor().newInstance();
-                } catch (Exception e) {
-                    throw new RuntimeException("Failed to create controller instance", e);
-                }
-            });
+        // Normalize the route pattern for consistent matching
+        String normalizedRoutePattern = normalizePath(fullPath);
 
-            // Parse URI and extract path/query parameters
-            String requestPath = exchange.getRequestURI().getPath();
-            Map<String, String> pathParams = extractPathParams(requestPath, fullPath);
-            Map<String, String> queryParams = this.getQueryToMap(exchange.getRequestURI().getQuery());
-
-            // Read and parse request body
-            String requestBody = new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
-
-            // Prepare method arguments
-            Object[] methodParams = new Object[method.getParameterCount()];
-            Parameter[] parameters = method.getParameters();
-            for (int i = 0; i < parameters.length; i++) {
-                Parameter param = parameters[i];
-                Class<?> paramType = param.getType();
-
-                // Process annotations
-                if (param.isAnnotationPresent(QueryParam.class)) {
-                    String paramName = param.getAnnotation(QueryParam.class).value();
-                    methodParams[i] = convertType(queryParams.get(paramName), paramType);
-                } else if (param.isAnnotationPresent(PathParam.class)) {
-                    String paramName = param.getAnnotation(PathParam.class).value();
-                    methodParams[i] = convertType(pathParams.get(paramName), paramType);
-                } else if (param.isAnnotationPresent(BeanParam.class)) {
-                    if (!requestBody.isBlank()) {
-                        methodParams[i] = new ObjectMapper().readValue(requestBody, paramType);
-                    }
-                } else {
-                    methodParams[i] = null; // Default to null for unannotated parameters
-                }
-            }
-
-            // Invoke the method and return the response
+        contextHandlers.computeIfAbsent(normalizedRoutePattern, k -> new HashMap<>()).put(httpMethod, exchange -> {
             try {
+                // Get the controller instance
+                Object controller = getControllerInstance(controllerClass);
+
+                // Normalize the request path
+                String requestPath = normalizePath(exchange.getRequestURI().getPath());
+
+                // Extract path parameters from the request
+                Map<String, String> pathParams = extractPathParams(requestPath, normalizedRoutePattern);
+                if (pathParams == null) {
+                    exchange.sendResponseHeaders(404, -1); // Not Found
+                    return;
+                }
+
+                // Extract query parameters from the request
+                Map<String, String> queryParams = getQueryToMap(exchange.getRequestURI().getQuery());
+
+                // Read the request body if applicable
+                String requestBody = readRequestBody(exchange);
+
+                // Prepare method arguments for the controller method
+                Object[] methodParams = prepareMethodParameters(method, pathParams, queryParams, requestBody);
+
+                // Invoke the controller method
                 Object result = method.invoke(controller, methodParams);
 
-                if (result instanceof HttpResponse<?> response) {
-                    String jsonResponse = new ObjectMapper().writeValueAsString(response.getContent());
-                    exchange.sendResponseHeaders(response.getCode(), jsonResponse.getBytes(StandardCharsets.UTF_8).length);
-                    try (OutputStream os = exchange.getResponseBody()) {
-                        os.write(jsonResponse.getBytes(StandardCharsets.UTF_8));
-                    }
-                }
-            } catch (Exception e) {
-                exchange.sendResponseHeaders(500, -1);
+                // Handle the response
+                handleResponse(exchange, result);
+
+            } catch (IllegalArgumentException e) {
+                // Handle invalid path parameter types (e.g., invalid UUID)
                 e.printStackTrace();
+                exchange.sendResponseHeaders(400, -1); // Bad Request
+            } catch (Exception e) {
+                // General error handling
+                e.printStackTrace();
+                exchange.sendResponseHeaders(500, -1); // Internal Server Error
             }
         });
     }
 
-    private Map<String, String> extractPathParams(String path, String routePattern) {
-        String regex = routePattern.replaceAll("\\{([^/}]+)}", "(?<$1>[^/]+)");
-        Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(path);
 
-        Map<String, String> params = new HashMap<>();
-        if (matcher.matches()) {
-            Pattern namedGroupPattern = Pattern.compile("\\{([^/}]+)}");
-            Matcher namedGroupMatcher = namedGroupPattern.matcher(routePattern);
-            while (namedGroupMatcher.find()) {
-                String groupName = namedGroupMatcher.group(1);
-                String value = matcher.group(groupName);
-                if (value != null) params.put(groupName, value);
+    private Object getControllerInstance(Class<?> controllerClass) {
+        return controllerInstances.computeIfAbsent(controllerClass, k -> {
+            try {
+                return controllerClass.getDeclaredConstructor().newInstance();
+            } catch (Exception e) {
+                throw new RuntimeException("Failed to create controller instance", e);
             }
+        });
+    }
+
+    private String readRequestBody(HttpExchange exchange) throws IOException {
+        try (InputStream inputStream = exchange.getRequestBody()) {
+            return new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
+        }
+    }
+
+    private Object[] prepareMethodParameters(Method method, Map<String, String> pathParams, Map<String, String> queryParams, String requestBody) throws IOException {
+        Object[] methodParams = new Object[method.getParameterCount()];
+        Parameter[] parameters = method.getParameters();
+
+        for (int i = 0; i < parameters.length; i++) {
+            Parameter param = parameters[i];
+            Class<?> paramType = param.getType();
+
+            if (param.isAnnotationPresent(QueryParam.class)) {
+                String paramName = param.getAnnotation(QueryParam.class).value();
+                methodParams[i] = convertType(queryParams.get(paramName), paramType);
+            } else if (param.isAnnotationPresent(PathParam.class)) {
+                String paramName = param.getAnnotation(PathParam.class).value();
+                methodParams[i] = convertType(pathParams.get(paramName), paramType);
+            } else if (param.isAnnotationPresent(BeanParam.class)) {
+                if (!requestBody.isBlank()) {
+                    methodParams[i] = new ObjectMapper().readValue(requestBody, paramType);
+                }
+            } else {
+                methodParams[i] = null;
+            }
+        }
+        return methodParams;
+    }
+
+    private void handleResponse(HttpExchange exchange, Object result) throws IOException {
+        if (result instanceof HttpResponse<?> response) {
+            Object responseContent = response.getContent();
+
+            // If the content is already a string, don't serialize it again
+            if (responseContent instanceof String) {
+                String jsonResponse = (String) responseContent;
+                exchange.sendResponseHeaders(response.getCode(), jsonResponse.getBytes(StandardCharsets.UTF_8).length);
+                try (OutputStream os = exchange.getResponseBody()) {
+                    os.write(jsonResponse.getBytes(StandardCharsets.UTF_8));
+                }
+            } else {
+                // Otherwise, serialize it into a JSON string
+                String jsonResponse = new ObjectMapper().writeValueAsString(responseContent);
+                exchange.sendResponseHeaders(response.getCode(), jsonResponse.getBytes(StandardCharsets.UTF_8).length);
+                try (OutputStream os = exchange.getResponseBody()) {
+                    os.write(jsonResponse.getBytes(StandardCharsets.UTF_8));
+                }
+            }
+        }
+    }
+
+
+
+    private Map<String, String> extractPathParams(String requestPath, String routePattern) {
+        String regex = routePattern.replaceAll("\\{([^/}]+)}", "(?<$1>[^/]+)");
+        Pattern pattern = Pattern.compile("^" + regex + "$");
+        Matcher matcher = pattern.matcher(requestPath);
+
+        // If no match, return null (route does not apply)
+        if (!matcher.matches()) {
+            return null;
+        }
+
+        System.out.println("Matched route: " + routePattern);
+
+        // Extract named groups
+        Map<String, String> params = new HashMap<>();
+        Pattern namedGroupPattern = Pattern.compile("\\{([^/}]+)}");
+        Matcher namedGroupMatcher = namedGroupPattern.matcher(routePattern);
+        while (namedGroupMatcher.find()) {
+            String groupName = namedGroupMatcher.group(1);
+            String value = matcher.group(groupName);
+            if (value != null) params.put(groupName, value);
         }
         return params;
     }
+
+    private UUID validateUuid(String idParam) {
+        try {
+            return UUID.fromString(idParam);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Invalid UUID format: " + idParam, e);
+        }
+    }
+
+
+    private String normalizePath(String path) {
+        if (path == null || path.isBlank()) {
+            return "/";
+        }
+        return path.replaceAll("/+", "/").replaceFirst("/$", "");
+    }
+
 
     private Object convertType(String value, Class<?> type) {
         if (value == null) return null;
@@ -169,7 +249,7 @@ public class FlexibleRestServer {
         } else if (type.equals(Long.class) || type.equals(long.class)) {
             return Long.parseLong(value);
         } else if (type.equals(UUID.class)) {
-            return UUID.fromString(value);
+            return validateUuid(value);
         } else if (type.equals(Double.class) || type.equals(double.class)) {
             return Double.parseDouble(value);
         } else if (type.equals(Boolean.class) || type.equals(boolean.class)) {
@@ -177,8 +257,6 @@ public class FlexibleRestServer {
         }
         throw new IllegalArgumentException("Unsupported type: " + type.getName());
     }
-
-
 
     public Map<String, String> getQueryToMap(String query) {
         if (query == null) {
@@ -194,10 +272,6 @@ public class FlexibleRestServer {
             }
         }
         return result;
-    }
-
-    public void stop() {
-        server.stop(0);
     }
 
     public static void main(String[] args) {

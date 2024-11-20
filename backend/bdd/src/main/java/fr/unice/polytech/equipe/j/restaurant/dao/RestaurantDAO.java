@@ -12,21 +12,28 @@ public class RestaurantDAO {
     public static List<RestaurantEntity> getAllRestaurants() {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             return session.createQuery("FROM RestaurantEntity", RestaurantEntity.class).list();
+        } catch (Exception e) {
+            System.out.println("Error while getting all restaurants: " + e.getMessage());
+            return null;
         }
     }
 
     public static RestaurantEntity getRestaurantById(UUID id) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             return session.get(RestaurantEntity.class, id);
+        } catch (Exception e) {
+            System.out.println("Error while getting restaurant by id: " + e.getMessage());
+            return null;
         }
     }
 
     public static void save(RestaurantEntity restaurantEntity) {
-        System.out.println("Saving restaurant: " + restaurantEntity.getName());
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             Transaction transaction = session.beginTransaction();
             session.merge(restaurantEntity);
             transaction.commit();
+        } catch (Exception e) {
+            System.out.println("Error while saving restaurant: " + e.getMessage());
         }
     }
 
@@ -38,6 +45,8 @@ public class RestaurantDAO {
                 session.delete(restaurantEntity);
             }
             transaction.commit();
+        } catch (Exception e) {
+            System.out.println("Error while deleting restaurant: " + e.getMessage());
         }
     }
 }

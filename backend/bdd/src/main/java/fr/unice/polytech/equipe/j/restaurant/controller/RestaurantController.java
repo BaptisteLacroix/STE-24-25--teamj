@@ -2,7 +2,6 @@ package fr.unice.polytech.equipe.j.restaurant.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import com.fasterxml.jackson.databind.util.JSONPObject;
 import fr.unice.polytech.equipe.j.HttpMethod;
 import fr.unice.polytech.equipe.j.annotations.BeanParam;
 import fr.unice.polytech.equipe.j.annotations.Controller;
@@ -36,12 +35,21 @@ public class RestaurantController {
 
     @Route(value = "/{id}", method = HttpMethod.GET)
     public HttpResponse getRestaurantById(@PathParam("id") UUID id) {
-        System.out.println("Getting restaurant by id: " + id);
         RestaurantEntity restaurantEntity = RestaurantDAO.getRestaurantById(id);
-        return restaurantEntity != null
-                ? new HttpResponse(HttpCode.HTTP_200, new JSONPObject("restaurant", RestaurantMapper.toDTO(restaurantEntity)))
-                : new HttpResponse(HttpCode.HTTP_404, "Restaurant not found");
+        if (restaurantEntity != null) {
+            ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+            try {
+                String json = ow.writeValueAsString(RestaurantMapper.toDTO(restaurantEntity));
+                return new HttpResponse(HttpCode.HTTP_200, json);
+            } catch (Exception e) {
+                e.printStackTrace();
+                return new HttpResponse(HttpCode.HTTP_500, "Internal server error");
+            }
+        } else {
+            return new HttpResponse(HttpCode.HTTP_404, "Restaurant not found");
+        }
     }
+
 
 //    @Route(value = "/search", method = HttpMethod.GET)
 //    public HttpResponse searchRestaurants(@QueryParam("name") String name, @QueryParam("location") String location) {

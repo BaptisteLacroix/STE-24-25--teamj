@@ -11,12 +11,18 @@ public class DeliveryLocationDAO {
     public static List<DeliveryLocationEntity> getAllDeliveryLocations() {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             return session.createQuery("FROM DeliveryLocationEntity", DeliveryLocationEntity.class).list();
+        } catch (Exception e) {
+            System.out.println("Error while getting all delivery locations: " + e.getMessage());
+            return null;
         }
     }
 
     public static DeliveryLocationEntity getDeliveryLocationById(String id) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             return session.get(DeliveryLocationEntity.class, id);
+        } catch (Exception e) {
+            System.out.println("Error while getting delivery location by id: " + e.getMessage());
+            return null;
         }
     }
 
@@ -25,6 +31,9 @@ public class DeliveryLocationDAO {
             return session.createQuery("FROM DeliveryLocationEntity WHERE locationName = :locationName", DeliveryLocationEntity.class)
                     .setParameter("locationName", locationName)
                     .uniqueResult();
+        } catch (Exception e) {
+            System.out.println("Error while getting delivery location by location name: " + e.getMessage());
+            return null;
         }
     }
 
@@ -33,6 +42,8 @@ public class DeliveryLocationDAO {
             Transaction transaction = session.beginTransaction();
             session.merge(deliveryLocationEntity);
             transaction.commit();
+        } catch (Exception e) {
+            System.out.println("Error while saving delivery location: " + e.getMessage());
         }
     }
 
@@ -44,6 +55,8 @@ public class DeliveryLocationDAO {
                 session.delete(deliveryLocationEntity);
             }
             transaction.commit();
+        } catch (Exception e) {
+            System.out.println("Error while deleting delivery location: " + e.getMessage());
         }
     }
 }

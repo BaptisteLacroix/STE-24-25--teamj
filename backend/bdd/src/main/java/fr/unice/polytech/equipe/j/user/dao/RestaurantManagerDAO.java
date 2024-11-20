@@ -13,12 +13,17 @@ public class RestaurantManagerDAO {
             Transaction tx = session.beginTransaction();
             session.merge(manager);
             tx.commit();
+        } catch (Exception e) {
+            System.out.println("Error while saving manager: " + e.getMessage());
         }
     }
 
     public static List<RestaurantManagerEntity> getAll() {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             return session.createQuery("from RestaurantManagerEntity", RestaurantManagerEntity.class).list();
+        } catch (Exception e) {
+            System.out.println("Error while getting all managers: " + e.getMessage());
+            return null;
         }
     }
 }

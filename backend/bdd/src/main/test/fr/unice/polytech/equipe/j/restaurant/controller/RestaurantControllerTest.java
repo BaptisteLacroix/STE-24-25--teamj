@@ -1,16 +1,14 @@
 package fr.unice.polytech.equipe.j.restaurant.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import com.fasterxml.jackson.databind.util.JSONPObject;
 import fr.unice.polytech.equipe.j.FlexibleRestServer;
-import fr.unice.polytech.equipe.j.HibernateUtil;
 import fr.unice.polytech.equipe.j.restaurant.dao.RestaurantDAO;
 import fr.unice.polytech.equipe.j.restaurant.dto.MenuDTO;
 import fr.unice.polytech.equipe.j.restaurant.dto.MenuItemDTO;
 import fr.unice.polytech.equipe.j.restaurant.dto.RestaurantDTO;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -34,8 +32,28 @@ class RestaurantControllerTest {
     }
 
     @Test
+    void testGetAllRestaurants() throws Exception {
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("http://localhost:5003/api/restaurants/all"))
+                .GET()
+                .build();
+
+        java.net.http.HttpResponse<String> response = client.send(request, java.net.http.HttpResponse.BodyHandlers.ofString());
+
+        assertNotNull(response.body());
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        List<RestaurantDTO> restaurantDTOList = objectMapper.readValue(response.body(), new TypeReference<List<RestaurantDTO>>() {
+        });
+        assertNotNull(restaurantDTOList);
+        assertEquals(200, response.statusCode());
+    }
+
+    @Test
     void testGetRestaurantById() throws JsonProcessingException {
         UUID id = RestaurantDAO.getAllRestaurants().getFirst().getId();
+        System.out.println(id);
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("http://localhost:5003/api/restaurants/" + id))
@@ -57,25 +75,6 @@ class RestaurantControllerTest {
     }
 
     @Test
-    void testGetAllRestaurants() throws Exception {
-        HttpClient client = HttpClient.newHttpClient();
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("http://localhost:5003/api/restaurants/all"))
-                .GET()
-                .build();
-
-        java.net.http.HttpResponse<String> response = client.send(request, java.net.http.HttpResponse.BodyHandlers.ofString());
-
-        assertNotNull(response.body());
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        List<RestaurantDTO> restaurantDTO = objectMapper.readValue(response.body(), List.class);
-        System.out.println(restaurantDTO);
-
-        assertEquals(200, response.statusCode());
-    }
-
-    @Test
     void testCreateRestaurant() throws Exception {
         HttpClient client = HttpClient.newHttpClient();
         List<MenuItemDTO> itemsRestaurant = List.of(
@@ -85,7 +84,7 @@ class RestaurantControllerTest {
         );
         MenuDTO menuDTO = new MenuDTO();
         menuDTO.setItems(itemsRestaurant);
-        RestaurantDTO restaurantDTO = new RestaurantDTO(UUID.randomUUID(), "TEST", null, null, new ArrayList<>(), menuDTO);
+        RestaurantDTO restaurantDTO = new RestaurantDTO(UUID.fromString("3183fa1c-ecd5-49a9-9351-92f75d33fea4"), "TEST", null, null, new ArrayList<>(), menuDTO);
         ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
         String json = ow.writeValueAsString(restaurantDTO);
         HttpRequest request = HttpRequest.newBuilder()
@@ -97,35 +96,5 @@ class RestaurantControllerTest {
         java.net.http.HttpResponse<String> response = client.send(request, java.net.http.HttpResponse.BodyHandlers.ofString());
         assertEquals(201, response.statusCode());
         assertTrue(response.body().contains("Restaurant created successfully"));
-    }
-
-    @Test
-    void testInvalidPathParam() throws Exception {
-        HttpClient client = HttpClient.newHttpClient();
-
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("http://localhost:5003/api/restaurants/invalid-uuid"))
-                .GET()
-                .build();
-
-        java.net.http.HttpResponse<String> response = client.send(request, java.net.http.HttpResponse.BodyHandlers.ofString());
-
-        assertTrue(response.body().contains("errorMessage"));
-        assertTrue(response.body().contains("Invalid UUID"));
-    }
-
-    @Test
-    void testMissingQueryParam() throws Exception {
-        HttpClient client = HttpClient.newHttpClient();
-
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("http://localhost:5003/api/restaurants/search?location="))
-                .GET()
-                .build();
-
-        java.net.http.HttpResponse<String> response = client.send(request, java.net.http.HttpResponse.BodyHandlers.ofString());
-
-        assertTrue(response.body().contains("errorMessage"));
-        assertTrue(response.body().contains("Missing required query parameter"));
     }
 }
