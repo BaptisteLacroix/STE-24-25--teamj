@@ -1,28 +1,28 @@
-#{{- if .Values.ingress.enabled }}
-#apiVersion: networking.k8s.io/v1
-#kind: Ingress
-#metadata:
-#  name: {{ .Release.Name }}-ingress
-#  namespace: {{ .Values.global.namespace }}
-#  annotations:
-#    {{- toYaml .Values.ingress.annotations | nindent 4 }}
-#spec:
-#  ingressClassName: nginx # Specify the class for ingress-nginx
-#  rules:
-#    - host: {{ .Values.ingress.host }}
-#      http:
-#        paths:
-#          {{- range .Values.ingress.paths }}
-#          - path: {{ .path }}
-#            pathType: {{ .pathType }}
-#            backend:
-#              service:
-#                name: {{ $.Release.Name }}-{{ .backendService }}
-#                port:
-#                  number: {{ .backendPort }}
-#          {{- end }}
-#  {{- if .Values.ingress.tls }}
-#  tls:
-#    {{- toYaml .Values.ingress.tls | nindent 4 }}
-#  {{- end }}
-#  {{- end }}
+{{- if .Values.ingress.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ .Release.Name }}-ingress
+  namespace: {{ .Values.global.namespace }}
+  annotations:
+    {{- toYaml .Values.ingress.annotations | nindent 4 }}
+spec:
+  ingressClassName: nginx # Specify the class for ingress-nginx
+  rules:
+    - host: {{ .Values.ingress.host }}
+      http:
+        paths:
+          {{- range .Values.ingress.paths }}
+          - path: {{ .path }}
+            pathType: {{ .pathType }}
+            backend:
+              service:
+                name: {{ $.Release.Name }}-{{ .backendService }}
+                port:
+                  number: {{ .backendPort }}
+          {{- end }}
+  {{- if .Values.ingress.tls }}
+  tls:
+    {{- toYaml .Values.ingress.tls | nindent 4 }}
+  {{- end }}
+  {{- end }}
