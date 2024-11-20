@@ -5,7 +5,7 @@ global:
 
 services:
   paymentServer:
-    image: "sophia-eats-payment-server"
+    image: "abdoutlili/sophia-eats-payment-server"
     tag: "latest"
     port: 8080
     jarFile: payment-server.jar
