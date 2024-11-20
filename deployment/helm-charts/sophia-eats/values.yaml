@@ -16,13 +16,12 @@ services:
       requests:
         memory: "256Mi"
         cpu: "250m"
-
-
 ingress:
   enabled: true
-  host: payment.sophia-eats.food
-  annotations: {}
-  tls: []
+  host: payment.sophia-eats.food # Use the subdomain
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: "/" # Rewrite paths if needed
+  tls: [] # Add TLS details if HTTPS is required
   paths:
     - path: /api/payment
       pathType: Prefix

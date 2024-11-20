@@ -7,7 +7,7 @@ metadata:
     app: {{ .Chart.Name }}
     component: payment-server
 spec:
-  type: ClusterIP
+  type: ClusterIP # Keep this as ClusterIP for Ingress to work
   ports:
     - port: {{ .Values.services.paymentServer.port }}
       targetPort: {{ .Values.services.paymentServer.port }}

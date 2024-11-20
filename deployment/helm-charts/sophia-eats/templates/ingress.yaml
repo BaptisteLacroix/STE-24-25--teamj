@@ -5,11 +5,13 @@ metadata:
   name: {{ .Release.Name }}-ingress
   namespace: {{ .Values.global.namespace }}
   annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: / # Rewrite paths if needed
+    nginx.ingress.kubernetes.io/ssl-redirect: "false" # Set to "true" if enabling HTTPS
     {{- toYaml .Values.ingress.annotations | nindent 4 }}
 spec:
-  ingressClassName: nginx # Specify the class for ingress-nginx
+  ingressClassName: nginx # NGINX Ingress Controller
   rules:
-    - host: {{ .Values.ingress.host }}
+    - host: payment.sophia-eats.food # Subdomain for the payment service
       http:
         paths:
           {{- range .Values.ingress.paths }}
@@ -23,6 +25,8 @@ spec:
           {{- end }}
   {{- if .Values.ingress.tls }}
   tls:
-    {{- toYaml .Values.ingress.tls | nindent 4 }}
+    - hosts:
+        - payment.sophia-eats.food
+      secretName: {{ .Values.ingress.tlsSecretName }}
   {{- end }}
   {{- end }}
