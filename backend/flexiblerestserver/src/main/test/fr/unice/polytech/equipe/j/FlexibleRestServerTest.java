@@ -86,6 +86,11 @@ class FlexibleRestServerTest {
     void testFullRequestFlow() throws IOException {
         // Start server in a separate thread
         new Thread(() -> server.start()).start();
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
 
         // Simulate HTTP Request
         URL url = new URL("http://localhost:8080/api/test");
