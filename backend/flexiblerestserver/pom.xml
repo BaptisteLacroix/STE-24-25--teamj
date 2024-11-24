@@ -14,4 +14,17 @@
 
     <artifactId>flexiblerestserver</artifactId>
 
+    <!-- Build Configuration -->
+    <build>
+        <!-- Specify Source Directories -->
+        <sourceDirectory>src/main/java</sourceDirectory>
+        <testSourceDirectory>src/main/test</testSourceDirectory>
+        <testResources>
+            <testResource>
+                <directory>src/test/resources</directory>
+                <filtering>false</filtering>
+            </testResource>
+        </testResources>
+    </build>
+
 </project>

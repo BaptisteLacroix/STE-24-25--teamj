@@ -16,6 +16,11 @@ public class ClassScanner {
         // Get the location of a class from the current module
         String classFileLocation = classLoader.getResource(path + "/").getPath();
 
+        // If the classFileLocation contains test-classes, replace it with classes
+        if (classFileLocation.contains("test-classes")) {
+            classFileLocation = classFileLocation.replace("test-classes", "classes");
+        }
+
         File directory = new File(classFileLocation);
 
         List<Class<?>> classes = new ArrayList<>();
