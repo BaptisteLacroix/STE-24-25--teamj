@@ -53,7 +53,6 @@ class RestaurantControllerTest {
     @Test
     void testGetRestaurantById() throws JsonProcessingException {
         UUID id = RestaurantDAO.getAllRestaurants().getFirst().getId();
-        System.out.println(id);
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("http://localhost:5003/api/database/restaurants/" + id))
@@ -96,5 +95,19 @@ class RestaurantControllerTest {
         java.net.http.HttpResponse<String> response = client.send(request, java.net.http.HttpResponse.BodyHandlers.ofString());
         assertEquals(201, response.statusCode());
         assertTrue(response.body().contains("Restaurant created successfully"));
+    }
+
+    @Test
+    void deleteRestaurant() throws Exception {
+        UUID id = RestaurantDAO.getAllRestaurants().stream().filter(r -> r.getName().equals("TEST")).findFirst().get().getId();
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("http://localhost:5003/api/database/restaurants/" + id))
+                .DELETE()
+                .build();
+
+        java.net.http.HttpResponse<String> response = client.send(request, java.net.http.HttpResponse.BodyHandlers.ofString());
+        assertEquals(200, response.statusCode());
+        assertTrue(response.body().contains("Restaurant deleted successfully"));
     }
 }
