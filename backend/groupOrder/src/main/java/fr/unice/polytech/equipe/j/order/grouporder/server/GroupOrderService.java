@@ -26,7 +26,7 @@ public class GroupOrderService {
     }
 
 
-    @Route(value = "/get",method = HttpMethod.GET)
+    @Route(value = "{groupOrderId}/getOrders",method = HttpMethod.GET)
     private List<Order> answerWithAllOrders() {
         return groupOrderProxy.getOrders();
     }
@@ -36,8 +36,8 @@ public class GroupOrderService {
 
     }
 
-    @Route(value = "join/{orderId}", method = HttpMethod.PUT)
-    private void joinGroupOrder(int id){
+    @Route(value = "{groupOrderId}/join/{userId}", method = HttpMethod.PUT)
+    private void joinGroupOrder(int groupOrderId, int userId) {
 
     }
 }
