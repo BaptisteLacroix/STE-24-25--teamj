@@ -30,7 +30,7 @@ public class RestaurantProxy implements IRestaurant {
      * @param menuItem     the menu item being added
      * @param deliveryTime the delivery time for the order (optional)
      */
-    // @Override
+    @Override
     public void addItemToOrder(Order order, MenuItem menuItem, LocalDateTime deliveryTime) {
         ((Restaurant)restaurant).canAddItemToOrder(order, menuItem, deliveryTime);
         restaurant.addItemToOrder(order, menuItem, deliveryTime);
