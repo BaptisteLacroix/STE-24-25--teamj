@@ -1,4 +1,4 @@
-package fr.unice.polytech.equipe.j.serverutils.http;
+package java.fr.unice.polytech.equipe.j.serverutils.http;
 
 public class HttpUtils {
     public static int OK_CODE = 200;

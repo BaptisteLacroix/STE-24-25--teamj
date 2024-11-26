@@ -1,16 +1,16 @@
-package fr.unice.polytech.equipe.j.restaurant;
+package java.fr.unice.polytech.equipe.j.restaurant;
 
-import fr.unice.polytech.equipe.j.delivery.DeliveryDetails;
-import fr.unice.polytech.equipe.j.delivery.DeliveryLocation;
-import fr.unice.polytech.equipe.j.delivery.DeliveryLocationManager;
-import fr.unice.polytech.equipe.j.order.IndividualOrder;
-import fr.unice.polytech.equipe.j.order.OrderManager;
-import fr.unice.polytech.equipe.j.order.OrderStatus;
+import java.fr.unice.polytech.equipe.j.delivery.DeliveryDetails;
+import java.fr.unice.polytech.equipe.j.delivery.DeliveryLocation;
+import java.fr.unice.polytech.equipe.j.delivery.DeliveryLocationManager;
+import java.fr.unice.polytech.equipe.j.order.IndividualOrder;
+import java.fr.unice.polytech.equipe.j.order.OrderManager;
+import java.fr.unice.polytech.equipe.j.order.OrderStatus;
 import fr.unice.polytech.equipe.j.payment.strategy.PaymentMethod;
 import fr.unice.polytech.equipe.j.restaurant.backend.IRestaurant;
 import fr.unice.polytech.equipe.j.restaurant.backend.RestaurantServiceManager;
-import fr.unice.polytech.equipe.j.restaurant.backend.menu.MenuItem;
-import fr.unice.polytech.equipe.j.user.CampusUser;
+import java.fr.unice.polytech.equipe.j.restaurant.menu.MenuItem;
+import java.fr.unice.polytech.equipe.j.user.CampusUser;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;

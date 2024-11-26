@@ -1,3 +1,5 @@
+package java.fr.unice.polytech.equipe.j.restaurant.menu;
+
 7package fr.unice.polytech.equipe.j.restaurant.backend.menu;
 
 import org.junit.jupiter.api.Test;

@@ -1,4 +1,4 @@
-package fr.unice.polytech.equipe.j.serverutils.utils;
+package java.fr.unice.polytech.equipe.j.serverutils.utils;
 
 import com.sun.net.httpserver.HttpExchange;
 

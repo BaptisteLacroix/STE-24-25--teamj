@@ -1,5 +1,5 @@
-package fr.unice.polytech.equipe.j.restaurant.orderpricestrategy;
-import fr.unice.polytech.equipe.j.restaurant.menu.MenuItem;
+package java.fr.unice.polytech.equipe.j.restaurant.orderpricestrategy;
+import java.fr.unice.polytech.equipe.j.restaurant.menu.MenuItem;
 
 import java.util.Map;
 

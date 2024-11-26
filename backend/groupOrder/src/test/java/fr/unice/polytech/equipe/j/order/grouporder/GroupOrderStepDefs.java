@@ -1,14 +1,14 @@
-package fr.unice.polytech.equipe.j.order.grouporder;
+package java.fr.unice.polytech.equipe.j.order.grouporder;
 
-import fr.unice.polytech.equipe.j.TimeUtils;
-import fr.unice.polytech.equipe.j.delivery.DeliveryDetails;
-import fr.unice.polytech.equipe.j.delivery.DeliveryLocation;
-import fr.unice.polytech.equipe.j.delivery.DeliveryLocationManager;
+import java.fr.unice.polytech.equipe.j.TimeUtils;
+import java.fr.unice.polytech.equipe.j.delivery.DeliveryDetails;
+import java.fr.unice.polytech.equipe.j.delivery.DeliveryLocation;
+import java.fr.unice.polytech.equipe.j.delivery.DeliveryLocationManager;
 import fr.unice.polytech.equipe.j.grouporder.backend.GroupOrder;
 import fr.unice.polytech.equipe.j.grouporder.backend.GroupOrderProxy;
 import fr.unice.polytech.equipe.j.grouporder.backend.IGroupOrder;
-import fr.unice.polytech.equipe.j.order.OrderManager;
-import fr.unice.polytech.equipe.j.user.CampusUser;
+import java.fr.unice.polytech.equipe.j.order.OrderManager;
+import java.fr.unice.polytech.equipe.j.user.CampusUser;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;

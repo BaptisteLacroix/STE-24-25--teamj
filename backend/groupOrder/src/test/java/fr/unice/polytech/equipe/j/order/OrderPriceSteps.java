@@ -1,14 +1,14 @@
-package fr.unice.polytech.equipe.j.order;
+package java.fr.unice.polytech.equipe.j.order;
 
 import fr.unice.polytech.equipe.j.restaurant.backend.IRestaurant;
-import fr.unice.polytech.equipe.j.restaurant.backend.menu.MenuItem;
-import fr.unice.polytech.equipe.j.restaurant.backend.orderpricestrategy.FreeItemFotNItemsOrderPriceStrategy;
-import fr.unice.polytech.equipe.j.restaurant.backend.orderpricestrategy.KPercentForNOrderPriceStrategy;
+import java.fr.unice.polytech.equipe.j.restaurant.menu.MenuItem;
+import java.fr.unice.polytech.equipe.j.restaurant.orderpricestrategy.FreeItemFotNItemsOrderPriceStrategy;
+import java.fr.unice.polytech.equipe.j.restaurant.orderpricestrategy.KPercentForNOrderPriceStrategy;
 import fr.unice.polytech.equipe.j.restaurant.backend.orderpricestrategy.OrderPrice;
 import fr.unice.polytech.equipe.j.restaurant.backend.Restaurant;
 import fr.unice.polytech.equipe.j.restaurant.backend.RestaurantProxy;
-import fr.unice.polytech.equipe.j.stepdefs.backend.Utils;
-import fr.unice.polytech.equipe.j.user.CampusUser;
+import java.fr.unice.polytech.equipe.j.stepdefs.backend.Utils;
+import java.fr.unice.polytech.equipe.j.user.CampusUser;
 import io.cucumber.datatable.DataTable;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;

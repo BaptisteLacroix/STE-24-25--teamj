@@ -1,12 +1,12 @@
-package fr.unice.polytech.equipe.j.user;
+package java.fr.unice.polytech.equipe.j.user;
 
-import fr.unice.polytech.equipe.j.TimeUtils;
+import java.fr.unice.polytech.equipe.j.TimeUtils;
 import fr.unice.polytech.equipe.j.restaurant.backend.IRestaurant;
-import fr.unice.polytech.equipe.j.restaurant.backend.menu.Menu;
-import fr.unice.polytech.equipe.j.restaurant.backend.menu.MenuItem;
+import java.fr.unice.polytech.equipe.j.restaurant.menu.Menu;
+import java.fr.unice.polytech.equipe.j.restaurant.menu.MenuItem;
 import fr.unice.polytech.equipe.j.restaurant.backend.Restaurant;
 import fr.unice.polytech.equipe.j.restaurant.backend.RestaurantServiceManager;
-import fr.unice.polytech.equipe.j.restaurant.backend.slot.Slot;
+import java.fr.unice.polytech.equipe.j.restaurant.slot.Slot;
 import io.cucumber.datatable.DataTable;
 import io.cucumber.java.Before;
 import io.cucumber.java.en.And;

@@ -1,8 +1,8 @@
-package fr.unice.polytech.equipe.j.order;
+package java.fr.unice.polytech.equipe.j.order;
 
-import fr.unice.polytech.equipe.j.restaurant.backend.IRestaurant;
-import fr.unice.polytech.equipe.j.restaurant.backend.menu.MenuItem;
-import fr.unice.polytech.equipe.j.user.CampusUser;
+import java.fr.unice.polytech.equipe.j.restaurant.IRestaurant;
+import java.fr.unice.polytech.equipe.j.restaurant.menu.MenuItem;
+import java.fr.unice.polytech.equipe.j.user.CampusUser;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,32 +20,6 @@ public class Order {
         items = new ArrayList<>();
         this.status = OrderStatus.PENDING;
         this.user = user;
-    }
-
-    public CampusUser getUser() {
-        return user;
-    }
-
-    public IRestaurant getRestaurant() {
-        return restaurant;
-    }
-
-    public List<MenuItem> getItems() {
-        return items;
-    }
-
-    public void addItem(MenuItem item) {
-        if (getStatus().equals(OrderStatus.VALIDATED)) {
-            throw new IllegalArgumentException("Cannot add items to an order that is already in preparation.");
-        }
-        items.add(item);
-    }
-
-    public void removeItem(MenuItem item) {
-        if (getStatus().equals(OrderStatus.VALIDATED)) {
-            throw new IllegalArgumentException("Cannot remove items from an order that is already in preparation.");
-        }
-        items.remove(item);
     }
 
     public void setStatus(OrderStatus status) {

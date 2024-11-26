@@ -1,12 +1,12 @@
-package fr.unice.polytech.equipe.j.order;
+package java.fr.unice.polytech.equipe.j.order;
 
-import fr.unice.polytech.equipe.j.TimeUtils;
-import fr.unice.polytech.equipe.j.delivery.DeliveryDetails;
-import fr.unice.polytech.equipe.j.delivery.DeliveryLocation;
-import fr.unice.polytech.equipe.j.delivery.DeliveryLocationManager;
+import java.fr.unice.polytech.equipe.j.TimeUtils;
+import java.fr.unice.polytech.equipe.j.delivery.DeliveryDetails;
+import java.fr.unice.polytech.equipe.j.delivery.DeliveryLocation;
+import java.fr.unice.polytech.equipe.j.delivery.DeliveryLocationManager;
 import fr.unice.polytech.equipe.j.restaurant.backend.IRestaurant;
 import fr.unice.polytech.equipe.j.restaurant.backend.RestaurantServiceManager;
-import fr.unice.polytech.equipe.j.user.CampusUser;
+import java.fr.unice.polytech.equipe.j.user.CampusUser;
 import io.cucumber.java.Before;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;

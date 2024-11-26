@@ -1,13 +1,13 @@
-package fr.unice.polytech.equipe.j.payment;
+package java.fr.unice.polytech.equipe.j.payment;
 
-import fr.unice.polytech.equipe.j.order.IndividualOrder;
-import fr.unice.polytech.equipe.j.order.OrderManager;
-import fr.unice.polytech.equipe.j.order.OrderStatus;
+import java.fr.unice.polytech.equipe.j.order.IndividualOrder;
+import java.fr.unice.polytech.equipe.j.order.OrderManager;
+import java.fr.unice.polytech.equipe.j.order.OrderStatus;
 import fr.unice.polytech.equipe.j.payment.strategy.PaymentMethod;
 import fr.unice.polytech.equipe.j.restaurant.backend.IRestaurant;
 import fr.unice.polytech.equipe.j.restaurant.backend.Restaurant;
 import fr.unice.polytech.equipe.j.restaurant.backend.RestaurantProxy;
-import fr.unice.polytech.equipe.j.user.CampusUser;
+import java.fr.unice.polytech.equipe.j.user.CampusUser;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

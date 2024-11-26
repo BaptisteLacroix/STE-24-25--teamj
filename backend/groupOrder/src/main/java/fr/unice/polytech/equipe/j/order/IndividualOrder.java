@@ -1,8 +1,8 @@
-package fr.unice.polytech.equipe.j.order;
+package java.fr.unice.polytech.equipe.j.order;
 
-import fr.unice.polytech.equipe.j.delivery.DeliveryDetails;
-import fr.unice.polytech.equipe.j.restaurant.backend.IRestaurant;
-import fr.unice.polytech.equipe.j.user.CampusUser;
+import java.fr.unice.polytech.equipe.j.delivery.DeliveryDetails;
+import java.fr.unice.polytech.equipe.j.restaurant.IRestaurant;
+import java.fr.unice.polytech.equipe.j.user.CampusUser;
 
 public class IndividualOrder extends Order {
     private final DeliveryDetails deliveryDetails;

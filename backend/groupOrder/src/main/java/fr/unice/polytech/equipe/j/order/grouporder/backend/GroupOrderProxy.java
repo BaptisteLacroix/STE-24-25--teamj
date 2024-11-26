@@ -1,14 +1,14 @@
-package fr.unice.polytech.equipe.j.grouporder.backend;
+package java.fr.unice.polytech.equipe.j.order.grouporder.backend;
 
-import fr.unice.polytech.equipe.j.delivery.DeliveryDetails;
-import fr.unice.polytech.equipe.j.order.Order;
-import fr.unice.polytech.equipe.j.order.OrderStatus;
-import fr.unice.polytech.equipe.j.user.CampusUser;
+import
+        java.fr.unice.polytech.equipe.j.delivery.DeliveryDetails;
+import java.fr.unice.polytech.equipe.j.order.Order;
+import java.fr.unice.polytech.equipe.j.order.OrderStatus;
+import java.fr.unice.polytech.equipe.j.user.CampusUser;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
-
 public class GroupOrderProxy implements IGroupOrder {
     private final IGroupOrder groupOrder;
 

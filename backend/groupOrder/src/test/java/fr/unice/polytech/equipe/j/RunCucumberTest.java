@@ -1,4 +1,4 @@
-package fr.unice.polytech.equipe.j;
+package java.fr.unice.polytech.equipe.j;
 
 import org.junit.platform.suite.api.ConfigurationParameter;
 import org.junit.platform.suite.api.IncludeEngines;

@@ -1,6 +1,6 @@
-package fr.unice.polytech.equipe.j.restaurant;
+package java.fr.unice.polytech.equipe.j.restaurant;
 
-import fr.unice.polytech.equipe.j.TimeUtils;
+import java.fr.unice.polytech.equipe.j.TimeUtils;
 import fr.unice.polytech.equipe.j.restaurant.backend.IRestaurant;
 import fr.unice.polytech.equipe.j.restaurant.backend.Restaurant;
 import fr.unice.polytech.equipe.j.restaurant.backend.RestaurantProxy;

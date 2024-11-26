@@ -1,10 +1,8 @@
-package fr.unice.polytech.equipe.j.user;
+package java.fr.unice.polytech.equipe.j.user;
 
-import fr.unice.polytech.equipe.j.restaurant.IRestaurant;
-import fr.unice.polytech.equipe.j.restaurant.menu.MenuItem;
+import java.fr.unice.polytech.equipe.j.restaurant.IRestaurant;
+
 import fr.unice.polytech.equipe.j.slot.Slot;
-
-import java.time.LocalDateTime;
 
 public class RestaurantManager {
     private IRestaurant restaurant;

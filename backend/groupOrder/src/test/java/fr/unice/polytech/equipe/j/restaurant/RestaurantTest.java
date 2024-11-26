@@ -1,21 +1,21 @@
-package fr.unice.polytech.equipe.j.restaurant;
+package java.fr.unice.polytech.equipe.j.restaurant;
 
-import fr.unice.polytech.equipe.j.TimeUtils;
-import fr.unice.polytech.equipe.j.delivery.DeliveryDetails;
-import fr.unice.polytech.equipe.j.delivery.DeliveryLocation;
-import fr.unice.polytech.equipe.j.delivery.DeliveryLocationManager;
-import fr.unice.polytech.equipe.j.order.IndividualOrder;
-import fr.unice.polytech.equipe.j.order.Order;
-import fr.unice.polytech.equipe.j.order.OrderManager;
-import fr.unice.polytech.equipe.j.order.OrderStatus;
+import java.fr.unice.polytech.equipe.j.TimeUtils;
+import java.fr.unice.polytech.equipe.j.delivery.DeliveryDetails;
+import java.fr.unice.polytech.equipe.j.delivery.DeliveryLocation;
+import java.fr.unice.polytech.equipe.j.delivery.DeliveryLocationManager;
+import java.fr.unice.polytech.equipe.j.order.IndividualOrder;
+import java.fr.unice.polytech.equipe.j.order.Order;
+import java.fr.unice.polytech.equipe.j.order.OrderManager;
+import java.fr.unice.polytech.equipe.j.order.OrderStatus;
 import fr.unice.polytech.equipe.j.restaurant.backend.IRestaurant;
 import fr.unice.polytech.equipe.j.restaurant.backend.Restaurant;
 import fr.unice.polytech.equipe.j.restaurant.backend.RestaurantProxy;
-import fr.unice.polytech.equipe.j.restaurant.backend.menu.Menu;
-import fr.unice.polytech.equipe.j.restaurant.backend.menu.MenuItem;
-import fr.unice.polytech.equipe.j.restaurant.backend.slot.Slot;
-import fr.unice.polytech.equipe.j.user.CampusUser;
-import fr.unice.polytech.equipe.j.user.RestaurantManager;
+import java.fr.unice.polytech.equipe.j.restaurant.menu.Menu;
+import java.fr.unice.polytech.equipe.j.restaurant.menu.MenuItem;
+import java.fr.unice.polytech.equipe.j.restaurant.slot.Slot;
+import java.fr.unice.polytech.equipe.j.user.CampusUser;
+import java.fr.unice.polytech.equipe.j.user.RestaurantManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

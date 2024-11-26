@@ -1,4 +1,4 @@
-package fr.unice.polytech.equipe.j.payment;
+package java.fr.unice.polytech.equipe.j.payment;
 
 import fr.unice.polytech.equipe.j.payment.strategy.CreditCardProcessor;
 import fr.unice.polytech.equipe.j.payment.strategy.PayPalProcessor;

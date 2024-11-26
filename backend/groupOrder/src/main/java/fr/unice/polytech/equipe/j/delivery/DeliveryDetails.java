@@ -1,4 +1,4 @@
-package fr.unice.polytech.equipe.j.delivery;
+package java.fr.unice.polytech.equipe.j.delivery;
 
 import java.time.LocalDateTime;
 import java.util.Optional;

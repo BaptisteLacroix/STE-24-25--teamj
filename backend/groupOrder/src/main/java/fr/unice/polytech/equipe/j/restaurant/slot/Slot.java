@@ -1,6 +1,6 @@
-package fr.unice.polytech.equipe.j.restaurant.backend.slot;
+package java.fr.unice.polytech.equipe.j.restaurant.slot;
 
-import fr.unice.polytech.equipe.j.restaurant.backend.menu.MenuItem;
+import java.fr.unice.polytech.equipe.j.restaurant.menu.MenuItem;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
