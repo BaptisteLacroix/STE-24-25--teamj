@@ -1,6 +1,6 @@
 package java.fr.unice.polytech.equipe.j.order.grouporder.server;
 
-import fr.unice.polytech.equipe.j.flexiblerestserver.FlexibleRestServer;
+import fr.unice.polytech.equipe.j.FlexibleRestServer;
 
 public class GroupOrderServer {
     public static void main(String[] args) {

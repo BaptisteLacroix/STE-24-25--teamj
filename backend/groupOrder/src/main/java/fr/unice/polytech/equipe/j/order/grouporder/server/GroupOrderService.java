@@ -1,8 +1,12 @@
 package java.fr.unice.polytech.equipe.j.order.grouporder.server;
 
-import fr.unice.polytech.equipe.j.flexiblerestserver.Controller;
-import fr.unice.polytech.equipe.j.flexiblerestserver.HttpMethod;
-import fr.unice.polytech.equipe.j.flexiblerestserver.Route;
+import fr.unice.polytech.equipe.j.HttpMethod;
+import fr.unice.polytech.equipe.j.annotations.BeanParam;
+import fr.unice.polytech.equipe.j.annotations.Controller;
+import fr.unice.polytech.equipe.j.annotations.PathParam;
+import fr.unice.polytech.equipe.j.annotations.Route;
+import fr.unice.polytech.equipe.j.httpresponse.HttpCode;
+import fr.unice.polytech.equipe.j.httpresponse.HttpResponse;
 import java.fr.unice.polytech.equipe.j.order.grouporder.backend.GroupOrder;
 import java.fr.unice.polytech.equipe.j.order.Order;
 
@@ -28,8 +32,8 @@ public class GroupOrderService {
     }
 
     @Route(value="/create",method = HttpMethod.POST)
-    private GroupOrder createGroupOrder() {
-        return new GroupOrder(null);
+    private void createGroupOrder() {
+
     }
 
     @Route(value = "join/{orderId}", method = HttpMethod.PUT)
