@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.UUID;
 
 public class GroupOrder implements IGroupOrder {
-    private final UUID groupOrderId;
+    private UUID groupOrderId;
     private final List<Order> orders = new ArrayList<>();
     private final List<CampusUser> users = new ArrayList<>();
     private final DeliveryDetails deliveryDetails;
@@ -80,5 +80,10 @@ public class GroupOrder implements IGroupOrder {
     @Override
     public OrderStatus getStatus() {
         return status;
+    }
+
+
+    public void setGroupOrderId(UUID groupOrderId) {
+        this.groupOrderId = groupOrderId;
     }
 }
