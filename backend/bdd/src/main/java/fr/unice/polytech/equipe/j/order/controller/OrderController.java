@@ -53,8 +53,8 @@ public class OrderController {
     }
 
     // Route to update an order (PUT request)
-    @Route(value = "/{id}", method = HttpMethod.PUT)
-    public HttpResponse updateOrder(@PathParam("id") UUID id, @BeanParam OrderDTO orderDTO) {
+    @Route(value = "/update", method = HttpMethod.PUT)
+    public HttpResponse updateOrder(@BeanParam OrderDTO orderDTO) {
         OrderEntity orderEntity = OrderMapper.toEntity(orderDTO);
         if (orderEntity != null) {
             return OrderDAO.update(orderEntity);

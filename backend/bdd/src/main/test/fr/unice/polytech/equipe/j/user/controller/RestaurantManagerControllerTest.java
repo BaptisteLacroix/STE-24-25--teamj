@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class RestaurantManagerControllerTest {
     private static final UUID MANAGER_ID = UUID.fromString("f5b16f30-b144-49ef-8ba5-9ddf4bd242ba");
     private static final UUID RESTAURANT_ID = UUID.fromString("3183fa1c-ecd5-49a9-9351-92f75d33fea4");
-    private static final String MANAGER_PATH = "http://localhost:5003/api/database/managers/";
+    private static final String MANAGER_PATH = "http://localhost:5001/api/database/managers/";
 
     @BeforeAll
     public static void startServer() {

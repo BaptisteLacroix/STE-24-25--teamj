@@ -4,6 +4,7 @@ import fr.unice.polytech.equipe.j.HibernateUtil;
 import fr.unice.polytech.equipe.j.httpresponse.HttpCode;
 import fr.unice.polytech.equipe.j.httpresponse.HttpResponse;
 import fr.unice.polytech.equipe.j.order.entities.OrderEntity;
+import java.util.Collections;
 import fr.unice.polytech.equipe.j.order.entities.IndividualOrderEntity;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -19,7 +20,7 @@ public class OrderDAO {
             return session.createQuery("FROM OrderEntity", OrderEntity.class).list();
         } catch (Exception e) {
             System.out.println("Error while getting all orders: " + e.getMessage());
-            return null;
+            return Collections.emptyList();
         }
     }
 

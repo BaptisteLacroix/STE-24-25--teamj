@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class CampusUserControllerTest {
     private static final UUID USER_ID = UUID.fromString("f5b16f30-b144-49ef-8ba5-9ddf4bd242ba");
-    private static final String USER_PATH = "http://localhost:5003/api/database/campusUsers/";
+    private static final String USER_PATH = "http://localhost:5002/api/database/campusUsers/";
 
     @BeforeAll
     public static void startServer() {

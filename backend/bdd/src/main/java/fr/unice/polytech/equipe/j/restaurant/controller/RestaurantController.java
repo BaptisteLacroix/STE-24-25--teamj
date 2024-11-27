@@ -57,8 +57,8 @@ public class RestaurantController {
         return RestaurantDAO.save(restaurantEntity);
     }
 
-    @Route(value = "/{id}", method = HttpMethod.PUT)
-    public HttpResponse updateRestaurant(@PathParam("id") UUID id, @BeanParam RestaurantDTO restaurantDTO) {
+    @Route(value = "/update", method = HttpMethod.PUT)
+    public HttpResponse updateRestaurant(@BeanParam RestaurantDTO restaurantDTO) {
         return RestaurantDAO.save(RestaurantMapper.toEntity(restaurantDTO));
     }
 

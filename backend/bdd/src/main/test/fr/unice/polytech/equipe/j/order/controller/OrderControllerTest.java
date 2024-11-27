@@ -178,7 +178,7 @@ class OrderControllerTest {
         // Send request
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(ORDER_PATH + orderDTO.getId()))
+                .uri(URI.create(ORDER_PATH + "update"))
                 .header("Content-Type", "application/json")
                 .PUT(HttpRequest.BodyPublishers.ofString(new ObjectMapper().writeValueAsString(orderDTO)))
                 .build();
