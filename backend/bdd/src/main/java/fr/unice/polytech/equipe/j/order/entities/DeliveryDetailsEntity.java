@@ -31,5 +31,5 @@ public class DeliveryDetailsEntity {
     private DeliveryLocationEntity deliveryLocation;
 
     @Column(name = "delivery_time")
-    private LocalDateTime deliveryTime;
+    private String deliveryTime;
 }

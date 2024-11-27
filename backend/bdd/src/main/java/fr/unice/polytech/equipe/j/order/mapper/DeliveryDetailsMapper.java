@@ -9,7 +9,8 @@ public class DeliveryDetailsMapper {
         DeliveryDetailsDTO deliveryDetailsDTO = new DeliveryDetailsDTO();
         deliveryDetailsDTO.setId(entity.getId());
         deliveryDetailsDTO.setDeliveryLocation(DeliveryLocationMapper.toDTO(entity.getDeliveryLocation()));
-        deliveryDetailsDTO.setDeliveryTime(entity.getDeliveryTime());
+        String deliveryTime = entity.getDeliveryTime() == null ? null : entity.getDeliveryTime();
+        deliveryDetailsDTO.setDeliveryTime(deliveryTime);
         return deliveryDetailsDTO;
     }
 
@@ -17,7 +18,8 @@ public class DeliveryDetailsMapper {
         DeliveryDetailsEntity deliveryDetails = new DeliveryDetailsEntity();
         deliveryDetails.setId(dto.getId());
         deliveryDetails.setDeliveryLocation(DeliveryLocationMapper.toEntity(dto.getDeliveryLocation()));
-        deliveryDetails.setDeliveryTime(dto.getDeliveryTime());
+        String deliveryTime = dto.getDeliveryTime() == null ? null : dto.getDeliveryTime();
+        deliveryDetails.setDeliveryTime(deliveryTime);
         return deliveryDetails;
     }
 }

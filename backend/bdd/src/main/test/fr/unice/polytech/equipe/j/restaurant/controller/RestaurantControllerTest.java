@@ -27,6 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class RestaurantControllerTest {
     private static final UUID RESTAURANT_ID = UUID.fromString("3183fa1c-ecd5-49a9-9351-92f75d33fea4");
+    private static final String RESTAURANT_PATH = "http://localhost:5003/api/database/restaurants/";
 
     @BeforeAll
     public static void startServer() {
@@ -50,7 +51,7 @@ class RestaurantControllerTest {
     void testGetAllRestaurants() throws Exception {
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("http://localhost:5003/api/database/restaurants/all"))
+                .uri(URI.create(RESTAURANT_PATH + "all"))
                 .GET()
                 .build();
 
@@ -71,14 +72,16 @@ class RestaurantControllerTest {
         ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
         String json = ow.writeValueAsString(getRestaurant());
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("http://localhost:5003/api/database/restaurants/create"))
+                .uri(URI.create(RESTAURANT_PATH + "create"))
                 .header("Content-Type", "application/json")
                 .POST(HttpRequest.BodyPublishers.ofString(json))
                 .build();
 
         java.net.http.HttpResponse<String> response = client.send(request, java.net.http.HttpResponse.BodyHandlers.ofString());
         assertEquals(201, response.statusCode());
-        assertTrue(response.body().contains("Restaurant created successfully"));
+        ObjectMapper objectMapper = new ObjectMapper();
+        UUID restaurantUUID = objectMapper.readValue(response.body(), UUID.class);
+        assertEquals(RESTAURANT_ID, restaurantUUID);
     }
 
     @Test
@@ -86,7 +89,7 @@ class RestaurantControllerTest {
         RestaurantDAO.save(RestaurantMapper.toEntity(getRestaurant()));
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("http://localhost:5003/api/database/restaurants/" + RESTAURANT_ID))
+                .uri(URI.create(RESTAURANT_PATH + RESTAURANT_ID))
                 .GET()
                 .build();
 
@@ -109,7 +112,7 @@ class RestaurantControllerTest {
         RestaurantDAO.save(RestaurantMapper.toEntity(getRestaurant()));
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("http://localhost:5003/api/database/restaurants/" + RESTAURANT_ID))
+                .uri(URI.create(RESTAURANT_PATH + RESTAURANT_ID))
                 .DELETE()
                 .build();
 

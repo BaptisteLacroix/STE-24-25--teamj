@@ -11,12 +11,12 @@ import java.util.UUID;
 public class DeliveryDetailsDTO {
     private UUID id;
     private DeliveryLocationDTO deliveryLocation;
-    private LocalDateTime deliveryTime;
+    private String deliveryTime;
 
     public DeliveryDetailsDTO() {
     }
 
-    public DeliveryDetailsDTO(UUID id, DeliveryLocationDTO deliveryLocation, LocalDateTime deliveryTime) {
+    public DeliveryDetailsDTO(UUID id, DeliveryLocationDTO deliveryLocation, String deliveryTime) {
         this.id = id;
         this.deliveryLocation = deliveryLocation;
         this.deliveryTime = deliveryTime;

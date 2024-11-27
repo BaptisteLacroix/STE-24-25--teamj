@@ -85,12 +85,12 @@ public class OrderDAO {
     }
 
     // Save or update an individual order (extends OrderEntity)
-    public static HttpResponse saveIndividualOrder(IndividualOrderEntity individualOrderEntity) {
+    public static HttpResponse save(IndividualOrderEntity individualOrderEntity) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             Transaction transaction = session.beginTransaction();
             session.merge(individualOrderEntity);
             transaction.commit();
-            return new HttpResponse(HttpCode.HTTP_201, "Individual order created successfully");
+            return new HttpResponse(HttpCode.HTTP_201, individualOrderEntity.getId());
         } catch (Exception e) {
             System.out.println("Error while saving individual order: " + e.getMessage());
             return new HttpResponse(HttpCode.HTTP_500, "Error while saving individual order");

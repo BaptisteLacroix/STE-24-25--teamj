@@ -3,15 +3,15 @@ package fr.unice.polytech.equipe.j.order.controller;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.unice.polytech.equipe.j.FlexibleRestServer;
-import fr.unice.polytech.equipe.j.httpresponse.HttpCode;
-import fr.unice.polytech.equipe.j.httpresponse.HttpResponse;
+import fr.unice.polytech.equipe.j.order.dao.DeliveryLocationDAO;
 import fr.unice.polytech.equipe.j.order.dao.OrderDAO;
+import fr.unice.polytech.equipe.j.order.dto.DeliveryDetailsDTO;
+import fr.unice.polytech.equipe.j.order.dto.DeliveryLocationDTO;
 import fr.unice.polytech.equipe.j.order.dto.IndividualOrderDTO;
 import fr.unice.polytech.equipe.j.order.dto.OrderDTO;
 import fr.unice.polytech.equipe.j.order.dto.OrderStatus;
 import fr.unice.polytech.equipe.j.order.dto.PaymentMethod;
-import fr.unice.polytech.equipe.j.order.entities.IndividualOrderEntity;
-import fr.unice.polytech.equipe.j.order.mapper.IndividualOrderMapper;
+import fr.unice.polytech.equipe.j.order.mapper.DeliveryLocationMapper;
 import fr.unice.polytech.equipe.j.order.mapper.OrderMapper;
 import fr.unice.polytech.equipe.j.restaurant.dao.RestaurantDAO;
 import fr.unice.polytech.equipe.j.restaurant.dto.MenuDTO;
@@ -23,29 +23,32 @@ import fr.unice.polytech.equipe.j.user.dto.CampusUserDTO;
 import fr.unice.polytech.equipe.j.user.mapper.CampusUserMapper;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.mock;
 
 class OrderControllerTest {
     private static final UUID RESTAURANT_ID = UUID.fromString("3183fa1c-ecd5-49a9-9351-92f75d33fea4"); // TEST Restaurant
     private static final UUID ORDER_ID = UUID.fromString("178225f2-9f08-4a7f-add2-3783e89ffa6b"); // TEST Order
+    private static final UUID INDIVIDUAL_ID = UUID.fromString("f78ed5e2-face-43c3-a60e-7f703bd995c3"); // TEST Order
     private static final UUID USER_ID = UUID.fromString("1aeb4480-305a-499d-885c-7d2d9f99153b"); // TEST User
+    private static final UUID DELIVERY_ID = UUID.fromString("774fcc38-ff40-4cc8-8722-a20bca38338d"); // TEST Delivery
+    private static final UUID LOCATION_ID = UUID.fromString("10a83413-1b4a-4184-b082-238d073e6126"); // TEST Location
+    private static final FlexibleRestServer server = new FlexibleRestServer("fr.unice.polytech.equipe.j", 5004);
+    private static final String ORDER_PATH = "http://localhost:5004/api/database/orders/";
 
     // Start the server
     @BeforeAll
     public static void startServer() {
         // Start the server (assuming the server is already started, this is just an example)
-        FlexibleRestServer server = new FlexibleRestServer("fr.unice.polytech.equipe.j", 5003);
         server.start();
     }
 
@@ -82,12 +85,30 @@ class OrderControllerTest {
         return new OrderDTO(ORDER_ID, restaurantDTO.getUuid(), userDTO.getId(), List.of(restaurantDTO.getMenu().getItems().getFirst()), OrderStatus.PENDING.name());
     }
 
+    private DeliveryDetailsDTO getDeliveryDetails() {
+        DeliveryLocationDTO deliveryLocationDTO = new DeliveryLocationDTO(LOCATION_ID,
+                "Campus Main Gate",
+                "123 Campus Street");
+        DeliveryLocationDAO.save(DeliveryLocationMapper.toEntity(deliveryLocationDTO));
+        return new DeliveryDetailsDTO(DELIVERY_ID, deliveryLocationDTO, LocalDateTime.now().toString());
+    }
+
+    private IndividualOrderDTO getIndividualOrder() {
+        RestaurantDAO.save(RestaurantMapper.toEntity(getRestaurant()));
+        CampusUserDAO.save(CampusUserMapper.toEntity(getCampusUser()));
+
+        CampusUserDTO userDTO = CampusUserMapper.toDTO(CampusUserDAO.getUserById(USER_ID));
+        RestaurantDTO restaurantDTO = RestaurantMapper.toDTO(RestaurantDAO.getRestaurantById(RESTAURANT_ID));
+
+        return new IndividualOrderDTO(new OrderDTO(INDIVIDUAL_ID, restaurantDTO.getUuid(), userDTO.getId(), List.of(restaurantDTO.getMenu().getItems().getFirst()), OrderStatus.PENDING.name()), getDeliveryDetails());
+    }
+
     @Test
     void testGetAllOrders() throws Exception {
         OrderDAO.save(OrderMapper.toEntity(getOrder()));
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("http://localhost:5003/api/database/orders/all"))
+                .uri(URI.create(ORDER_PATH + "all"))
                 .GET()
                 .build();
 
@@ -112,7 +133,7 @@ class OrderControllerTest {
         OrderDTO orderDTO = getOrder();
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("http://localhost:5003/api/database/orders/create"))
+                .uri(URI.create(ORDER_PATH + "create"))
                 .header("Content-Type", "application/json")
                 .POST(HttpRequest.BodyPublishers.ofString(new ObjectMapper().writeValueAsString(orderDTO)))
                 .build();
@@ -129,7 +150,7 @@ class OrderControllerTest {
         // Create the HttpClient to send the request
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("http://localhost:5003/api/database/orders/" + ORDER_ID))
+                .uri(URI.create(ORDER_PATH + ORDER_ID))
                 .GET()
                 .build();
 
@@ -157,7 +178,7 @@ class OrderControllerTest {
         // Send request
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("http://localhost:5003/api/database/orders/" + orderDTO.getId()))
+                .uri(URI.create(ORDER_PATH + orderDTO.getId()))
                 .header("Content-Type", "application/json")
                 .PUT(HttpRequest.BodyPublishers.ofString(new ObjectMapper().writeValueAsString(orderDTO)))
                 .build();
@@ -168,7 +189,7 @@ class OrderControllerTest {
 
         // Get the updated order by id and check status update
         HttpRequest getRequest = HttpRequest.newBuilder()
-                .uri(URI.create("http://localhost:5003/api/database/orders/" + orderDTO.getId()))
+                .uri(URI.create(ORDER_PATH + orderDTO.getId()))
                 .GET()
                 .build();
         java.net.http.HttpResponse<String> getResponse = client.send(getRequest, java.net.http.HttpResponse.BodyHandlers.ofString());
@@ -185,7 +206,7 @@ class OrderControllerTest {
         OrderDAO.save(OrderMapper.toEntity(orderDTO));
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("http://localhost:5003/api/database/orders/" + orderDTO.getId()))
+                .uri(URI.create(ORDER_PATH + orderDTO.getId()))
                 .DELETE()
                 .build();
 
@@ -197,19 +218,20 @@ class OrderControllerTest {
     @Test
     void testCreateIndividualOrder() throws Exception {
         // Create an IndividualOrderDTO
-        IndividualOrderDTO individualOrderDTO = new IndividualOrderDTO();
+        IndividualOrderDTO individualOrderDTO = new IndividualOrderDTO(getIndividualOrder(), getDeliveryDetails());
 
         // Send request
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("http://localhost:5003/api/database/orders/individual/create"))
+                .uri(URI.create(ORDER_PATH + "individual/create"))
                 .header("Content-Type", "application/json")
                 .POST(HttpRequest.BodyPublishers.ofString(new ObjectMapper().writeValueAsString(individualOrderDTO)))
                 .build();
 
         java.net.http.HttpResponse<String> response = client.send(request, java.net.http.HttpResponse.BodyHandlers.ofString());
-
-        assertEquals(200, response.statusCode());
+        assertEquals(201, response.statusCode());
+        ObjectMapper objectMapper = new ObjectMapper();
+        assertEquals(individualOrderDTO.getId(), objectMapper.readValue(response.body(), UUID.class));
     }
 
 }

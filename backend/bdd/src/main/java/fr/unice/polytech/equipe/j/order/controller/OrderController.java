@@ -69,9 +69,6 @@ public class OrderController {
         return OrderDAO.delete(id);
     }
 
-
-    // TODO
-
     // Route to create an individual order
     @Route(value = "/individual/create", method = HttpMethod.POST)
     public HttpResponse createIndividualOrder(@BeanParam IndividualOrderDTO individualOrderDTO) {
@@ -79,7 +76,7 @@ public class OrderController {
         IndividualOrderEntity individualOrderEntity = IndividualOrderMapper.toEntity(individualOrderDTO);
 
         // Save the individual order to the database
-        return OrderDAO.saveIndividualOrder(individualOrderEntity);
+        return OrderDAO.save(individualOrderEntity);
     }
 
     // Route to get an individual order by its UUID

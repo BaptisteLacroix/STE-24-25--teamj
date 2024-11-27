@@ -6,6 +6,7 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 import java.util.List;
+import java.util.UUID;
 
 public class DeliveryLocationDAO {
     public static List<DeliveryLocationEntity> getAllDeliveryLocations() {
@@ -17,7 +18,7 @@ public class DeliveryLocationDAO {
         }
     }
 
-    public static DeliveryLocationEntity getDeliveryLocationById(String id) {
+    public static DeliveryLocationEntity getDeliveryLocationById(UUID id) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             return session.get(DeliveryLocationEntity.class, id);
         } catch (Exception e) {

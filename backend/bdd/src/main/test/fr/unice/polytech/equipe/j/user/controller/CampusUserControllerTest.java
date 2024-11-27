@@ -21,11 +21,12 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class CampusUserControllerTest {
     private static final UUID USER_ID = UUID.fromString("f5b16f30-b144-49ef-8ba5-9ddf4bd242ba");
+    private static final String USER_PATH = "http://localhost:5003/api/database/campusUsers/";
 
     @BeforeAll
     public static void startServer() {
         // Assuming FlexibleRestServer is a class that starts the server.
-        FlexibleRestServer server = new FlexibleRestServer("fr.unice.polytech.equipe.j", 5003);
+        FlexibleRestServer server = new FlexibleRestServer("fr.unice.polytech.equipe.j", 5002);
         server.start();
     }
 
@@ -49,7 +50,7 @@ public class CampusUserControllerTest {
         // Create an HTTP client and make a POST request to create the user.
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("http://localhost:5003/api/database/campusUsers/create"))
+                .uri(URI.create(USER_PATH + "create"))
                 .header("Content-Type", "application/json")
                 .POST(HttpRequest.BodyPublishers.ofString(jsonUser))
                 .build();
@@ -63,7 +64,7 @@ public class CampusUserControllerTest {
         // Create an HTTP client and make a GET request to fetch all users.
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("http://localhost:5003/api/database/campusUsers/all"))
+                .uri(URI.create(USER_PATH + "all"))
                 .GET()
                 .build();
 
@@ -89,7 +90,7 @@ public class CampusUserControllerTest {
         // Make a GET request to fetch the user by their UUID.
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("http://localhost:5003/api/database/campusUsers/" + USER_ID))
+                .uri(URI.create(USER_PATH + USER_ID))
                 .GET()
                 .build();
 
@@ -116,7 +117,7 @@ public class CampusUserControllerTest {
         // Make a GET request to fetch the non-existing user.
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("http://localhost:5003/api/database/campusUsers/" + nonExistingUserId))
+                .uri(URI.create(USER_PATH + nonExistingUserId))
                 .GET()
                 .build();
 
@@ -135,7 +136,7 @@ public class CampusUserControllerTest {
         // Create the user first.
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest createRequest = HttpRequest.newBuilder()
-                .uri(URI.create("http://localhost:5003/api/database/campusUsers/create"))
+                .uri(URI.create(USER_PATH + "create"))
                 .header("Content-Type", "application/json")
                 .POST(HttpRequest.BodyPublishers.ofString(jsonUser))
                 .build();
@@ -149,7 +150,7 @@ public class CampusUserControllerTest {
 
         // Now, make a DELETE request to delete the user.
         HttpRequest deleteRequest = HttpRequest.newBuilder()
-                .uri(URI.create("http://localhost:5003/api/database/campusUsers/" + userId))
+                .uri(URI.create(USER_PATH + userId))
                 .DELETE()
                 .build();
 
@@ -160,7 +161,7 @@ public class CampusUserControllerTest {
 
         // Verify that the user has been deleted (optional but good practice).
         HttpRequest getRequest = HttpRequest.newBuilder()
-                .uri(URI.create("http://localhost:5003/api/database/campusUsers/" + userId))
+                .uri(URI.create(USER_PATH + userId))
                 .GET()
                 .build();
         HttpResponse<String> getResponse = client.send(getRequest, HttpResponse.BodyHandlers.ofString());

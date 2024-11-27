@@ -23,11 +23,12 @@ import static org.junit.jupiter.api.Assertions.*;
 public class RestaurantManagerControllerTest {
     private static final UUID MANAGER_ID = UUID.fromString("f5b16f30-b144-49ef-8ba5-9ddf4bd242ba");
     private static final UUID RESTAURANT_ID = UUID.fromString("3183fa1c-ecd5-49a9-9351-92f75d33fea4");
+    private static final String MANAGER_PATH = "http://localhost:5003/api/database/managers/";
 
     @BeforeAll
     public static void startServer() {
         // Assuming FlexibleRestServer is a class that starts the server.
-        FlexibleRestServer server = new FlexibleRestServer("fr.unice.polytech.equipe.j", 5003);
+        FlexibleRestServer server = new FlexibleRestServer("fr.unice.polytech.equipe.j", 5001);
         server.start();
     }
 
@@ -61,7 +62,7 @@ public class RestaurantManagerControllerTest {
         // Create an HTTP client and make a POST request to create the manager.
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("http://localhost:5003/api/database/managers/create"))
+                .uri(URI.create(MANAGER_PATH + "create"))
                 .header("Content-Type", "application/json")
                 .POST(HttpRequest.BodyPublishers.ofString(jsonManager))
                 .build();
@@ -79,7 +80,7 @@ public class RestaurantManagerControllerTest {
         // Create an HTTP client and make a GET request to fetch all managers.
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("http://localhost:5003/api/database/managers/all"))
+                .uri(URI.create(MANAGER_PATH + "all"))
                 .GET()
                 .build();
 
@@ -106,7 +107,7 @@ public class RestaurantManagerControllerTest {
         // Make a GET request to fetch the manager by their UUID.
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("http://localhost:5003/api/database/managers/" + MANAGER_ID))
+                .uri(URI.create(MANAGER_PATH + MANAGER_ID))
                 .GET()
                 .build();
 
@@ -133,7 +134,7 @@ public class RestaurantManagerControllerTest {
         // Create the manager first.
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest createRequest = HttpRequest.newBuilder()
-                .uri(URI.create("http://localhost:5003/api/database/managers/create"))
+                .uri(URI.create(MANAGER_PATH + "create"))
                 .header("Content-Type", "application/json")
                 .POST(HttpRequest.BodyPublishers.ofString(jsonManager))
                 .build();
@@ -146,7 +147,7 @@ public class RestaurantManagerControllerTest {
         UUID managerId = objectMapper.readValue(createResponse.body(), UUID.class);
         // Now, make a DELETE request to delete the manager.
         HttpRequest deleteRequest = HttpRequest.newBuilder()
-                .uri(URI.create("http://localhost:5003/api/database/managers/" + managerId))
+                .uri(URI.create(MANAGER_PATH + managerId))
                 .DELETE()
                 .build();
 
@@ -156,7 +157,7 @@ public class RestaurantManagerControllerTest {
         assertEquals("Manager deleted", deleteResponse.body());
         // Verify that the manager has been deleted (optional but good practice).
         HttpRequest getRequest = HttpRequest.newBuilder()
-                .uri(URI.create("http://localhost:5003/api/database/managers/" + managerId))
+                .uri(URI.create(MANAGER_PATH + managerId))
                 .GET()
                 .build();
         HttpResponse<String> getResponse = client.send(getRequest, HttpResponse.BodyHandlers.ofString());
