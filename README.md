@@ -115,7 +115,7 @@ This part provides an overview of the project structure, designed to ensure clea
 - **doc/**: Holds technical documentation, project reports, and other related resources.
 - **src/**: The core source code of the application, organized into functional packages.
   - **main/**: Primary application code, organized by core functionalities.
-    - **Restaurant/**: Contains modules for managing restaurant data and functionality, including restaurant creation, menu management, and related operations.
+    - **Restaurant/**: Contains modules for managing restaurantEntity data and functionality, including restaurantEntity creation, menuEntity management, and related operations.
     - **Slot/**: Handles scheduling and time slots, supporting features such as reservation management and availability tracking.
     - **Order/**: Manages order processing, including order creation, updates, and tracking.
     - **Payment/**: Implements payment processing features, such as payment initiation, validation, and transaction management.
