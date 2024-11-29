@@ -7,7 +7,7 @@ public class MenuItemMapper {
 
     public static MenuItemDTO toDTO(MenuItemEntity entity) {
         MenuItemDTO menuItemDTO = new MenuItemDTO();
-        menuItemDTO.setUuid(entity.getId());
+        menuItemDTO.setId(entity.getId());
         menuItemDTO.setName(entity.getName());
         menuItemDTO.setPrice(entity.getPrice());
         menuItemDTO.setPrepTime(entity.getPrepTime());
@@ -16,7 +16,7 @@ public class MenuItemMapper {
 
     public static MenuItemEntity toEntity(MenuItemDTO dto) {
         MenuItemEntity menuItemEntity = new MenuItemEntity();
-        menuItemEntity.setId(dto.getUuid());
+        menuItemEntity.setId(dto.getId());
         menuItemEntity.setName(dto.getName());
         menuItemEntity.setPrice(dto.getPrice());
         menuItemEntity.setPrepTime(dto.getPrepTime());

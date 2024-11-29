@@ -8,7 +8,6 @@ import fr.unice.polytech.equipe.j.restaurant.entities.MenuEntity;
 import fr.unice.polytech.equipe.j.restaurant.entities.MenuItemEntity;
 import fr.unice.polytech.equipe.j.restaurant.entities.RestaurantEntity;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 public class RestaurantMapper {
@@ -51,7 +50,7 @@ public class RestaurantMapper {
             menuEntity.setItems(dto.getMenu().getItems().stream()
                     .map(item -> {
                         MenuItemEntity menuItemEntity = new MenuItemEntity();
-                        menuItemEntity.setId(item.getUuid());
+                        menuItemEntity.setId(item.getId());
                         menuItemEntity.setName(item.getName());
                         menuItemEntity.setPrepTime(item.getPrepTime());
                         menuItemEntity.setPrice(item.getPrice());

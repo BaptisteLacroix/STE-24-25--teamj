@@ -124,7 +124,7 @@ class OrderControllerTest {
 
         // Assert that the user list is not null or empty.
         assertNotNull(orderDTOList);
-        assertEquals(CampusUserDAO.getAll().size(), orderDTOList.size());
+        assertEquals(OrderDAO.getAllOrders().size(), orderDTOList.size());
     }
 
 
