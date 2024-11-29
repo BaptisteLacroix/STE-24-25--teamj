@@ -6,7 +6,6 @@ import fr.unice.polytech.equipe.j.user.entities.RestaurantManagerEntity;
 
 public class RestaurantManagerMapper {
     public static RestaurantManagerDTO toDTO(RestaurantManagerEntity entity) {
-        System.out.println(entity);
         return new RestaurantManagerDTO(
                 entity.getId(),
                 entity.getEmail(),

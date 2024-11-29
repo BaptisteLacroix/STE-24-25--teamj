@@ -7,30 +7,25 @@ import fr.unice.polytech.equipe.j.restaurant.dto.SlotDTO;
 import fr.unice.polytech.equipe.j.restaurant.entities.MenuEntity;
 import fr.unice.polytech.equipe.j.restaurant.entities.MenuItemEntity;
 import fr.unice.polytech.equipe.j.restaurant.entities.RestaurantEntity;
+import fr.unice.polytech.equipe.j.restaurant.entities.SlotEntity;
 
 import java.util.ArrayList;
 
 public class RestaurantMapper {
     public static RestaurantDTO toDTO(RestaurantEntity restaurantEntity) {
         MenuDTO menuDTO = new MenuDTO();
-        menuDTO.setUuid(restaurantEntity.getMenuEntity().getId());
+        menuDTO.setUuid(restaurantEntity.getMenuEntity().getUuid());
         menuDTO.setItems(restaurantEntity.getMenuEntity().getItems().stream().map(item -> new MenuItemDTO(
                 item.getId(),
                 item.getName(),
                 item.getPrepTime(),
                 item.getPrice()
         )).toList());
-
-        String openingTime = restaurantEntity.getOpeningTime() != null ?
-                restaurantEntity.getOpeningTime() : null;
-        String closingTime = restaurantEntity.getClosingTime() != null ?
-                restaurantEntity.getClosingTime() : null;
-
         return new RestaurantDTO(
                 restaurantEntity.getId(),
                 restaurantEntity.getName(),
-                openingTime,
-                closingTime,
+                restaurantEntity.getOpeningTime(),
+                restaurantEntity.getClosingTime(),
                 restaurantEntity.getSlotEntities().stream().map(slot -> new SlotDTO(
                         slot.getId(),
                         slot.getCurrentCapacity(),
@@ -46,7 +41,7 @@ public class RestaurantMapper {
     public static RestaurantEntity toEntity(RestaurantDTO dto) {
         MenuEntity menuEntity = new MenuEntity();
         if (dto.getMenu().getItems() != null) {
-            menuEntity.setId(dto.getMenu().getUuid());
+            menuEntity.setUuid(dto.getMenu().getUuid());
             menuEntity.setItems(dto.getMenu().getItems().stream()
                     .map(item -> {
                         MenuItemEntity menuItemEntity = new MenuItemEntity();
@@ -58,21 +53,28 @@ public class RestaurantMapper {
                         return menuItemEntity;
                     }).toList());
         } else {
-            menuEntity.setId(dto.getMenu().getUuid());
+            menuEntity.setUuid(dto.getMenu().getUuid());
             menuEntity.setItems(new ArrayList<>());
         }
 
-        String openingTime = dto.getOpeningTime() != null ?
-                dto.getOpeningTime() : null;
-        String closingTime = dto.getClosingTime() != null ?
-                dto.getClosingTime() : null;
-
         RestaurantEntity restaurantEntity = new RestaurantEntity();
-        restaurantEntity.setId(dto.getUuid());
+        restaurantEntity.setId(dto.getId());
         restaurantEntity.setName(dto.getRestaurantName());
-        restaurantEntity.setOpeningTime(openingTime);
-        restaurantEntity.setClosingTime(closingTime);
+        restaurantEntity.setOpeningTime(dto.getOpeningTime());
+        restaurantEntity.setClosingTime(dto.getClosingTime());
         restaurantEntity.setMenuEntity(menuEntity);
+        restaurantEntity.setSlotEntities(dto.getSlots().stream()
+                .map(slot -> {
+                    SlotEntity slotEntity = new SlotEntity();
+                    slotEntity.setId(slot.getUuid());
+                    slotEntity.setCurrentCapacity(slot.getCurrentCapacity());
+                    slotEntity.setMaxCapacity(slot.getMaxCapacity());
+                    slotEntity.setOpeningDate(slot.getOpeningDate());
+                    slotEntity.setDurationTime(slot.getDurationTime());
+                    slotEntity.setNumberOfPersonnel(slot.getNumberOfPersonnel());
+                    slotEntity.setRestaurantEntity(restaurantEntity);
+                    return slotEntity;
+                }).toList());
 
         return restaurantEntity;
     }

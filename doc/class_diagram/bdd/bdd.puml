@@ -1,0 +1,81 @@
+@startuml
+!theme plain
+top to bottom direction
+skinparam linetype ortho
+
+class CampusUserEntity {
+   id:  UUID
+   balance:  double
+   defaultPaymentMethod:  PaymentMethod
+   name:  String
+}
+class DeliveryDetailsEntity {
+   id:  UUID
+   deliveryTime:  String
+}
+class DeliveryLocationEntity {
+   id:  UUID
+   address:  String
+   locationName:  String
+}
+class GroupOrderEntity {
+   id:  UUID
+   status:  OrderStatus
+}
+class IndividualOrderEntity
+class MenuEntity {
+   id:  UUID
+}
+class MenuItemEntity {
+   id:  UUID
+   name:  String
+   prepTime:  int
+   price:  double
+}
+class OrderEntity {
+   id:  UUID
+   restaurantId:  UUID
+   status:  OrderStatus
+   userId:  UUID
+}
+class RestaurantEntity {
+   id:  UUID
+   closingTime:  String
+   name:  String
+   openingTime:  String
+}
+class RestaurantManagerEntity {
+   id:  UUID
+   email:  String
+   name:  String
+}
+class SlotEntity {
+   id:  UUID
+   currentCapacity:  int
+   durationTime:  Duration
+   maxCapacity:  int
+   numberOfPersonnel:  int
+   openingDate:  LocalDateTime
+}
+class TransactionEntity {
+   id:  UUID
+   amount:  double
+   timestamp:  LocalDateTime
+}
+
+CampusUserEntity        "0..1" -[#595959,plain]-> "0..*" OrderEntity
+CampusUserEntity        "0..1" -[#595959,plain]-> "0..*" TransactionEntity
+DeliveryDetailsEntity   "0..1" -[#595959,plain]-> "0..1" DeliveryLocationEntity
+GroupOrderEntity        "0..*" -[#595959,plain]-> "0..*" CampusUserEntity
+GroupOrderEntity        "0..1" -[#595959,plain]-> "1" DeliveryDetailsEntity
+GroupOrderEntity        "0..1" -[#595959,plain]-> "0..*" OrderEntity
+IndividualOrderEntity   "0..1" -[#595959,plain]-> "1" DeliveryDetailsEntity
+IndividualOrderEntity    -[#595959,plain]-^  OrderEntity
+MenuEntity              "0..1" <-[#595959,plain]-> "0..*" MenuItemEntity
+OrderEntity             "0..1" -[#595959,plain]-> "0..*" MenuItemEntity
+RestaurantEntity        "0..1" -[#595959,plain]-> "0..1" MenuEntity
+RestaurantEntity        "0..1" <-[#595959,plain]-> "0..*" SlotEntity
+RestaurantManagerEntity "0..*" -[#595959,plain]-> "0..1" RestaurantEntity
+TransactionEntity       "0..*" -[#595959,plain]-> "1" CampusUserEntity
+TransactionEntity       "0..*" -[#595959,plain]-> "0..1" OrderEntity
+@enduml

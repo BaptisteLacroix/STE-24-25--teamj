@@ -20,4 +20,13 @@ public class DeliveryLocationDTO {
 
     public DeliveryLocationDTO() {
     }
+
+    @Override
+    public String toString() {
+        return "DeliveryLocationDTO{" +
+                "id=" + id +
+                ", locationName='" + locationName + '\'' +
+                ", address='" + address + '\'' +
+                '}';
+    }
 }

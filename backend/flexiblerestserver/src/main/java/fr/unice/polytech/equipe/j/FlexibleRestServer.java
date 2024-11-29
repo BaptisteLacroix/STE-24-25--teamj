@@ -1,6 +1,7 @@
 package fr.unice.polytech.equipe.j;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
@@ -43,6 +44,7 @@ public class FlexibleRestServer {
     public FlexibleRestServer(String serverRoot, int port) {
         this.port = port;
         this.serverRoot = serverRoot;
+        objectMapper.registerModule(new JavaTimeModule());
     }
 
     /**

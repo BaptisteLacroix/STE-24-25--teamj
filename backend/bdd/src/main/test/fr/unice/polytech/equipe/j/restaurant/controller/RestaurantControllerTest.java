@@ -5,12 +5,12 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import fr.unice.polytech.equipe.j.FlexibleRestServer;
+import fr.unice.polytech.equipe.j.JacksonConfig;
 import fr.unice.polytech.equipe.j.restaurant.dao.RestaurantDAO;
 import fr.unice.polytech.equipe.j.restaurant.dto.MenuDTO;
 import fr.unice.polytech.equipe.j.restaurant.dto.MenuItemDTO;
 import fr.unice.polytech.equipe.j.restaurant.dto.RestaurantDTO;
 import fr.unice.polytech.equipe.j.restaurant.mapper.RestaurantMapper;
-import fr.unice.polytech.equipe.j.user.dao.CampusUserDAO;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -59,7 +59,7 @@ class RestaurantControllerTest {
 
         assertNotNull(response.body());
 
-        ObjectMapper objectMapper = new ObjectMapper();
+        ObjectMapper objectMapper = JacksonConfig.configureObjectMapper();
         List<RestaurantDTO> restaurantDTOList = objectMapper.readValue(response.body(), new TypeReference<List<RestaurantDTO>>() {
         });
         assertNotNull(restaurantDTOList);
@@ -69,7 +69,7 @@ class RestaurantControllerTest {
     @Test
     void testCreateRestaurant() throws Exception {
         HttpClient client = HttpClient.newHttpClient();
-        ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+        ObjectWriter ow = JacksonConfig.configureObjectMapper().writer().withDefaultPrettyPrinter();
         String json = ow.writeValueAsString(getRestaurant());
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(RESTAURANT_PATH + "create"))
@@ -79,7 +79,7 @@ class RestaurantControllerTest {
 
         java.net.http.HttpResponse<String> response = client.send(request, java.net.http.HttpResponse.BodyHandlers.ofString());
         assertEquals(201, response.statusCode());
-        ObjectMapper objectMapper = new ObjectMapper();
+        ObjectMapper objectMapper = JacksonConfig.configureObjectMapper();
         UUID restaurantUUID = objectMapper.readValue(response.body(), UUID.class);
         assertEquals(RESTAURANT_ID, restaurantUUID);
     }
@@ -102,9 +102,9 @@ class RestaurantControllerTest {
 
         assertNotNull(response.body());
         assertEquals(200, response.statusCode());
-        ObjectMapper objectMapper = new ObjectMapper();
+        ObjectMapper objectMapper = JacksonConfig.configureObjectMapper();
         RestaurantDTO restaurantDTO = objectMapper.readValue(response.body(), RestaurantDTO.class);
-        assertEquals(RESTAURANT_ID, restaurantDTO.getUuid());
+        assertEquals(RESTAURANT_ID, restaurantDTO.getId());
     }
 
     @Test

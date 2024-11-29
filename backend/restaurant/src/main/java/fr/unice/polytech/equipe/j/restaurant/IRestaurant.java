@@ -58,10 +58,6 @@ public interface IRestaurant {
     // TODO: See later if we keep this
     List<Slot> getSlots();
 
-    void setOpeningTime(LocalDateTime openingHour);
-
-    void setClosingTime(LocalDateTime closingHour);
-
     boolean setNumberOfPersonnel(Slot slotToUpdate, int numberOfPersonnel);
 
     void addOrderToHistory(Order order);
@@ -73,4 +69,8 @@ public interface IRestaurant {
     Map<Slot, Set<Order>> getPendingOrders();
 
     void changeMenu(Menu testMenu);
+
+    HttpResponse<String> changeHours(UUID managerId, LocalDateTime openingHour, LocalDateTime closingHour);
+
+    HttpResponse<String> changeNumberOfEmployees(UUID managerId, UUID slotId, int numberOfEmployees);
 }

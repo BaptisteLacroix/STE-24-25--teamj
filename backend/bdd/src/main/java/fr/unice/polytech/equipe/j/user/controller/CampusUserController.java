@@ -19,16 +19,19 @@ import java.util.stream.Collectors;
 public class CampusUserController {
     @Route(value = "/create", method = HttpMethod.POST)
     public HttpResponse createUser(@BeanParam CampusUserDTO dto) {
+        System.out.println("Create user");
         return CampusUserDAO.save(CampusUserMapper.toEntity(dto));
     }
 
     @Route(value = "/all", method = HttpMethod.GET)
     public HttpResponse getAllUsers() {
+        System.out.println("Get all users");
         return new HttpResponse(HttpCode.HTTP_200, CampusUserDAO.getAll().stream().map(CampusUserMapper::toDTO).collect(Collectors.toList()));
     }
 
     @Route(value = "/{id}", method = HttpMethod.GET)
     public HttpResponse getUserById(@PathParam("id") UUID id) {
+        System.out.println("Get user by id: " + id);
         CampusUserEntity user = CampusUserDAO.getUserById(id);
         if (user == null) {
             return new HttpResponse(HttpCode.HTTP_404, "User not found");
@@ -38,6 +41,7 @@ public class CampusUserController {
 
     @Route(value = "/{id}", method = HttpMethod.DELETE)
     public HttpResponse deleteUserById(@PathParam("id") UUID id) {
+        System.out.println("Delete user by id: " + id);
         return CampusUserDAO.delete(id);
     }
 }

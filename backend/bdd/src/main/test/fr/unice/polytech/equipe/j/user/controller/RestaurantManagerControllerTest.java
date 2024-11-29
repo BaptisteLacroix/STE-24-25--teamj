@@ -1,6 +1,7 @@
 package fr.unice.polytech.equipe.j.user.controller;
 
 import fr.unice.polytech.equipe.j.FlexibleRestServer;
+import fr.unice.polytech.equipe.j.JacksonConfig;
 import fr.unice.polytech.equipe.j.restaurant.dto.MenuDTO;
 import fr.unice.polytech.equipe.j.restaurant.dto.MenuItemDTO;
 import fr.unice.polytech.equipe.j.restaurant.dto.RestaurantDTO;
@@ -56,7 +57,7 @@ public class RestaurantManagerControllerTest {
     @Test
     void testCreateManager() throws Exception {
         // Convert the DTO to JSON.
-        ObjectMapper objectMapper = new ObjectMapper();
+        ObjectMapper objectMapper = JacksonConfig.configureObjectMapper();
         String jsonManager = objectMapper.writeValueAsString(getRestaurantManager());
 
         // Create an HTTP client and make a POST request to create the manager.
@@ -92,12 +93,11 @@ public class RestaurantManagerControllerTest {
         assertEquals(200, response.statusCode());
 
         // Parse the response body into a list of RestaurantManagerDTO objects.
-        ObjectMapper objectMapper = new ObjectMapper();
+        ObjectMapper objectMapper = JacksonConfig.configureObjectMapper();
         List<RestaurantManagerDTO> managerDTOList = objectMapper.readValue(response.body(), new TypeReference<List<RestaurantManagerDTO>>() {});
 
         // Assert that the manager list is not null or empty.
         assertNotNull(managerDTOList);
-        System.out.println("Manager list : " + managerDTOList);
         assertEquals(RestaurantManagerDAO.getAll().size(), managerDTOList.size());
     }
 
@@ -119,7 +119,7 @@ public class RestaurantManagerControllerTest {
         assertEquals(200, response.statusCode());
 
         // Parse the response to a RestaurantManagerDTO object.
-        ObjectMapper objectMapper = new ObjectMapper();
+        ObjectMapper objectMapper = JacksonConfig.configureObjectMapper();
         RestaurantManagerDTO managerDTO = objectMapper.readValue(response.body(), RestaurantManagerDTO.class);
 
         // Assert that the UUID of the returned manager matches the requested UUID.
@@ -129,7 +129,7 @@ public class RestaurantManagerControllerTest {
     @Test
     void testDeleteManagerById() throws Exception {
         RestaurantManagerDAO.save(RestaurantManagerMapper.toEntity(getRestaurantManager()));
-        ObjectMapper objectMapper = new ObjectMapper();
+        ObjectMapper objectMapper = JacksonConfig.configureObjectMapper();
         String jsonManager = objectMapper.writeValueAsString(getRestaurantManager());
         // Create the manager first.
         HttpClient client = HttpClient.newHttpClient();

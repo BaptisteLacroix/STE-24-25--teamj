@@ -10,39 +10,36 @@ import fr.unice.polytech.equipe.j.restaurant.IRestaurant;
 import fr.unice.polytech.equipe.j.restaurant.Restaurant;
 import fr.unice.polytech.equipe.j.slot.Slot;
 
-import java.time.LocalDateTime;
-
 public class DTOMapper {
 
     public static RestaurantDTO toRestaurantDTO(IRestaurant restaurant) {
         RestaurantDTO dto = new RestaurantDTO();
-        dto.setUuid(restaurant.getRestaurantUUID());
+        dto.setId(restaurant.getRestaurantUUID());
         dto.setRestaurantName(restaurant.getRestaurantName());
         dto.setMenu(toMenuDTO(restaurant.getMenu()));
         dto.setSlots(restaurant.getSlots().stream().map(DTOMapper::toSlotDTO).toList());
-        dto.setOpeningTime(restaurant.getOpeningTime().map(LocalDateTime::toString).orElse(null));
-        dto.setOpeningTime(restaurant.getOpeningTime().map(LocalDateTime::toString).orElse(null));
+        dto.setClosingTime(restaurant.getClosingTime().orElse(null));
+        dto.setOpeningTime(restaurant.getOpeningTime().orElse(null));
         return dto;
     }
 
     public static SlotDTO toSlotDTO(Slot slot) {
         SlotDTO dto = new SlotDTO();
-        dto.setOpeningDate(slot.getOpeningDate().toString());
-        dto.setAvailableCapacity(slot.getAvailableCapacity());
+        dto.setUuid(slot.getUUID());
+        dto.setOpeningDate(slot.getOpeningDate());
+        dto.setCurrentCapacity(slot.getAvailableCapacity());
         dto.setNumberOfPersonnel(slot.getNumberOfPersonnel());
+        dto.setMaxCapacity(slot.getMaxCapacity());
+        dto.setDurationTime(slot.getDurationTime());
         return dto;
     }
 
     public static IRestaurant toRestaurant(RestaurantDTO restaurantDTO) {
-        LocalDateTime openingTime = restaurantDTO.getOpeningTime() != null ?
-                LocalDateTime.parse(restaurantDTO.getOpeningTime()) : null;
-        LocalDateTime closingTime = restaurantDTO.getClosingTime() != null ?
-                LocalDateTime.parse(restaurantDTO.getClosingTime()) : null;
         return new Restaurant(
-                restaurantDTO.getUuid(),
+                restaurantDTO.getId(),
                 restaurantDTO.getRestaurantName(),
-                openingTime,
-                closingTime,
+                restaurantDTO.getOpeningTime(),
+                restaurantDTO.getClosingTime(),
                 toMenu(restaurantDTO.getMenu()),
                 restaurantDTO.getSlots().stream().map(DTOMapper::toSlot).toList()
         );
@@ -51,17 +48,20 @@ public class DTOMapper {
 
     public static MenuDTO toMenuDTO(Menu menu) {
         MenuDTO menuDTO = new MenuDTO();
+        menuDTO.setUuid(menu.getUuid());
         menuDTO.setItems(menu.getItems().stream().map(DTOMapper::toMenuItemDTO).toList());
         return menuDTO;
     }
 
     public static Menu toMenu(MenuDTO menuDTO) {
-        return new Menu.MenuBuilder().addMenuItems(menuDTO.getItems().stream().map(DTOMapper::toMenuItem).toList()).build();
+        Menu menu = new Menu.MenuBuilder().addMenuItems(menuDTO.getItems().stream().map(DTOMapper::toMenuItem).toList()).build();
+        menu.setUuid(menuDTO.getUuid());
+        return menu;
     }
 
     public static Slot toSlot(SlotDTO slotDTO) {
-        Slot slot = new Slot(slotDTO.getUuid(), LocalDateTime.parse(slotDTO.getOpeningDate()), slotDTO.getNumberOfPersonnel());
-        slot.setAvailableCapacity(slotDTO.getAvailableCapacity());
+        Slot slot = new Slot(slotDTO.getUuid(), slotDTO.getOpeningDate(), slotDTO.getNumberOfPersonnel());
+        slot.setAvailableCapacity(slotDTO.getCurrentCapacity());
         return slot;
     }
 

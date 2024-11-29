@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.util.JSONPObject;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import fr.unice.polytech.equipe.j.HttpMethod;
 import fr.unice.polytech.equipe.j.JacksonConfig;
 import fr.unice.polytech.equipe.j.RequestUtil;
@@ -138,7 +139,7 @@ public class RestaurantController {
                     HttpMethod.GET,
                     null
             );
-            ObjectMapper objectMapper = new ObjectMapper();
+            ObjectMapper objectMapper = JacksonConfig.configureObjectMapper();
             List<IRestaurant> restaurants = objectMapper.readValue(response.body(), objectMapper.getTypeFactory().constructCollectionType(List.class, IRestaurant.class));
 
             // Fetch the list of restaurants that can deliver at the specified time
@@ -152,6 +153,7 @@ public class RestaurantController {
             String jsonResponse = objectMapper.writeValueAsString(matchingRestaurants);
             return createHttpResponse(HttpCode.HTTP_200, jsonResponse);
         } catch (Exception e) {
+            e.printStackTrace();
             return createHttpResponse(HttpCode.HTTP_500, "Internal server error: " + e.getMessage());
         }
     }
@@ -172,25 +174,24 @@ public class RestaurantController {
                     null);
             IRestaurant restaurantProxy = createRestaurantProxy(restaurantId);
             Order order = fetchOrderById(orderId);
+            System.out.println("Order: " + order);
             if (order == null || restaurantProxy == null) {
                 return createHttpResponse(HttpCode.HTTP_400, order == null ? "Order not found" : "Restaurant not found");
             }
             // Map responses to DTOs
-            ObjectMapper objectMapper = new ObjectMapper();
+            ObjectMapper objectMapper = JacksonConfig.configureObjectMapper();
             MenuItem menuItem = objectMapper.readValue(menuItemResponse.body(), MenuItem.class);
 
             // Use proxy to add item to the order
             LocalDateTime deliveryDateTime = null;
             if (deliveryTime != null) deliveryDateTime = LocalDateTime.parse(deliveryTime);
             java.net.http.HttpResponse<String> response = restaurantProxy.addItemToOrder(order, menuItem, deliveryDateTime);
-            System.out.println("Response: " + response);
             if (response.statusCode() != 200) {
-                System.out.println(response.body());
                 return createHttpResponse(HttpCode.HTTP_400, "Item cannot be added to order");
             }
-            System.out.println("Item added to order successfully");
             return createHttpResponse(HttpCode.HTTP_200, "Item added to order successfully");
         } catch (Exception e) {
+            e.printStackTrace();
             return createHttpResponse(HttpCode.HTTP_500, "Internal server error: " + e.getMessage());
         }
     }
@@ -200,7 +201,6 @@ public class RestaurantController {
             @PathParam("restaurantId") UUID restaurantId,
             @PathParam("orderId") UUID orderId,
             @BeanParam String deliveryTime) {
-
         try {
             LocalDateTime deliveryDateTime = LocalDateTime.parse(deliveryTime);
             Order order = fetchOrderById(orderId);
@@ -217,6 +217,45 @@ public class RestaurantController {
             }
             return createHttpResponse(HttpCode.HTTP_500, "Internal server error: " + response.body());
         } catch (Exception e) {
+            e.printStackTrace();
+            return createHttpResponse(HttpCode.HTTP_500, "Internal server error: " + e.getMessage());
+        }
+    }
+
+    @Route(value = "/{restaurantId}/manager/{managerId}/changeHours/{openingHour}/{closingHour}", method = HttpMethod.POST)
+    public HttpResponse changeHours(
+            @PathParam("restaurantId") UUID restaurantId,
+            @PathParam("managerId") UUID managerId,
+            @PathParam("openingHour") String openingHour,
+            @PathParam("closingHour") String closingHour) {
+        try {
+            LocalDateTime openingHourDateTime = LocalDateTime.parse(openingHour);
+            LocalDateTime closingHourDateTime = LocalDateTime.parse(closingHour);
+            IRestaurant restaurantProxy = createRestaurantProxy(restaurantId);
+            if (restaurantProxy == null) {
+                return createHttpResponse(HttpCode.HTTP_400, "Restaurant not found");
+            }
+            java.net.http.HttpResponse<String> response = restaurantProxy.changeHours(managerId, openingHourDateTime, closingHourDateTime);
+            return createHttpResponse(HttpCode.fromCode(response.statusCode()), response.body());
+        } catch (Exception e) {
+            return createHttpResponse(HttpCode.HTTP_500, "Internal server error: " + e.getMessage());
+        }
+    }
+
+    @Route(value = "/{restaurantId}/manager/{managerId}/slots/{slotId}/changeNumberOfEmployees/{numberOfEmployees}", method = HttpMethod.POST)
+    public HttpResponse changeNumberOfEmployees(
+            @PathParam("restaurantId") UUID restaurantId,
+            @PathParam("managerId") UUID managerId,
+            @PathParam("slotId") UUID slotId,
+            @PathParam("numberOfEmployees") int numberOfEmployees) {
+        try {
+            IRestaurant restaurantProxy = createRestaurantProxy(restaurantId);
+            if (restaurantProxy == null) {
+                return createHttpResponse(HttpCode.HTTP_400, "Restaurant not found");
+            }
+            java.net.http.HttpResponse<String> response = restaurantProxy.changeNumberOfEmployees(managerId, slotId, numberOfEmployees);
+            return createHttpResponse(HttpCode.fromCode(response.statusCode()), response.body());
+        } catch (Exception e) {
             return createHttpResponse(HttpCode.HTTP_500, "Internal server error: " + e.getMessage());
         }
     }
@@ -230,7 +269,7 @@ public class RestaurantController {
             }
             Menu menu = restaurantProxy.getMenu();
 
-            ObjectMapper objectMapper = new ObjectMapper();
+            ObjectMapper objectMapper = JacksonConfig.configureObjectMapper();
             String jsonResponse = objectMapper.writeValueAsString(menu);
 
             return createHttpResponse(HttpCode.HTTP_200, jsonResponse);
@@ -368,11 +407,12 @@ public class RestaurantController {
                     HttpMethod.GET,
                     null);
             // Parse response
-            ObjectMapper objectMapper = new ObjectMapper();
+            ObjectMapper objectMapper = JacksonConfig.configureObjectMapper();
             RestaurantDTO restaurantDTO = objectMapper.readValue(restaurantResponse.body(), RestaurantDTO.class);
             // Create proxy
             return new RestaurantProxy(DTOMapper.toRestaurant(restaurantDTO));
         } catch (Exception e) {
+            e.printStackTrace();
             return null;
         }
     }
@@ -386,7 +426,7 @@ public class RestaurantController {
                     HttpMethod.GET,
                     null);
             // Parse response
-            ObjectMapper objectMapper = new ObjectMapper();
+            ObjectMapper objectMapper = JacksonConfig.configureObjectMapper();
             return objectMapper.readValue(orderResponse.body(), Order.class);
         } catch (Exception e) {
             return null;

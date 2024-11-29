@@ -120,4 +120,16 @@ public class Slot {
     public UUID getUUID() {
         return uuid;
     }
+
+    @Override
+    public String toString() {
+        return "Slot{" +
+                "uuid=" + uuid +
+                ", currentCapacity=" + currentCapacity +
+                ", maxCapacity=" + maxCapacity +
+                ", openingDate=" + openingDate +
+                ", durationTime=" + durationTime +
+                ", numberOfPersonnel=" + numberOfPersonnel +
+                '}';
+    }
 }

@@ -26,6 +26,7 @@ public class RestaurantManagerController {
 
     @Route(value = "/all", method = HttpMethod.GET)
     public HttpResponse getAllManagers() {
+        System.out.println("Get all managers");
         List<RestaurantManagerDTO> managers = RestaurantManagerDAO.getAll().stream()
                 .map(RestaurantManagerMapper::toDTO)
                 .collect(Collectors.toList());
@@ -34,6 +35,7 @@ public class RestaurantManagerController {
 
     @Route(value = "/{id}", method = HttpMethod.GET)
     public HttpResponse getManagerById(@PathParam("id") UUID id) {
+        System.out.println("Get manager by id: " + id);
         RestaurantManagerEntity restaurantManagerEntity = RestaurantManagerDAO.getManagerById(id);
         if (restaurantManagerEntity != null) {
             return new HttpResponse(HttpCode.HTTP_200, RestaurantManagerMapper.toDTO(restaurantManagerEntity));
@@ -44,6 +46,20 @@ public class RestaurantManagerController {
 
     @Route(value = "/{id}", method = HttpMethod.DELETE)
     public HttpResponse deleteManagerById(@PathParam("id") UUID id) {
+        System.out.println("Delete manager by id: " + id);
         return RestaurantManagerDAO.delete(id);
+    }
+
+    @Route(value = "/{id}/restaurant/{restaurantId}", method = HttpMethod.GET)
+    public HttpResponse getManagerRestaurant(@PathParam("id") UUID id, @PathParam("restaurantId") UUID restaurantId) {
+        System.out.println("Get manager's restaurant by id: " + id);
+        RestaurantManagerEntity restaurantManagerEntity = RestaurantManagerDAO.getManagerById(id);
+        if (restaurantManagerEntity == null) {
+            return new HttpResponse(HttpCode.HTTP_404, "Manager not found");
+        }
+        if (!restaurantManagerEntity.getRestaurant().getId().equals(restaurantId)) {
+            return new HttpResponse(HttpCode.HTTP_404, "Restaurant not found");
+        }
+        return new HttpResponse(HttpCode.HTTP_200, RestaurantManagerMapper.toDTO(restaurantManagerEntity).getRestaurant());
     }
 }

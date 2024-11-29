@@ -12,7 +12,6 @@ public class TempRestController {
 
     @Route(value= "/tempRoute", method=HttpMethod.GET)
     public HttpResponse tempRoute(String test, String test2) {
-        System.out.println("get");
         return new HttpResponse(HttpCode.HTTP_200, "jsp");
     }
 }

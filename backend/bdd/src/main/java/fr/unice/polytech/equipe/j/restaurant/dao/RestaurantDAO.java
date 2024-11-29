@@ -3,6 +3,8 @@ package fr.unice.polytech.equipe.j.restaurant.dao;
 import fr.unice.polytech.equipe.j.HibernateUtil;
 import fr.unice.polytech.equipe.j.httpresponse.HttpCode;
 import fr.unice.polytech.equipe.j.httpresponse.HttpResponse;
+import fr.unice.polytech.equipe.j.restaurant.entities.MenuEntity;
+import fr.unice.polytech.equipe.j.restaurant.entities.MenuItemEntity;
 import fr.unice.polytech.equipe.j.restaurant.entities.RestaurantEntity;
 import org.hibernate.Session;
 import org.hibernate.Transaction;

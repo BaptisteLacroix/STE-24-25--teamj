@@ -1,6 +1,13 @@
 package fr.unice.polytech.equipe.j.restaurant;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import fr.unice.polytech.equipe.j.CustomHttpResponse;
+import fr.unice.polytech.equipe.j.HttpMethod;
+import fr.unice.polytech.equipe.j.JacksonConfig;
+import fr.unice.polytech.equipe.j.RequestUtil;
 import fr.unice.polytech.equipe.j.dto.Order;
+import fr.unice.polytech.equipe.j.dto.RestaurantDTO;
+import fr.unice.polytech.equipe.j.mapper.DTOMapper;
 import fr.unice.polytech.equipe.j.menu.Menu;
 import fr.unice.polytech.equipe.j.menu.MenuItem;
 import fr.unice.polytech.equipe.j.orderpricestrategy.OrderPrice;
@@ -14,6 +21,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+
+import static fr.unice.polytech.equipe.j.RequestUtil.request;
 
 public class RestaurantProxy implements IRestaurant {
     private final IRestaurant restaurant;
@@ -31,7 +40,7 @@ public class RestaurantProxy implements IRestaurant {
      */
     @Override
     public HttpResponse<String> addItemToOrder(Order order, MenuItem menuItem, LocalDateTime deliveryTime) {
-        HttpResponse<String> response = ((Restaurant)restaurant).canAddItemToOrder(order, menuItem, deliveryTime);
+        HttpResponse<String> response = ((Restaurant) restaurant).canAddItemToOrder(order, menuItem, deliveryTime);
         if (response.statusCode() != 200) {
             return response;
         }
@@ -123,16 +132,6 @@ public class RestaurantProxy implements IRestaurant {
     }
 
     @Override
-    public void setOpeningTime(LocalDateTime openingHour) {
-        getRestaurant().setOpeningTime(openingHour);
-    }
-
-    @Override
-    public void setClosingTime(LocalDateTime closingHour) {
-        getRestaurant().setClosingTime(closingHour);
-    }
-
-    @Override
     public boolean setNumberOfPersonnel(Slot slotToUpdate, int numberOfPersonnel) {
         return getRestaurant().setNumberOfPersonnel(slotToUpdate, numberOfPersonnel);
     }
@@ -160,5 +159,56 @@ public class RestaurantProxy implements IRestaurant {
     @Override
     public void changeMenu(Menu testMenu) {
         getRestaurant().changeMenu(testMenu);
+    }
+
+    @Override
+    public HttpResponse<String> changeHours(UUID managerId, LocalDateTime openingHour, LocalDateTime closingHour) {
+        // Check if the manager is authorized to change the hours
+        // if the manager have this restaurantId in his list of restaurants, then he is authorized
+        HttpResponse<String> response = request(
+                RequestUtil.DATABASE_MANAGER_SERVICE_URI,
+                "/" + managerId + "/restaurant/" + getRestaurantUUID(),
+                HttpMethod.GET,
+                null
+        );
+        if (response.statusCode() != 200) {
+            return response;
+        }
+        ObjectMapper objectMapper = JacksonConfig.configureObjectMapper();
+        try {
+            RestaurantDTO restaurantDTO = objectMapper.readValue(response.body(), RestaurantDTO.class);
+            IRestaurant restaurant = DTOMapper.toRestaurant(restaurantDTO);
+            if (!restaurant.getRestaurantUUID().equals(getRestaurantUUID())) {
+                return new CustomHttpResponse(403, "The manager is not authorized to change the hours of this restaurant");
+            }
+        } catch (Exception e) {
+            return new CustomHttpResponse(500, "Error while parsing the response body of the managers list of restaurants");
+        }
+        return getRestaurant().changeHours(managerId, openingHour, closingHour);
+    }
+
+    public HttpResponse<String> changeNumberOfEmployees(UUID managerId, UUID slotId, int numberOfEmployees) {
+        // Check that the manager is authorized to change the number of employees
+        // if the manager have this restaurantId in his list of restaurants, then he is authorized
+        HttpResponse<String> response = request(
+                RequestUtil.DATABASE_MANAGER_SERVICE_URI,
+                "/" + managerId + "/restaurant/" + getRestaurantUUID(),
+                HttpMethod.GET,
+                null
+        );
+        if (response.statusCode() != 200) {
+            return response;
+        }
+        ObjectMapper objectMapper = JacksonConfig.configureObjectMapper();
+        try {
+            RestaurantDTO restaurantDTO = objectMapper.readValue(response.body(), RestaurantDTO.class);
+            IRestaurant restaurant = DTOMapper.toRestaurant(restaurantDTO);
+            if (!restaurant.getRestaurantUUID().equals(getRestaurantUUID())) {
+                return new CustomHttpResponse(403, "The manager is not authorized to change the number of employees of this restaurant");
+            }
+        } catch (Exception e) {
+            return new CustomHttpResponse(500, "Error while parsing the response body of the managers list of restaurants");
+        }
+        return getRestaurant().changeNumberOfEmployees(managerId, slotId, numberOfEmployees);
     }
 }

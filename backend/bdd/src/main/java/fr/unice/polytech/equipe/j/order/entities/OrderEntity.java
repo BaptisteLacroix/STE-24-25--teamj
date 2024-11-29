@@ -22,10 +22,10 @@ public class OrderEntity {
     @Column(name = "id", updatable = false, nullable = false, unique = true)
     private UUID id;
 
-    @JoinColumn(name = "restaurant_id", nullable = false)
+    @Column(name = "restaurant_id", nullable = false)
     private UUID restaurantId;
 
-    @JoinColumn(name = "user_id", nullable = false)
+    @Column(name = "user_id", nullable = false)
     private UUID userId;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)

@@ -3,6 +3,7 @@ package fr.unice.polytech.equipe.j.order.controller;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.unice.polytech.equipe.j.FlexibleRestServer;
+import fr.unice.polytech.equipe.j.JacksonConfig;
 import fr.unice.polytech.equipe.j.order.dao.DeliveryLocationDAO;
 import fr.unice.polytech.equipe.j.order.dao.OrderDAO;
 import fr.unice.polytech.equipe.j.order.dto.DeliveryDetailsDTO;
@@ -32,6 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import static fr.unice.polytech.equipe.j.JacksonConfig.configureObjectMapper;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -82,7 +84,7 @@ class OrderControllerTest {
         CampusUserDTO userDTO = CampusUserMapper.toDTO(CampusUserDAO.getUserById(USER_ID));
         RestaurantDTO restaurantDTO = RestaurantMapper.toDTO(RestaurantDAO.getRestaurantById(RESTAURANT_ID));
 
-        return new OrderDTO(ORDER_ID, restaurantDTO.getUuid(), userDTO.getId(), List.of(restaurantDTO.getMenu().getItems().getFirst()), OrderStatus.PENDING.name());
+        return new OrderDTO(ORDER_ID, restaurantDTO.getId(), userDTO.getId(), List.of(restaurantDTO.getMenu().getItems().getFirst()), OrderStatus.PENDING.name());
     }
 
     private DeliveryDetailsDTO getDeliveryDetails() {
@@ -90,7 +92,7 @@ class OrderControllerTest {
                 "Campus Main Gate",
                 "123 Campus Street");
         DeliveryLocationDAO.save(DeliveryLocationMapper.toEntity(deliveryLocationDTO));
-        return new DeliveryDetailsDTO(DELIVERY_ID, deliveryLocationDTO, LocalDateTime.now().toString());
+        return new DeliveryDetailsDTO(DELIVERY_ID, deliveryLocationDTO, LocalDateTime.now());
     }
 
     private IndividualOrderDTO getIndividualOrder() {
@@ -100,7 +102,7 @@ class OrderControllerTest {
         CampusUserDTO userDTO = CampusUserMapper.toDTO(CampusUserDAO.getUserById(USER_ID));
         RestaurantDTO restaurantDTO = RestaurantMapper.toDTO(RestaurantDAO.getRestaurantById(RESTAURANT_ID));
 
-        return new IndividualOrderDTO(new OrderDTO(INDIVIDUAL_ID, restaurantDTO.getUuid(), userDTO.getId(), List.of(restaurantDTO.getMenu().getItems().getFirst()), OrderStatus.PENDING.name()), getDeliveryDetails());
+        return new IndividualOrderDTO(new OrderDTO(INDIVIDUAL_ID, restaurantDTO.getId(), userDTO.getId(), List.of(restaurantDTO.getMenu().getItems().getFirst()), OrderStatus.PENDING.name()), getDeliveryDetails());
     }
 
     @Test
@@ -118,12 +120,13 @@ class OrderControllerTest {
         assertEquals(200, response.statusCode());
 
         // Parse the response body into a list of CampusUserDTO objects.
-        ObjectMapper objectMapper = new ObjectMapper();
+        ObjectMapper objectMapper = JacksonConfig.configureObjectMapper();
         List<OrderDTO> orderDTOList = objectMapper.readValue(response.body(), new TypeReference<List<OrderDTO>>() {
         });
 
         // Assert that the user list is not null or empty.
         assertNotNull(orderDTOList);
+        System.out.println(orderDTOList);
         assertEquals(OrderDAO.getAllOrders().size(), orderDTOList.size());
     }
 
@@ -135,12 +138,12 @@ class OrderControllerTest {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(ORDER_PATH + "create"))
                 .header("Content-Type", "application/json")
-                .POST(HttpRequest.BodyPublishers.ofString(new ObjectMapper().writeValueAsString(orderDTO)))
+                .POST(HttpRequest.BodyPublishers.ofString(JacksonConfig.configureObjectMapper().writeValueAsString(orderDTO)))
                 .build();
 
         java.net.http.HttpResponse<String> response = client.send(request, java.net.http.HttpResponse.BodyHandlers.ofString());
         assertEquals(201, response.statusCode());
-        ObjectMapper objectMapper = new ObjectMapper();
+        ObjectMapper objectMapper = JacksonConfig.configureObjectMapper();
         assertEquals(orderDTO.getId(), objectMapper.readValue(response.body(), UUID.class));
     }
 
@@ -161,7 +164,7 @@ class OrderControllerTest {
         assertEquals(200, response.statusCode());
 
         // Parse the response body to OrderDTO
-        ObjectMapper objectMapper = new ObjectMapper();
+        ObjectMapper objectMapper = JacksonConfig.configureObjectMapper();
         OrderDTO orderDTO = objectMapper.readValue(response.body(), OrderDTO.class);
 
         // Assert that the ID in the response matches the mock ID
@@ -180,11 +183,11 @@ class OrderControllerTest {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(ORDER_PATH + "update"))
                 .header("Content-Type", "application/json")
-                .PUT(HttpRequest.BodyPublishers.ofString(new ObjectMapper().writeValueAsString(orderDTO)))
+                .PUT(HttpRequest.BodyPublishers.ofString(JacksonConfig.configureObjectMapper().writeValueAsString(orderDTO)))
                 .build();
         java.net.http.HttpResponse<String> response = client.send(request, java.net.http.HttpResponse.BodyHandlers.ofString());
         assertEquals(200, response.statusCode());
-        orderDTO = new ObjectMapper().readValue(response.body(), OrderDTO.class);
+        orderDTO = JacksonConfig.configureObjectMapper().readValue(response.body(), OrderDTO.class);
         assertEquals(orderDTO.getId(), orderDTO.getId());
 
         // Get the updated order by id and check status update
@@ -193,7 +196,7 @@ class OrderControllerTest {
                 .GET()
                 .build();
         java.net.http.HttpResponse<String> getResponse = client.send(getRequest, java.net.http.HttpResponse.BodyHandlers.ofString());
-        OrderDTO updatedOrderDTO = new ObjectMapper().readValue(getResponse.body(), OrderDTO.class);
+        OrderDTO updatedOrderDTO = JacksonConfig.configureObjectMapper().readValue(getResponse.body(), OrderDTO.class);
         assertEquals(OrderStatus.VALIDATED.name(), updatedOrderDTO.getStatus());
         assertEquals(orderDTO.getId(), updatedOrderDTO.getId());
     }
@@ -220,17 +223,18 @@ class OrderControllerTest {
         // Create an IndividualOrderDTO
         IndividualOrderDTO individualOrderDTO = new IndividualOrderDTO(getIndividualOrder(), getDeliveryDetails());
 
+        ObjectMapper objectMapper = configureObjectMapper();
+
         // Send request
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(ORDER_PATH + "individual/create"))
                 .header("Content-Type", "application/json")
-                .POST(HttpRequest.BodyPublishers.ofString(new ObjectMapper().writeValueAsString(individualOrderDTO)))
+                .POST(HttpRequest.BodyPublishers.ofString(objectMapper.writeValueAsString(individualOrderDTO)))
                 .build();
 
         java.net.http.HttpResponse<String> response = client.send(request, java.net.http.HttpResponse.BodyHandlers.ofString());
         assertEquals(201, response.statusCode());
-        ObjectMapper objectMapper = new ObjectMapper();
         assertEquals(individualOrderDTO.getId(), objectMapper.readValue(response.body(), UUID.class));
     }
 

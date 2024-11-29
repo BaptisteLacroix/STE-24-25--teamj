@@ -2,13 +2,16 @@ package fr.unice.polytech.equipe.j.restaurant;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import fr.unice.polytech.equipe.j.CustomHttpResponse;
 import fr.unice.polytech.equipe.j.HttpMethod;
+import fr.unice.polytech.equipe.j.JacksonConfig;
 import fr.unice.polytech.equipe.j.RequestUtil;
 import fr.unice.polytech.equipe.j.TimeUtils;
 import fr.unice.polytech.equipe.j.dto.MenuItemDTO;
 import fr.unice.polytech.equipe.j.dto.Order;
 import fr.unice.polytech.equipe.j.dto.OrderStatus;
+import fr.unice.polytech.equipe.j.dto.RestaurantDTO;
 import fr.unice.polytech.equipe.j.httpresponse.HttpCode;
 import fr.unice.polytech.equipe.j.mapper.DTOMapper;
 import fr.unice.polytech.equipe.j.menu.Menu;
@@ -17,6 +20,7 @@ import fr.unice.polytech.equipe.j.orderpricestrategy.FreeItemFotNItemsOrderPrice
 import fr.unice.polytech.equipe.j.orderpricestrategy.OrderPrice;
 import fr.unice.polytech.equipe.j.orderpricestrategy.OrderPriceStrategy;
 import fr.unice.polytech.equipe.j.slot.Slot;
+import lombok.Setter;
 
 import java.net.http.HttpResponse;
 import java.time.LocalDateTime;
@@ -35,9 +39,10 @@ import static fr.unice.polytech.equipe.j.RequestUtil.request;
 public class Restaurant implements IRestaurant {
     private final UUID restaurantId;
     private final String restaurantName;
-    private Optional<LocalDateTime> openingTime;
-    private Optional<LocalDateTime> closingTime;
+    private LocalDateTime openingTime;
+    private LocalDateTime closingTime;
     private List<Slot> slots;
+    @Setter
     private Menu menu;
     private OrderPriceStrategy orderPriceStrategy;
     private final List<Order> ordersHistory = new ArrayList<>();
@@ -51,13 +56,8 @@ public class Restaurant implements IRestaurant {
     private Restaurant(UUID restaurantId, String name, LocalDateTime openingTime, LocalDateTime closingTime, Menu menu, OrderPriceStrategy strategy, List<Slot> slots) {
         this.restaurantId = restaurantId;
         this.restaurantName = name;
-        this.openingTime = openingTime == null ? Optional.empty() : Optional.of(openingTime);
         if (closingTime != null && closingTime.isBefore(openingTime)) {
             throw new IllegalArgumentException("Closing time cannot be before opening time.");
-        }
-        this.closingTime = closingTime == null ? Optional.empty() : Optional.of(closingTime);
-        if (this.openingTime.isPresent() && this.closingTime.isEmpty()) {
-            throw new IllegalArgumentException("Closing time is required if the restaurant is open.");
         }
         this.menu = menu;
         this.orderPriceStrategy = strategy;
@@ -73,12 +73,12 @@ public class Restaurant implements IRestaurant {
      * For every 30 minutes, generate a slot with a duration of 30 minutes. The number of slots is calculated based on the opening and closing time.
      */
     private void generateSlots() {
-        if (openingTime.isEmpty() || closingTime.isEmpty()) {
+        if (openingTime == null || closingTime == null) {
             return;
         }
         slots = new ArrayList<>();
-        LocalDateTime currentTime = openingTime.get();
-        while (currentTime.isBefore(closingTime.get())) {
+        LocalDateTime currentTime = openingTime;
+        while (currentTime.isBefore(closingTime)) {
             Slot slot = new Slot(UUID.randomUUID(), currentTime, 0);
             slots.add(slot);
             pendingOrders.put(slot, new LinkedHashSet<>());
@@ -138,7 +138,6 @@ public class Restaurant implements IRestaurant {
     @Override
     public HttpResponse<String> addItemToOrder(Order order, MenuItem menuItem, LocalDateTime deliveryTime) {
         try {
-            System.out.println("Adding item to order");
             Slot availableSlot = slots.stream()
                     .filter(slot -> slot.updateSlotCapacity(menuItem))
                     .findFirst()
@@ -148,9 +147,7 @@ public class Restaurant implements IRestaurant {
             List<MenuItemDTO> newItems = new ArrayList<>(order.getItems());
             newItems.add(DTOMapper.toMenuItemDTO(menuItem));
             order.setItems(newItems);
-            ObjectMapper mapper = new ObjectMapper();
-            System.out.println(RequestUtil.DATABASE_ORDER_SERVICE_URI + "/update");
-            System.out.println(mapper.writeValueAsString(order));
+            ObjectMapper mapper = JacksonConfig.configureObjectMapper();
             return request(
                     RequestUtil.DATABASE_ORDER_SERVICE_URI,
                     "/update",
@@ -184,7 +181,7 @@ public class Restaurant implements IRestaurant {
                 }
             }
             // Update the Restaurant in the database uisng the update route
-            ObjectMapper mapper = new ObjectMapper();
+            ObjectMapper mapper = JacksonConfig.configureObjectMapper();
             HttpResponse<String> response = request(
                     RequestUtil.DATABASE_RESTAURANT_SERVICE_URI,
                     "/update",
@@ -252,7 +249,6 @@ public class Restaurant implements IRestaurant {
      */
     private boolean isItemTooLate(MenuItem menuItem, LocalDateTime deliveryTime) {
         LocalDateTime estimatedReadyTime = TimeUtils.getNow().plusSeconds(menuItem.getPrepTime());
-        System.out.println("Estimated ready time: " + estimatedReadyTime + " Delivery time: " + deliveryTime);
         return estimatedReadyTime.isAfter(deliveryTime);
     }
 
@@ -302,8 +298,8 @@ public class Restaurant implements IRestaurant {
 
 
     public boolean isOpenAt(LocalDateTime time) {
-        return openingTime.isPresent() && closingTime.isPresent() &&
-                !time.isBefore(openingTime.get()) && !time.isAfter(closingTime.get());
+        return openingTime != null && closingTime != null &&
+                !time.isBefore(openingTime) && !time.isAfter(closingTime);
     }
 
     @Override
@@ -402,10 +398,6 @@ public class Restaurant implements IRestaurant {
         return menu;
     }
 
-    public void setMenu(Menu menu) {
-        this.menu = menu;
-    }
-
     @Override
     public String getRestaurantName() {
         return restaurantName;
@@ -413,42 +405,12 @@ public class Restaurant implements IRestaurant {
 
     @Override
     public Optional<LocalDateTime> getOpeningTime() {
-        return openingTime;
-    }
-
-    @Override
-    public void setOpeningTime(LocalDateTime openingTime) {
-        this.openingTime = openingTime == null ? Optional.empty() : Optional.of(openingTime);
-        // if opening time is set, generate slots
-        if (this.openingTime.isPresent() && this.closingTime.isPresent()) {
-            generateSlots();
-        }
-        // if the opening time is empty, clear the slots and set the closing time to empty
-        if (this.openingTime.isEmpty()) {
-            slots.clear();
-            this.closingTime = Optional.empty();
-        }
+        return Optional.ofNullable(openingTime);
     }
 
     @Override
     public Optional<LocalDateTime> getClosingTime() {
-        return closingTime;
-    }
-
-    @Override
-    public void setClosingTime(LocalDateTime closingTime) {
-        if (closingTime != null && closingTime.isBefore(openingTime.orElseThrow())) {
-            throw new IllegalArgumentException("Closing time cannot be before opening time.");
-        }
-        this.closingTime = closingTime == null ? Optional.empty() : Optional.of(closingTime);
-        // if closing time is set, generate slots
-        if (this.openingTime.isPresent() && this.closingTime.isPresent()) {
-            generateSlots();
-        }
-        // if the closing time is empty, clear the slots
-        if (this.closingTime.isEmpty()) {
-            slots.clear();
-        }
+        return Optional.ofNullable(closingTime);
     }
 
     public OrderPriceStrategy getOrderPriceStrategy() {
@@ -477,7 +439,7 @@ public class Restaurant implements IRestaurant {
         if (response.statusCode() != 200) {
             return new LinkedHashMap<>();
         }
-        ObjectMapper mapper = new ObjectMapper();
+        ObjectMapper mapper = JacksonConfig.configureObjectMapper();
         try {
             return mapper.readValue(response.body(), new TypeReference<Map<Slot, Set<Order>>>() {
             });
@@ -509,7 +471,7 @@ public class Restaurant implements IRestaurant {
         if (response.statusCode() != 200) {
             return new ArrayList<>();
         }
-        ObjectMapper mapper = new ObjectMapper();
+        ObjectMapper mapper = JacksonConfig.configureObjectMapper();
         try {
             return mapper.readValue(response.body(), new TypeReference<List<Order>>() {
             });
@@ -523,5 +485,96 @@ public class Restaurant implements IRestaurant {
         return order.getItems().stream()
                 .mapToDouble(MenuItemDTO::getPrice)
                 .sum();
+    }
+
+    @Override
+    public HttpResponse<String> changeHours(UUID managerId, LocalDateTime openingHour, LocalDateTime closingHour) {
+        try {
+            if (openingHour == null && closingHour != null) {
+                return new CustomHttpResponse(HttpCode.HTTP_400.getCode(), "Opening time must be set before closing time.");
+            }
+            // Check that the opening time is before the closing time
+            if (openingHour != null && openingHour.isAfter(closingHour)) {
+                return new CustomHttpResponse(HttpCode.HTTP_400.getCode(), "Closing time cannot be before opening time.");
+            }
+            if (closingHour != null && closingHour.isBefore(openingHour)) {
+                return new CustomHttpResponse(HttpCode.HTTP_400.getCode(), "Closing time cannot be before opening time.");
+            }
+
+            // Update the opening and closing time
+            this.openingTime = openingHour;
+            this.closingTime = closingHour;
+
+            // if closing time is set, generate slots
+            if (openingHour != null && closingHour != null) {
+                updateSlotsByChangingHours(closingHour);
+            } else {
+                // if closing time is not set, remove all slots
+                slots = new ArrayList<>();
+            }
+            // Call the database to update the restaurant
+            ObjectMapper mapper = JacksonConfig.configureObjectMapper();
+            System.out.println(this.slots);
+            RestaurantDTO restaurantDTO = DTOMapper.toRestaurantDTO(this);
+            // System.out.println(restaurantDTO.getSlots());
+            return request(
+                    RequestUtil.DATABASE_RESTAURANT_SERVICE_URI,
+                    "/update",
+                    HttpMethod.PUT,
+                    mapper.writeValueAsString(restaurantDTO)
+            );
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new CustomHttpResponse(HttpCode.HTTP_500.getCode(), "An error occurred while updating the restaurant.");
+        }
+    }
+
+    private void updateSlotsByChangingHours(LocalDateTime closingHour) {
+        List<Slot> newSlots = new ArrayList<>();
+        for (Slot slot : slots) {
+            if (slot.getOpeningDate().isBefore(closingHour)) {
+                newSlots.add(slot);
+            }
+        }
+        // if the newSlots list is empty call generateSlots
+        if (newSlots.isEmpty()) {
+            generateSlots();
+            return;
+        }
+        Slot lastSlot = newSlots.get(newSlots.size() - 1);
+        LocalDateTime currentTime = lastSlot.getOpeningDate().plusMinutes(30);
+        while (currentTime.isBefore(closingHour)) {
+            Slot slot = new Slot(UUID.randomUUID(), currentTime, 0);
+            newSlots.add(slot);
+            pendingOrders.put(slot, new LinkedHashSet<>());
+            currentTime = currentTime.plusMinutes(30);
+        }
+        slots = newSlots;
+    }
+
+    public HttpResponse<String> changeNumberOfEmployees(UUID managerId, UUID slotId, int numberOfEmployees) {
+        // Update the number of employees for the slot
+        Slot slotToUpdate = slots.stream()
+                .filter(slot -> slot.getUUID().equals(slotId))
+                .findFirst()
+                .orElse(null);
+        if (slotToUpdate == null) {
+            return new CustomHttpResponse(HttpCode.HTTP_404.getCode(), "Slot not found.");
+        }
+        slotToUpdate.setNumberOfPersonnel(numberOfEmployees);
+        // Call the database to update the restaurant
+        try {
+            ObjectMapper mapper = JacksonConfig.configureObjectMapper();
+            RestaurantDTO restaurantDTO = DTOMapper.toRestaurantDTO(this);
+            return request(
+                    RequestUtil.DATABASE_RESTAURANT_SERVICE_URI,
+                    "/update",
+                    HttpMethod.PUT,
+                    mapper.writeValueAsString(restaurantDTO)
+            );
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new CustomHttpResponse(HttpCode.HTTP_500.getCode(), "An error occurred while updating the restaurant.");
+        }
     }
 }

@@ -1,5 +1,6 @@
 package fr.unice.polytech.equipe.j.restaurant.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -35,5 +36,15 @@ public class MenuItemEntity {
     @JoinColumn(name = "menu_id")
     private MenuEntity menuEntity;
 
-
+    @Override
+    @JsonIgnore
+    public String toString() {
+        return "MenuItemEntity{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", prepTime=" + prepTime +
+                ", price=" + price +
+                ", menuEntity=" + menuEntity +
+                '}';
+    }
 }

@@ -1,6 +1,7 @@
 package fr.unice.polytech.equipe.j.user.controller;
 
 import fr.unice.polytech.equipe.j.FlexibleRestServer;
+import fr.unice.polytech.equipe.j.JacksonConfig;
 import fr.unice.polytech.equipe.j.order.dto.PaymentMethod;
 import fr.unice.polytech.equipe.j.user.dao.CampusUserDAO;
 import fr.unice.polytech.equipe.j.user.dto.CampusUserDTO;
@@ -44,7 +45,7 @@ public class CampusUserControllerTest {
     @Test
     void testCreateUser() throws Exception {
         // Convert the DTO to JSON.
-        ObjectMapper objectMapper = new ObjectMapper();
+        ObjectMapper objectMapper = JacksonConfig.configureObjectMapper();
         String jsonUser = objectMapper.writeValueAsString(getCampusUser());
 
         // Create an HTTP client and make a POST request to create the user.
@@ -76,7 +77,7 @@ public class CampusUserControllerTest {
         assertEquals(200, response.statusCode());
 
         // Parse the response body into a list of CampusUserDTO objects.
-        ObjectMapper objectMapper = new ObjectMapper();
+        ObjectMapper objectMapper = JacksonConfig.configureObjectMapper();
         List<CampusUserDTO> userDTOList = objectMapper.readValue(response.body(), new TypeReference<List<CampusUserDTO>>() {});
 
         // Assert that the user list is not null or empty.
@@ -102,7 +103,7 @@ public class CampusUserControllerTest {
         assertEquals(200, response.statusCode());
 
         // Parse the response to a CampusUserDTO object.
-        ObjectMapper objectMapper = new ObjectMapper();
+        ObjectMapper objectMapper = JacksonConfig.configureObjectMapper();
         CampusUserDTO userDTO = objectMapper.readValue(response.body(), CampusUserDTO.class);
 
         // Assert that the UUID of the returned user matches the requested UUID.
@@ -130,7 +131,7 @@ public class CampusUserControllerTest {
 
     @Test
     void testDeleteUserById() throws Exception {
-        ObjectMapper objectMapper = new ObjectMapper();
+        ObjectMapper objectMapper = JacksonConfig.configureObjectMapper();
         String jsonUser = objectMapper.writeValueAsString(getCampusUser());
 
         // Create the user first.

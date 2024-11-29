@@ -24,6 +24,15 @@ public class OrderDAO {
         }
     }
 
+    public static List<IndividualOrderEntity> getAllIndividualOrders() {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            return session.createQuery("FROM IndividualOrderEntity", IndividualOrderEntity.class).list();
+        } catch (Exception e) {
+            System.out.println("Error while getting all orders: " + e.getMessage());
+            return Collections.emptyList();
+        }
+    }
+
     // Fetch an order by its ID
     public static OrderEntity getOrderById(UUID id) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
@@ -46,6 +55,7 @@ public class OrderDAO {
 
     // Save or update an order
     public static HttpResponse save(OrderEntity orderEntity) {
+        System.out.println("Saving order: " + orderEntity);
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             Transaction transaction = session.beginTransaction();
             session.merge(orderEntity);
@@ -87,6 +97,7 @@ public class OrderDAO {
 
     // Save or update an individual order (extends OrderEntity)
     public static HttpResponse save(IndividualOrderEntity individualOrderEntity) {
+        System.out.println("Saving individual order: " + individualOrderEntity);
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             Transaction transaction = session.beginTransaction();
             session.merge(individualOrderEntity);

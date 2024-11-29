@@ -1,6 +1,7 @@
 package fr.unice.polytech.equipe.j.restaurant.dto;
 
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
@@ -10,19 +11,22 @@ import java.util.UUID;
 @Getter
 @Setter
 public class RestaurantDTO {
-    private UUID uuid;
+    @NonNull
+    private UUID id;
+    @NonNull
     private String restaurantName;
-    private String openingTime;
-    private String closingTime;
-    private List<SlotDTO> slots;
     private MenuDTO menu;
+    @NonNull
+    private List<SlotDTO> slots;
+    private LocalDateTime openingTime;
+    private LocalDateTime closingTime;
     private OrderPriceStrategyDTO orOrderPriceStrategy;
 
     public RestaurantDTO() {
     }
 
-    public RestaurantDTO(UUID uuid, String restaurantName, String openingTime, String closingTime, List<SlotDTO> slots, MenuDTO menu) {
-        this.uuid = uuid;
+    public RestaurantDTO(UUID id, String restaurantName, LocalDateTime openingTime, LocalDateTime closingTime, List<SlotDTO> slots, MenuDTO menu) {
+        this.id = id;
         this.restaurantName = restaurantName;
         this.openingTime = openingTime;
         this.closingTime = closingTime;

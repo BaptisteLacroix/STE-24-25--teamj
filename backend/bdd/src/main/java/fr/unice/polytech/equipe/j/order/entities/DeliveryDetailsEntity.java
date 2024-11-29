@@ -26,10 +26,10 @@ public class DeliveryDetailsEntity {
     @Column(name = "id", updatable = false, nullable = false, unique = true)
     private UUID id;
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "location_id", nullable = false)
     private DeliveryLocationEntity deliveryLocation;
 
     @Column(name = "delivery_time")
-    private String deliveryTime;
+    private LocalDateTime deliveryTime;
 }

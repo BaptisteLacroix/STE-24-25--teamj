@@ -1,5 +1,6 @@
 package fr.unice.polytech.equipe.j.restaurant.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -40,5 +41,18 @@ public class SlotEntity {
     @ManyToOne
     @JoinColumn(name = "restaurant_id")
     private RestaurantEntity restaurantEntity;
+
+    @Override
+    @JsonIgnore
+    public String toString() {
+        return "SlotEntity{" +
+                "id=" + id +
+                ", currentCapacity=" + currentCapacity +
+                ", maxCapacity=" + maxCapacity +
+                ", openingDate=" + openingDate +
+                ", durationTime=" + durationTime +
+                ", numberOfPersonnel=" + numberOfPersonnel +
+                '}';
+    }
 
 }
