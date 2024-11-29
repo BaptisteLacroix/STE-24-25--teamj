@@ -26,4 +26,15 @@ public class OrderDTO {
         this.items = items;
         this.status = status;
     }
+
+    @Override
+    public String toString() {
+        return "OrderDTO{" +
+                "id=" + id +
+                ", restaurantId=" + restaurantId +
+                ", userId=" + userId +
+                ", items=" + items +
+                ", status='" + status + '\'' +
+                '}';
+    }
 }

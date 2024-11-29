@@ -1,5 +1,6 @@
 package fr.unice.polytech.equipe.j.order.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import fr.unice.polytech.equipe.j.order.dto.OrderStatus;
 import fr.unice.polytech.equipe.j.order.mapper.OrderStatusConverter;
 import fr.unice.polytech.equipe.j.restaurant.entities.MenuItemEntity;
@@ -34,9 +35,19 @@ public class OrderEntity {
     @Column(name = "status", nullable = false)
     private OrderStatus status;
 
-
-
     public OrderEntity() {
         this.status = OrderStatus.PENDING;
+    }
+
+    @Override
+    @JsonIgnore
+    public String toString() {
+        return "OrderEntity{" +
+                "id=" + id +
+                ", restaurantId=" + restaurantId +
+                ", userId=" + userId +
+                ", items=" + items +
+                ", status=" + status +
+                '}';
     }
 }

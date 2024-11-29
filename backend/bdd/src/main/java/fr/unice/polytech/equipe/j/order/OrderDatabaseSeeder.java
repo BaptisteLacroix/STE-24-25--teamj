@@ -3,93 +3,67 @@ package fr.unice.polytech.equipe.j.order;
 import fr.unice.polytech.equipe.j.order.dao.OrderDAO;
 import fr.unice.polytech.equipe.j.order.dto.OrderDTO;
 import fr.unice.polytech.equipe.j.order.dto.OrderStatus;
-import fr.unice.polytech.equipe.j.order.dto.PaymentMethod;
+import fr.unice.polytech.equipe.j.order.entities.OrderEntity;
 import fr.unice.polytech.equipe.j.order.mapper.OrderMapper;
 import fr.unice.polytech.equipe.j.restaurant.dao.RestaurantDAO;
-import fr.unice.polytech.equipe.j.restaurant.dto.MenuDTO;
 import fr.unice.polytech.equipe.j.restaurant.dto.MenuItemDTO;
 import fr.unice.polytech.equipe.j.restaurant.dto.RestaurantDTO;
+import fr.unice.polytech.equipe.j.restaurant.entities.RestaurantEntity;
 import fr.unice.polytech.equipe.j.restaurant.mapper.RestaurantMapper;
 import fr.unice.polytech.equipe.j.user.dao.CampusUserDAO;
 import fr.unice.polytech.equipe.j.user.dto.CampusUserDTO;
+import fr.unice.polytech.equipe.j.user.entities.CampusUserEntity;
 import fr.unice.polytech.equipe.j.user.mapper.CampusUserMapper;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 public class OrderDatabaseSeeder {
 
     public static void seedDatabase() {
-        // Creating CampusUser and Restaurant data
-        CampusUserDTO userDTO = new CampusUserDTO();
-        userDTO.setId(UUID.randomUUID());
-        userDTO.setName("Jane Smith");
-        userDTO.setBalance(50.0);
-        userDTO.setTransactions(List.of());
-        userDTO.setOrdersHistory(List.of());
-        userDTO.setDefaultPaymentMethod(PaymentMethod.CREDIT_CARD);
+        // Fetch user
+        CampusUserEntity userEntity = CampusUserDAO.getUserById(UUID.fromString("2ed64a86-d499-4a9c-a0a1-9aba06297348"));
+        if (userEntity == null) {
+            System.out.println("User not found!");
+            return;
+        }
+        CampusUserDTO userDTO = CampusUserMapper.toDTO(userEntity);
 
-        // Save CampusUser
-        CampusUserDAO.save(CampusUserMapper.toEntity(userDTO));
+        // Fetch restaurant
+        RestaurantEntity restaurantEntity = RestaurantDAO.getRestaurantById(UUID.fromString("0e1e323a-ac8c-4833-94cf-1f14aac83285"));
+        if (restaurantEntity == null) {
+            System.out.println("Restaurant not found!");
+            return;
+        }
+        RestaurantDTO restaurantDTO = RestaurantMapper.toDTO(restaurantEntity);
 
-        // Create a sample restaurant
-        RestaurantDTO restaurantDTO = new RestaurantDTO(UUID.randomUUID(), "Le Petit Nice", null, null, new ArrayList<>(), new MenuDTO());
-        restaurantDTO.getMenu().setUuid(UUID.randomUUID());
-        restaurantDTO.getMenu().setItems(List.of(new MenuItemDTO(UUID.randomUUID(), "Salade Nicoise", 60, 12.50)));
+        // Check if the restaurant has a menu with items
+        if (restaurantDTO.getMenu() == null || restaurantDTO.getMenu().getItems().isEmpty()) {
+            System.out.println("Restaurant menu is empty!");
+            return;
+        }
+        MenuItemDTO menuItemDTO = restaurantDTO.getMenu().getItems().getFirst();
 
-        // Save Restaurant
-        RestaurantDAO.save(RestaurantMapper.toEntity(restaurantDTO));
-
-        // Creating Order for the user
+        // Create OrderDTO
         OrderDTO orderDTO = new OrderDTO(
-                UUID.randomUUID(),
+                UUID.fromString("581066b1-074a-4cf9-92f4-32b271fb53be"),
                 restaurantDTO.getUuid(),
                 userDTO.getId(),
-                List.of(restaurantDTO.getMenu().getItems().get(0)),
+                List.of(menuItemDTO),
                 OrderStatus.PENDING.name()
         );
+        // Convert to OrderEntity
+        OrderEntity orderEntity = OrderMapper.toEntity(orderDTO);
 
-        // Save Order
-        OrderDAO.save(OrderMapper.toEntity(orderDTO));
+        System.out.println("Saving order..." + orderEntity.getRestaurantId());
 
-        // Repeat the process for more orders if needed
-        createAnotherOrder();
+        if (OrderDAO.save(orderEntity).getCode() == 201) {
+            System.out.println("Order saved successfully!");
+            return;
+        }
+        System.out.println("Error saving order");
     }
 
-    private static void createAnotherOrder() {
-        // Similar to above, create another order for a different user and restaurant
-        CampusUserDTO userDTO = new CampusUserDTO();
-        userDTO.setId(UUID.randomUUID());
-        userDTO.setName("John Doe");
-        userDTO.setBalance(150.0);
-        userDTO.setTransactions(List.of());
-        userDTO.setOrdersHistory(List.of());
-        userDTO.setDefaultPaymentMethod(PaymentMethod.CREDIT_CARD);
-
-        // Save user
-        CampusUserDAO.save(CampusUserMapper.toEntity(userDTO));
-
-        // Create Restaurant data
-        RestaurantDTO restaurantDTO = new RestaurantDTO(UUID.randomUUID(), "Le Gourmet", null, null, new ArrayList<>(), new MenuDTO());
-        restaurantDTO.getMenu().setUuid(UUID.randomUUID());
-        restaurantDTO.getMenu().setItems(List.of(new MenuItemDTO(UUID.randomUUID(), "Magret de Canard", 300, 22.00)));
-
-        // Save restaurant
-        RestaurantDAO.save(RestaurantMapper.toEntity(restaurantDTO));
-
-        // Creating another Order for the user
-        OrderDTO orderDTO = new OrderDTO(
-                UUID.randomUUID(),
-                restaurantDTO.getUuid(),
-                userDTO.getId(),
-                List.of(restaurantDTO.getMenu().getItems().get(0)),
-                OrderStatus.PENDING.name()
-        );
-
-        // Save Order
-        OrderDAO.save(OrderMapper.toEntity(orderDTO));
-    }
 
     public static void main(String[] args) {
         // Clear database and seed orders

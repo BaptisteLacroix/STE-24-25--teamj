@@ -68,11 +68,11 @@ public class RestaurantController {
     }
 
     // Get menuItem from restaurant
-    @Route(value = "{restaurantId}/menuItem/{menuItemId}/", method = HttpMethod.GET)
+    @Route(value = "/{restaurantId}/menuItem/{menuItemId}", method = HttpMethod.GET)
     public HttpResponse getMenuItem(@PathParam("restaurantId") UUID restaurantId, @PathParam("menuItemId") UUID menuItemId) {
         RestaurantEntity restaurantEntity = RestaurantDAO.getRestaurantById(restaurantId);
         RestaurantDTO restaurantDTO = RestaurantMapper.toDTO(restaurantEntity);
-        MenuItemDTO menuItemEntity = restaurantDTO.getMenu().getItems().stream().filter(item -> item.getUuid().equals(menuItemId)).findFirst().orElse(null);
+        MenuItemDTO menuItemEntity = restaurantDTO.getMenu().getItems().stream().filter(item -> item.getId().equals(menuItemId)).findFirst().orElse(null);
         if (menuItemEntity != null) {
             ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
             try {
