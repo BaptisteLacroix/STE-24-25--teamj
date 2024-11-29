@@ -8,7 +8,7 @@ import java.util.UUID;
 @Getter
 @Setter
 public class MenuItemDTO {
-    private UUID uuid;
+    private UUID id;
     private String name;
     private int prepTime;
     private double price;
@@ -19,7 +19,7 @@ public class MenuItemDTO {
     @Override
     public String toString() {
         return "MenuItemDTO{" +
-                "uuid=" + uuid +
+                "uuid=" + id +
                 ", name='" + name + '\'' +
                 ", prepTime=" + prepTime +
                 ", price=" + price +
