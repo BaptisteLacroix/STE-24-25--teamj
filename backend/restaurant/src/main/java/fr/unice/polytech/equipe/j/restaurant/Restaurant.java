@@ -2,12 +2,15 @@ package fr.unice.polytech.equipe.j.restaurant;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import fr.unice.polytech.equipe.j.CustomHttpResponse;
 import fr.unice.polytech.equipe.j.HttpMethod;
 import fr.unice.polytech.equipe.j.RequestUtil;
 import fr.unice.polytech.equipe.j.TimeUtils;
 import fr.unice.polytech.equipe.j.dto.MenuItemDTO;
 import fr.unice.polytech.equipe.j.dto.Order;
 import fr.unice.polytech.equipe.j.dto.OrderStatus;
+import fr.unice.polytech.equipe.j.httpresponse.HttpCode;
+import fr.unice.polytech.equipe.j.mapper.DTOMapper;
 import fr.unice.polytech.equipe.j.menu.Menu;
 import fr.unice.polytech.equipe.j.menu.MenuItem;
 import fr.unice.polytech.equipe.j.orderpricestrategy.FreeItemFotNItemsOrderPriceStrategy;
@@ -134,19 +137,30 @@ public class Restaurant implements IRestaurant {
      */
     @Override
     public HttpResponse<String> addItemToOrder(Order order, MenuItem menuItem, LocalDateTime deliveryTime) {
-        Slot availableSlot = slots.stream()
-                .filter(slot -> slot.updateSlotCapacity(menuItem))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("Cannot add item to order, no slot available."));
-        this.pendingOrders.get(availableSlot).add(order);
-
-        // TODO: To The Request
-        return request(
-                RequestUtil.DATABASE_ORDER_SERVICE_URI,
-                "/orders/" + order.getUuid() + "/addItem/" + getRestaurantUUID() + "/" + menuItem.getUuid(),
-                HttpMethod.GET,
-                null
-        );
+        try {
+            System.out.println("Adding item to order");
+            Slot availableSlot = slots.stream()
+                    .filter(slot -> slot.updateSlotCapacity(menuItem))
+                    .findFirst()
+                    .orElseThrow(() -> new IllegalArgumentException("Cannot add item to order, no slot available."));
+            this.pendingOrders.get(availableSlot).add(order);
+            // add the new item to the list of items in the order
+            List<MenuItemDTO> newItems = new ArrayList<>(order.getItems());
+            newItems.add(DTOMapper.toMenuItemDTO(menuItem));
+            order.setItems(newItems);
+            ObjectMapper mapper = new ObjectMapper();
+            System.out.println(RequestUtil.DATABASE_ORDER_SERVICE_URI + "/update");
+            System.out.println(mapper.writeValueAsString(order));
+            return request(
+                    RequestUtil.DATABASE_ORDER_SERVICE_URI,
+                    "/update",
+                    HttpMethod.PUT,
+                    mapper.writeValueAsString(order)
+            );
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
 
@@ -157,42 +171,40 @@ public class Restaurant implements IRestaurant {
      */
     @Override
     public HttpResponse<String> cancelOrder(Order order, LocalDateTime deliveryTime) {
-        // Check order exists and match uuid
-        if (pendingOrders.values().stream().map(Set::stream).noneMatch(stream -> stream.anyMatch(o -> o.getUuid().equals(order.getUuid())))) {
+        try {
+            // Check order exists and match uuid
+            if (pendingOrders.values().stream().map(Set::stream).noneMatch(stream -> stream.anyMatch(o -> o.getId().equals(order.getId())))) {
+                return null;
+            }
+            // Adjust the capacity for each slot when an order is canceled
+            for (Slot slot : slots) {
+                for (MenuItemDTO item : order.getItems()) {
+                    slot.addCapacity(-item.getPrepTime());
+                    pendingOrders.get(slot).remove(order);
+                }
+            }
+            // Update the Restaurant in the database uisng the update route
+            ObjectMapper mapper = new ObjectMapper();
+            HttpResponse<String> response = request(
+                    RequestUtil.DATABASE_RESTAURANT_SERVICE_URI,
+                    "/update",
+                    HttpMethod.PUT,
+                    mapper.writeValueAsString(this)
+            );
+            if (response.statusCode() != 200) {
+                return response;
+            }
+            order.setStatus(OrderStatus.CANCELLED);
+            return request(
+                    RequestUtil.DATABASE_ORDER_SERVICE_URI,
+                    "/update",
+                    HttpMethod.POST,
+                    mapper.writeValueAsString(order)
+            );
+        } catch (Exception e) {
+            e.printStackTrace();
             return null;
         }
-        // Adjust the capacity for each slot when an order is canceled
-        for (Slot slot : slots) {
-            for (MenuItemDTO item : order.getItems()) {
-                // TODO: To The Request
-                HttpResponse<String> response = request(
-                        RequestUtil.DATABASE_RESTAURANT_SERVICE_URI,
-                        "/restaurants/" + getRestaurantUUID() + "/slot/" + slot.getUUID() + "/capacity/" + item.getPrepTime(),
-                        HttpMethod.PUT,
-                        null
-                );
-                if (response.statusCode() != 200) {
-                    return response;
-                }
-                // TODO: To The Request
-                HttpResponse<String> responseRemoveOrderFromSlot = request(
-                        RequestUtil.DATABASE_RESTAURANT_SERVICE_URI,
-                        "/restaurants/" + getRestaurantUUID() + "/slot/" + slot.getUUID() + "/order/" + order.getUuid(),
-                        HttpMethod.DELETE,
-                        null
-                );
-                if (responseRemoveOrderFromSlot.statusCode() != 200) {
-                    return responseRemoveOrderFromSlot;
-                }
-                pendingOrders.get(slot).remove(order);
-            }
-        }
-        return request(
-                RequestUtil.DATABASE_ORDER_SERVICE_URI,
-                "/orders/" + order.getUuid() + "/cancel",
-                HttpMethod.POST,
-                null
-        );
     }
 
     /**
@@ -216,22 +228,23 @@ public class Restaurant implements IRestaurant {
      *                                  if the item cannot be prepared in time,
      *                                  or if there is no available slot for the item.
      */
-    void canAddItemToOrder(Order order, MenuItem menuItem, LocalDateTime deliveryTime) {
+    HttpResponse<String> canAddItemToOrder(Order order, MenuItem menuItem, LocalDateTime deliveryTime) {
         if (order.getStatus() != OrderStatus.PENDING) {
-            throw new IllegalArgumentException("Cannot add items to an order that is not pending.");
+            return new CustomHttpResponse(HttpCode.HTTP_400.getCode(), "Order is not pending.");
         }
         if (!isItemAvailable(menuItem)) {
-            throw new IllegalArgumentException("Item is not available.");
+            return new CustomHttpResponse(HttpCode.HTTP_400.getCode(), "Item is not available.");
         }
         if (deliveryTime != null && isItemTooLate(menuItem, deliveryTime)) {
-            throw new IllegalArgumentException("Cannot add item to order, it will not be ready in time.");
+            return new CustomHttpResponse(HttpCode.HTTP_400.getCode(), "Cannot add item to order, restaurant cannot prepare it in time.");
         }
         if (deliveryTime != null && !slotAvailable(menuItem, deliveryTime)) {
-            throw new IllegalArgumentException("Cannot add item to order, no slot available.");
+            return new CustomHttpResponse(HttpCode.HTTP_400.getCode(), "Cannot add item to order, no slot available.");
         }
         if (deliveryTime == null && isItemTooLate(menuItem, getClosingTime().orElseThrow())) {
-            throw new IllegalArgumentException("Cannot add item to order, restaurant cannot prepare it.");
+            return new CustomHttpResponse(HttpCode.HTTP_400.getCode(), "Cannot add item to order, restaurant cannot prepare it in time, the restaurant will be closed.");
         }
+        return new CustomHttpResponse(HttpCode.HTTP_200.getCode(), "Item can be added to order.");
     }
 
     /**
@@ -239,6 +252,7 @@ public class Restaurant implements IRestaurant {
      */
     private boolean isItemTooLate(MenuItem menuItem, LocalDateTime deliveryTime) {
         LocalDateTime estimatedReadyTime = TimeUtils.getNow().plusSeconds(menuItem.getPrepTime());
+        System.out.println("Estimated ready time: " + estimatedReadyTime + " Delivery time: " + deliveryTime);
         return estimatedReadyTime.isAfter(deliveryTime);
     }
 
@@ -309,7 +323,7 @@ public class Restaurant implements IRestaurant {
         // TODO: Do the request
         return request(
                 RequestUtil.DATABASE_ORDER_SERVICE_URI,
-                "/orders/" + order.getUuid() + "/validate",
+                "/" + order.getId() + "/validate",
                 HttpMethod.POST,
                 null
         );
@@ -456,7 +470,7 @@ public class Restaurant implements IRestaurant {
         // TODO: To The Request
         HttpResponse<String> response = request(
                 RequestUtil.DATABASE_RESTAURANT_SERVICE_URI,
-                "/restaurants/" + getRestaurantUUID() + "/pendingOrders",
+                "/" + getRestaurantUUID() + "/pendingOrders",
                 HttpMethod.GET,
                 null
         );
@@ -488,7 +502,7 @@ public class Restaurant implements IRestaurant {
         // TODO: To The Request
         HttpResponse<String> response = request(
                 RequestUtil.DATABASE_RESTAURANT_SERVICE_URI,
-                "/restaurants/" + getRestaurantUUID() + "/history",
+                "/" + getRestaurantUUID() + "/history",
                 HttpMethod.GET,
                 null
         );

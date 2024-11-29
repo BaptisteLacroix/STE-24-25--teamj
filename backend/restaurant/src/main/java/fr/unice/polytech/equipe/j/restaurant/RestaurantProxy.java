@@ -31,7 +31,10 @@ public class RestaurantProxy implements IRestaurant {
      */
     @Override
     public HttpResponse<String> addItemToOrder(Order order, MenuItem menuItem, LocalDateTime deliveryTime) {
-        ((Restaurant)restaurant).canAddItemToOrder(order, menuItem, deliveryTime);
+        HttpResponse<String> response = ((Restaurant)restaurant).canAddItemToOrder(order, menuItem, deliveryTime);
+        if (response.statusCode() != 200) {
+            return response;
+        }
         return restaurant.addItemToOrder(order, menuItem, deliveryTime);
     }
 

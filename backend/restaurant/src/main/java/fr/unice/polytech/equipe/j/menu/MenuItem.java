@@ -9,7 +9,7 @@ import java.util.UUID;
 @Setter
 public class MenuItem {
     private UUID uuid;
-    private final String name;
+    private String name;
     private int prepTime;
     private double price;
 
@@ -20,8 +20,29 @@ public class MenuItem {
         this.price = price;
     }
 
+    public MenuItem() {
+
+    }
+
     @Override
     public String toString() {
-        return name + " - " + price + " EUR" + " - " + prepTime + "s";
+        return uuid + " - " + name + " - " + price + " EUR" + " - " + prepTime + "s";
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) {
+            return true;
+        }
+        if (!(obj instanceof MenuItem)) {
+            return false;
+        }
+        MenuItem menuItem = (MenuItem) obj;
+        return menuItem.getUuid().equals(uuid) && menuItem.getName().equals(name) && menuItem.getPrepTime() == prepTime && menuItem.getPrice() == price;
+    }
+
+    @Override
+    public int hashCode() {
+        return uuid.hashCode();
     }
 }

@@ -42,7 +42,7 @@ public class RestaurantController {
     @Route(value = "/all", method = HttpMethod.GET)
     public HttpResponse getAllRestaurants() {
         try {
-            java.net.http.HttpResponse<String> response = request(RequestUtil.DATABASE_RESTAURANT_SERVICE_URI, "/restaurants/all", HttpMethod.GET, null);
+            java.net.http.HttpResponse<String> response = request(RequestUtil.DATABASE_RESTAURANT_SERVICE_URI, "/all", HttpMethod.GET, null);
             return createHttpResponse(HttpCode.HTTP_200, response.body());
         } catch (Exception e) {
             return createHttpResponse(HttpCode.HTTP_500, "Internal server error: " + e.getMessage());
@@ -52,7 +52,7 @@ public class RestaurantController {
     @Route(value = "/{restaurantId}", method = HttpMethod.GET)
     public HttpResponse getRestaurant(@PathParam("restaurantId") UUID restaurantId) {
         try {
-            java.net.http.HttpResponse<String> response = request(RequestUtil.DATABASE_RESTAURANT_SERVICE_URI, "/restaurants/" + restaurantId, HttpMethod.GET, null);
+            java.net.http.HttpResponse<String> response = request(RequestUtil.DATABASE_RESTAURANT_SERVICE_URI, "/" + restaurantId, HttpMethod.GET, null);
             return createHttpResponse(HttpCode.HTTP_200, response.body());
         } catch (Exception e) {
             return createHttpResponse(HttpCode.HTTP_500, "Internal server error: " + e.getMessage());
@@ -94,7 +94,7 @@ public class RestaurantController {
     private List<IRestaurant> fetchRestaurantsFromDatabase() throws IOException {
         java.net.http.HttpResponse<String> response = request(
                 RequestUtil.DATABASE_RESTAURANT_SERVICE_URI,
-                "/restaurants/all",
+                "/all",
                 HttpMethod.GET,
                 null
         );
@@ -134,7 +134,7 @@ public class RestaurantController {
 
             java.net.http.HttpResponse<String> response = request(
                     RequestUtil.DATABASE_RESTAURANT_SERVICE_URI,
-                    "/restaurants/all",
+                    "/all",
                     HttpMethod.GET,
                     null
             );
@@ -161,17 +161,15 @@ public class RestaurantController {
             @PathParam("restaurantId") UUID restaurantId,
             @PathParam("orderId") UUID orderId,
             @PathParam("menuItemId") UUID menuItemId,
-            @BeanParam String deliveryTime) {
+            @QueryParam("deliveryTime") String deliveryTime) {
 
         try {
             // Fetch restaurant, order, and menu item details
-            // TODO: Do the request
             java.net.http.HttpResponse<String> menuItemResponse = request(
                     RequestUtil.DATABASE_RESTAURANT_SERVICE_URI,
-                    "/restaurants/" + restaurantId + "/menu/" + menuItemId,
+                    "/" + restaurantId + "/menuItem/" + menuItemId,
                     HttpMethod.GET,
                     null);
-
             IRestaurant restaurantProxy = createRestaurantProxy(restaurantId);
             Order order = fetchOrderById(orderId);
             if (order == null || restaurantProxy == null) {
@@ -182,9 +180,15 @@ public class RestaurantController {
             MenuItem menuItem = objectMapper.readValue(menuItemResponse.body(), MenuItem.class);
 
             // Use proxy to add item to the order
-            LocalDateTime deliveryDateTime = LocalDateTime.parse(deliveryTime);
-            restaurantProxy.addItemToOrder(order, menuItem, deliveryDateTime);
-
+            LocalDateTime deliveryDateTime = null;
+            if (deliveryTime != null) deliveryDateTime = LocalDateTime.parse(deliveryTime);
+            java.net.http.HttpResponse<String> response = restaurantProxy.addItemToOrder(order, menuItem, deliveryDateTime);
+            System.out.println("Response: " + response);
+            if (response.statusCode() != 200) {
+                System.out.println(response.body());
+                return createHttpResponse(HttpCode.HTTP_400, "Item cannot be added to order");
+            }
+            System.out.println("Item added to order successfully");
             return createHttpResponse(HttpCode.HTTP_200, "Item added to order successfully");
         } catch (Exception e) {
             return createHttpResponse(HttpCode.HTTP_500, "Internal server error: " + e.getMessage());
@@ -354,14 +358,13 @@ public class RestaurantController {
         }
     }
 
-
     // Helper Methods
     private IRestaurant createRestaurantProxy(UUID restaurantId) {
         try {
             // Fetch restaurant data
             java.net.http.HttpResponse<String> restaurantResponse = request(
                     RequestUtil.DATABASE_RESTAURANT_SERVICE_URI,
-                    "/restaurants/" + restaurantId,
+                    "/" + restaurantId,
                     HttpMethod.GET,
                     null);
             // Parse response
@@ -379,7 +382,7 @@ public class RestaurantController {
             // Fetch order data
             java.net.http.HttpResponse<String> orderResponse = request(
                     RequestUtil.DATABASE_ORDER_SERVICE_URI,
-                    "/orders/" + orderId,
+                    "/" + orderId,
                     HttpMethod.GET,
                     null);
             // Parse response

@@ -9,11 +9,11 @@ import java.util.UUID;
 @Getter
 @Setter
 public class Order {
-    private UUID uuid;
+    private UUID id;
+    private UUID restaurantId;
+    private UUID userId;
     private List<MenuItemDTO> items;
     private OrderStatus status;
-    private double totalPrice;
-    private UUID userId;
 
     public Order() {
     }
