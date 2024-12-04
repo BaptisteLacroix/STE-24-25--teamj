@@ -6,6 +6,7 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 import java.util.List;
+import java.util.UUID;
 
 public class CampusUserDAO {
     public static void save(CampusUserEntity user) {
@@ -23,6 +24,15 @@ public class CampusUserDAO {
             return session.createQuery("from CampusUserEntity", CampusUserEntity.class).list();
         } catch (Exception e) {
             System.out.println("Error while getting all users: " + e.getMessage());
+            return null;
+        }
+    }
+
+    public static CampusUserEntity getUser(UUID userId){
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            return session.get(CampusUserEntity.class, userId);
+        } catch (Exception e) {
+            System.out.println("Error while getting user: " + e.getMessage());
             return null;
         }
     }

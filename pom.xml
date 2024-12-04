@@ -12,6 +12,7 @@
     <modules>
         <module>backend/bdd</module>
         <module>backend/flexiblerestserver</module>
+        <module>backend/grouporder</module>
     </modules>
 
     <repositories>
@@ -140,18 +141,6 @@
             <version>2.17.2</version>
         </dependency>
         <dependency>
-            <groupId>fr.unice.polytech.equipe.j</groupId>
-            <artifactId>flexiblerestserver</artifactId>
-            <version>1.0-SNAPSHOT</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>fr.unice.polytech.equipe.j</groupId>
-            <artifactId>bdd</artifactId>
-            <version>1.0-SNAPSHOT</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>1.18.30</version>
@@ -189,6 +178,7 @@
                     </properties>
                 </configuration>
             </plugin>
+
         </plugins>
     </build>
 </project>

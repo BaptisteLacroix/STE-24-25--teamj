@@ -20,16 +20,26 @@ import fr.unice.polytech.equipe.j.restaurant.mapper.RestaurantMapper;
 
 import java.util.UUID;
 
-@Controller("/api/database/groupOrder")
+@Controller("/api/database/groupOrders")
 public class GroupOrderController {
 
     @Route(value = "/create", method = HttpMethod.POST)
     public HttpResponse createGroupOrder(@BeanParam GroupOrderDTO dto) {
-        System.out.println("Creating restaurant: " + GroupOrderDTO.class);
+        System.out.println("Creating groupOrder: " + GroupOrderDTO.class);
         GroupOrderEntity groupOrderEntity = GroupOrderMapper.toEntity(dto);
         GroupOrderDAO.save(groupOrderEntity);
         return new HttpResponse(HttpCode.HTTP_201, "GroupOrder created successfully");
     }
+
+    @Route(value = "/update", method = HttpMethod.PUT)
+    public HttpResponse updateGroupOrder(@BeanParam GroupOrderDTO groupOrderDTO) {
+        System.out.println("Update GroupOrder");
+        GroupOrderEntity groupOrderEntity = GroupOrderMapper.toEntity(groupOrderDTO);
+        GroupOrderDAO.save(groupOrderEntity);
+        return new HttpResponse(HttpCode.HTTP_200, "GroupOrder updated successfully");
+    }
+
+
 
     @Route(value = "/{id}", method = HttpMethod.GET)
     public HttpResponse getGroupOrderById(@PathParam("id") UUID id) {
