@@ -1,5 +1,6 @@
 package fr.unice.polytech.equipe.j.dto;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -17,6 +18,8 @@ public class MenuItemDTO {
     private int prepTime;
     @NonNull
     private double price;
+    @JsonBackReference
+    private MenuDTO menuDTO;
 
     public MenuItemDTO() {
     }

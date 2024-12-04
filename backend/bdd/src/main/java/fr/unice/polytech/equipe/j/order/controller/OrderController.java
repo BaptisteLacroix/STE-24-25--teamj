@@ -80,7 +80,7 @@ public class OrderController {
         System.out.println("Update order");
         OrderEntity orderEntity = OrderMapper.toEntity(orderDTO);
         if (orderEntity != null) {
-            return OrderDAO.update(orderEntity);
+            return OrderDAO.save(orderEntity);
         }
         return new HttpResponse(HttpCode.HTTP_400, "Order not found");
     }
@@ -103,14 +103,14 @@ public class OrderController {
         // Save the individual order to the database
         return OrderDAO.save(individualOrderEntity);
     }
+
     @Route(value = "/individual/update", method = HttpMethod.PUT)
     public HttpResponse updateOrder(@BeanParam IndividualOrderDTO orderDTO) {
-        System.out.println("Update order");
+        System.out.println("Update individual order");
+        System.out.println(orderDTO);
         IndividualOrderEntity orderEntity = IndividualOrderMapper.toEntity(orderDTO);
-        if (orderEntity != null) {
-            return OrderDAO.update(orderEntity);
-        }
-        return new HttpResponse(HttpCode.HTTP_400, "Order not found");
+        System.out.println(orderEntity);
+        return OrderDAO.save(orderEntity);
     }
 
 
@@ -121,7 +121,9 @@ public class OrderController {
         IndividualOrderEntity individualOrderEntity = OrderDAO.getIndividualOrderById(id);
         if (individualOrderEntity != null) {
             // Convert entity to DTO using the IndividualOrderMapper
-            return new HttpResponse(HttpCode.HTTP_200, IndividualOrderMapper.toDTO(individualOrderEntity));
+            IndividualOrderDTO individualOrderDTO = IndividualOrderMapper.toDTO(individualOrderEntity);
+            System.out.println("Sending individual order: " + individualOrderDTO);
+            return new HttpResponse(HttpCode.HTTP_200, individualOrderDTO);
         }
         return new HttpResponse(HttpCode.HTTP_400, "Individual order not found");
     }

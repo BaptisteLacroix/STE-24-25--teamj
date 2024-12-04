@@ -10,6 +10,8 @@ import fr.unice.polytech.equipe.j.restaurant.IRestaurant;
 import fr.unice.polytech.equipe.j.restaurant.Restaurant;
 import fr.unice.polytech.equipe.j.slot.Slot;
 
+import java.util.List;
+
 public class DTOMapper {
 
     public static RestaurantDTO toRestaurantDTO(IRestaurant restaurant) {
@@ -27,7 +29,7 @@ public class DTOMapper {
         SlotDTO dto = new SlotDTO();
         dto.setUuid(slot.getUUID());
         dto.setOpeningDate(slot.getOpeningDate());
-        dto.setCurrentCapacity(slot.getAvailableCapacity());
+        dto.setCurrentCapacity(slot.getCurrentCapacity());
         dto.setNumberOfPersonnel(slot.getNumberOfPersonnel());
         dto.setMaxCapacity(slot.getMaxCapacity());
         dto.setDurationTime(slot.getDurationTime());
@@ -35,6 +37,7 @@ public class DTOMapper {
     }
 
     public static IRestaurant toRestaurant(RestaurantDTO restaurantDTO) {
+        System.out.println("Restaurant Menu to Restaurant : " + restaurantDTO.getMenu());
         return new Restaurant(
                 restaurantDTO.getId(),
                 restaurantDTO.getRestaurantName(),
@@ -49,7 +52,10 @@ public class DTOMapper {
     public static MenuDTO toMenuDTO(Menu menu) {
         MenuDTO menuDTO = new MenuDTO();
         menuDTO.setUuid(menu.getUuid());
-        menuDTO.setItems(menu.getItems().stream().map(DTOMapper::toMenuItemDTO).toList());
+        List<MenuItemDTO> items = menu.getItems().stream().map(DTOMapper::toMenuItemDTO).toList();
+        menuDTO.setItems(items);
+        // Set back reference
+        items.forEach(item -> item.setMenuDTO(menuDTO));
         return menuDTO;
     }
 
@@ -61,7 +67,7 @@ public class DTOMapper {
 
     public static Slot toSlot(SlotDTO slotDTO) {
         Slot slot = new Slot(slotDTO.getUuid(), slotDTO.getOpeningDate(), slotDTO.getNumberOfPersonnel());
-        slot.setAvailableCapacity(slotDTO.getCurrentCapacity());
+        slot.setCurrentCapacity(slotDTO.getCurrentCapacity());
         return slot;
     }
 

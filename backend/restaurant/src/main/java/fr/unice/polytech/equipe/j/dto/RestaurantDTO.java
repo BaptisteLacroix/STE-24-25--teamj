@@ -1,5 +1,6 @@
 package fr.unice.polytech.equipe.j.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -23,6 +24,20 @@ public class RestaurantDTO {
     private OrderPriceStrategyDTO orOrderPriceStrategy;
 
     public RestaurantDTO() {
+    }
+
+    @Override
+    @JsonIgnore
+    public String toString() {
+        return "RestaurantDTO{" +
+                "id=" + id +
+                ", restaurantName='" + restaurantName + '\'' +
+                ", menu=" + menu +
+                ", slots=" + slots +
+                ", openingTime=" + openingTime +
+                ", closingTime=" + closingTime +
+                ", orOrderPriceStrategy=" + orOrderPriceStrategy +
+                '}';
     }
 }
 

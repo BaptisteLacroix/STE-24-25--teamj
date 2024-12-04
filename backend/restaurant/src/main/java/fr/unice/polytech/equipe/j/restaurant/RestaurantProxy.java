@@ -5,7 +5,7 @@ import fr.unice.polytech.equipe.j.CustomHttpResponse;
 import fr.unice.polytech.equipe.j.HttpMethod;
 import fr.unice.polytech.equipe.j.JacksonConfig;
 import fr.unice.polytech.equipe.j.RequestUtil;
-import fr.unice.polytech.equipe.j.dto.Order;
+import fr.unice.polytech.equipe.j.dto.OrderDTO;
 import fr.unice.polytech.equipe.j.dto.RestaurantDTO;
 import fr.unice.polytech.equipe.j.mapper.DTOMapper;
 import fr.unice.polytech.equipe.j.menu.Menu;
@@ -34,31 +34,33 @@ public class RestaurantProxy implements IRestaurant {
     /**
      * Add an item to an order, either individual or group.
      *
-     * @param order        the order to which the item is added
+     * @param orderDTO        the order to which the item is added
      * @param menuItem     the menu item being added
      * @param deliveryTime the delivery time for the order (optional)
      */
     @Override
-    public HttpResponse<String> addItemToOrder(Order order, MenuItem menuItem, LocalDateTime deliveryTime) {
-        HttpResponse<String> response = ((Restaurant) restaurant).canAddItemToOrder(order, menuItem, deliveryTime);
-        if (response.statusCode() != 200) {
+    public HttpResponse<String> addItemToOrder(OrderDTO orderDTO, MenuItem menuItem, LocalDateTime deliveryTime) {
+        HttpResponse<String> response = ((Restaurant) restaurant).canAddItemToOrder(orderDTO, menuItem, deliveryTime);
+        if (response.statusCode() != 200 && response.statusCode() != 201) {
+            System.out.println("Response: " + response);
+            System.out.println("Response status code: " + response.statusCode());
             return response;
         }
-        return restaurant.addItemToOrder(order, menuItem, deliveryTime);
+        return restaurant.addItemToOrder(orderDTO, menuItem, deliveryTime);
     }
 
     @Override
-    public HttpResponse<String> cancelOrder(Order order, LocalDateTime deliveryTime) {
+    public HttpResponse<String> cancelOrder(OrderDTO orderDTO, LocalDateTime deliveryTime) {
         // If the delivery time is not half an hour before the order, the order is cancelled
         if (deliveryTime.isBefore(LocalDateTime.now().minusMinutes(30))) {
-            return restaurant.cancelOrder(order, deliveryTime);
+            return restaurant.cancelOrder(orderDTO, deliveryTime);
         }
         return null;
     }
 
     @Override
-    public boolean isOrderValid(Order order) {
-        return getRestaurant().isOrderValid(order);
+    public boolean isOrderValid(OrderDTO orderDTO) {
+        return getRestaurant().isOrderValid(orderDTO);
     }
 
     @Override
@@ -67,8 +69,8 @@ public class RestaurantProxy implements IRestaurant {
     }
 
     @Override
-    public double getTotalPrice(Order order) {
-        return getRestaurant().getTotalPrice(order);
+    public double getTotalPrice(OrderDTO orderDTO) {
+        return getRestaurant().getTotalPrice(orderDTO);
     }
 
     @Override
@@ -92,8 +94,8 @@ public class RestaurantProxy implements IRestaurant {
     }
 
     @Override
-    public HttpResponse<String> onOrderPaid(Order order) {
-        return getRestaurant().onOrderPaid(order);
+    public HttpResponse<String> onOrderPaid(OrderDTO orderDTO) {
+        return getRestaurant().onOrderPaid(orderDTO);
     }
 
     // for Mock testing
@@ -117,8 +119,8 @@ public class RestaurantProxy implements IRestaurant {
     }
 
     @Override
-    public OrderPrice processOrderPrice(Order order) {
-        return restaurant.processOrderPrice(order);
+    public OrderPrice processOrderPrice(OrderDTO orderDTO) {
+        return restaurant.processOrderPrice(orderDTO);
     }
 
     @Override
@@ -137,8 +139,8 @@ public class RestaurantProxy implements IRestaurant {
     }
 
     @Override
-    public void addOrderToHistory(Order order) {
-        getRestaurant().addOrderToHistory(order);
+    public void addOrderToHistory(OrderDTO orderDTO) {
+        getRestaurant().addOrderToHistory(orderDTO);
     }
 
     @Override
@@ -147,12 +149,12 @@ public class RestaurantProxy implements IRestaurant {
     }
 
     @Override
-    public List<Order> getOrdersHistory() {
+    public List<OrderDTO> getOrdersHistory() {
         return getRestaurant().getOrdersHistory();
     }
 
     @Override
-    public Map<Slot, Set<Order>> getPendingOrders() {
+    public Map<Slot, Set<OrderDTO>> getPendingOrders() {
         return getRestaurant().getPendingOrders();
     }
 

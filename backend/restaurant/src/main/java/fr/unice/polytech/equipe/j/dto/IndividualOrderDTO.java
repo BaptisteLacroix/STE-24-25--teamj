@@ -1,4 +1,4 @@
-package fr.unice.polytech.equipe.j.order.dto;
+package fr.unice.polytech.equipe.j.dto;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -23,4 +23,5 @@ public class IndividualOrderDTO extends OrderDTO {
                 "deliveryDetails=" + deliveryDetails +
                 '}';
     }
+
 }

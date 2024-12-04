@@ -1,11 +1,8 @@
 package fr.unice.polytech.equipe.j.orderpricestrategy;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.SerializerProvider;
 import fr.unice.polytech.equipe.j.dto.MenuItemDTO;
-import fr.unice.polytech.equipe.j.dto.Order;
+import fr.unice.polytech.equipe.j.dto.OrderDTO;
 import fr.unice.polytech.equipe.j.mapper.DTOMapper;
 import fr.unice.polytech.equipe.j.restaurant.IRestaurant;
 import fr.unice.polytech.equipe.j.menu.MenuItem;
@@ -25,8 +22,8 @@ public class FreeItemFotNItemsOrderPriceStrategy implements OrderPriceStrategy{
     }
 
     @Override
-    public OrderPrice processOrderPrice(Order order, IRestaurant restaurant) {
-        Map<MenuItem, Double> prices = order.getItems()
+    public OrderPrice processOrderPrice(OrderDTO orderDTO, IRestaurant restaurant) {
+        Map<MenuItem, Double> prices = orderDTO.getItems()
                 .stream()
                 .collect(Collectors.toMap(
                         DTOMapper::toMenuItem,

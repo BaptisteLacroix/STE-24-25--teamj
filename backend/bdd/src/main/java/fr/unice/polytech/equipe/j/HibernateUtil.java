@@ -1,7 +1,6 @@
 package fr.unice.polytech.equipe.j;
 
 import fr.unice.polytech.equipe.j.order.DeliveryLocationDatabaseSeeder;
-import fr.unice.polytech.equipe.j.order.OrderDatabaseSeeder;
 import fr.unice.polytech.equipe.j.restaurant.RestaurantDatabaseSeeder;
 import fr.unice.polytech.equipe.j.user.UserDatabaseSeeder;
 import lombok.Getter;

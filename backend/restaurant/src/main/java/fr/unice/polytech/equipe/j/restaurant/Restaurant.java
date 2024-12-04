@@ -2,14 +2,14 @@ package fr.unice.polytech.equipe.j.restaurant;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import fr.unice.polytech.equipe.j.CustomHttpResponse;
 import fr.unice.polytech.equipe.j.HttpMethod;
 import fr.unice.polytech.equipe.j.JacksonConfig;
 import fr.unice.polytech.equipe.j.RequestUtil;
 import fr.unice.polytech.equipe.j.TimeUtils;
+import fr.unice.polytech.equipe.j.dto.IndividualOrderDTO;
 import fr.unice.polytech.equipe.j.dto.MenuItemDTO;
-import fr.unice.polytech.equipe.j.dto.Order;
+import fr.unice.polytech.equipe.j.dto.OrderDTO;
 import fr.unice.polytech.equipe.j.dto.OrderStatus;
 import fr.unice.polytech.equipe.j.dto.RestaurantDTO;
 import fr.unice.polytech.equipe.j.httpresponse.HttpCode;
@@ -45,8 +45,8 @@ public class Restaurant implements IRestaurant {
     @Setter
     private Menu menu;
     private OrderPriceStrategy orderPriceStrategy;
-    private final List<Order> ordersHistory = new ArrayList<>();
-    private final Map<Slot, Set<Order>> pendingOrders = new LinkedHashMap<>();
+    private final List<OrderDTO> ordersHistory = new ArrayList<>();
+    private final Map<Slot, Set<OrderDTO>> pendingOrders = new LinkedHashMap<>();
 
 
     public Restaurant(UUID restaurantId, String name, LocalDateTime openingTime, LocalDateTime closingTime, Menu menu, List<Slot> slots) {
@@ -59,6 +59,8 @@ public class Restaurant implements IRestaurant {
         if (closingTime != null && closingTime.isBefore(openingTime)) {
             throw new IllegalArgumentException("Closing time cannot be before opening time.");
         }
+        this.openingTime = openingTime;
+        this.closingTime = closingTime;
         this.menu = menu;
         this.orderPriceStrategy = strategy;
         if (slots == null) {
@@ -130,30 +132,73 @@ public class Restaurant implements IRestaurant {
     /**
      * Add an item to an order, either individual or group.
      *
-     * @param order        the order to which the item is added
+     * @param orderDTO     the order to which the item is added
      * @param menuItem     the menu item being added
      * @param deliveryTime the delivery time for the order (optional)
      * @throws IllegalArgumentException if the item is not available or cannot be prepared in time
      */
     @Override
-    public HttpResponse<String> addItemToOrder(Order order, MenuItem menuItem, LocalDateTime deliveryTime) {
+    public HttpResponse<String> addItemToOrder(OrderDTO orderDTO, MenuItem menuItem, LocalDateTime deliveryTime) {
         try {
+            System.out.println("Menu1 : " + getMenu());
             Slot availableSlot = slots.stream()
                     .filter(slot -> slot.updateSlotCapacity(menuItem))
                     .findFirst()
                     .orElseThrow(() -> new IllegalArgumentException("Cannot add item to order, no slot available."));
-            this.pendingOrders.get(availableSlot).add(order);
+            this.pendingOrders.get(availableSlot).add(orderDTO);
+            System.out.println("Menu2 : " + getMenu());
             // add the new item to the list of items in the order
-            List<MenuItemDTO> newItems = new ArrayList<>(order.getItems());
+            List<MenuItemDTO> newItems = new ArrayList<>(orderDTO.getItems());
             newItems.add(DTOMapper.toMenuItemDTO(menuItem));
-            order.setItems(newItems);
+            System.out.println("Menu3 : " + getMenu());
+            System.out.println("New items: " + newItems);
+            orderDTO.setItems(newItems);
             ObjectMapper mapper = JacksonConfig.configureObjectMapper();
-            return request(
-                    RequestUtil.DATABASE_ORDER_SERVICE_URI,
+            // Update the restaurant in the database using the update route
+            HttpResponse<String> response = request(
+                    RequestUtil.DATABASE_RESTAURANT_SERVICE_URI,
                     "/update",
                     HttpMethod.PUT,
-                    mapper.writeValueAsString(order)
+                    mapper.writeValueAsString(DTOMapper.toRestaurantDTO(this))
             );
+            System.out.println("Menu4 : " + getMenu());
+            if (response.statusCode() != 201 && response.statusCode() != 200) {
+                return response;
+            }
+            if (orderDTO instanceof IndividualOrderDTO) {
+                System.out.println("Menu5 : " + getMenu());
+                response = request(
+                        RequestUtil.DATABASE_ORDER_SERVICE_URI,
+                        "/individual/update",
+                        HttpMethod.PUT,
+                        mapper.writeValueAsString(orderDTO)
+                );
+            } else {
+                System.out.println("Menu6 : " + getMenu());
+                response = request(
+                        RequestUtil.DATABASE_ORDER_SERVICE_URI,
+                        "/update",
+                        HttpMethod.PUT,
+                        mapper.writeValueAsString(orderDTO)
+                );
+            }
+            System.out.println("Menu7 : " + getMenu());
+            // If the response is not successful, abort the restaurant update operation
+            if (response.statusCode() != 201 && response.statusCode() != 200) {
+                System.out.println("Error while updating the order.");
+                this.pendingOrders.get(availableSlot).remove(orderDTO);
+                availableSlot.addCapacity(-menuItem.getPrepTime());
+                System.out.println("Menu8 : " + getMenu());
+                request(
+                        RequestUtil.DATABASE_RESTAURANT_SERVICE_URI,
+                        "/update",
+                        HttpMethod.PUT,
+                        mapper.writeValueAsString(DTOMapper.toRestaurantDTO(this))
+                );
+                return response;
+            }
+            System.out.println("Menu9 : " + getMenu());
+            return new CustomHttpResponse(HttpCode.HTTP_200.getCode(), "Item added to order.");
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -164,22 +209,26 @@ public class Restaurant implements IRestaurant {
     /**
      * Cancel an order and free up capacity.
      *
-     * @param order the order to cancel
+     * @param orderDTO the order to cancel
      */
     @Override
-    public HttpResponse<String> cancelOrder(Order order, LocalDateTime deliveryTime) {
+    public HttpResponse<String> cancelOrder(OrderDTO orderDTO, LocalDateTime deliveryTime) {
         try {
             // Check order exists and match uuid
-            if (pendingOrders.values().stream().map(Set::stream).noneMatch(stream -> stream.anyMatch(o -> o.getId().equals(order.getId())))) {
+            System.out.println("Order to cancel: " + pendingOrders);
+            if (pendingOrders.values().stream().map(Set::stream).noneMatch(stream -> stream.anyMatch(o -> o.getId().equals(orderDTO.getId())))) {
+                System.out.println("Order not found");
                 return null;
             }
             // Adjust the capacity for each slot when an order is canceled
             for (Slot slot : slots) {
-                for (MenuItemDTO item : order.getItems()) {
+                for (MenuItemDTO item : orderDTO.getItems()) {
+                    System.out.println("CANCEL ORDER: " + item);
                     slot.addCapacity(-item.getPrepTime());
-                    pendingOrders.get(slot).remove(order);
+                    pendingOrders.get(slot).remove(orderDTO);
                 }
             }
+            System.out.println("Order canceled2 successfully.");
             // Update the Restaurant in the database uisng the update route
             ObjectMapper mapper = JacksonConfig.configureObjectMapper();
             HttpResponse<String> response = request(
@@ -189,14 +238,17 @@ public class Restaurant implements IRestaurant {
                     mapper.writeValueAsString(this)
             );
             if (response.statusCode() != 200) {
+                System.out.println("Error while updating the restaurant.");
+                System.out.println(response.body());
                 return response;
             }
-            order.setStatus(OrderStatus.CANCELLED);
+            System.out.println("Order canceled1 successfully.");
+            orderDTO.setStatus(OrderStatus.CANCELLED);
             return request(
                     RequestUtil.DATABASE_ORDER_SERVICE_URI,
                     "/update",
                     HttpMethod.POST,
-                    mapper.writeValueAsString(order)
+                    mapper.writeValueAsString(orderDTO)
             );
         } catch (Exception e) {
             e.printStackTrace();
@@ -217,7 +269,7 @@ public class Restaurant implements IRestaurant {
     /**
      * Validates whether an item can be added to an existing order.
      *
-     * @param order        the order to which the item is being added
+     * @param orderDTO     the order to which the item is being added
      * @param menuItem     the menu item that is intended to be added
      * @param deliveryTime the requested delivery time for the order (can be null)
      * @throws IllegalArgumentException if the order is not pending,
@@ -225,8 +277,8 @@ public class Restaurant implements IRestaurant {
      *                                  if the item cannot be prepared in time,
      *                                  or if there is no available slot for the item.
      */
-    HttpResponse<String> canAddItemToOrder(Order order, MenuItem menuItem, LocalDateTime deliveryTime) {
-        if (order.getStatus() != OrderStatus.PENDING) {
+    HttpResponse<String> canAddItemToOrder(OrderDTO orderDTO, MenuItem menuItem, LocalDateTime deliveryTime) {
+        if (orderDTO.getStatus() != OrderStatus.PENDING) {
             return new CustomHttpResponse(HttpCode.HTTP_400.getCode(), "Order is not pending.");
         }
         if (!isItemAvailable(menuItem)) {
@@ -255,16 +307,16 @@ public class Restaurant implements IRestaurant {
     /**
      * Check if the order is valid.
      *
-     * @param order The order to check
+     * @param orderDTO The order to check
      * @return true if the order is valid, false otherwise
      */
     @Override
-    public boolean isOrderValid(Order order) {
-        if (!order.getStatus().equals(OrderStatus.PENDING)) {
+    public boolean isOrderValid(OrderDTO orderDTO) {
+        if (!orderDTO.getStatus().equals(OrderStatus.PENDING)) {
             return false;
         }
         // Check that the restaurant has all the items in the order, and the order is not empty
-        return new HashSet<>(getMenu().getItems()).containsAll(order.getItems()) && !order.getItems().isEmpty();
+        return new HashSet<>(getMenu().getItems()).containsAll(orderDTO.getItems()) && !orderDTO.getItems().isEmpty();
     }
 
     /**
@@ -274,24 +326,21 @@ public class Restaurant implements IRestaurant {
      * @param deliveryTime The desired delivery time.
      * @return true if there is a slot available that can prepare the item before the delivery time, false otherwise.
      */
-
     public boolean slotAvailable(MenuItem menuItem, LocalDateTime deliveryTime) {
         LocalDateTime now = TimeUtils.getNow();
-
         for (Slot slot : slots) {
             // Check if the slot's opening time is before the delivery time and within operating hours
-            // Check if the item can be prepared before the delivery time
-            boolean isBefore = slot.getOpeningDate().isBefore(deliveryTime);
-            boolean isAfter = slot.getOpeningDate().isAfter(now);
-            // Check that the slot has enough capacity to prepare the item, and the number of orders is less than the maximum (EX2)
-            boolean isCapacityAvailable = slot.getAvailableCapacity() >= menuItem.getPrepTime() && pendingOrders.get(slot).size() < this.getMaxOrdersForSlot(slot);
-            if (isBefore && !isAfter && isCapacityAvailable) {
+            boolean isSlotBeforeDeliveryTime = slot.getOpeningDate().isBefore(deliveryTime);
+            // Check if the slot has enough capacity to prepare the item, and the number of orders is less than the maximum (EX2)
+            boolean isSlotCapacityAvailable = slot.getAvailableCapacity() >= menuItem.getPrepTime() && pendingOrders.get(slot).size() < this.getMaxOrdersForSlot(slot);
+            // Check that the slot is between the current time and the delivery time
+            boolean isSlotBetweenNowAndDeliveryTime = slot.getOpeningDate().isAfter(now) && slot.getOpeningDate().isBefore(deliveryTime);
+            if (isSlotBeforeDeliveryTime && isSlotBetweenNowAndDeliveryTime && isSlotCapacityAvailable) {
                 LocalDateTime preparationEndTime = now.plusSeconds(menuItem.getPrepTime());
                 if (preparationEndTime.isBefore(deliveryTime)) {
                     return true;
                 }
             }
-
         }
         return false;
     }
@@ -312,14 +361,14 @@ public class Restaurant implements IRestaurant {
     /**
      * Mark the order as VALIDATED after payment and move it from pending orders to the order history.
      *
-     * @param order The UUID of the order
+     * @param orderDTO The UUID of the order
      */
     @Override
-    public HttpResponse<String> onOrderPaid(Order order) {
+    public HttpResponse<String> onOrderPaid(OrderDTO orderDTO) {
         // TODO: Do the request
         return request(
                 RequestUtil.DATABASE_ORDER_SERVICE_URI,
-                "/" + order.getId() + "/validate",
+                "/" + orderDTO.getId() + "/validate",
                 HttpMethod.POST,
                 null
         );
@@ -369,9 +418,9 @@ public class Restaurant implements IRestaurant {
     }
 
     @Override
-    public OrderPrice processOrderPrice(Order order) {
+    public OrderPrice processOrderPrice(OrderDTO orderDTO) {
         // TODO
-        return this.orderPriceStrategy.processOrderPrice(order, this);
+        return this.orderPriceStrategy.processOrderPrice(orderDTO, this);
     }
 
     @Override
@@ -428,7 +477,7 @@ public class Restaurant implements IRestaurant {
     }
 
     @Override
-    public Map<Slot, Set<Order>> getPendingOrders() {
+    public Map<Slot, Set<OrderDTO>> getPendingOrders() {
         // TODO: To The Request
         HttpResponse<String> response = request(
                 RequestUtil.DATABASE_RESTAURANT_SERVICE_URI,
@@ -441,7 +490,7 @@ public class Restaurant implements IRestaurant {
         }
         ObjectMapper mapper = JacksonConfig.configureObjectMapper();
         try {
-            return mapper.readValue(response.body(), new TypeReference<Map<Slot, Set<Order>>>() {
+            return mapper.readValue(response.body(), new TypeReference<Map<Slot, Set<OrderDTO>>>() {
             });
         } catch (Exception e) {
             return new LinkedHashMap<>();
@@ -455,12 +504,12 @@ public class Restaurant implements IRestaurant {
 
 
     @Override
-    public void addOrderToHistory(Order order) {
-        this.ordersHistory.add(order);
+    public void addOrderToHistory(OrderDTO orderDTO) {
+        this.ordersHistory.add(orderDTO);
     }
 
     @Override
-    public List<Order> getOrdersHistory() {
+    public List<OrderDTO> getOrdersHistory() {
         // TODO: To The Request
         HttpResponse<String> response = request(
                 RequestUtil.DATABASE_RESTAURANT_SERVICE_URI,
@@ -473,7 +522,7 @@ public class Restaurant implements IRestaurant {
         }
         ObjectMapper mapper = JacksonConfig.configureObjectMapper();
         try {
-            return mapper.readValue(response.body(), new TypeReference<List<Order>>() {
+            return mapper.readValue(response.body(), new TypeReference<List<OrderDTO>>() {
             });
         } catch (Exception e) {
             return new ArrayList<>();
@@ -481,8 +530,8 @@ public class Restaurant implements IRestaurant {
     }
 
     @Override
-    public double getTotalPrice(Order order) {
-        return order.getItems().stream()
+    public double getTotalPrice(OrderDTO orderDTO) {
+        return orderDTO.getItems().stream()
                 .mapToDouble(MenuItemDTO::getPrice)
                 .sum();
     }
@@ -514,9 +563,8 @@ public class Restaurant implements IRestaurant {
             }
             // Call the database to update the restaurant
             ObjectMapper mapper = JacksonConfig.configureObjectMapper();
-            System.out.println(this.slots);
             RestaurantDTO restaurantDTO = DTOMapper.toRestaurantDTO(this);
-            // System.out.println(restaurantDTO.getSlots());
+            System.out.println(restaurantDTO);
             return request(
                     RequestUtil.DATABASE_RESTAURANT_SERVICE_URI,
                     "/update",

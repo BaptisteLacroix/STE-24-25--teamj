@@ -1,6 +1,6 @@
 package fr.unice.polytech.equipe.j.restaurant;
 
-import fr.unice.polytech.equipe.j.dto.Order;
+import fr.unice.polytech.equipe.j.dto.OrderDTO;
 import fr.unice.polytech.equipe.j.menu.Menu;
 import fr.unice.polytech.equipe.j.menu.MenuItem;
 import fr.unice.polytech.equipe.j.orderpricestrategy.OrderPrice;
@@ -20,16 +20,16 @@ public interface IRestaurant {
     /**
      * Add an item to an order, either individual or group.
      *
-     * @param order        the order to which the item is added
+     * @param orderDTO        the order to which the item is added
      * @param menuItem     the menu item being added
      * @param deliveryTime the delivery time for the order (optional)
      * @throws IllegalArgumentException if the item is not available or cannot be prepared in time
      */
-    HttpResponse<String> addItemToOrder(Order order, MenuItem menuItem, LocalDateTime deliveryTime);
+    HttpResponse<String> addItemToOrder(OrderDTO orderDTO, MenuItem menuItem, LocalDateTime deliveryTime);
 
-    HttpResponse<String> onOrderPaid(Order order);
+    HttpResponse<String> onOrderPaid(OrderDTO orderDTO);
 
-    double getTotalPrice(Order order);
+    double getTotalPrice(OrderDTO orderDTO);
 
     Optional<LocalDateTime> getOpeningTime();
 
@@ -43,11 +43,11 @@ public interface IRestaurant {
 
     void setOrderPriceStrategy(OrderPriceStrategy orderPriceStrategy);
 
-    OrderPrice processOrderPrice(Order order);
+    OrderPrice processOrderPrice(OrderDTO orderDTO);
 
-    HttpResponse<String> cancelOrder(Order order, LocalDateTime deliveryTime);
+    HttpResponse<String> cancelOrder(OrderDTO orderDTO, LocalDateTime deliveryTime);
 
-    boolean isOrderValid(Order order);
+    boolean isOrderValid(OrderDTO orderDTO);
 
     boolean canAccommodateDeliveryTime(List<MenuItem> items, LocalDateTime deliveryTime);
 
@@ -60,13 +60,13 @@ public interface IRestaurant {
 
     boolean setNumberOfPersonnel(Slot slotToUpdate, int numberOfPersonnel);
 
-    void addOrderToHistory(Order order);
+    void addOrderToHistory(OrderDTO orderDTO);
 
     boolean addMenuItemToSlot(Slot slot, MenuItem selectedItem);
 
-    List<Order> getOrdersHistory();
+    List<OrderDTO> getOrdersHistory();
 
-    Map<Slot, Set<Order>> getPendingOrders();
+    Map<Slot, Set<OrderDTO>> getPendingOrders();
 
     void changeMenu(Menu testMenu);
 

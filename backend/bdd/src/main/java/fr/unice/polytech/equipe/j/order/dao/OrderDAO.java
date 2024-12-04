@@ -6,6 +6,7 @@ import fr.unice.polytech.equipe.j.httpresponse.HttpResponse;
 import fr.unice.polytech.equipe.j.order.entities.OrderEntity;
 import java.util.Collections;
 import fr.unice.polytech.equipe.j.order.entities.IndividualOrderEntity;
+import fr.unice.polytech.equipe.j.restaurant.dao.RestaurantDAO;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
@@ -17,7 +18,9 @@ public class OrderDAO {
     // Fetch all orders
     public static List<OrderEntity> getAllOrders() {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            return session.createQuery("FROM OrderEntity", OrderEntity.class).list();
+            List<OrderEntity> orderEntities = session.createQuery("FROM OrderEntity", OrderEntity.class).list();
+            System.out.println("Order entities: " + orderEntities);
+            return orderEntities;
         } catch (Exception e) {
             System.out.println("Error while getting all orders: " + e.getMessage());
             return Collections.emptyList();
@@ -55,7 +58,6 @@ public class OrderDAO {
 
     // Save or update an order
     public static HttpResponse save(OrderEntity orderEntity) {
-        System.out.println("Saving order: " + orderEntity);
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             Transaction transaction = session.beginTransaction();
             session.merge(orderEntity);
@@ -64,18 +66,6 @@ public class OrderDAO {
         } catch (Exception e) {
             System.out.println("Error while saving order: " + e.getMessage());
             return new HttpResponse(HttpCode.HTTP_500, "Error while saving order");
-        }
-    }
-
-    public static HttpResponse update(OrderEntity orderEntity) {
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            Transaction transaction = session.beginTransaction();
-            session.update(orderEntity);
-            transaction.commit();
-            return new HttpResponse(HttpCode.HTTP_200, orderEntity);
-        } catch (Exception e) {
-            System.out.println("Error while updating order: " + e.getMessage());
-            return new HttpResponse(HttpCode.HTTP_500, "Error while updating order");
         }
     }
 
@@ -97,11 +87,13 @@ public class OrderDAO {
 
     // Save or update an individual order (extends OrderEntity)
     public static HttpResponse save(IndividualOrderEntity individualOrderEntity) {
-        System.out.println("Saving individual order: " + individualOrderEntity);
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             Transaction transaction = session.beginTransaction();
+            System.out.println(individualOrderEntity.getItems());
+            System.out.println(RestaurantDAO.getRestaurantById(UUID.fromString("3183fa1c-ecd5-49a9-9351-92f75d33fea4")).getMenuEntity().getItems());
             session.merge(individualOrderEntity);
             transaction.commit();
+            System.out.println(RestaurantDAO.getRestaurantById(UUID.fromString("3183fa1c-ecd5-49a9-9351-92f75d33fea4")).getMenuEntity().getItems());
             return new HttpResponse(HttpCode.HTTP_201, individualOrderEntity.getId());
         } catch (Exception e) {
             System.out.println("Error while saving individual order: " + e.getMessage());

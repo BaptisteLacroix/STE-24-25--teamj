@@ -2,7 +2,7 @@ package fr.unice.polytech.equipe.j.orderpricestrategy;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import fr.unice.polytech.equipe.j.dto.MenuItemDTO;
-import fr.unice.polytech.equipe.j.dto.Order;
+import fr.unice.polytech.equipe.j.dto.OrderDTO;
 import fr.unice.polytech.equipe.j.mapper.DTOMapper;
 import fr.unice.polytech.equipe.j.restaurant.IRestaurant;
 import fr.unice.polytech.equipe.j.menu.MenuItem;
@@ -23,14 +23,14 @@ public class KPercentForNOrderPriceStrategy implements OrderPriceStrategy {
     }
 
     @Override
-    public OrderPrice processOrderPrice(Order order, IRestaurant restaurant) {
-        UUID user = order.getUserId();
+    public OrderPrice processOrderPrice(OrderDTO orderDTO, IRestaurant restaurant) {
+        UUID user = orderDTO.getUserId();
         long previousOrders = restaurant.getOrdersHistory().stream()
                 .filter((o) -> o.getUserId().equals(user))
                 .count();
 
         // map order menuItems to their prices
-        Map<MenuItem, Double> prices = order.getItems().stream().collect(Collectors.toMap((item) -> DTOMapper.toMenuItem(item), MenuItemDTO::getPrice));
+        Map<MenuItem, Double> prices = orderDTO.getItems().stream().collect(Collectors.toMap((item) -> DTOMapper.toMenuItem(item), MenuItemDTO::getPrice));
         double totalPrice = prices.values().stream().mapToDouble(Double::doubleValue).sum();
 
         String description = "No discount";

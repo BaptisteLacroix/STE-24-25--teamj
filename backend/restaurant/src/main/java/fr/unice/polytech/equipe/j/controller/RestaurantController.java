@@ -4,23 +4,22 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.util.JSONPObject;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import fr.unice.polytech.equipe.j.HttpMethod;
 import fr.unice.polytech.equipe.j.JacksonConfig;
 import fr.unice.polytech.equipe.j.RequestUtil;
-import fr.unice.polytech.equipe.j.TimeUtils;
 import fr.unice.polytech.equipe.j.annotations.BeanParam;
 import fr.unice.polytech.equipe.j.annotations.Controller;
 import fr.unice.polytech.equipe.j.annotations.PathParam;
 import fr.unice.polytech.equipe.j.annotations.QueryParam;
 import fr.unice.polytech.equipe.j.annotations.Route;
-import fr.unice.polytech.equipe.j.dto.Order;
+import fr.unice.polytech.equipe.j.dto.IndividualOrderDTO;
+import fr.unice.polytech.equipe.j.dto.MenuItemDTO;
+import fr.unice.polytech.equipe.j.dto.OrderDTO;
 import fr.unice.polytech.equipe.j.dto.RestaurantDTO;
 import fr.unice.polytech.equipe.j.httpresponse.HttpCode;
 import fr.unice.polytech.equipe.j.httpresponse.HttpResponse;
 import fr.unice.polytech.equipe.j.mapper.DTOMapper;
 import fr.unice.polytech.equipe.j.menu.Menu;
-import fr.unice.polytech.equipe.j.menu.MenuItem;
 import fr.unice.polytech.equipe.j.orderpricestrategy.OrderPriceStrategy;
 import fr.unice.polytech.equipe.j.restaurant.IRestaurant;
 import fr.unice.polytech.equipe.j.restaurant.RestaurantProxy;
@@ -100,7 +99,8 @@ public class RestaurantController {
                 null
         );
         ObjectMapper objectMapper = JacksonConfig.configureObjectMapper();
-        List<RestaurantDTO> restaurantsDTO = objectMapper.readValue(response.body(), new TypeReference<List<RestaurantDTO>>() {});
+        List<RestaurantDTO> restaurantsDTO = objectMapper.readValue(response.body(), new TypeReference<List<RestaurantDTO>>() {
+        });
 
         return restaurantsDTO.stream()
                 .map(DTOMapper::toRestaurant)
@@ -140,17 +140,20 @@ public class RestaurantController {
                     null
             );
             ObjectMapper objectMapper = JacksonConfig.configureObjectMapper();
-            List<IRestaurant> restaurants = objectMapper.readValue(response.body(), objectMapper.getTypeFactory().constructCollectionType(List.class, IRestaurant.class));
-
+            List<RestaurantDTO> restaurantDTOS = objectMapper.readValue(response.body(), new TypeReference<List<RestaurantDTO>>() {
+            });
+            List<IRestaurant> restaurants = restaurantDTOS.stream()
+                    .map(DTOMapper::toRestaurant)
+                    .collect(Collectors.toList());
             // Fetch the list of restaurants that can deliver at the specified time
             List<IRestaurant> matchingRestaurants = RestaurantServiceManager.getInstance()
                     .searchRestaurantByDeliveryTime(restaurants, Optional.of(deliveryTime));
-            if (matchingRestaurants.isEmpty()) {
-                return createHttpResponse(HttpCode.HTTP_404, "No restaurants can deliver at the specified time");
-            }
 
+            List<RestaurantDTO> matchingRestaurantsDTO = matchingRestaurants.stream()
+                    .map(DTOMapper::toRestaurantDTO)
+                    .collect(Collectors.toList());
             // Convert the list of restaurants to JSON response
-            String jsonResponse = objectMapper.writeValueAsString(matchingRestaurants);
+            String jsonResponse = objectMapper.writeValueAsString(matchingRestaurantsDTO);
             return createHttpResponse(HttpCode.HTTP_200, jsonResponse);
         } catch (Exception e) {
             e.printStackTrace();
@@ -167,29 +170,43 @@ public class RestaurantController {
 
         try {
             // Fetch restaurant, order, and menu item details
+            System.out.println(RequestUtil.DATABASE_RESTAURANT_SERVICE_URI + "/" + restaurantId + "/menuItem/" + menuItemId);
             java.net.http.HttpResponse<String> menuItemResponse = request(
                     RequestUtil.DATABASE_RESTAURANT_SERVICE_URI,
                     "/" + restaurantId + "/menuItem/" + menuItemId,
                     HttpMethod.GET,
                     null);
-            IRestaurant restaurantProxy = createRestaurantProxy(restaurantId);
-            Order order = fetchOrderById(orderId);
-            System.out.println("Order: " + order);
-            if (order == null || restaurantProxy == null) {
-                return createHttpResponse(HttpCode.HTTP_400, order == null ? "Order not found" : "Restaurant not found");
+            if (menuItemResponse.statusCode() != 200) {
+                System.out.println("menuItemResponse: " + menuItemResponse.body());
+                System.out.println("menuItemResponse code: " + menuItemResponse.statusCode());
+                return createHttpResponse(HttpCode.HTTP_404, "Menu item not found");
             }
-            // Map responses to DTOs
-            ObjectMapper objectMapper = JacksonConfig.configureObjectMapper();
-            MenuItem menuItem = objectMapper.readValue(menuItemResponse.body(), MenuItem.class);
+            return createHttpResponse(HttpCode.HTTP_200, menuItemResponse.body());
 
-            // Use proxy to add item to the order
-            LocalDateTime deliveryDateTime = null;
-            if (deliveryTime != null) deliveryDateTime = LocalDateTime.parse(deliveryTime);
-            java.net.http.HttpResponse<String> response = restaurantProxy.addItemToOrder(order, menuItem, deliveryDateTime);
-            if (response.statusCode() != 200) {
-                return createHttpResponse(HttpCode.HTTP_400, "Item cannot be added to order");
-            }
-            return createHttpResponse(HttpCode.HTTP_200, "Item added to order successfully");
+//            IRestaurant restaurantProxy = createRestaurantProxy(restaurantId);
+//            OrderDTO orderDTO = fetchOrderByIdOrIndividual(orderId);
+//            if (orderDTO == null || restaurantProxy == null) {
+//                System.out.println("orderDTO: " + orderDTO);
+//                System.out.println("restaurantProxy: " + restaurantProxy);
+//                return createHttpResponse(HttpCode.HTTP_404, orderDTO == null ? "Order not found" : "Restaurant not found");
+//            }
+//            // Map responses to DTOs
+//            ObjectMapper objectMapper = JacksonConfig.configureObjectMapper();
+//            MenuItemDTO menuItem = objectMapper.readValue(menuItemResponse.body(), MenuItemDTO.class);
+//
+//            // Use proxy to add item to the order
+//            LocalDateTime deliveryDateTime = null;
+//            if (deliveryTime != null) deliveryDateTime = LocalDateTime.parse(deliveryTime);
+//            System.out.println("deliveryDateTime: " + deliveryDateTime);
+//            java.net.http.HttpResponse<String> response = restaurantProxy.addItemToOrder(orderDTO, DTOMapper.toMenuItem(menuItem), deliveryDateTime);
+//            System.out.println("response: " + response.body());
+//            System.out.println("response code: " + response.statusCode());
+//            if (response.statusCode() != 201 && response.statusCode() != 200) {
+//                System.out.println("response: " + response.body());
+//                System.out.println("response code: " + response.statusCode());
+//                return createHttpResponse(HttpCode.HTTP_400, "Item cannot be added to order");
+//            }
+//            return createHttpResponse(HttpCode.HTTP_200, "Item added to order successfully");
         } catch (Exception e) {
             e.printStackTrace();
             return createHttpResponse(HttpCode.HTTP_500, "Internal server error: " + e.getMessage());
@@ -203,18 +220,24 @@ public class RestaurantController {
             @BeanParam String deliveryTime) {
         try {
             LocalDateTime deliveryDateTime = LocalDateTime.parse(deliveryTime);
-            Order order = fetchOrderById(orderId);
+            OrderDTO orderDTO = fetchOrderByIdOrIndividual(orderId);
             IRestaurant restaurantProxy = createRestaurantProxy(restaurantId);
-            if (order == null || restaurantProxy == null) {
-                return createHttpResponse(HttpCode.HTTP_400, order == null ? "Order not found" : "Restaurant not found");
+
+            if (orderDTO == null || restaurantProxy == null) {
+                String errorMessage = orderDTO == null ? "Order not found" : "Restaurant not found";
+                return createHttpResponse(HttpCode.HTTP_400, errorMessage);
             }
-            java.net.http.HttpResponse<String> response = restaurantProxy.cancelOrder(order, deliveryDateTime);
+
+            java.net.http.HttpResponse<String> response = restaurantProxy.cancelOrder(orderDTO, deliveryDateTime);
+
             if (response == null) {
                 return createHttpResponse(HttpCode.HTTP_400, "Order cannot be cancelled");
             }
+
             if (response.statusCode() == 200) {
                 return createHttpResponse(HttpCode.HTTP_200, "Order cancelled successfully");
             }
+
             return createHttpResponse(HttpCode.HTTP_500, "Internal server error: " + response.body());
         } catch (Exception e) {
             e.printStackTrace();
@@ -284,12 +307,12 @@ public class RestaurantController {
             @PathParam("orderId") UUID orderId) {
 
         try {
-            Order order = fetchOrderById(orderId);
+            OrderDTO orderDTO = fetchOrderByIdOrIndividual(orderId);
             IRestaurant restaurantProxy = createRestaurantProxy(restaurantId);
-            if (order == null || restaurantProxy == null) {
-                return createHttpResponse(HttpCode.HTTP_400, order == null ? "Order not found" : "Restaurant not found");
+            if (orderDTO == null || restaurantProxy == null) {
+                return createHttpResponse(HttpCode.HTTP_400, orderDTO == null ? "Order not found" : "Restaurant not found");
             }
-            double totalPrice = restaurantProxy.getTotalPrice(order);
+            double totalPrice = restaurantProxy.getTotalPrice(orderDTO);
             return createHttpResponse(HttpCode.HTTP_200, String.valueOf(totalPrice));
         } catch (Exception e) {
             return createHttpResponse(HttpCode.HTTP_500, "Internal server error: " + e.getMessage());
@@ -316,12 +339,12 @@ public class RestaurantController {
             @PathParam("restaurantId") UUID restaurantId,
             @PathParam("orderUUID") UUID orderId) {
         try {
-            Order order = fetchOrderById(orderId);
+            OrderDTO orderDTO = fetchOrderByIdOrIndividual(orderId);
             IRestaurant restaurantProxy = createRestaurantProxy(restaurantId);
-            if (order == null || restaurantProxy == null) {
-                return createHttpResponse(HttpCode.HTTP_400, order == null ? "Order not found" : "Restaurant not found");
+            if (orderDTO == null || restaurantProxy == null) {
+                return createHttpResponse(HttpCode.HTTP_400, orderDTO == null ? "Order not found" : "Restaurant not found");
             }
-            java.net.http.HttpResponse<String> response = restaurantProxy.onOrderPaid(order);
+            java.net.http.HttpResponse<String> response = restaurantProxy.onOrderPaid(orderDTO);
             if (response.statusCode() == 200) {
                 return createHttpResponse(HttpCode.HTTP_200, "Order paid successfully");
             }
@@ -417,19 +440,33 @@ public class RestaurantController {
         }
     }
 
-    private Order fetchOrderById(UUID orderId) {
+    private OrderDTO fetchOrderByIdOrIndividual(UUID orderId) {
         try {
-            // Fetch order data
+            // Attempt to fetch regular order data
             java.net.http.HttpResponse<String> orderResponse = request(
                     RequestUtil.DATABASE_ORDER_SERVICE_URI,
                     "/" + orderId,
                     HttpMethod.GET,
                     null);
-            // Parse response
+
+            // Parse response as OrderDTO
             ObjectMapper objectMapper = JacksonConfig.configureObjectMapper();
-            return objectMapper.readValue(orderResponse.body(), Order.class);
+            return objectMapper.readValue(orderResponse.body(), OrderDTO.class);
         } catch (Exception e) {
-            return null;
+            // If regular order fails, attempt to fetch individual order data
+            try {
+                java.net.http.HttpResponse<String> individualOrderResponse = request(
+                        RequestUtil.DATABASE_ORDER_SERVICE_URI,
+                        "/individual/" + orderId,
+                        HttpMethod.GET,
+                        null);
+
+                // Parse response as IndividualOrderDTO
+                return JacksonConfig.configureObjectMapper().readValue(individualOrderResponse.body(), IndividualOrderDTO.class);
+            } catch (Exception innerException) {
+                // Both fetching attempts failed
+                return null;
+            }
         }
     }
 }

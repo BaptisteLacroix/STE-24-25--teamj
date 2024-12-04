@@ -126,7 +126,6 @@ class OrderControllerTest {
 
         // Assert that the user list is not null or empty.
         assertNotNull(orderDTOList);
-        System.out.println(orderDTOList);
         assertEquals(OrderDAO.getAllOrders().size(), orderDTOList.size());
     }
 
@@ -186,19 +185,19 @@ class OrderControllerTest {
                 .PUT(HttpRequest.BodyPublishers.ofString(JacksonConfig.configureObjectMapper().writeValueAsString(orderDTO)))
                 .build();
         java.net.http.HttpResponse<String> response = client.send(request, java.net.http.HttpResponse.BodyHandlers.ofString());
-        assertEquals(200, response.statusCode());
-        orderDTO = JacksonConfig.configureObjectMapper().readValue(response.body(), OrderDTO.class);
-        assertEquals(orderDTO.getId(), orderDTO.getId());
+        assertEquals(201, response.statusCode());
+        UUID orderUUID = JacksonConfig.configureObjectMapper().readValue(response.body(), UUID.class);
+        assertEquals(orderDTO.getId(), orderUUID);
 
         // Get the updated order by id and check status update
         HttpRequest getRequest = HttpRequest.newBuilder()
-                .uri(URI.create(ORDER_PATH + orderDTO.getId()))
+                .uri(URI.create(ORDER_PATH + orderUUID))
                 .GET()
                 .build();
         java.net.http.HttpResponse<String> getResponse = client.send(getRequest, java.net.http.HttpResponse.BodyHandlers.ofString());
         OrderDTO updatedOrderDTO = JacksonConfig.configureObjectMapper().readValue(getResponse.body(), OrderDTO.class);
         assertEquals(OrderStatus.VALIDATED.name(), updatedOrderDTO.getStatus());
-        assertEquals(orderDTO.getId(), updatedOrderDTO.getId());
+        assertEquals(orderUUID, updatedOrderDTO.getId());
     }
 
 

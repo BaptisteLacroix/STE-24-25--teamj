@@ -2,7 +2,7 @@ package fr.unice.polytech.equipe.j.orderpricestrategy;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import fr.unice.polytech.equipe.j.dto.Order;
+import fr.unice.polytech.equipe.j.dto.OrderDTO;
 import fr.unice.polytech.equipe.j.restaurant.IRestaurant;
 
 @JsonTypeInfo(
@@ -15,5 +15,5 @@ import fr.unice.polytech.equipe.j.restaurant.IRestaurant;
         @JsonSubTypes.Type(value = FreeItemFotNItemsOrderPriceStrategy.class, name = "free_item")
 })
 public interface OrderPriceStrategy {
-    OrderPrice processOrderPrice(Order order, IRestaurant restaurant);
+    OrderPrice processOrderPrice(OrderDTO orderDTO, IRestaurant restaurant);
 }

@@ -297,7 +297,11 @@ public class FlexibleRestServer {
      * @throws IOException If an error occurs while parsing the request body.
      */
     private Object parseRequestBody(Class<?> paramType, String requestBody) throws IOException {
-        return requestBody.isBlank() ? null : objectMapper.readValue(requestBody, paramType);
+        if (requestBody.isBlank()) return null;
+        if (paramType == String.class) {
+            return requestBody;
+        }
+        return objectMapper.readValue(requestBody, paramType);
     }
 
     /**
