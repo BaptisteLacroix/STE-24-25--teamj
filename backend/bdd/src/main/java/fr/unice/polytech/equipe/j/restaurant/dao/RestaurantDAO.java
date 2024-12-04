@@ -37,6 +37,7 @@ public class RestaurantDAO {
             Transaction transaction = session.beginTransaction();
             session.merge(restaurantEntity);
             transaction.commit();
+            System.out.println(RestaurantDAO.getRestaurantById(restaurantEntity.getId()).getSlotEntities());
             return new HttpResponse(HttpCode.HTTP_201, restaurantEntity.getId());
         } catch (Exception e) {
             e.printStackTrace();

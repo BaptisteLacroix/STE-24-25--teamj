@@ -1,6 +1,7 @@
 package fr.unice.polytech.equipe.j.restaurant.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sun.security.jgss.GSSUtil;
 import fr.unice.polytech.equipe.j.HttpMethod;
 import fr.unice.polytech.equipe.j.annotations.BeanParam;
 import fr.unice.polytech.equipe.j.annotations.Controller;
@@ -60,9 +61,8 @@ public class RestaurantController {
     @Route(value = "/update", method = HttpMethod.PUT)
     public HttpResponse updateRestaurant(@BeanParam RestaurantDTO restaurantDTO) {
         System.out.println("Update restaurant");
-        System.out.println(restaurantDTO.getMenu().getItems());
         RestaurantEntity restaurantEntity = RestaurantMapper.toEntity(restaurantDTO);
-        System.out.println(restaurantEntity.getMenuEntity().getItems());
+        System.out.println("Slots: " + restaurantEntity.getSlotEntities());
         return RestaurantDAO.save(restaurantEntity);
     }
 

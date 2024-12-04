@@ -38,7 +38,7 @@ public class RestaurantEntity {
     @OneToOne(cascade = CascadeType.ALL)
     private MenuEntity menuEntity;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "restaurantEntity", fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "restaurantEntity", fetch = FetchType.EAGER, orphanRemoval = true)
     private List<SlotEntity> slotEntities = new ArrayList<>();
 
     @Override

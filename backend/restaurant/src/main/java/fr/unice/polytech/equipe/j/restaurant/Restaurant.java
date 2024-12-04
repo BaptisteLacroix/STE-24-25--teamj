@@ -556,7 +556,7 @@ public class Restaurant implements IRestaurant {
 
             // if closing time is set, generate slots
             if (openingHour != null && closingHour != null) {
-                updateSlotsByChangingHours(closingHour);
+                generateSlots();
             } else {
                 // if closing time is not set, remove all slots
                 slots = new ArrayList<>();
@@ -564,7 +564,6 @@ public class Restaurant implements IRestaurant {
             // Call the database to update the restaurant
             ObjectMapper mapper = JacksonConfig.configureObjectMapper();
             RestaurantDTO restaurantDTO = DTOMapper.toRestaurantDTO(this);
-            System.out.println(restaurantDTO);
             return request(
                     RequestUtil.DATABASE_RESTAURANT_SERVICE_URI,
                     "/update",
@@ -575,29 +574,6 @@ public class Restaurant implements IRestaurant {
             e.printStackTrace();
             return new CustomHttpResponse(HttpCode.HTTP_500.getCode(), "An error occurred while updating the restaurant.");
         }
-    }
-
-    private void updateSlotsByChangingHours(LocalDateTime closingHour) {
-        List<Slot> newSlots = new ArrayList<>();
-        for (Slot slot : slots) {
-            if (slot.getOpeningDate().isBefore(closingHour)) {
-                newSlots.add(slot);
-            }
-        }
-        // if the newSlots list is empty call generateSlots
-        if (newSlots.isEmpty()) {
-            generateSlots();
-            return;
-        }
-        Slot lastSlot = newSlots.get(newSlots.size() - 1);
-        LocalDateTime currentTime = lastSlot.getOpeningDate().plusMinutes(30);
-        while (currentTime.isBefore(closingHour)) {
-            Slot slot = new Slot(UUID.randomUUID(), currentTime, 0);
-            newSlots.add(slot);
-            pendingOrders.put(slot, new LinkedHashSet<>());
-            currentTime = currentTime.plusMinutes(30);
-        }
-        slots = newSlots;
     }
 
     public HttpResponse<String> changeNumberOfEmployees(UUID managerId, UUID slotId, int numberOfEmployees) {
