@@ -1,5 +1,6 @@
 package fr.unice.polytech.equipe.j.restaurant.mapper;
 
+import fr.unice.polytech.equipe.j.restaurant.dao.RestaurantDAO;
 import fr.unice.polytech.equipe.j.restaurant.dto.MenuItemDTO;
 import fr.unice.polytech.equipe.j.restaurant.entities.MenuItemEntity;
 
@@ -20,6 +21,7 @@ public class MenuItemMapper {
         menuItemEntity.setName(dto.getName());
         menuItemEntity.setPrice(dto.getPrice());
         menuItemEntity.setPrepTime(dto.getPrepTime());
+        menuItemEntity.setMenuEntity(RestaurantDAO.getMenuByMenuItemId(dto.getId()));
         return menuItemEntity;
     }
 }

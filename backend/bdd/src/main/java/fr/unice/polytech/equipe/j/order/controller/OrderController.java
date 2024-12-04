@@ -35,11 +35,7 @@ public class OrderController {
             }
             orderDTOS.add(OrderMapper.toDTO(order));
         }
-        if (orders != null) {
-            // Convert entities to DTOs using the OrderMapper
-            return new HttpResponse(HttpCode.HTTP_200, orderDTOS);
-        }
-        return new HttpResponse(HttpCode.HTTP_400, "Error while fetching orders");
+        return new HttpResponse(HttpCode.HTTP_200, orderDTOS);
     }
 
     @Route(value = "/individual/all", method = HttpMethod.GET)
@@ -47,7 +43,6 @@ public class OrderController {
         System.out.println("Get all orders");
         List<IndividualOrderEntity> orders = OrderDAO.getAllIndividualOrders();
         if (orders != null) {
-            // Convert entities to DTOs using the OrderMapper
             return new HttpResponse(HttpCode.HTTP_200, orders.stream().map(IndividualOrderMapper::toDTO).collect(Collectors.toList()));
         }
         return new HttpResponse(HttpCode.HTTP_400, "Error while fetching orders");
@@ -57,9 +52,7 @@ public class OrderController {
     @Route(value = "/create", method = HttpMethod.POST)
     public HttpResponse createOrder(@BeanParam OrderDTO orderDTO) {
         System.out.println("Create order");
-        // Convert the DTO to entity using the OrderMapper
         OrderEntity orderEntity = OrderMapper.toEntity(orderDTO);
-        // Save the order to the database
         return OrderDAO.save(orderEntity);
     }
 
@@ -79,17 +72,13 @@ public class OrderController {
     public HttpResponse updateOrder(@BeanParam OrderDTO orderDTO) {
         System.out.println("Update order");
         OrderEntity orderEntity = OrderMapper.toEntity(orderDTO);
-        if (orderEntity != null) {
-            return OrderDAO.save(orderEntity);
-        }
-        return new HttpResponse(HttpCode.HTTP_400, "Order not found");
+        return OrderDAO.save(orderEntity);
     }
 
     // Route to delete an order by its UUID
     @Route(value = "/{id}", method = HttpMethod.DELETE)
     public HttpResponse deleteOrder(@PathParam("id") UUID id) {
         System.out.println("Delete order");
-        // Delete the order by ID
         return OrderDAO.delete(id);
     }
 
@@ -97,19 +86,14 @@ public class OrderController {
     @Route(value = "/individual/create", method = HttpMethod.POST)
     public HttpResponse createIndividualOrder(@BeanParam IndividualOrderDTO individualOrderDTO) {
         System.out.println("Create individual order");
-        // Convert the IndividualOrderDTO to IndividualOrderEntity using the IndividualOrderMapper
         IndividualOrderEntity individualOrderEntity = IndividualOrderMapper.toEntity(individualOrderDTO);
-
-        // Save the individual order to the database
         return OrderDAO.save(individualOrderEntity);
     }
 
     @Route(value = "/individual/update", method = HttpMethod.PUT)
     public HttpResponse updateOrder(@BeanParam IndividualOrderDTO orderDTO) {
         System.out.println("Update individual order");
-        System.out.println(orderDTO);
         IndividualOrderEntity orderEntity = IndividualOrderMapper.toEntity(orderDTO);
-        System.out.println(orderEntity);
         return OrderDAO.save(orderEntity);
     }
 
@@ -120,9 +104,7 @@ public class OrderController {
         System.out.println("Get individual order by id: " + id);
         IndividualOrderEntity individualOrderEntity = OrderDAO.getIndividualOrderById(id);
         if (individualOrderEntity != null) {
-            // Convert entity to DTO using the IndividualOrderMapper
             IndividualOrderDTO individualOrderDTO = IndividualOrderMapper.toDTO(individualOrderEntity);
-            System.out.println("Sending individual order: " + individualOrderDTO);
             return new HttpResponse(HttpCode.HTTP_200, individualOrderDTO);
         }
         return new HttpResponse(HttpCode.HTTP_400, "Individual order not found");

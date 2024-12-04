@@ -89,11 +89,8 @@ public class OrderDAO {
     public static HttpResponse save(IndividualOrderEntity individualOrderEntity) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             Transaction transaction = session.beginTransaction();
-            System.out.println(individualOrderEntity.getItems());
-            System.out.println(RestaurantDAO.getRestaurantById(UUID.fromString("3183fa1c-ecd5-49a9-9351-92f75d33fea4")).getMenuEntity().getItems());
             session.merge(individualOrderEntity);
             transaction.commit();
-            System.out.println(RestaurantDAO.getRestaurantById(UUID.fromString("3183fa1c-ecd5-49a9-9351-92f75d33fea4")).getMenuEntity().getItems());
             return new HttpResponse(HttpCode.HTTP_201, individualOrderEntity.getId());
         } catch (Exception e) {
             System.out.println("Error while saving individual order: " + e.getMessage());

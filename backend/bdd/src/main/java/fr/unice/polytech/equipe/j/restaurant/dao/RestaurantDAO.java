@@ -56,5 +56,25 @@ public class RestaurantDAO {
             return new HttpResponse(HttpCode.HTTP_500, "Internal server error");
         }
     }
+
+    public static MenuEntity getMenuById(UUID id) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            return session.get(MenuEntity.class, id);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    // Found in which menu is the given menu item
+    public static MenuEntity getMenuByMenuItemId(UUID id) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            MenuItemEntity menuItemEntity = session.get(MenuItemEntity.class, id);
+            return menuItemEntity.getMenuEntity();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 }
 
