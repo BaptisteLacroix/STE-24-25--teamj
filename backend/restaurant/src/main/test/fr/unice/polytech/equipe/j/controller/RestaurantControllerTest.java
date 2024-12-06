@@ -30,7 +30,6 @@ class RestaurantControllerTest {
     private static final UUID MANAGER_UUID = UUID.fromString("5926a1d4-1831-48ea-9106-b28cc16c9da3"); // TEST Manager
     private static final String BASE_URL = "http://localhost:5003/api/restaurants";
     private static final UUID MENU_ITEM_UUID = UUID.fromString("cdaa1fc4-621b-4b18-89df-1fafd39aadd0");
-    private static final UUID SLOT_UUID = UUID.fromString("2f088106-f4e0-43f9-bfd6-4c0b59c6be28");
 
     @BeforeAll
     public static void startServer() {
@@ -139,14 +138,35 @@ class RestaurantControllerTest {
 
     @Test
     void testChangeNumberOfEmployees() throws Exception {
+        // Get the restaurant and get the uuid of a slot
+        HttpClient client;
+        HttpRequest request;
+        java.net.http.HttpResponse<String> response;
+
+        client = HttpClient.newHttpClient();
+        request = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + "/" + RESTAURANT_UUID))
+                .GET()
+                .build();
+
+        response = client.send(request, java.net.http.HttpResponse.BodyHandlers.ofString());
+        assertNotNull(response.body());
+        assertEquals(200, response.statusCode());
+
+        ObjectMapper objectMapper = JacksonConfig.configureObjectMapper();
+        RestaurantDTO restaurantDTO = objectMapper.readValue(response.body(), RestaurantDTO.class);
+        UUID slotUUID = restaurantDTO.getSlots().get(0).getUuid();
+
+
+
         int numberOfEmployees = 5;
-        HttpClient client = HttpClient.newHttpClient();
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(BASE_URL + "/" + RESTAURANT_UUID + "/manager/" + MANAGER_UUID + "/slots/" + SLOT_UUID + "/changeNumberOfEmployees/" + numberOfEmployees))
+        client = HttpClient.newHttpClient();
+        request = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + "/" + RESTAURANT_UUID + "/manager/" + MANAGER_UUID + "/slots/" + slotUUID + "/changeNumberOfEmployees/" + numberOfEmployees))
                 .POST(HttpRequest.BodyPublishers.noBody())
                 .build();
 
-        java.net.http.HttpResponse<String> response = client.send(request, java.net.http.HttpResponse.BodyHandlers.ofString());
+        response = client.send(request, java.net.http.HttpResponse.BodyHandlers.ofString());
 
         assertNotNull(response.body());
         assertEquals(201, response.statusCode());
@@ -164,7 +184,7 @@ class RestaurantControllerTest {
         java.net.http.HttpResponse<String> response = client.send(request, java.net.http.HttpResponse.BodyHandlers.ofString());
 
         assertNotNull(response.body());
-        assertEquals(400, response.statusCode());
+        assertEquals(404, response.statusCode());
     }
 
     @Test
@@ -182,16 +202,12 @@ class RestaurantControllerTest {
                 .GET()
                 .build();
 
-        System.out.println("SEND REQUEST");
         response = client.send(request, java.net.http.HttpResponse.BodyHandlers.ofString());
         assertNotNull(response.body());
         assertEquals(200, response.statusCode());
 
-        System.out.println(response.body());
         IndividualOrderDTO individualOrderDTO = objectMapper.readValue(response.body(), IndividualOrderDTO.class);
         individualOrderDTO.getDeliveryDetails().setDeliveryTime(deliveryTime);
-
-        System.out.println(individualOrderDTO);
 
         request = HttpRequest.newBuilder()
                 .uri(URI.create("http://localhost:5000/api/database/orders/individual/update"))
@@ -212,7 +228,6 @@ class RestaurantControllerTest {
         response = client.send(request, java.net.http.HttpResponse.BodyHandlers.ofString());
 
         assertNotNull(response.body());
-        System.out.println(response.body());
         assertEquals(200, response.statusCode());
     }
 

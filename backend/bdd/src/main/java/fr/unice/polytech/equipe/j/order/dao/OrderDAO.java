@@ -19,7 +19,6 @@ public class OrderDAO {
     public static List<OrderEntity> getAllOrders() {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             List<OrderEntity> orderEntities = session.createQuery("FROM OrderEntity", OrderEntity.class).list();
-            System.out.println("Order entities: " + orderEntities);
             return orderEntities;
         } catch (Exception e) {
             System.out.println("Error while getting all orders: " + e.getMessage());

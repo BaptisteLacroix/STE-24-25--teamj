@@ -62,7 +62,6 @@ public class RestaurantController {
     public HttpResponse updateRestaurant(@BeanParam RestaurantDTO restaurantDTO) {
         System.out.println("Update restaurant");
         RestaurantEntity restaurantEntity = RestaurantMapper.toEntity(restaurantDTO);
-        System.out.println("Slots: " + restaurantEntity.getSlotEntities());
         return RestaurantDAO.save(restaurantEntity);
     }
 
@@ -77,16 +76,8 @@ public class RestaurantController {
     public HttpResponse getMenuItem(@PathParam("restaurantId") UUID restaurantId, @PathParam("menuItemId") UUID menuItemId) {
         System.out.println("Get menu item");
         RestaurantEntity restaurantEntity = RestaurantDAO.getRestaurantById(restaurantId);
-        System.out.println("Restaurant entity: " + restaurantEntity.getMenuEntity().getItems());
         RestaurantDTO restaurantDTO = RestaurantMapper.toDTO(restaurantEntity);
-        System.out.println("Restaurant DTO: " + restaurantDTO);
-        System.out.println("Menu items: " + restaurantDTO.getMenu().getItems());
-        System.out.println("Menu item id: " + restaurantDTO.getMenu().getUuid());
-        MenuItemDTO menuItemDTO = restaurantDTO.getMenu().getItems().stream().filter(item -> {
-            System.out.println("Item id: " + item.getId() + " = " + menuItemId);
-            return item.getId().equals(menuItemId);
-        }).findFirst().orElse(null);
-        System.out.println("Menu item entity: " + menuItemDTO);
+        MenuItemDTO menuItemDTO = restaurantDTO.getMenu().getItems().stream().filter(item -> item.getId().equals(menuItemId)).findFirst().orElse(null);
         if (menuItemDTO != null) {
             try {
                 return new HttpResponse(HttpCode.HTTP_200, objectMapper.writeValueAsString(menuItemDTO));

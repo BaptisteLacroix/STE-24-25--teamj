@@ -42,8 +42,6 @@ public class RestaurantProxy implements IRestaurant {
     public HttpResponse<String> addItemToOrder(OrderDTO orderDTO, MenuItem menuItem, LocalDateTime deliveryTime) {
         HttpResponse<String> response = ((Restaurant) restaurant).canAddItemToOrder(orderDTO, menuItem, deliveryTime);
         if (response.statusCode() != 200 && response.statusCode() != 201) {
-            System.out.println("Response: " + response);
-            System.out.println("Response status code: " + response.statusCode());
             return response;
         }
         return restaurant.addItemToOrder(orderDTO, menuItem, deliveryTime);

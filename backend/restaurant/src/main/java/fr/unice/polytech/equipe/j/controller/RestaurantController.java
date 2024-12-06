@@ -170,43 +170,32 @@ public class RestaurantController {
 
         try {
             // Fetch restaurant, order, and menu item details
-            System.out.println(RequestUtil.DATABASE_RESTAURANT_SERVICE_URI + "/" + restaurantId + "/menuItem/" + menuItemId);
             java.net.http.HttpResponse<String> menuItemResponse = request(
                     RequestUtil.DATABASE_RESTAURANT_SERVICE_URI,
                     "/" + restaurantId + "/menuItem/" + menuItemId,
                     HttpMethod.GET,
                     null);
-            if (menuItemResponse.statusCode() != 200) {
-                System.out.println("menuItemResponse: " + menuItemResponse.body());
-                System.out.println("menuItemResponse code: " + menuItemResponse.statusCode());
+            if (menuItemResponse == null || menuItemResponse.statusCode() != 200) {
                 return createHttpResponse(HttpCode.HTTP_404, "Menu item not found");
             }
-            return createHttpResponse(HttpCode.HTTP_200, menuItemResponse.body());
 
-//            IRestaurant restaurantProxy = createRestaurantProxy(restaurantId);
-//            OrderDTO orderDTO = fetchOrderByIdOrIndividual(orderId);
-//            if (orderDTO == null || restaurantProxy == null) {
-//                System.out.println("orderDTO: " + orderDTO);
-//                System.out.println("restaurantProxy: " + restaurantProxy);
-//                return createHttpResponse(HttpCode.HTTP_404, orderDTO == null ? "Order not found" : "Restaurant not found");
-//            }
-//            // Map responses to DTOs
-//            ObjectMapper objectMapper = JacksonConfig.configureObjectMapper();
-//            MenuItemDTO menuItem = objectMapper.readValue(menuItemResponse.body(), MenuItemDTO.class);
-//
-//            // Use proxy to add item to the order
-//            LocalDateTime deliveryDateTime = null;
-//            if (deliveryTime != null) deliveryDateTime = LocalDateTime.parse(deliveryTime);
-//            System.out.println("deliveryDateTime: " + deliveryDateTime);
-//            java.net.http.HttpResponse<String> response = restaurantProxy.addItemToOrder(orderDTO, DTOMapper.toMenuItem(menuItem), deliveryDateTime);
-//            System.out.println("response: " + response.body());
-//            System.out.println("response code: " + response.statusCode());
-//            if (response.statusCode() != 201 && response.statusCode() != 200) {
-//                System.out.println("response: " + response.body());
-//                System.out.println("response code: " + response.statusCode());
-//                return createHttpResponse(HttpCode.HTTP_400, "Item cannot be added to order");
-//            }
-//            return createHttpResponse(HttpCode.HTTP_200, "Item added to order successfully");
+            IRestaurant restaurantProxy = createRestaurantProxy(restaurantId);
+            OrderDTO orderDTO = fetchOrderByIdOrIndividual(orderId);
+            if (orderDTO == null || restaurantProxy == null) {
+                return createHttpResponse(HttpCode.HTTP_404, orderDTO == null ? "Order not found" : "Restaurant not found");
+            }
+            // Map responses to DTOs
+            ObjectMapper objectMapper = JacksonConfig.configureObjectMapper();
+            MenuItemDTO menuItem = objectMapper.readValue(menuItemResponse.body(), MenuItemDTO.class);
+
+            // Use proxy to add item to the order
+            LocalDateTime deliveryDateTime = null;
+            if (deliveryTime != null) deliveryDateTime = LocalDateTime.parse(deliveryTime);
+            java.net.http.HttpResponse<String> response = restaurantProxy.addItemToOrder(orderDTO, DTOMapper.toMenuItem(menuItem), deliveryDateTime);
+            if (response.statusCode() != 201 && response.statusCode() != 200) {
+                return createHttpResponse(HttpCode.HTTP_400, "Item cannot be added to order");
+            }
+            return createHttpResponse(HttpCode.HTTP_200, "Item added to order successfully");
         } catch (Exception e) {
             e.printStackTrace();
             return createHttpResponse(HttpCode.HTTP_500, "Internal server error: " + e.getMessage());

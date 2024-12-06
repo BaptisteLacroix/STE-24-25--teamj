@@ -140,18 +140,14 @@ public class Restaurant implements IRestaurant {
     @Override
     public HttpResponse<String> addItemToOrder(OrderDTO orderDTO, MenuItem menuItem, LocalDateTime deliveryTime) {
         try {
-            System.out.println("Menu1 : " + getMenu());
             Slot availableSlot = slots.stream()
                     .filter(slot -> slot.updateSlotCapacity(menuItem))
                     .findFirst()
                     .orElseThrow(() -> new IllegalArgumentException("Cannot add item to order, no slot available."));
             this.pendingOrders.get(availableSlot).add(orderDTO);
-            System.out.println("Menu2 : " + getMenu());
             // add the new item to the list of items in the order
             List<MenuItemDTO> newItems = new ArrayList<>(orderDTO.getItems());
             newItems.add(DTOMapper.toMenuItemDTO(menuItem));
-            System.out.println("Menu3 : " + getMenu());
-            System.out.println("New items: " + newItems);
             orderDTO.setItems(newItems);
             ObjectMapper mapper = JacksonConfig.configureObjectMapper();
             // Update the restaurant in the database using the update route
@@ -161,12 +157,10 @@ public class Restaurant implements IRestaurant {
                     HttpMethod.PUT,
                     mapper.writeValueAsString(DTOMapper.toRestaurantDTO(this))
             );
-            System.out.println("Menu4 : " + getMenu());
             if (response.statusCode() != 201 && response.statusCode() != 200) {
                 return response;
             }
             if (orderDTO instanceof IndividualOrderDTO) {
-                System.out.println("Menu5 : " + getMenu());
                 response = request(
                         RequestUtil.DATABASE_ORDER_SERVICE_URI,
                         "/individual/update",
@@ -174,7 +168,6 @@ public class Restaurant implements IRestaurant {
                         mapper.writeValueAsString(orderDTO)
                 );
             } else {
-                System.out.println("Menu6 : " + getMenu());
                 response = request(
                         RequestUtil.DATABASE_ORDER_SERVICE_URI,
                         "/update",
@@ -182,13 +175,10 @@ public class Restaurant implements IRestaurant {
                         mapper.writeValueAsString(orderDTO)
                 );
             }
-            System.out.println("Menu7 : " + getMenu());
             // If the response is not successful, abort the restaurant update operation
             if (response.statusCode() != 201 && response.statusCode() != 200) {
-                System.out.println("Error while updating the order.");
                 this.pendingOrders.get(availableSlot).remove(orderDTO);
                 availableSlot.addCapacity(-menuItem.getPrepTime());
-                System.out.println("Menu8 : " + getMenu());
                 request(
                         RequestUtil.DATABASE_RESTAURANT_SERVICE_URI,
                         "/update",
@@ -197,7 +187,6 @@ public class Restaurant implements IRestaurant {
                 );
                 return response;
             }
-            System.out.println("Menu9 : " + getMenu());
             return new CustomHttpResponse(HttpCode.HTTP_200.getCode(), "Item added to order.");
         } catch (Exception e) {
             e.printStackTrace();
