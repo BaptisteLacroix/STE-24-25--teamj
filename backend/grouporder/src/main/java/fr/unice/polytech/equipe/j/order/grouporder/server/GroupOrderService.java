@@ -60,7 +60,7 @@ public class GroupOrderService {
             GroupOrder groupOrder1 = new GroupOrder(null);
             GroupOrderDTO groupOrderDTO = new GroupOrderDTO(groupOrder1.getGroupOrderId(),null,new ArrayList<CampusUserDTO>(),null, "pending");
 
-            GroupOrderProxy groupOrderProxy = createGroupOrderProxy(groupOrder1.getGroupOrderId());
+            IGroupOrder groupOrderProxy = createGroupOrderProxy(groupOrder1.getGroupOrderId());
 
             ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
             String json = ow.writeValueAsString(groupOrderDTO);
@@ -93,19 +93,17 @@ public class GroupOrderService {
     private HttpResponse joinGroupOrder(@PathParam("groupOrderId") UUID groupOrderId,@PathParam("userId") UUID userId) {
     try {
             java.net.http.HttpResponse<String> user = request(DATABASE_CAMPUS_USER_SERVICE_URI, "/"+userId.toString(),HttpMethod.GET, null);
-            GroupOrderProxy groupOrderProxy = createGroupOrderProxy(groupOrderId);
-
+            IGroupOrder groupOrderProxy = createGroupOrderProxy(groupOrderId);
             CampusUserDTO userDTO = new ObjectMapper().readValue(user.body(), CampusUserDTO.class);
-            groupOrderProxy.addUser(userDTO);
-            return new HttpResponse(HttpCode.HTTP_200, "GroupOrder joined successfully");
+            return groupOrderProxy.addUser(userDTO);
         } catch (Exception e) {
-            throw new Error(e.getMessage());
+            return new HttpResponse(HttpCode.HTTP_500,"User can't join groupOrder");
         }
 
     }
 
 
-    private GroupOrderProxy createGroupOrderProxy(UUID groupOrderId){
+    private IGroupOrder createGroupOrderProxy(UUID groupOrderId){
         java.net.http.HttpResponse<String> groupOrderResponse = request(DATABASE_ORDER_SERVICE_URI, "/" + groupOrderId.toString(), HttpMethod.GET, null);
         ObjectMapper mapper = new ObjectMapper();
         try {

@@ -22,30 +22,33 @@ public class GroupOrder implements IGroupOrder {
     private UUID groupOrderId;
     private final List<OrderDTO> orders = new ArrayList<>();
     private final DeliveryDetails deliveryDetails;
+    private final List<CampusUserDTO> campusUsers = new ArrayList<>();
     private OrderStatus status = OrderStatus.PENDING;
 
     @Override
     public List<CampusUserDTO> getUsers() {
-        return users;
+        return this.campusUsers ;
     }
 
     @Override
     public HttpResponse addUser(CampusUserDTO user) {
         try {
             java.net.http.HttpResponse<String> groupOrder = request(DATABASE_GROUPORDER_SERVICE_URI,"/"+getGroupOrderId().toString(), HttpMethod.GET,null);
-            GroupOrderDTO groupOrderDTO = new ObjectMapper().readValue(groupOrder.body(), GroupOrderDTO.class);
-            groupOrderDTO.getUsers().add(user);
+            this.getUsers().add(user);
             try {
                 ObjectMapper mapper = JacksonConfig.configureObjectMapper();
-                request(DATABASE_GROUPORDER_SERVICE_URI,"/update",HttpMethod.PUT,mapper.writeValueAsString(groupOrderDTO));
-                return new HttpResponse(HttpCode.HTTP_200, "User added to the groupOrder");
-                }catch (Exception e){
-                    throw new Error("Impossible d'ajouter l'utilisateur au GroupOrder");
+                java.net.http.HttpResponse response = request(DATABASE_GROUPORDER_SERVICE_URI,"/update",HttpMethod.PUT,mapper.writeValueAsString(groupOrderDTO));
+                if (response.statusCode()==201){
+                    return new HttpResponse(HttpCode.HTTP_201, "User added to the groupOrder");
+                }  else {
+                    return new HttpResponse(HttpCode.HTTP_500, response.body());
                 }
-            } catch (Exception e){
-                throw new Error("Impossible de récupérer le groupOrder");
+            }catch (Exception e){
+                    throw new Error("Impossible d'ajouter l'utilisateur au GroupOrder");
             }
-
+        } catch (Exception e){
+            throw new Error("Impossible de récupérer le groupOrder");
+        }
     }
 
     public GroupOrder(DeliveryDetails deliveryDetails) {
@@ -71,7 +74,7 @@ public class GroupOrder implements IGroupOrder {
 
     @Override
     public HttpResponse<String> getOrders() {
-        return request(); // Regarder exemple 
+        return request(); // Regarder exemple
     }
 
     @Override
