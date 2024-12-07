@@ -39,11 +39,9 @@ public class DTOMapper {
         ).toList());
         dto.setClosingTime(restaurant.getClosingTime().orElse(null));
         dto.setOpeningTime(restaurant.getOpeningTime().orElse(null));
-        System.out.println("Pending orders: " + restaurant.getPendingOrders());
         Map<UUID, Set<UUID>> pendingOrders = restaurant.getPendingOrders().entrySet().stream()
                 .collect(LinkedHashMap::new, (map, entry) -> map.put(entry.getKey().getUUID(), entry.getValue().stream().map(OrderDTO::getId).collect(Collectors.toSet())), Map::putAll);
         dto.setPendingOrders(pendingOrders);
-        System.out.println("DTO: " + dto.getPendingOrders());
         return dto;
     }
 

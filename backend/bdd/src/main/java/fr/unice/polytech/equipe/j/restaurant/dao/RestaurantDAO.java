@@ -33,7 +33,6 @@ public class RestaurantDAO {
     }
 
     public static HttpResponse save(RestaurantEntity restaurantEntity) {
-        System.out.println(restaurantEntity.getSlotEntities());
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             Transaction transaction = session.beginTransaction();
             session.merge(restaurantEntity);

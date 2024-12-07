@@ -40,7 +40,7 @@ public class OrderController {
 
     @Route(value = "/individual/all", method = HttpMethod.GET)
     public HttpResponse getAllIndividualOrders() {
-        System.out.println("Get all orders");
+        System.out.println("Get all individuals orders");
         List<IndividualOrderEntity> orders = OrderDAO.getAllIndividualOrders();
         if (orders != null) {
             return new HttpResponse(HttpCode.HTTP_200, orders.stream().map(IndividualOrderMapper::toDTO).collect(Collectors.toList()));

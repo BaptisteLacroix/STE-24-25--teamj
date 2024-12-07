@@ -96,7 +96,5 @@ public class RestaurantDatabaseSeeder {
     public static void main(String[] args) {
         // Clear database
         seedDatabase();
-        // Show the database
-        System.out.println(RestaurantDAO.getAllRestaurants().size());
     }
 }

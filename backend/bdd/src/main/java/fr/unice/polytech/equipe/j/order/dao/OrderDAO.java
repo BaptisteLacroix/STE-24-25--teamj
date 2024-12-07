@@ -61,7 +61,6 @@ public class OrderDAO {
             Transaction transaction = session.beginTransaction();
             session.merge(orderEntity);
             transaction.commit();
-            System.out.println("GET ORDER BY ID IN UPDATE : " + OrderDAO.getOrderById(orderEntity.getId()));
             return new HttpResponse(HttpCode.HTTP_201, orderEntity.getId());
         } catch (Exception e) {
             System.out.println("Error while saving order: " + e.getMessage());

@@ -157,7 +157,6 @@ public class Restaurant implements IRestaurant {
             orderDTO.setItems(newItems);
             ObjectMapper mapper = JacksonConfig.configureObjectMapper();
 
-            System.out.println(this.pendingOrders);
             // Update the restaurant in the database using the update route
             HttpResponse<String> response = request(
                     RequestUtil.DATABASE_RESTAURANT_SERVICE_URI,
@@ -224,8 +223,6 @@ public class Restaurant implements IRestaurant {
                     .map(Map.Entry::getKey)
                     .collect(HashSet::new, HashSet::add, HashSet::addAll);
 
-            System.out.println("SLOTS: " + slots);
-
             // Remove the order from each slot and adjust the capacity
             for (Slot slot : slots) {
                 for (MenuItemDTO item : orderDTO.getItems()) {
@@ -233,7 +230,6 @@ public class Restaurant implements IRestaurant {
                 }
                 pendingOrders.get(slot).removeIf(o -> o.getId().equals(orderDTO.getId()));
             }
-            System.out.println("STARTING TO UPDATE THE RESTAURANT");
             // Update the restaurant in the database using the update route
             ObjectMapper mapper = JacksonConfig.configureObjectMapper();
             HttpResponse<String> restaurantUpdateResponse = request(
@@ -245,11 +241,8 @@ public class Restaurant implements IRestaurant {
 
             if (restaurantUpdateResponse.statusCode() != HttpCode.HTTP_201.getCode()) {
                 System.out.println("Error while updating the restaurant.");
-                System.out.println(restaurantUpdateResponse.body());
                 return restaurantUpdateResponse;
             }
-            System.out.println("RESTAURANT UPDATED SUCCESSFULLY");
-            System.out.println("STARTING TO UPDATE THE ORDER");
             orderDTO.setStatus(OrderStatus.CANCELLED);
             orderDTO.setSlot(null);
             HttpResponse<String> orderUpdateResponse;
@@ -271,10 +264,8 @@ public class Restaurant implements IRestaurant {
 
             if (orderUpdateResponse.statusCode() != HttpCode.HTTP_201.getCode()) {
                 System.out.println("Error while updating the order status.");
-                System.out.println(orderUpdateResponse.body());
                 return orderUpdateResponse;
             }
-            System.out.println("ORDER UPDATED SUCCESSFULLY");
             return new CustomHttpResponse(HttpCode.HTTP_200.getCode(), "Order canceled successfully.");
         } catch (Exception e) {
             e.printStackTrace();

@@ -101,7 +101,6 @@ class RestaurantControllerTest {
     @Test
     void testSearchByDeliveryTime() throws Exception {
         LocalDateTime deliveryTime = LocalDateTime.parse("2024-11-30T18:30:13");
-        System.out.println(deliveryTime);
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(BASE_URL + "/deliveryTime/" + deliveryTime.getHour() + "/" + deliveryTime.getMinute()))
@@ -116,7 +115,6 @@ class RestaurantControllerTest {
         ObjectMapper objectMapper = JacksonConfig.configureObjectMapper();
         List<RestaurantDTO> matchingRestaurants = objectMapper.readValue(response.body(), new TypeReference<List<RestaurantDTO>>() {
         });
-        System.out.println(matchingRestaurants);
         assertNotNull(matchingRestaurants);
     }
 
@@ -133,7 +131,6 @@ class RestaurantControllerTest {
         java.net.http.HttpResponse<String> response = client.send(request, java.net.http.HttpResponse.BodyHandlers.ofString());
 
         assertNotNull(response.body());
-        System.out.println(response.body());
         assertEquals(201, response.statusCode());
     }
 
@@ -248,7 +245,6 @@ class RestaurantControllerTest {
 
         IndividualOrderDTO individualOrderDTO = objectMapper.readValue(response.body(), IndividualOrderDTO.class);
         LocalDateTime deliveryTime = individualOrderDTO.getDeliveryDetails().getDeliveryTime().minusHours(1);
-        System.out.println(deliveryTime);
         client = HttpClient.newHttpClient();
         request = HttpRequest.newBuilder()
                 .uri(URI.create(BASE_URL + "/" + RESTAURANT_UUID + "/orders/" + INDIVIDUAL_ORDER_UUID + "/cancel"))
@@ -258,7 +254,6 @@ class RestaurantControllerTest {
         response = client.send(request, java.net.http.HttpResponse.BodyHandlers.ofString());
 
         assertNotNull(response.body());
-        System.out.println(response.body());
         assertEquals(200, response.statusCode());
     }
 
