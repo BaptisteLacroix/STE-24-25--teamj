@@ -9,6 +9,7 @@ import fr.unice.polytech.equipe.j.httpresponse.HttpResponse;
 import fr.unice.polytech.equipe.j.order.grouporder.dto.CampusUserDTO;
 import fr.unice.polytech.equipe.j.order.grouporder.dto.GroupOrderDTO;
 import fr.unice.polytech.equipe.j.order.grouporder.dto.OrderDTO;
+import org.json.HTTP;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -39,15 +40,15 @@ public class GroupOrder implements IGroupOrder {
                 ObjectMapper mapper = JacksonConfig.configureObjectMapper();
                 java.net.http.HttpResponse response = request(DATABASE_GROUPORDER_SERVICE_URI,"/update",HttpMethod.PUT,mapper.writeValueAsString(groupOrderDTO));
                 if (response.statusCode()==201){
-                    return new HttpResponse(HttpCode.HTTP_201, "User added to the groupOrder");
+                    return new HttpResponse(HttpCode.HTTP_201, "GroupOrder Updated in database");
                 }  else {
                     return new HttpResponse(HttpCode.HTTP_500, response.body());
                 }
             }catch (Exception e){
-                    throw new Error("Impossible d'ajouter l'utilisateur au GroupOrder");
+                    return new HttpResponse(HttpCode.HTTP_400,"Can't update groupOrder");
             }
         } catch (Exception e){
-            throw new Error("Impossible de récupérer le groupOrder");
+            return new HttpResponse(HttpCode.HTTP_400,"Can't find groupOrder");
         }
     }
 

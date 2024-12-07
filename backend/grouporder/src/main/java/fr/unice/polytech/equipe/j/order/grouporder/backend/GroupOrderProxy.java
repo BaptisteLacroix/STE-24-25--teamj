@@ -1,6 +1,7 @@
 package fr.unice.polytech.equipe.j.order.grouporder.backend;
 
 import fr.unice.polytech.equipe.j.delivery.DeliveryDetails;
+import fr.unice.polytech.equipe.j.httpresponse.HttpCode;
 import fr.unice.polytech.equipe.j.httpresponse.HttpResponse;
 import fr.unice.polytech.equipe.j.order.grouporder.dto.CampusUserDTO;
 
@@ -54,10 +55,10 @@ public class GroupOrderProxy implements IGroupOrder {
     @Override
     public HttpResponse addUser(CampusUserDTO user) {
         if (groupOrder.getStatus() != OrderStatus.PENDING) {
-            throw new IllegalArgumentException("The group order has already been validated.");
+            return new HttpResponse(HttpCode.HTTP_400, "Order cannot be added to groupOrder");
         }
-        groupOrder.addUser(user);
-        return null;
+        return groupOrder.addUser(user);
+
     }
 
     @Override
