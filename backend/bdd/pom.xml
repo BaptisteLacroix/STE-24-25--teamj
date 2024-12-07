@@ -57,6 +57,22 @@
                     </systemProperties>
                 </configuration>
             </plugin>
+            <!-- Plugin to run the main application -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <mainClass>fr.unice.polytech.equipe.j.Application</mainClass>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
