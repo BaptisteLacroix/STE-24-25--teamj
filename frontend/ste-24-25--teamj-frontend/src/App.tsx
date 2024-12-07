@@ -1,20 +1,29 @@
 import './App.css'
 import { PolyfoodHeader } from './components/header'
-import { RestaurantCard } from './components/restaurantCard'
+import { createBrowserRouter, RouterProvider } from 'react-router'
+import { RestaurantCards } from './components/restaurantCards';
+import { Restaurant } from './components/restaurant';
+
+const router = createBrowserRouter([
+    {
+        path: '/restaurants',
+        Component: RestaurantCards
+    },
+    {
+        path: '/restaurant',
+        Component: Restaurant
+    },
+]);
 
 function App() {
     return (
         <div className='flex flex-col items-center'>
-            <PolyfoodHeader/>
-            <div className="mt-10 w-full flex justify-center">
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-y-10 gap-x-10 justify-items-center max-w-6xl">
-                    {[1, 2, 3, 4, 5, 6].map((num) => (
-                        <RestaurantCard name={`Temp restaurant ${num}`} averagePrice={10} key={num} />
-                    ))}
-                </div>
+            <PolyfoodHeader />
+            <div className='mt-10'>
+                <RouterProvider router={router} />
             </div>
         </div>
     )
 }
- 
+
 export default App
