@@ -1,8 +1,9 @@
 import './App.css'
 import { PolyfoodHeader } from './components/header'
-import { createBrowserRouter, RouterProvider } from 'react-router'
+import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import { RestaurantCards } from './components/restaurants';
 import { RestaurantComponent } from './components/restaurant';
+import { CreateGroupOrder } from './components/createGroupOrder';
 
 const router = createBrowserRouter([
     {
@@ -12,6 +13,10 @@ const router = createBrowserRouter([
     {
         path: '/restaurant/:id',
         element: <RestaurantComponent />
+    },
+    {
+        path: '/new-group-order',
+        element: <CreateGroupOrder />
     },
 ]);
 

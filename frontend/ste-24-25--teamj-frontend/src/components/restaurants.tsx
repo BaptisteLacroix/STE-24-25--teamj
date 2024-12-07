@@ -1,4 +1,4 @@
-import { Link } from "react-router"
+import { Link } from "react-router-dom"
 import { PolyFoodCard } from "./polyfoodCard"
 import { getAllRestaurants } from "../apiUtils"
 import { Restaurant } from "../types";

@@ -1,4 +1,4 @@
-import { useParams } from "react-router";
+import { useParams } from "react-router-dom";
 import { PolyFoodCard } from "./polyfoodCard";
 import { useState, useEffect } from "react";
 import { getDishes } from "../apiUtils";

@@ -5,8 +5,14 @@ export function PolyfoodHeader() {
   return (
     <Navbar isBordered>
       <NavbarContent as="div" className="items-center flex" justify="start">
+
+        {/* <Link to="/create-group-order/"> */}
         <Button radius="full">New Group Order</Button>
+        {/* </Link> */}
+
+        {/* <Link to="/join-group-order/"> */}
         <Button radius="full">Join Group Order</Button>
+        {/* </Link> */}
       </NavbarContent>
 
       <NavbarContent as="div" className="items-center" justify="center">
