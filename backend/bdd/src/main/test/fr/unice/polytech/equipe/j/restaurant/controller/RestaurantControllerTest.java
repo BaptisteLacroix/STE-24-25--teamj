@@ -18,6 +18,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.UUID;
 
@@ -44,7 +45,7 @@ class RestaurantControllerTest {
         MenuDTO menuDTO = new MenuDTO();
         menuDTO.setUuid(UUID.randomUUID());
         menuDTO.setItems(itemsRestaurant);
-        return new RestaurantDTO(RESTAURANT_ID, "TEST", null, null, new ArrayList<>(), menuDTO);
+        return new RestaurantDTO(RESTAURANT_ID, "TEST", null, null, new ArrayList<>(), menuDTO, new LinkedHashMap<>());
     }
 
     @Test

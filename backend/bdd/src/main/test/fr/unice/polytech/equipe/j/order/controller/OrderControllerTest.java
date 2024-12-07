@@ -18,6 +18,7 @@ import fr.unice.polytech.equipe.j.restaurant.dao.RestaurantDAO;
 import fr.unice.polytech.equipe.j.restaurant.dto.MenuDTO;
 import fr.unice.polytech.equipe.j.restaurant.dto.MenuItemDTO;
 import fr.unice.polytech.equipe.j.restaurant.dto.RestaurantDTO;
+import fr.unice.polytech.equipe.j.restaurant.dto.SlotDTO;
 import fr.unice.polytech.equipe.j.restaurant.mapper.RestaurantMapper;
 import fr.unice.polytech.equipe.j.user.dao.CampusUserDAO;
 import fr.unice.polytech.equipe.j.user.dto.CampusUserDTO;
@@ -28,8 +29,12 @@ import org.junit.jupiter.api.Test;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
+import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalUnit;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.UUID;
 
@@ -74,7 +79,8 @@ class OrderControllerTest {
         MenuDTO menuDTO = new MenuDTO();
         menuDTO.setUuid(UUID.randomUUID());
         menuDTO.setItems(itemsRestaurant);
-        return new RestaurantDTO(RESTAURANT_ID, "TEST", null, null, new ArrayList<>(), menuDTO);
+        List<SlotDTO> slotDTOS = List.of(new SlotDTO(UUID.randomUUID(), 0, 9000, LocalDateTime.now(), Duration.of(30, ChronoUnit.MINUTES), 5));
+        return new RestaurantDTO(RESTAURANT_ID, "TEST", LocalDateTime.now(), LocalDateTime.now().plusHours(2), slotDTOS, menuDTO, new LinkedHashMap<>());
     }
 
     private OrderDTO getOrder() {
@@ -84,7 +90,7 @@ class OrderControllerTest {
         CampusUserDTO userDTO = CampusUserMapper.toDTO(CampusUserDAO.getUserById(USER_ID));
         RestaurantDTO restaurantDTO = RestaurantMapper.toDTO(RestaurantDAO.getRestaurantById(RESTAURANT_ID));
 
-        return new OrderDTO(ORDER_ID, restaurantDTO.getId(), userDTO.getId(), List.of(restaurantDTO.getMenu().getItems().getFirst()), OrderStatus.PENDING.name());
+        return new OrderDTO(ORDER_ID, restaurantDTO.getId(), userDTO.getId(), List.of(restaurantDTO.getMenu().getItems().getFirst()), OrderStatus.PENDING.name(), restaurantDTO.getSlots().getFirst());
     }
 
     private DeliveryDetailsDTO getDeliveryDetails() {
@@ -102,7 +108,7 @@ class OrderControllerTest {
         CampusUserDTO userDTO = CampusUserMapper.toDTO(CampusUserDAO.getUserById(USER_ID));
         RestaurantDTO restaurantDTO = RestaurantMapper.toDTO(RestaurantDAO.getRestaurantById(RESTAURANT_ID));
 
-        return new IndividualOrderDTO(new OrderDTO(INDIVIDUAL_ID, restaurantDTO.getId(), userDTO.getId(), List.of(restaurantDTO.getMenu().getItems().getFirst()), OrderStatus.PENDING.name()), getDeliveryDetails());
+        return new IndividualOrderDTO(new OrderDTO(INDIVIDUAL_ID, restaurantDTO.getId(), userDTO.getId(), List.of(restaurantDTO.getMenu().getItems().getFirst()), OrderStatus.PENDING.name(),  restaurantDTO.getSlots().getFirst()), getDeliveryDetails());
     }
 
     @Test

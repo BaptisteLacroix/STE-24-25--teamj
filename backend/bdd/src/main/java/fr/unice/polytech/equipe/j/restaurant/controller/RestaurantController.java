@@ -1,7 +1,6 @@
 package fr.unice.polytech.equipe.j.restaurant.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sun.security.jgss.GSSUtil;
 import fr.unice.polytech.equipe.j.HttpMethod;
 import fr.unice.polytech.equipe.j.annotations.BeanParam;
 import fr.unice.polytech.equipe.j.annotations.Controller;

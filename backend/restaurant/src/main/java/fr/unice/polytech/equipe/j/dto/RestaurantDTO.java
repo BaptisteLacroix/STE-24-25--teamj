@@ -7,6 +7,8 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 @Getter
@@ -22,6 +24,7 @@ public class RestaurantDTO {
     private LocalDateTime openingTime;
     private LocalDateTime closingTime;
     private OrderPriceStrategyDTO orOrderPriceStrategy;
+    private Map<UUID, Set<UUID>> pendingOrders;
 
     public RestaurantDTO() {
     }
@@ -37,6 +40,7 @@ public class RestaurantDTO {
                 ", openingTime=" + openingTime +
                 ", closingTime=" + closingTime +
                 ", orOrderPriceStrategy=" + orOrderPriceStrategy +
+                ", pendingOrders=" + pendingOrders +
                 '}';
     }
 }

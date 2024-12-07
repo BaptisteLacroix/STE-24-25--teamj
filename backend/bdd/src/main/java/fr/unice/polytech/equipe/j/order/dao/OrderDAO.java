@@ -3,13 +3,12 @@ package fr.unice.polytech.equipe.j.order.dao;
 import fr.unice.polytech.equipe.j.HibernateUtil;
 import fr.unice.polytech.equipe.j.httpresponse.HttpCode;
 import fr.unice.polytech.equipe.j.httpresponse.HttpResponse;
-import fr.unice.polytech.equipe.j.order.entities.OrderEntity;
-import java.util.Collections;
 import fr.unice.polytech.equipe.j.order.entities.IndividualOrderEntity;
-import fr.unice.polytech.equipe.j.restaurant.dao.RestaurantDAO;
+import fr.unice.polytech.equipe.j.order.entities.OrderEntity;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -57,10 +56,12 @@ public class OrderDAO {
 
     // Save or update an order
     public static HttpResponse save(OrderEntity orderEntity) {
+        System.out.println("Saving order: " + orderEntity);
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             Transaction transaction = session.beginTransaction();
             session.merge(orderEntity);
             transaction.commit();
+            System.out.println("GET ORDER BY ID IN UPDATE : " + OrderDAO.getOrderById(orderEntity.getId()));
             return new HttpResponse(HttpCode.HTTP_201, orderEntity.getId());
         } catch (Exception e) {
             System.out.println("Error while saving order: " + e.getMessage());
@@ -86,6 +87,7 @@ public class OrderDAO {
 
     // Save or update an individual order (extends OrderEntity)
     public static HttpResponse save(IndividualOrderEntity individualOrderEntity) {
+        System.out.println("Saving order: " + individualOrderEntity.getSlotEntity());
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             Transaction transaction = session.beginTransaction();
             session.merge(individualOrderEntity);

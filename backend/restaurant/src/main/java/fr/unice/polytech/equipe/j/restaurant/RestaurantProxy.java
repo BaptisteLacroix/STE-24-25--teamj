@@ -53,7 +53,7 @@ public class RestaurantProxy implements IRestaurant {
         if (deliveryTime.isBefore(LocalDateTime.now().minusMinutes(30))) {
             return restaurant.cancelOrder(orderDTO, deliveryTime);
         }
-        return null;
+        return new CustomHttpResponse(400, "The order cannot be cancelled less than 30 minutes before the delivery time");
     }
 
     @Override

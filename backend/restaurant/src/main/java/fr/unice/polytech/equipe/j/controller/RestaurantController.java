@@ -193,7 +193,7 @@ public class RestaurantController {
             if (deliveryTime != null) deliveryDateTime = LocalDateTime.parse(deliveryTime);
             java.net.http.HttpResponse<String> response = restaurantProxy.addItemToOrder(orderDTO, DTOMapper.toMenuItem(menuItem), deliveryDateTime);
             if (response.statusCode() != 201 && response.statusCode() != 200) {
-                return createHttpResponse(HttpCode.HTTP_400, "Item cannot be added to order");
+                return createHttpResponse(HttpCode.HTTP_400, response.body());
             }
             return createHttpResponse(HttpCode.HTTP_200, "Item added to order successfully");
         } catch (Exception e) {
@@ -218,16 +218,7 @@ public class RestaurantController {
             }
 
             java.net.http.HttpResponse<String> response = restaurantProxy.cancelOrder(orderDTO, deliveryDateTime);
-
-            if (response == null) {
-                return createHttpResponse(HttpCode.HTTP_400, "Order cannot be cancelled");
-            }
-
-            if (response.statusCode() == 200) {
-                return createHttpResponse(HttpCode.HTTP_200, "Order cancelled successfully");
-            }
-
-            return createHttpResponse(HttpCode.HTTP_500, "Internal server error: " + response.body());
+            return createHttpResponse(HttpCode.fromCode(response.statusCode()), response.body());
         } catch (Exception e) {
             e.printStackTrace();
             return createHttpResponse(HttpCode.HTTP_500, "Internal server error: " + e.getMessage());
@@ -357,21 +348,6 @@ public class RestaurantController {
             restaurantProxy.setOrderPriceStrategy(orderPriceStrategy);
 
             return createHttpResponse(HttpCode.HTTP_200, "Order price strategy set successfully");
-        } catch (Exception e) {
-            return createHttpResponse(HttpCode.HTTP_500, "Internal server error: " + e.getMessage());
-        }
-    }
-
-    @Route(value = "/{restaurantId}/name", method = HttpMethod.GET)
-    public HttpResponse getRestaurantName(@PathParam("restaurantId") UUID restaurantId) {
-        try {
-            IRestaurant restaurantProxy = createRestaurantProxy(restaurantId);
-            if (restaurantProxy == null) {
-                return createHttpResponse(HttpCode.HTTP_400, "Restaurant not found");
-            }
-            String name = restaurantProxy.getRestaurantName();
-
-            return createHttpResponse(HttpCode.HTTP_200, name);
         } catch (Exception e) {
             return createHttpResponse(HttpCode.HTTP_500, "Internal server error: " + e.getMessage());
         }

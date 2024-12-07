@@ -28,8 +28,9 @@ class RestaurantControllerTest {
     private static final UUID INDIVIDUAL_ORDER_UUID = UUID.fromString("f78ed5e2-face-43c3-a60e-7f703bd995c3"); // TEST Order
     private static final UUID USER_UUID = UUID.fromString("2e9aedb2-0d83-4304-871e-a89894bd16ba"); // TEST User
     private static final UUID MANAGER_UUID = UUID.fromString("5926a1d4-1831-48ea-9106-b28cc16c9da3"); // TEST Manager
-    private static final String BASE_URL = "http://localhost:5003/api/restaurants";
     private static final UUID MENU_ITEM_UUID = UUID.fromString("cdaa1fc4-621b-4b18-89df-1fafd39aadd0");
+    private static final String BASE_URL = "http://localhost:5003/api/restaurants";
+    private static final String BASE_DATABASE_URL = "http://localhost:5000/api/database";
 
     @BeforeAll
     public static void startServer() {
@@ -157,8 +158,6 @@ class RestaurantControllerTest {
         RestaurantDTO restaurantDTO = objectMapper.readValue(response.body(), RestaurantDTO.class);
         UUID slotUUID = restaurantDTO.getSlots().get(0).getUuid();
 
-
-
         int numberOfEmployees = 5;
         client = HttpClient.newHttpClient();
         request = HttpRequest.newBuilder()
@@ -182,9 +181,8 @@ class RestaurantControllerTest {
                 .build();
 
         java.net.http.HttpResponse<String> response = client.send(request, java.net.http.HttpResponse.BodyHandlers.ofString());
-
         assertNotNull(response.body());
-        assertEquals(404, response.statusCode());
+        assertEquals(400, response.statusCode());
     }
 
     @Test
@@ -198,7 +196,7 @@ class RestaurantControllerTest {
 
         client = HttpClient.newHttpClient();
         request = HttpRequest.newBuilder()
-                .uri(URI.create("http://localhost:5000/api/database/orders/individual/" + INDIVIDUAL_ORDER_UUID))
+                .uri(URI.create(BASE_DATABASE_URL + "/orders/individual/" + INDIVIDUAL_ORDER_UUID))
                 .GET()
                 .build();
 
@@ -210,7 +208,7 @@ class RestaurantControllerTest {
         individualOrderDTO.getDeliveryDetails().setDeliveryTime(deliveryTime);
 
         request = HttpRequest.newBuilder()
-                .uri(URI.create("http://localhost:5000/api/database/orders/individual/update"))
+                .uri(URI.create(BASE_DATABASE_URL+ "/orders/individual/update"))
                 .PUT(HttpRequest.BodyPublishers.ofString(objectMapper.writeValueAsString(individualOrderDTO)))
                 .build();
 
@@ -240,7 +238,7 @@ class RestaurantControllerTest {
 
         client = HttpClient.newHttpClient();
         request = HttpRequest.newBuilder()
-                .uri(URI.create("http://localhost:5000/api/database/orders/individual/" + INDIVIDUAL_ORDER_UUID))
+                .uri(URI.create(BASE_DATABASE_URL + "/orders/individual/" + INDIVIDUAL_ORDER_UUID))
                 .GET()
                 .build();
 

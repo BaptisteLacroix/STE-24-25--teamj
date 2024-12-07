@@ -4,6 +4,7 @@ import fr.unice.polytech.equipe.j.menu.MenuItem;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.Objects;
 import java.util.UUID;
 
 public class Slot {
@@ -97,7 +98,7 @@ public class Slot {
         return currentCapacity;
     }
 
-    public void setCurrentCapacity(int capacity){
+    public void setCurrentCapacity(int capacity) {
         this.currentCapacity = capacity;
     }
 
@@ -132,4 +133,18 @@ public class Slot {
                 ", numberOfPersonnel=" + numberOfPersonnel +
                 '}';
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        Slot slot = (Slot) obj;
+        return Objects.equals(uuid, slot.uuid);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(uuid);
+    }
+
 }

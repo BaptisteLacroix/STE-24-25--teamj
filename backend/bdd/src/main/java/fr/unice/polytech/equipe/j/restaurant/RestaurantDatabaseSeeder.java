@@ -7,6 +7,7 @@ import fr.unice.polytech.equipe.j.restaurant.dto.RestaurantDTO;
 import fr.unice.polytech.equipe.j.restaurant.mapper.RestaurantMapper;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.UUID;
 
@@ -22,7 +23,7 @@ public class RestaurantDatabaseSeeder {
         MenuDTO menuDTO = new MenuDTO();
         menuDTO.setUuid(UUID.fromString("0c73b70f-dab9-467a-b4a2-fcdc3f1b8e91"));
         menuDTO.setItems(itemsRestaurant1);
-        RestaurantDTO restaurantDTO = new RestaurantDTO(UUID.fromString("1a66eb77-3b5f-40e8-ae72-1ea2e5602f01"), "Le Petit Nice", null, null, new ArrayList<>(), menuDTO);
+        RestaurantDTO restaurantDTO = new RestaurantDTO(UUID.fromString("1a66eb77-3b5f-40e8-ae72-1ea2e5602f01"), "Le Petit Nice", null, null, new ArrayList<>(), menuDTO, new LinkedHashMap<>());
         RestaurantDAO.save(RestaurantMapper.toEntity(restaurantDTO));
 
         // Restaurant 2
@@ -34,7 +35,7 @@ public class RestaurantDatabaseSeeder {
         menuDTO = new MenuDTO();
         menuDTO.setUuid(UUID.fromString("26dd780b-2d0e-4fbd-8422-2776efb2263f"));
         menuDTO.setItems(itemsRestaurant2);
-        restaurantDTO = new RestaurantDTO(UUID.fromString("df59855f-8572-4435-9bdf-6b36241cc5b6"), "Le Petit Jardin", null, null, new ArrayList<>(), menuDTO);
+        restaurantDTO = new RestaurantDTO(UUID.fromString("df59855f-8572-4435-9bdf-6b36241cc5b6"), "Le Petit Jardin", null, null, new ArrayList<>(), menuDTO, new LinkedHashMap<>());
         RestaurantDAO.save(RestaurantMapper.toEntity(restaurantDTO));
 
         // Restaurant 3
@@ -46,7 +47,7 @@ public class RestaurantDatabaseSeeder {
         menuDTO = new MenuDTO();
         menuDTO.setUuid(UUID.fromString("d273b66b-5f22-435f-8ccb-a63edf95dda8"));
         menuDTO.setItems(itemsRestaurant3);
-        restaurantDTO = new RestaurantDTO(UUID.fromString("c961543e-c1a1-4e6c-b71a-6b8f56647ca1"), "Le Petit Chateau", null, null, new ArrayList<>(), menuDTO);
+        restaurantDTO = new RestaurantDTO(UUID.fromString("c961543e-c1a1-4e6c-b71a-6b8f56647ca1"), "Le Petit Chateau", null, null, new ArrayList<>(), menuDTO, new LinkedHashMap<>());
         RestaurantDAO.save(RestaurantMapper.toEntity(restaurantDTO));
 
         // Restaurant A (closed)
@@ -58,7 +59,7 @@ public class RestaurantDatabaseSeeder {
         menuDTO = new MenuDTO();
         menuDTO.setUuid(UUID.fromString("3c0ca0d1-fe96-4cfb-85c4-ce0a719fcfe6"));
         menuDTO.setItems(itemsRestaurantA);
-        restaurantDTO = new RestaurantDTO(UUID.fromString("43938b33-a4ed-4521-858c-5fa79bb5e598"), "Le Gourmet D'Or", null, null, new ArrayList<>(), menuDTO);
+        restaurantDTO = new RestaurantDTO(UUID.fromString("43938b33-a4ed-4521-858c-5fa79bb5e598"), "Le Gourmet D'Or", null, null, new ArrayList<>(), menuDTO, new LinkedHashMap<>());
         RestaurantDAO.save(RestaurantMapper.toEntity(restaurantDTO));
 
         // Restaurant B (no personnel)
@@ -70,13 +71,13 @@ public class RestaurantDatabaseSeeder {
         menuDTO = new MenuDTO();
         menuDTO.setUuid(UUID.fromString("37d02f1f-6936-4889-9174-75582c3fb922"));
         menuDTO.setItems(itemsRestaurantB);
-        restaurantDTO = new RestaurantDTO(UUID.fromString("84b00a65-20b9-40f0-88d8-d159fe66de97"), "Bistro de la Plage", null, null, new ArrayList<>(), menuDTO);
+        restaurantDTO = new RestaurantDTO(UUID.fromString("84b00a65-20b9-40f0-88d8-d159fe66de97"), "Bistro de la Plage", null, null, new ArrayList<>(), menuDTO, new LinkedHashMap<>());
         RestaurantDAO.save(RestaurantMapper.toEntity(restaurantDTO));
 
         // Restaurant C (no menu)
         menuDTO = new MenuDTO();
         menuDTO.setUuid(UUID.fromString("1474c27f-0511-4c06-99ab-5dc2c7037309"));
-        restaurantDTO = new RestaurantDTO(UUID.fromString("a66f77b2-aa53-4372-9514-12cd36550b41"), "Café de l'Aube", null, null, new ArrayList<>(), menuDTO);
+        restaurantDTO = new RestaurantDTO(UUID.fromString("a66f77b2-aa53-4372-9514-12cd36550b41"), "Café de l'Aube", null, null, new ArrayList<>(), menuDTO, new LinkedHashMap<>());
         RestaurantDAO.save(RestaurantMapper.toEntity(restaurantDTO));
 
         // Restaurant D (limited personnel)
@@ -88,7 +89,7 @@ public class RestaurantDatabaseSeeder {
         menuDTO = new MenuDTO();
         menuDTO.setUuid(UUID.fromString("f9a61250-5ad2-4e1a-9a61-e89c7951fb81"));
         menuDTO.setItems(itemsRestaurantD);
-        restaurantDTO = new RestaurantDTO(UUID.fromString("7091cbc7-4910-4e52-895b-7c87df747931"), "La Table Royale", null, null, new ArrayList<>(), menuDTO);
+        restaurantDTO = new RestaurantDTO(UUID.fromString("7091cbc7-4910-4e52-895b-7c87df747931"), "La Table Royale", null, null, new ArrayList<>(), menuDTO, new LinkedHashMap<>());
         RestaurantDAO.save(RestaurantMapper.toEntity(restaurantDTO));
     }
 

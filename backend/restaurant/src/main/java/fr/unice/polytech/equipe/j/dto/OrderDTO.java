@@ -20,6 +20,7 @@ public class OrderDTO {
     private List<MenuItemDTO> items;
     @NonNull
     private OrderStatus status;
+    private SlotDTO slot;
 
     public OrderDTO() {
     }

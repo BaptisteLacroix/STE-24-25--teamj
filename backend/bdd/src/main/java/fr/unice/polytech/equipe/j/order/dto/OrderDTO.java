@@ -1,6 +1,7 @@
 package fr.unice.polytech.equipe.j.order.dto;
 
 import fr.unice.polytech.equipe.j.restaurant.dto.MenuItemDTO;
+import fr.unice.polytech.equipe.j.restaurant.dto.SlotDTO;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -15,16 +16,18 @@ public class OrderDTO {
     private UUID userId;
     private List<MenuItemDTO> items;
     private String status;
+    private SlotDTO slot;
 
     public OrderDTO() {
     }
 
-    public OrderDTO(UUID id, UUID restaurantId, UUID userId, List<MenuItemDTO> items, String status) {
+    public OrderDTO(UUID id, UUID restaurantId, UUID userId, List<MenuItemDTO> items, String status, SlotDTO slot) {
         this.id = id;
         this.restaurantId = restaurantId;
         this.userId = userId;
         this.items = items;
         this.status = status;
+        this.slot = slot;
     }
 
     @Override

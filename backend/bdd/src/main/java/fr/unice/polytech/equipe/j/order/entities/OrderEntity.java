@@ -4,7 +4,19 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import fr.unice.polytech.equipe.j.order.dto.OrderStatus;
 import fr.unice.polytech.equipe.j.order.mapper.OrderStatusConverter;
 import fr.unice.polytech.equipe.j.restaurant.entities.MenuItemEntity;
-import jakarta.persistence.*;
+import fr.unice.polytech.equipe.j.restaurant.entities.SlotEntity;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -28,12 +40,16 @@ public class OrderEntity {
     @Column(name = "user_id", nullable = false)
     private UUID userId;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH}, fetch = FetchType.EAGER)
     private List<MenuItemEntity> items = new ArrayList<>();
 
     @Convert(converter = OrderStatusConverter.class)
     @Column(name = "status", nullable = false)
     private OrderStatus status;
+
+    @ManyToOne
+    @JoinColumn(name = "slot_entity_id")
+    private SlotEntity slotEntity;
 
     public OrderEntity() {
         this.status = OrderStatus.PENDING;

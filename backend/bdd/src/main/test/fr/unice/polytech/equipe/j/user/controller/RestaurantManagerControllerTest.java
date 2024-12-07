@@ -15,6 +15,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.UUID;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -42,7 +43,7 @@ public class RestaurantManagerControllerTest {
         MenuDTO menuDTO = new MenuDTO();
         menuDTO.setUuid(UUID.randomUUID());
         menuDTO.setItems(itemsRestaurant);
-        return new RestaurantDTO(RESTAURANT_ID, "TEST", null, null, new ArrayList<>(), menuDTO);
+        return new RestaurantDTO(RESTAURANT_ID, "TEST", null, null, new ArrayList<>(), menuDTO, new LinkedHashMap<>());
     }
 
     private RestaurantManagerDTO getRestaurantManager() {
