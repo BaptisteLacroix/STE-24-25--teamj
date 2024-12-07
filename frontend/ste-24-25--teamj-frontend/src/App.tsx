@@ -1,17 +1,17 @@
 import './App.css'
 import { PolyfoodHeader } from './components/header'
 import { createBrowserRouter, RouterProvider } from 'react-router'
-import { RestaurantCards } from './components/restaurantCards';
-import { Restaurant } from './components/restaurant';
+import { RestaurantCards } from './components/restaurants';
+import { RestaurantComponent } from './components/restaurant';
 
 const router = createBrowserRouter([
     {
-        path: '/restaurants',
-        Component: RestaurantCards
+        path: '/',
+        element: <RestaurantCards />
     },
     {
-        path: '/restaurant',
-        Component: Restaurant
+        path: '/restaurant/:id',
+        element: <RestaurantComponent />
     },
 ]);
 
