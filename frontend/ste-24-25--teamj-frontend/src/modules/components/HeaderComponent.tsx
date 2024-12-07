@@ -10,9 +10,14 @@ import {useAppState} from "../AppStateContext.tsx";
 type PolyFoodHeaderProps = {
     restaurantModel: RestaurantModel;
     setIsNewGroupOrderModalOpen: (isOpen: boolean) => void;
+    setIsJoinGroupOrderModalOpen: (isOpen: boolean) => void;
 };
 
-export function PolyfoodHeader({restaurantModel, setIsNewGroupOrderModalOpen}: PolyFoodHeaderProps) {
+export function PolyfoodHeader({
+                                   restaurantModel,
+                                   setIsNewGroupOrderModalOpen,
+                                   setIsJoinGroupOrderModalOpen
+                               }: PolyFoodHeaderProps) {
     const [order, setOrder] = useState<Order | IndividualOrder | null>(null);
     const {userId, setUserId, orderId} = useAppState();
 
@@ -40,11 +45,17 @@ export function PolyfoodHeader({restaurantModel, setIsNewGroupOrderModalOpen}: P
                     <Button variant={"bordered"} color={"default"} radius="full">Home</Button>
                 </Link>
                 {userId !== null ? (
-                    <Button variant={"bordered"} color={"default"} onClick={() => setIsNewGroupOrderModalOpen(true)} radius="full">New Group Order</Button>
+                    <>
+                        <Button variant={"bordered"} color={"default"} onClick={() => setIsNewGroupOrderModalOpen(true)}
+                                radius="full">New Group Order</Button>
+                        <Button variant={"bordered"} color={"default"} radius="full"
+                                onClick={() => setIsJoinGroupOrderModalOpen(true)}>Join Group Order</Button></>
                 ) : (
-                    <Button variant={"bordered"} color={"default"} radius="full" disabled>New Group Order</Button>
+                    <>
+                        <Button variant={"bordered"} color={"default"} radius="full" disabled>New Group Order</Button>
+                        <Button variant={"bordered"} color={"default"} radius="full" disabled>Join Group Order</Button>
+                    </>
                 )}
-                <Button variant={"bordered"} color={"default"} radius="full">Join Group Order</Button>
             </NavbarContent>
 
             <NavbarContent as="div" className="items-center" justify="center">

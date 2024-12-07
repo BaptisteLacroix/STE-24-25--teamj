@@ -10,7 +10,7 @@ type NewGroupOrderProps = {
     setIsNewGroupOrderModalOpen: (isOpen: boolean) => void;
 };
 
-const NewGroupOrder: React.FC<NewGroupOrderProps> = ({restaurantModel, setIsNewGroupOrderModalOpen}) => {
+export const NewGroupOrder: React.FC<NewGroupOrderProps> = ({restaurantModel, setIsNewGroupOrderModalOpen}) => {
     const {userId, setGroupOrderId} = useAppState(); // Assuming userId comes from global state/context
     const [deliveryLocation, setDeliveryLocation] = useState<DeliveryLocation | null>(null);
     const [deliveryLocations, setDeliveryLocations] = useState<DeliveryLocation[]>([]);
@@ -97,5 +97,3 @@ const NewGroupOrder: React.FC<NewGroupOrderProps> = ({restaurantModel, setIsNewG
         </Modal>
     );
 };
-
-export default NewGroupOrder;

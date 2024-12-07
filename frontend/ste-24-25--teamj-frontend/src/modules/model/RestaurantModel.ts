@@ -299,4 +299,20 @@ export class RestaurantModel {
         return data.groupOrderId*/
         return "1"
     }
+
+    public async joinGroupOrder(userId: string, groupOrderId: string | null) {
+        /*
+        const response = await fetch(`${API_BASE_URL}/${userId}/groupOrder/${groupOrderId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        if (response.status !== 200) {
+            throw new Error('Failed to join group order')
+        }
+        const data = await response.json()
+        return data.groupOrderId*/
+        return "1"
+    }
 }

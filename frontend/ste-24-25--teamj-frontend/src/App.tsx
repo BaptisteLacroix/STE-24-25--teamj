@@ -5,17 +5,22 @@ import { RestaurantModel } from './modules/model/RestaurantModel.ts';
 import { RestaurantsComponent } from './modules/components/RestaurantsComponent.tsx';
 import { DishesComponent } from './modules/components/DishesComponent.tsx';
 import { CartComponent } from './modules/components/CartComponent.tsx';
-import NewGroupOrder from "./modules/components/NewGroupOrderComponent.tsx";
 import { useState } from "react";
+import {JoinGroupOrder} from "./modules/components/JoinGroupOrderComponent.tsx";
+import {NewGroupOrder} from "./modules/components/NewGroupOrderComponent.tsx";
 
 function App() {
     const restaurantModel = new RestaurantModel();
-    const [isNewGroupOrderModalOpen, setIsNewGroupOrderModalOpen] = useState(false); // State to control modal visibility
+    const [isNewGroupOrderModalOpen, setIsNewGroupOrderModalOpen] = useState(false);
+    const [isJoinGroupOrderModalOpen, setIsJoinGroupOrderModalOpen] = useState(false);
 
     return (
         <BrowserRouter>
             <div className="flex flex-col items-center">
-                <PolyfoodHeader restaurantModel={restaurantModel} setIsNewGroupOrderModalOpen={setIsNewGroupOrderModalOpen} />
+                <PolyfoodHeader restaurantModel={restaurantModel}
+                                setIsNewGroupOrderModalOpen={setIsNewGroupOrderModalOpen}
+                                setIsJoinGroupOrderModalOpen={setIsJoinGroupOrderModalOpen}
+                />
                 <Routes>
                     <Route path="/" element={<RestaurantsComponent restaurantModel={restaurantModel} />} />
                     <Route
@@ -30,6 +35,7 @@ function App() {
                 </Routes>
 
                 {isNewGroupOrderModalOpen && <NewGroupOrder restaurantModel={restaurantModel} setIsNewGroupOrderModalOpen={setIsNewGroupOrderModalOpen} />}
+                {isJoinGroupOrderModalOpen && <JoinGroupOrder restaurantModel={restaurantModel} setIsJoinGroupOrderModalOpen={setIsJoinGroupOrderModalOpen} />}
             </div>
         </BrowserRouter>
     );
