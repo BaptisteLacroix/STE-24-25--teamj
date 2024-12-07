@@ -21,7 +21,6 @@ export function PolyfoodHeader({
     const [order, setOrder] = useState<Order | IndividualOrder | null>(null);
     const {userId, setUserId, orderId} = useAppState();
 
-    // Fetch order details when userId and orderId are available
     useEffect(() => {
         if (!orderId || !userId) return;
         restaurantModel.getOrder(userId, orderId).then((order) => {
@@ -29,7 +28,6 @@ export function PolyfoodHeader({
         });
     }, [orderId, userId, restaurantModel]);
 
-    // Handle login/logout
     const handleLoginLogout = () => {
         if (userId) {
             setUserId(null);

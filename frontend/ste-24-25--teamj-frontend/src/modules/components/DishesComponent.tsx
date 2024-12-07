@@ -35,7 +35,6 @@ export const DishesComponent: React.FC<DishesComponentProps> = ({
     const [deliveryLocations, setDeliveryLocations] = useState<DeliveryLocation[]>([]);
     const [deliveryDate, setDeliveryDate] = useState<Date | null>(null);
 
-    // Fetch dishes when restaurantId changes
     useEffect(() => {
         if (restaurantId) {
             restaurantModel.getRestaurantById(restaurantId).then((restaurant) => {
@@ -45,7 +44,6 @@ export const DishesComponent: React.FC<DishesComponentProps> = ({
         }
     }, [restaurantId, restaurantModel]);
 
-    // Fetch delivery locations when userId changes
     useEffect(() => {
         if (userId) {
             restaurantModel
@@ -55,7 +53,6 @@ export const DishesComponent: React.FC<DishesComponentProps> = ({
         }
     }, [userId, restaurantModel]);
 
-    // Fetch detailed delivery location when deliveryLocationId changes
     useEffect(() => {
         if (deliveryLocationId && userId) {
             restaurantModel
@@ -65,7 +62,6 @@ export const DishesComponent: React.FC<DishesComponentProps> = ({
         }
     }, [deliveryLocationId, userId, restaurantModel]);
 
-    // Helper function to add item to order
     const handleAddItemToOrder = async (dishId: string, deliveryDetails: DeliveryDetails | null = null) => {
         try {
             if (restaurantId && userId) {

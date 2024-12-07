@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from "react";
 import {Button, Modal, Select, SelectItem, DatePicker, ModalHeader, ModalBody, ModalFooter, ModalContent} from "@nextui-org/react";
-import {useAppState} from "../AppStateContext.tsx"; // Assuming you have AppStateContext for user info
+import {useAppState} from "../AppStateContext.tsx";
 import {RestaurantModel} from "../model/RestaurantModel.ts";
 import {DeliveryDetails, DeliveryLocation} from "../utils/types.ts";
 import {now, getLocalTimeZone} from "@internationalized/date";
@@ -11,7 +11,7 @@ type NewGroupOrderProps = {
 };
 
 export const NewGroupOrder: React.FC<NewGroupOrderProps> = ({restaurantModel, setIsNewGroupOrderModalOpen}) => {
-    const {userId, setGroupOrderId} = useAppState(); // Assuming userId comes from global state/context
+    const {userId, setGroupOrderId} = useAppState();
     const [deliveryLocation, setDeliveryLocation] = useState<DeliveryLocation | null>(null);
     const [deliveryLocations, setDeliveryLocations] = useState<DeliveryLocation[]>([]);
     const [deliveryDate, setDeliveryDate] = useState<Date | null>(null);
@@ -27,7 +27,6 @@ export const NewGroupOrder: React.FC<NewGroupOrderProps> = ({restaurantModel, se
         }
     }, [userId, restaurantModel]);
 
-    // Handle form submission
     const handleSubmit = () => {
         if (!userId) return;
         if (deliveryLocation == null || deliveryDate == null) {

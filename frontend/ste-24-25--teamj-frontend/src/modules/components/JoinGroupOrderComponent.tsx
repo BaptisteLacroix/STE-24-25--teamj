@@ -12,7 +12,6 @@ export const JoinGroupOrder: React.FC<NewGroupOrderProps> = ({restaurantModel, s
     const {userId} = useAppState();
     const [groupOrderId, setGroupOrderId] = useState<string | null>(null);
 
-    // Handle form submission
     const handleSubmit = () => {
         if (!userId) {
             setIsJoinGroupOrderModalOpen(false);

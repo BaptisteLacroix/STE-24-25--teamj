@@ -25,7 +25,6 @@ export const AppStateProvider: React.FC<{ children: ReactNode }> = ({ children }
     const [orderId, setOrderId] = useState<string | null>(() => localStorage.getItem('orderId') || null);
     const [groupOrderId, setGroupOrderId] = useState<string | null>(() => localStorage.getItem('groupOrderId') || null);
 
-    // Sync state changes to localStorage
     useEffect(() => {
         if (userId !== null) {
             localStorage.setItem('userId', userId);
