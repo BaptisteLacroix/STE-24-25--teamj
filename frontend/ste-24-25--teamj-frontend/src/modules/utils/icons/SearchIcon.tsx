@@ -1,3 +1,5 @@
+import React from "react";
+
 interface SearchIconProps extends React.SVGProps<SVGSVGElement> {
     size?: number;
     strokeWidth?: number;
@@ -38,5 +40,4 @@ export const SearchIcon = ({
       />
     </svg>
   );
-  
   
