@@ -222,6 +222,7 @@ class RestaurantControllerTest {
     @Order(2)
     void testChangeNumberOfEmployees() throws Exception {
         // Get the restaurant and get the uuid of a slot
+        System.out.println("====> executing testChangeNumberOfEmployees ");
         HttpClient client;
         HttpRequest request;
         java.net.http.HttpResponse<String> response;
