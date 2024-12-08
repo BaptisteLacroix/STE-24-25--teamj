@@ -1,8 +1,7 @@
 package fr.unice.polytech.equipe.j.order.dto;
 
 import fr.unice.polytech.equipe.j.restaurant.dto.MenuItemDTO;
-import fr.unice.polytech.equipe.j.restaurant.dto.RestaurantDTO;
-import fr.unice.polytech.equipe.j.user.dto.CampusUserDTO;
+import fr.unice.polytech.equipe.j.restaurant.dto.SlotDTO;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,20 +11,33 @@ import java.util.UUID;
 @Getter
 @Setter
 public class OrderDTO {
-    private UUID orderUUID;
-    private RestaurantDTO restaurant;
-    private CampusUserDTO user;
+    private UUID id;
+    private UUID restaurantId;
+    private UUID userId;
     private List<MenuItemDTO> items;
     private String status;
+    private SlotDTO slot;
 
     public OrderDTO() {
     }
 
-    public OrderDTO(UUID orderUUID, RestaurantDTO restaurant, CampusUserDTO user, List<MenuItemDTO> items, String status) {
-        this.orderUUID = orderUUID;
-        this.restaurant = restaurant;
-        this.user = user;
+    public OrderDTO(UUID id, UUID restaurantId, UUID userId, List<MenuItemDTO> items, String status, SlotDTO slot) {
+        this.id = id;
+        this.restaurantId = restaurantId;
+        this.userId = userId;
         this.items = items;
         this.status = status;
+        this.slot = slot;
+    }
+
+    @Override
+    public String toString() {
+        return "OrderDTO{" +
+                "id=" + id +
+                ", restaurantId=" + restaurantId +
+                ", userId=" + userId +
+                ", items=" + items +
+                ", status='" + status + '\'' +
+                '}';
     }
 }

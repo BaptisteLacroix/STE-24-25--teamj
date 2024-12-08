@@ -27,8 +27,6 @@ import java.util.UUID;
 @Setter
 public class CampusUserEntity {
     @Id
-    @GeneratedValue(generator = "UUID")
-    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     @Column(name = "id", updatable = false, nullable = false, unique = true)
     private UUID id;
 
@@ -42,9 +40,9 @@ public class CampusUserEntity {
     @Column(name = "defaultPaymentMethod", nullable = false)
     private PaymentMethod defaultPaymentMethod = PaymentMethod.CREDIT_CARD;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<OrderEntity> ordersHistory = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<TransactionEntity> transactions = new ArrayList<>();
 }

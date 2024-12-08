@@ -22,8 +22,6 @@ import java.util.UUID;
 @AllArgsConstructor
 public class DeliveryLocationEntity {
     @Id
-    @GeneratedValue(generator = "UUID")
-    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     @Column(name = "id", updatable = false, nullable = false, unique = true)
     private UUID id;
 

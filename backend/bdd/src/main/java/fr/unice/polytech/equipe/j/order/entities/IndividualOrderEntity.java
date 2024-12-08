@@ -14,6 +14,15 @@ import lombok.Setter;
 @Getter
 @Setter
 public class IndividualOrderEntity extends OrderEntity {
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, optional = false)
     private DeliveryDetailsEntity deliveryDetails;
+
+
+    @Override
+    public String toString() {
+        return "IndividualOrderEntity{" +
+                super.toString() +
+                ", deliveryDetails=" + deliveryDetails +
+                '}';
+    }
 }

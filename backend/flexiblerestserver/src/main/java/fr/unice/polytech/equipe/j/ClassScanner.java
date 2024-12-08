@@ -6,21 +6,26 @@ import java.util.List;
 
 public class ClassScanner {
 
-    public static List<Class<?>> findClassesInPackage(String root) throws ClassNotFoundException {
+    public static List<Class<?>> findClassesInPackage(String root, String classpath) throws ClassNotFoundException {
         // Get the current class loader (which is module-specific)
-        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        String classFileLocation;
+        if (classpath != null) {
+            String path = root.replace('.', '/');
+            classFileLocation = classpath + "/" + path;
+        } else {
+            ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 
-        // Convert the root package name to a path
-        String path = root.replace('.', '/');
+            // Convert the root package name to a path
+            String path = root.replace('.', '/');
 
-        // Get the location of a class from the current module
-        String classFileLocation = classLoader.getResource(path + "/").getPath();
+            // Get the location of a class from the current module
+            classFileLocation = classLoader.getResource(path + "/").getPath();
+        }
 
         // If the classFileLocation contains test-classes, replace it with classes
         if (classFileLocation.contains("test-classes")) {
             classFileLocation = classFileLocation.replace("test-classes", "classes");
         }
-
         File directory = new File(classFileLocation);
 
         List<Class<?>> classes = new ArrayList<>();
@@ -32,6 +37,7 @@ public class ClassScanner {
 
         return classes;
     }
+
 
 
 

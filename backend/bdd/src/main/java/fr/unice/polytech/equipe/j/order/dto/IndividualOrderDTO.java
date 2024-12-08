@@ -12,7 +12,15 @@ public class IndividualOrderDTO extends OrderDTO {
     }
 
     public IndividualOrderDTO(OrderDTO orderDTO, DeliveryDetailsDTO deliveryDetails) {
-        super(orderDTO.getOrderUUID(), orderDTO.getRestaurant(), orderDTO.getUser(), orderDTO.getItems(), orderDTO.getStatus());
+        super(orderDTO.getId(), orderDTO.getRestaurantId(), orderDTO.getUserId(), orderDTO.getItems(), orderDTO.getStatus(), orderDTO.getSlot());
         this.deliveryDetails = deliveryDetails;
+    }
+
+    @Override
+    public String toString() {
+        return "IndividualOrderDTO{" +
+                super.toString() +
+                "deliveryDetails=" + deliveryDetails +
+                '}';
     }
 }

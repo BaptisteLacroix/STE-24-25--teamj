@@ -51,8 +51,5 @@ public class UserDatabaseSeeder {
 
     public static void main(String[] args) {
         seedDatabase();
-
-        System.out.println(CampusUserDAO.getAll().size());
-        System.out.println(RestaurantManagerDAO.getAll().size());
     }
 }

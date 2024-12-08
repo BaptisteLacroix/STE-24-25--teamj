@@ -21,4 +21,13 @@ public class DeliveryDetailsDTO {
         this.deliveryLocation = deliveryLocation;
         this.deliveryTime = deliveryTime;
     }
+
+    @Override
+    public String toString() {
+        return "DeliveryDetailsDTO{" +
+                "id=" + id +
+                ", deliveryLocation=" + deliveryLocation +
+                ", deliveryTime=" + deliveryTime +
+                '}';
+    }
 }

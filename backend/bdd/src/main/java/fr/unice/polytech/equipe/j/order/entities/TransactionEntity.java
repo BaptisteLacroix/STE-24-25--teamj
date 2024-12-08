@@ -23,8 +23,6 @@ import java.util.UUID;
 @Setter
 public class TransactionEntity {
     @Id
-    @GeneratedValue(generator = "UUID")
-    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     @Column(name = "id", updatable = false, nullable = false, unique = true)
     private UUID id;
 

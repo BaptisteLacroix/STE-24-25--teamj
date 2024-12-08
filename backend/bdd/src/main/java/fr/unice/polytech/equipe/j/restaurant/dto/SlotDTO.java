@@ -1,6 +1,8 @@
 package fr.unice.polytech.equipe.j.restaurant.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 
 import java.time.Duration;
@@ -10,7 +12,8 @@ import java.util.UUID;
 @Getter
 @Setter
 public class SlotDTO {
-    private UUID id;
+    @NonNull
+    private UUID uuid;
     private int currentCapacity;
     private int maxCapacity;
     private LocalDateTime openingDate;
@@ -20,12 +23,25 @@ public class SlotDTO {
     public SlotDTO() {
     }
 
-    public SlotDTO(UUID id, int currentCapacity, int maxCapacity, LocalDateTime openingDate, Duration durationTime, int numberOfPersonnel) {
-        this.id = id;
+    public SlotDTO(UUID uuid, int currentCapacity, int maxCapacity, LocalDateTime openingDate, Duration durationTime, int numberOfPersonnel) {
+        this.uuid = uuid;
         this.currentCapacity = currentCapacity;
         this.maxCapacity = maxCapacity;
         this.openingDate = openingDate;
         this.durationTime = durationTime;
         this.numberOfPersonnel = numberOfPersonnel;
+    }
+
+    @JsonIgnore
+    @Override
+    public String toString() {
+        return "SlotDTO{" +
+                "uuid=" + uuid +
+                ", currentCapacity=" + currentCapacity +
+                ", maxCapacity=" + maxCapacity +
+                ", openingDate=" + openingDate +
+                ", durationTime=" + durationTime +
+                ", numberOfPersonnel=" + numberOfPersonnel +
+                '}';
     }
 }
