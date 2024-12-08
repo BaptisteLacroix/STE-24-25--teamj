@@ -39,6 +39,22 @@ import static fr.unice.polytech.equipe.j.RequestUtil.request;
 @Controller("/api/restaurants")
 public class RestaurantController {
 
+    @Route(value = "/name/{name}", method = HttpMethod.GET)
+    public HttpResponse searchByName(@PathParam("name") String name) {
+        try {
+            List<IRestaurant> restaurants = fetchRestaurantsFromDatabase();
+            List<IRestaurant> matchingRestaurants = RestaurantServiceManager.getInstance()
+                    .searchByName(restaurants, name);
+            if (matchingRestaurants.isEmpty()) {
+                return createHttpResponse(HttpCode.HTTP_404, "No restaurants found with the given name");
+            } else {
+                return createHttpResponse(HttpCode.HTTP_200, convertRestaurantsToJson(matchingRestaurants));
+            }
+        } catch (Exception e) {
+            return createHttpResponse(HttpCode.HTTP_500, "Internal server error: " + e.getMessage());
+        }
+    }
+
     @Route(value = "/all", method = HttpMethod.GET)
     public HttpResponse getAllRestaurants() {
         try {
