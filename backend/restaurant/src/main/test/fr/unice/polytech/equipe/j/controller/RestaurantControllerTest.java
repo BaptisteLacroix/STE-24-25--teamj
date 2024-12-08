@@ -2,6 +2,7 @@ package fr.unice.polytech.equipe.j.controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import fr.unice.polytech.equipe.j.Application;
 import fr.unice.polytech.equipe.j.FlexibleRestServer;
 import fr.unice.polytech.equipe.j.JacksonConfig;
 import fr.unice.polytech.equipe.j.dto.IndividualOrderDTO;
@@ -9,14 +10,18 @@ import fr.unice.polytech.equipe.j.dto.RestaurantDTO;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import java.net.HttpURLConnection;
 import java.net.URI;
+import java.net.URL;
 import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -31,12 +36,59 @@ class RestaurantControllerTest {
     private static final UUID MENU_ITEM_UUID = UUID.fromString("cdaa1fc4-621b-4b18-89df-1fafd39aadd0");
     private static final String BASE_URL = "http://localhost:5003/api/restaurants";
     private static final String BASE_DATABASE_URL = "http://localhost:5000/api/database";
+    private static final String DATABASE_HEALTH_URL = "http://localhost:5000/api/database/health";  // Assuming you have a health check endpoint
 
     @BeforeAll
     public static void startServer() {
-        // Setup server before tests
+        String backendPath = Paths.get(System.getProperty("user.dir")).getParent().toString();
+        new Thread(() -> Application.main(
+                new String[]{backendPath + "/bdd/target/classes"}
+        )).start();
+
+        // Wait for the database API to be available
+        waitForDatabaseToStart(DATABASE_HEALTH_URL);
+
         FlexibleRestServer server = new FlexibleRestServer("fr.unice.polytech.equipe.j", 5003);
         server.start();
+    }
+
+    // Helper method to wait until the database API is available
+    private static void waitForDatabaseToStart(String databaseUrl) {
+        boolean isDatabaseUp = false;
+        int attempts = 0;
+        int maxAttempts = 30;  // Retry for up to 30 seconds (adjust as necessary)
+
+        while (attempts < maxAttempts && !isDatabaseUp) {
+            try {
+                HttpURLConnection connection = (HttpURLConnection) new URL(databaseUrl).openConnection();
+                connection.setRequestMethod("GET");
+                int statusCode = connection.getResponseCode();
+                if (statusCode == 200) {
+                    isDatabaseUp = true;
+                    System.out.println("Database API is up and running!");
+                    return;
+                }
+                attempts++;
+                System.out.println("Database API not available yet (" + statusCode + "). Retrying... (" + attempts + ")");
+                try {
+                    TimeUnit.SECONDS.sleep(1);  // Wait 1 second before retrying
+                } catch (InterruptedException ex) {
+                    Thread.currentThread().interrupt();
+                }
+            } catch (Exception e) {
+                attempts++;
+                System.out.println("Database API not available yet. Retrying... (" + attempts + ")");
+                try {
+                    TimeUnit.SECONDS.sleep(1);  // Wait 1 second before retrying
+                } catch (InterruptedException ex) {
+                    Thread.currentThread().interrupt();
+                }
+            }
+        }
+
+        if (!isDatabaseUp) {
+            throw new RuntimeException("Database API did not start in time.");
+        }
     }
 
     @Test
@@ -205,7 +257,7 @@ class RestaurantControllerTest {
         individualOrderDTO.getDeliveryDetails().setDeliveryTime(deliveryTime);
 
         request = HttpRequest.newBuilder()
-                .uri(URI.create(BASE_DATABASE_URL+ "/orders/individual/update"))
+                .uri(URI.create(BASE_DATABASE_URL + "/orders/individual/update"))
                 .PUT(HttpRequest.BodyPublishers.ofString(objectMapper.writeValueAsString(individualOrderDTO)))
                 .build();
 

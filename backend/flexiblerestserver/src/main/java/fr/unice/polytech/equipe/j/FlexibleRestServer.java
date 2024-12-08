@@ -32,6 +32,7 @@ public class FlexibleRestServer {
     private HttpServer server;
     private final int port;
     private final String serverRoot;
+    private String classpath;  // Add classpath to specify where to scan
     private final Map<Class<?>, Object> controllerInstances = new HashMap<>();
     private final Map<String, Map<HttpMethod, HttpHandler>> contextHandlers = new HashMap<>();
     private static final ObjectMapper objectMapper = new ObjectMapper();
@@ -41,11 +42,17 @@ public class FlexibleRestServer {
      * @param serverRoot The root package to scan for controller classes.
      * @param port The port on which the server will run.
      */
+    public FlexibleRestServer(String serverRoot, String classpath, int port) {
+        this(serverRoot, port);
+        this.classpath = classpath;  // Store classpath
+    }
+
     public FlexibleRestServer(String serverRoot, int port) {
         this.port = port;
         this.serverRoot = serverRoot;
         objectMapper.registerModule(new JavaTimeModule());
     }
+
 
     /**
      * Starts the HTTP server, scans for controller classes, and initializes handlers.
@@ -72,7 +79,7 @@ public class FlexibleRestServer {
      */
     private List<Class<?>> scanControllerClasses() {
         try {
-            return ClassScanner.findClassesInPackage(serverRoot);
+            return ClassScanner.findClassesInPackage(serverRoot, classpath);
         } catch (ClassNotFoundException e) {
             throw new RuntimeException("Could not scan classes in package " + serverRoot, e);
         }
