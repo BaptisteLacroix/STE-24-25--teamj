@@ -18,9 +18,6 @@ public class HibernateUtil {
             // Get the path to the Hibernate config file based on a system property
             // Default to "hibernate-prod.cfg.xml" if no property is set
             String configFile = System.getProperty("hibernate.cfg.path", "hibernate-prod.cfg.xml");
-            String bddModulePath = Paths.get(System.getProperty("user.dir")).getParent().getParent().toString();
-            System.out.println("BDD Module Path: " + bddModulePath);
-            System.setProperty("user.dir", bddModulePath);
             // Create the session factory using the selected config file
             sessionFactory = new Configuration().configure(configFile).buildSessionFactory();
             System.out.println("Using Database URL: " + sessionFactory.getProperties().get("hibernate.connection.url"));
@@ -34,16 +31,19 @@ public class HibernateUtil {
     }
 
     public static void main(String[] args) {
-        FlexibleRestServer server = new FlexibleRestServer("fr.unice.polytech.equipe.j", 5003);
+        populateDatabase(args);
+        System.exit(0);
+    }
+
+    public static boolean populateDatabase(String[] args) {
+        FlexibleRestServer server = new FlexibleRestServer("fr.unice.polytech.equipe.j", 5001);
         server.start();
         RestaurantDatabaseSeeder.seedDatabase();
         UserDatabaseSeeder.seedDatabase();
         DeliveryLocationDatabaseSeeder.seedDatabase();
-        shutdown();
-        System.exit(0);
-    }
-
-    public static void shutdown() {
-        getSessionFactory().close();
+        if (args.length > 0) {
+            ExecuteSQLFileWithHibernate.main(args);
+        }
+        return true;
     }
 }

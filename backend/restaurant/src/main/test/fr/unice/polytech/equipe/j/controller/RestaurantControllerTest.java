@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.unice.polytech.equipe.j.Application;
 import fr.unice.polytech.equipe.j.FlexibleRestServer;
+import fr.unice.polytech.equipe.j.HibernateUtil;
 import fr.unice.polytech.equipe.j.JacksonConfig;
 import fr.unice.polytech.equipe.j.dto.IndividualOrderDTO;
 import fr.unice.polytech.equipe.j.dto.RestaurantDTO;
@@ -40,6 +41,22 @@ class RestaurantControllerTest {
 
     @BeforeAll
     public static void startServer() {
+        String userDir = System.getProperty("user.dir");
+        String bddModulePath = Paths.get(System.getProperty("user.dir")).getParent().toString();
+        System.setProperty("user.dir", bddModulePath + "/bdd");
+        System.out.println("bddModulePath: " + bddModulePath);
+
+        // Set the hibernate.cfg.path system property to the test one hibernate-test.cfg.xml
+        System.setProperty("hibernate.cfg.path", "hibernate-test.cfg.xml");
+        // wait the end of the execution of the main method before continuing
+        while (!HibernateUtil.populateDatabase(new String[]{"test"})) {
+            try {
+                TimeUnit.SECONDS.sleep(1);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        System.setProperty("user.dir", userDir);
         String backendPath = Paths.get(System.getProperty("user.dir")).getParent().toString();
         new Thread(() -> Application.main(
                 new String[]{backendPath + "/bdd/target/classes"}
