@@ -251,6 +251,8 @@ class RestaurantControllerTest {
                 .build();
 
         response = client.send(request, java.net.http.HttpResponse.BodyHandlers.ofString());
+        System.out.println("after ===> "+restaurantDTO.getSlots().get(0).toString());
+
 
         assertNotNull(response.body());
         assertEquals(201, response.statusCode());
@@ -266,6 +268,8 @@ class RestaurantControllerTest {
                 .build();
 
         response = client.send(request, java.net.http.HttpResponse.BodyHandlers.ofString());
+
+        System.out.println("after ===> "+restaurantDTO.getSlots().get(1).toString());
 
         assertNotNull(response.body());
         assertEquals(201, response.statusCode());
