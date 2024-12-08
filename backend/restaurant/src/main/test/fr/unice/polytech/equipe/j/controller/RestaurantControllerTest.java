@@ -272,6 +272,7 @@ class RestaurantControllerTest {
         HttpRequest request;
         java.net.http.HttpResponse<String> response;
 
+        // Step 1: Retrieve the individual order
         client = HttpClient.newHttpClient();
         request = HttpRequest.newBuilder()
                 .uri(URI.create(BASE_DATABASE_URL + "/orders/individual/" + INDIVIDUAL_ORDER_UUID))
@@ -282,9 +283,21 @@ class RestaurantControllerTest {
         assertNotNull(response.body());
         assertEquals(200, response.statusCode());
 
+        // Print out detailed order information for debugging
+        System.out.println("Order Retrieval Response: " + response.body());
+
         IndividualOrderDTO individualOrderDTO = objectMapper.readValue(response.body(), IndividualOrderDTO.class);
+
+        // Print out additional details about the order
+        System.out.println("Original Order Details:");
+        System.out.println("Order UUID: " + individualOrderDTO.getId());
+        System.out.println("Original Delivery Time: " + individualOrderDTO.getDeliveryDetails().getDeliveryTime());
+        System.out.println("Current Order Status: " + individualOrderDTO.getStatus());
+
+        // Update delivery time
         individualOrderDTO.getDeliveryDetails().setDeliveryTime(deliveryTime);
 
+        // Step 2: Update the order
         request = HttpRequest.newBuilder()
                 .uri(URI.create(BASE_DATABASE_URL + "/orders/individual/update"))
                 .PUT(HttpRequest.BodyPublishers.ofString(objectMapper.writeValueAsString(individualOrderDTO)))
@@ -295,16 +308,32 @@ class RestaurantControllerTest {
         assertNotNull(response.body());
         assertEquals(201, response.statusCode());
 
+        // Print out the update response
+        System.out.println("Order Update Response: " + response.body());
+
+        // Step 3: Add item to the order
+        // Ensure delivery time is properly formatted
+        String formattedDeliveryTime = URLEncoder.encode(deliveryTime.toString(), StandardCharsets.UTF_8);
+
         client = HttpClient.newHttpClient();
         request = HttpRequest.newBuilder()
-                .uri(URI.create(BASE_URL + "/" + RESTAURANT_UUID + "/orders/" + INDIVIDUAL_ORDER_UUID + "/item/" + MENU_ITEM_UUID + "?deliveryTime=" + deliveryTime))
+                .uri(URI.create(BASE_URL + "/" + RESTAURANT_UUID +
+                        "/orders/" + INDIVIDUAL_ORDER_UUID +
+                        "/item/" + MENU_ITEM_UUID +
+                        "?deliveryTime=" + formattedDeliveryTime))
                 .POST(HttpRequest.BodyPublishers.noBody())
                 .build();
 
         response = client.send(request, java.net.http.HttpResponse.BodyHandlers.ofString());
 
+        // Print detailed information about the add item request
+        System.out.println("Add Item Request URL: " + request.uri());
+        System.out.println("Add Item Response Status: " + response.statusCode());
+        System.out.println("Add Item Response Body: " + response.body());
+
         assertNotNull(response.body());
-        assertEquals(200, response.statusCode());
+        assertEquals(200, response.statusCode(),
+                "Failed to add item to order. Response: " + response.body());
     }
 
     @Test
