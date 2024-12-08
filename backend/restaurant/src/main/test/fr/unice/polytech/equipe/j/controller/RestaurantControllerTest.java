@@ -71,6 +71,12 @@ class RestaurantControllerTest {
 
         FlexibleRestServer server = new FlexibleRestServer("fr.unice.polytech.equipe.j", 5003);
         server.start();
+
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     // Helper method to wait until the database API is available
