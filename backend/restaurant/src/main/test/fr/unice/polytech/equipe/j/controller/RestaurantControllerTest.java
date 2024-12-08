@@ -254,7 +254,7 @@ class RestaurantControllerTest {
 
         slotUUID = restaurantDTO.getSlots().get(1).getUuid();
 
-        int numberOfEmployees = 5;
+        numberOfEmployees = 5;
         client = HttpClient.newHttpClient();
         request = HttpRequest.newBuilder()
                 .uri(URI.create(BASE_URL + "/" + RESTAURANT_UUID + "/manager/" + MANAGER_UUID + "/slots/" + slotUUID + "/changeNumberOfEmployees/" + numberOfEmployees))
