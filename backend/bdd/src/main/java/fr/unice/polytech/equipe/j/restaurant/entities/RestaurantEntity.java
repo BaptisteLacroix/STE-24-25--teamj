@@ -1,18 +1,16 @@
 package fr.unice.polytech.equipe.j.restaurant.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import jakarta.persistence.Version;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.GenericGenerator;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -25,8 +23,6 @@ import java.util.UUID;
 @Setter
 public class RestaurantEntity {
     @Id
-    @GeneratedValue(generator = "UUID")
-    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     @Column(name = "id", updatable = false, nullable = false, unique = true)
     private UUID id;
 
@@ -42,6 +38,19 @@ public class RestaurantEntity {
     @OneToOne(cascade = CascadeType.ALL)
     private MenuEntity menuEntity;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "restaurantEntity", fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "restaurantEntity", fetch = FetchType.EAGER, orphanRemoval = true)
     private List<SlotEntity> slotEntities = new ArrayList<>();
+
+    @Override
+    @JsonIgnore
+    public String toString() {
+        return "RestaurantEntity{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", openingTime=" + openingTime +
+                ", closingTime=" + closingTime +
+                ", menuEntity=" + menuEntity +
+                ", slotEntities=" + slotEntities +
+                '}';
+    }
 }

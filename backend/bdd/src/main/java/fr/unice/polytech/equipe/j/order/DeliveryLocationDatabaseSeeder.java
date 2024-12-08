@@ -23,7 +23,5 @@ public class DeliveryLocationDatabaseSeeder {
 
     public static void main(String[] args) {
         seedDatabase();
-
-        System.out.println(DeliveryLocationDAO.getAllDeliveryLocations().size());
     }
 }

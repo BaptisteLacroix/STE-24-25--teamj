@@ -1,6 +1,7 @@
 package fr.unice.polytech.equipe.j;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
@@ -31,6 +32,7 @@ public class FlexibleRestServer {
     private HttpServer server;
     private final int port;
     private final String serverRoot;
+    private String classpath;  // Add classpath to specify where to scan
     private final Map<Class<?>, Object> controllerInstances = new HashMap<>();
     private final Map<String, Map<HttpMethod, HttpHandler>> contextHandlers = new HashMap<>();
     private static final ObjectMapper objectMapper = new ObjectMapper();
@@ -40,10 +42,17 @@ public class FlexibleRestServer {
      * @param serverRoot The root package to scan for controller classes.
      * @param port The port on which the server will run.
      */
+    public FlexibleRestServer(String serverRoot, String classpath, int port) {
+        this(serverRoot, port);
+        this.classpath = classpath;  // Store classpath
+    }
+
     public FlexibleRestServer(String serverRoot, int port) {
         this.port = port;
         this.serverRoot = serverRoot;
+        objectMapper.registerModule(new JavaTimeModule());
     }
+
 
     /**
      * Starts the HTTP server, scans for controller classes, and initializes handlers.
@@ -70,7 +79,7 @@ public class FlexibleRestServer {
      */
     private List<Class<?>> scanControllerClasses() {
         try {
-            return ClassScanner.findClassesInPackage(serverRoot);
+            return ClassScanner.findClassesInPackage(serverRoot, classpath);
         } catch (ClassNotFoundException e) {
             throw new RuntimeException("Could not scan classes in package " + serverRoot, e);
         }
@@ -295,7 +304,11 @@ public class FlexibleRestServer {
      * @throws IOException If an error occurs while parsing the request body.
      */
     private Object parseRequestBody(Class<?> paramType, String requestBody) throws IOException {
-        return requestBody.isBlank() ? null : objectMapper.readValue(requestBody, paramType);
+        if (requestBody.isBlank()) return null;
+        if (paramType == String.class) {
+            return requestBody;
+        }
+        return objectMapper.readValue(requestBody, paramType);
     }
 
     /**
