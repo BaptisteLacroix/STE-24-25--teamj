@@ -11,7 +11,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Data Access Object (DAO) for managing CampusUserEntity objects in the database.
+ * Provides methods for CRUD operations (Create, Read, Update, Delete) on campus user entities.
+ */
 public class CampusUserDAO {
+
+    /**
+     * Saves or updates a CampusUserEntity in the database.
+     * If the user already exists, the entity will be merged; otherwise, a new user will be created.
+     *
+     * @param user the CampusUserEntity to save or update.
+     * @return an HttpResponse containing the HTTP status code and the ID of the saved or updated user.
+     */
     public static HttpResponse save(CampusUserEntity user) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             Transaction tx = session.beginTransaction();
@@ -24,6 +36,11 @@ public class CampusUserDAO {
         }
     }
 
+    /**
+     * Retrieves all CampusUserEntity objects from the database.
+     *
+     * @return a list of all CampusUserEntity objects, or an empty list if an error occurs.
+     */
     public static List<CampusUserEntity> getAll() {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             return session.createQuery("from CampusUserEntity", CampusUserEntity.class).list();
@@ -33,6 +50,12 @@ public class CampusUserDAO {
         }
     }
 
+    /**
+     * Retrieves a CampusUserEntity by its unique identifier.
+     *
+     * @param userUuid the UUID of the user to retrieve.
+     * @return the CampusUserEntity associated with the provided UUID, or null if no matching user is found or an error occurs.
+     */
     public static CampusUserEntity getUserById(UUID userUuid) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             return session.get(CampusUserEntity.class, userUuid);
@@ -42,11 +65,19 @@ public class CampusUserDAO {
         }
     }
 
+    /**
+     * Deletes a CampusUserEntity by its unique identifier.
+     *
+     * @param id the UUID of the user to delete.
+     * @return an HttpResponse containing the status code and a success or error message.
+     */
     public static HttpResponse delete(UUID id) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             Transaction tx = session.beginTransaction();
             CampusUserEntity user = session.get(CampusUserEntity.class, id);
-            session.delete(user);
+            if (user != null) {
+                session.delete(user);
+            }
             tx.commit();
             return new HttpResponse(HttpCode.HTTP_200, "User deleted successfully");
         } catch (Exception e) {

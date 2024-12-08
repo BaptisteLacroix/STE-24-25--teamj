@@ -92,16 +92,16 @@ exit 0
 
 - **Feature Branches**:  
   `feature/<usecase-number>-<short-description>`  
-  Example: `feature/R2-group-orderDTO-validation`
+  Example: `feature/R2-group-order-validation`
 - **Bugfix Branches**:  
   `bugfix/<issue-number>-<short-description>`  
-  Example: `bugfix/42-fix-group-orderDTO-validation`
+  Example: `bugfix/42-fix-group-order-validation`
 
 ### Commit Message Convention
 
 - **Commit Message Format**:  
   `<type>(<scope>): <subject> #<issue-number>`  
-  Example: `feat(orders): add group orderDTO validation feature. #4`
+  Example: `feat(orders): add group order validation feature. #4`
 
 ---
 
@@ -117,7 +117,7 @@ This part provides an overview of the project structure, designed to ensure clea
   - **main/**: Primary application code, organized by core functionalities.
     - **Restaurant/**: Contains modules for managing restaurantEntity data and functionality, including restaurantEntity creation, menuEntity management, and related operations.
     - **Slot/**: Handles scheduling and time slots, supporting features such as reservation management and availability tracking.
-    - **Order/**: Manages orderDTO processing, including orderDTO creation, updates, and tracking.
+    - **Order/**: Manages order processing, including order creation, updates, and tracking.
     - **Payment/**: Implements payment processing features, such as payment initiation, validation, and transaction management.
     - **Delivery/**: Contains modules related to delivery management.
   - **test/**: Contains testing files, definitions, and resources to validate application features, ensuring reliable and functional code.
@@ -132,13 +132,13 @@ This part provides an overview of the project structure, designed to ensure clea
 **Title**: Validation of group orders by members
 
 **Description**:  
-As a registered user, I want to validate the group orderDTO at the end of my individual orderDTO and, if necessary, specify a
-compatible delivery time so that the group orderDTO can be finalized and closed.
+As a registered user, I want to validate the group order at the end of my individual order and, if necessary, specify a
+compatible delivery time so that the group order can be finalized and closed.
 
 **Feature Demonstration**:  
 The behavior of this user story is demonstrated
 in [ValidateGroupOrder.feature](./src/test/resources/features/orders/ValidateGroupOrder.feature). The scenarios include
-validation of a group orderDTO, setting delivery times, and handling incompatible delivery times.
+validation of a group order, setting delivery times, and handling incompatible delivery times.
 
 
 <!-- ## Ce que fait votre projet
@@ -148,7 +148,7 @@ validation of a group orderDTO, setting delivery times, and handling incompatibl
 Vous mettez en évidence les principales user stories de votre projet.
 Chaque user story doit être décrite par 
    - son identifiant en tant que issue github (#), 
-   - sa forme classique (As a… I want to… In orderDTO to…) (pour faciliter la lecture)
+   - sa forme classique (As a… I want to… In order to…) (pour faciliter la lecture)
    - Le nom du fichier feature Cucumber et le nom des scénarios qui servent de tests d’acceptation pour la story.
    Les contenus détaillés sont dans l'issue elle-même. -->
    
