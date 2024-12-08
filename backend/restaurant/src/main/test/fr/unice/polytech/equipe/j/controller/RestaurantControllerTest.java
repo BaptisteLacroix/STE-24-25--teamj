@@ -393,8 +393,14 @@ class RestaurantControllerTest {
 
         response = client.send(request, java.net.http.HttpResponse.BodyHandlers.ofString());
 
+        // Print detailed information about the add item request
+        System.out.println("Add Item Request URL: " + request.uri());
+        System.out.println("Add Item Response Status: " + response.statusCode());
+        System.out.println("Add Item Response Body: " + response.body());
+
         assertNotNull(response.body());
-        assertEquals(200, response.statusCode());
+        assertEquals(200, response.statusCode(),
+                "Failed to add item to order. Response: " + response.body());
     }
 
     @Test
