@@ -204,7 +204,7 @@ class RestaurantControllerTest {
     @Test
     @Order(1)
     void testChangeRestaurantsHours() throws Exception {
-        LocalDateTime openingHour = LocalDateTime.now().minusHours(1);
+        LocalDateTime openingHour = LocalDateTime.now();
         LocalDateTime closingHour = LocalDateTime.now().plusHours(6);
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
@@ -290,7 +290,7 @@ class RestaurantControllerTest {
     void testCanAddItemToIndividualOrder() throws Exception {
         // Get the individual order change the orderDelivery time save it and test if it can be added
         LocalDateTime deliveryTime = LocalDateTime.now().plusMinutes(20);
-        System.out.println("===> "+deliveryTime);
+        System.out.println("====> "+deliveryTime);
 
         ObjectMapper objectMapper = JacksonConfig.configureObjectMapper();
         HttpClient client;
