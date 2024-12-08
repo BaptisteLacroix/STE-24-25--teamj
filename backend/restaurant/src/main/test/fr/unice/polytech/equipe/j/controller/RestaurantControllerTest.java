@@ -294,7 +294,7 @@ class RestaurantControllerTest {
     @Order(3)
     void testCanAddItemToIndividualOrder() throws Exception {
         // Get the individual order change the orderDelivery time save it and test if it can be added
-        LocalDateTime deliveryTime = LocalDateTime.now().plusMinutes(20);
+        LocalDateTime deliveryTime = LocalDateTime.now().plusMinutes(40);
         System.out.println("====> "+deliveryTime);
 
         ObjectMapper objectMapper = JacksonConfig.configureObjectMapper();
