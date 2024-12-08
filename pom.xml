@@ -12,6 +12,7 @@
     <modules>
         <module>backend/bdd</module>
         <module>backend/flexiblerestserver</module>
+        <module>backend/transaction</module>
     </modules>
 
     <repositories>
