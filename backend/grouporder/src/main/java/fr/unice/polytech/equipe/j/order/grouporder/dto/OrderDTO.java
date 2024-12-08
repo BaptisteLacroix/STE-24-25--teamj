@@ -1,8 +1,8 @@
 package fr.unice.polytech.equipe.j.order.grouporder.dto;
 
-import fr.unice.polytech.equipe.j.restaurant.dto.MenuItemDTO;
-import fr.unice.polytech.equipe.j.restaurant.dto.RestaurantDTO;
-import fr.unice.polytech.equipe.j.user.dto.CampusUserDTO;
+import fr.unice.polytech.equipe.j.order.grouporder.dto.MenuItemDTO;
+import fr.unice.polytech.equipe.j.order.grouporder.dto.RestaurantDTO;
+import fr.unice.polytech.equipe.j.order.grouporder.dto.CampusUserDTO;
 import lombok.Getter;
 import lombok.Setter;
 

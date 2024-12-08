@@ -19,13 +19,13 @@ public class GroupOrderProxy implements IGroupOrder {
 
     @Override
     public void setDeliveryTime(LocalDateTime deliveryTime) {
-        if (groupOrder.getDeliveryDetails().getDeliveryTime().isPresent()) {
+       /* if (groupOrder.getDeliveryDetails().getDeliveryTime().isPresent()) {
             throw new UnsupportedOperationException("You cannot change the delivery time of a group order.");
         }
 
         if (!isDeliveryTimeValid(deliveryTime)) {
             throw new UnsupportedOperationException("Invalid delivery time for one or more restaurants.");
-        }
+        }*/
 
         groupOrder.setDeliveryTime(deliveryTime);
     }
@@ -35,7 +35,7 @@ public class GroupOrderProxy implements IGroupOrder {
         if (groupOrder.getStatus() != OrderStatus.PENDING) {
             throw new IllegalArgumentException("Cannot join a group order that is not pending");
         }
-        if (!orderDTO.getRestaurant().canPrepareItemForGroupOrderDeliveryTime(this)) {
+        /* if (!orderDTO.getRestaurant().canPrepareItemForGroupOrderDeliveryTime(this)) {
             throw new IllegalArgumentException("Order cannot be added, restaurant cannot prepare items in time");
         }
         // Check that all items inside can be prepared in time
@@ -45,14 +45,14 @@ public class GroupOrderProxy implements IGroupOrder {
         // Check user is inside the group order
         if (!groupOrder.getUsers().contains(orderDTO.getUser())) {
             throw new IllegalArgumentException("Cannot add order to group order, user is not part of the group.");
-        }
+        }*/
         groupOrder.addOrder(orderDTO);
     }
 
-    private boolean isDeliveryTimeValid(LocalDateTime deliveryTime) {
+/*private boolean isDeliveryTimeValid(LocalDateTime deliveryTime) {
         return groupOrder.getOrders().stream()
                 .allMatch(order -> order.getRestaurant().canAccommodateDeliveryTime(order.getItems(), deliveryTime));
-    }
+    }*/
 
     @Override
     public HttpResponse addUser(CampusUserDTO user) {
@@ -78,7 +78,7 @@ public class GroupOrderProxy implements IGroupOrder {
         if (getOrders().stream().noneMatch(order -> order.getUser().equals(user))) {
             throw new IllegalArgumentException("Cannot validate group order if you have no order.");
         }
-        groupOrder.validate(user);
+        return groupOrder.validate(user);
     }
 
     @Override
