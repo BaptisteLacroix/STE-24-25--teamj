@@ -367,6 +367,7 @@ class RestaurantControllerTest {
         response = client.send(request, java.net.http.HttpResponse.BodyHandlers.ofString());
 
         assertNotNull(response.body());
+        System.out.println("=====> reponse from the cancel function : "+response.body().toString());
         assertEquals(200, response.statusCode());
     }
 
