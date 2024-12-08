@@ -76,9 +76,4 @@ public class CampusUserController {
         System.out.println("Delete user by id: " + id);
         return CampusUserDAO.delete(id);
     }
-
-    @Route(value = "/{id}", method = HttpMethod.GET)
-    public HttpResponse getUser(@PathParam("{userId}")UUID userId){
-        return new HttpResponse(HttpCode.HTTP_200,CampusUserDAO.getUser(userId));
-    }
 }
