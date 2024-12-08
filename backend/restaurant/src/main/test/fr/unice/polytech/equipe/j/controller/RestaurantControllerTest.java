@@ -240,6 +240,8 @@ class RestaurantControllerTest {
         RestaurantDTO restaurantDTO = objectMapper.readValue(response.body(), RestaurantDTO.class);
         UUID slotUUID = restaurantDTO.getSlots().get(0).getUuid();
 
+        System.out.println("===> "+restaurantDTO.getSlots().get(0).toString());
+
         int numberOfEmployees = 5;
         client = HttpClient.newHttpClient();
         request = HttpRequest.newBuilder()
@@ -253,6 +255,7 @@ class RestaurantControllerTest {
         assertEquals(201, response.statusCode());
 
         slotUUID = restaurantDTO.getSlots().get(1).getUuid();
+        System.out.println("===> "+restaurantDTO.getSlots().get(1).toString());
 
         numberOfEmployees = 5;
         client = HttpClient.newHttpClient();
@@ -287,6 +290,8 @@ class RestaurantControllerTest {
     void testCanAddItemToIndividualOrder() throws Exception {
         // Get the individual order change the orderDelivery time save it and test if it can be added
         LocalDateTime deliveryTime = LocalDateTime.now().plusMinutes(20);
+        System.out.println("===> "+deliveryTime);
+
         ObjectMapper objectMapper = JacksonConfig.configureObjectMapper();
         HttpClient client;
         HttpRequest request;
