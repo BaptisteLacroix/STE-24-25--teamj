@@ -133,7 +133,7 @@ class RestaurantControllerTest {
     }
 
     @Test
-    @Order(1)
+    @Order(2)
     void testGetRestaurantById() throws Exception {
         // Get a restaurant from database and get uuid
         HttpClient client = HttpClient.newHttpClient();
@@ -153,7 +153,7 @@ class RestaurantControllerTest {
     }
 
     @Test
-    @Order(1)
+    @Order(3)
     void testSearchByFoodType() throws Exception {
         String foodType = "Mousse au chocolat";
         HttpClient client = HttpClient.newHttpClient();
@@ -175,7 +175,7 @@ class RestaurantControllerTest {
     }
 
     @Test
-    @Order(1)
+    @Order(4)
     void testSearchByDeliveryTime() throws Exception {
         LocalDateTime deliveryTime = LocalDateTime.parse("2024-11-30T18:30:13");
         HttpClient client = HttpClient.newHttpClient();
@@ -196,7 +196,7 @@ class RestaurantControllerTest {
     }
 
     @Test
-    @Order(1)
+    @Order(5)
     void testChangeRestaurantsHours() throws Exception {
         LocalDateTime openingHour = LocalDateTime.now();
         LocalDateTime closingHour = LocalDateTime.now().plusHours(6);
@@ -213,7 +213,7 @@ class RestaurantControllerTest {
     }
 
     @Test
-    @Order(2)
+    @Order(6)
     void testChangeNumberOfEmployees() throws Exception {
         // Get the restaurant and get the uuid of a slot
         HttpClient client;
@@ -248,7 +248,7 @@ class RestaurantControllerTest {
     }
 
     @Test
-    @Order(3)
+    @Order(7)
     void testCannotAddItemToOrder() throws Exception {
         String deliveryTime = LocalDateTime.parse("2024-12-31T11:00:00").toString();
         HttpClient client = HttpClient.newHttpClient();
@@ -263,7 +263,7 @@ class RestaurantControllerTest {
     }
 
     @Test
-    @Order(3)
+    @Order(8)
     void testCanAddItemToIndividualOrder() throws Exception {
         // Get the individual order change the orderDelivery time save it and test if it can be added
         LocalDateTime deliveryTime = LocalDateTime.now().plusMinutes(20);
@@ -308,7 +308,7 @@ class RestaurantControllerTest {
     }
 
     @Test
-    @Order(6)
+    @Order(13)
     void testCanAddItemToOrder() throws Exception {
         // Simulate groupOrder delivery time
         LocalDateTime deliveryTime = LocalDateTime.now().plusMinutes(20);
@@ -339,7 +339,7 @@ class RestaurantControllerTest {
     }
 
     @Test
-    @Order(5)
+    @Order(10)
     void testCancelOrder() throws Exception {
         ObjectMapper objectMapper = JacksonConfig.configureObjectMapper();
         HttpClient client;
@@ -371,7 +371,7 @@ class RestaurantControllerTest {
     }
 
     @Test
-    @Order(1)
+    @Order(11)
     void testGetMenu() throws Exception {
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
@@ -386,7 +386,7 @@ class RestaurantControllerTest {
     }
 
     @Test
-    @Order(4)
+    @Order(12)
     void testGetTotalPrice() throws Exception {
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
@@ -401,7 +401,7 @@ class RestaurantControllerTest {
     }
 
     @Test
-    @Order(3)
+    @Order(9)
     void testIsSlotCapacityAvailable() throws Exception {
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
@@ -416,7 +416,7 @@ class RestaurantControllerTest {
     }
 
     @Test
-    @Order(7)
+    @Order(14)
     void testOnOrderPaid() throws Exception {
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
