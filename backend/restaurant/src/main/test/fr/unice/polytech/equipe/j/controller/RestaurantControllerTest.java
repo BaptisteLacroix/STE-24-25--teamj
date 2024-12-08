@@ -370,7 +370,7 @@ class RestaurantControllerTest {
     @Order(6)
     void testCanAddItemToOrder() throws Exception {
         // Simulate groupOrder delivery time
-        LocalDateTime deliveryTime = LocalDateTime.now().plusMinutes(20);
+        LocalDateTime deliveryTime = LocalDateTime.now().plusMinutes(40);
         HttpClient client;
         HttpRequest request;
         java.net.http.HttpResponse<String> response;
