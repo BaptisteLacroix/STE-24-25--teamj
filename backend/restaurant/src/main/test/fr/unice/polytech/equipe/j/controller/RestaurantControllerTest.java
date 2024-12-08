@@ -7,9 +7,13 @@ import fr.unice.polytech.equipe.j.FlexibleRestServer;
 import fr.unice.polytech.equipe.j.HibernateUtil;
 import fr.unice.polytech.equipe.j.JacksonConfig;
 import fr.unice.polytech.equipe.j.dto.IndividualOrderDTO;
+import fr.unice.polytech.equipe.j.dto.OrderDTO;
 import fr.unice.polytech.equipe.j.dto.RestaurantDTO;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 
 import java.net.HttpURLConnection;
 import java.net.URI;
@@ -27,6 +31,7 @@ import java.util.concurrent.TimeUnit;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class RestaurantControllerTest {
 
     private static final UUID RESTAURANT_UUID = UUID.fromString("3183fa1c-ecd5-49a9-9351-92f75d33fea4"); // TEST Restaurant
@@ -44,7 +49,6 @@ class RestaurantControllerTest {
         String userDir = System.getProperty("user.dir");
         String bddModulePath = Paths.get(System.getProperty("user.dir")).getParent().toString();
         System.setProperty("user.dir", bddModulePath + "/bdd");
-        System.out.println("bddModulePath: " + bddModulePath);
 
         // Set the hibernate.cfg.path system property to the test one hibernate-test.cfg.xml
         System.setProperty("hibernate.cfg.path", "hibernate-test.cfg.xml");
@@ -109,6 +113,7 @@ class RestaurantControllerTest {
     }
 
     @Test
+    @Order(1)
     void testGetAllRestaurants() throws Exception {
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
@@ -128,6 +133,7 @@ class RestaurantControllerTest {
     }
 
     @Test
+    @Order(1)
     void testGetRestaurantById() throws Exception {
         // Get a restaurant from database and get uuid
         HttpClient client = HttpClient.newHttpClient();
@@ -147,6 +153,7 @@ class RestaurantControllerTest {
     }
 
     @Test
+    @Order(1)
     void testSearchByFoodType() throws Exception {
         String foodType = "Mousse au chocolat";
         HttpClient client = HttpClient.newHttpClient();
@@ -168,6 +175,7 @@ class RestaurantControllerTest {
     }
 
     @Test
+    @Order(1)
     void testSearchByDeliveryTime() throws Exception {
         LocalDateTime deliveryTime = LocalDateTime.parse("2024-11-30T18:30:13");
         HttpClient client = HttpClient.newHttpClient();
@@ -188,6 +196,7 @@ class RestaurantControllerTest {
     }
 
     @Test
+    @Order(1)
     void testChangeRestaurantsHours() throws Exception {
         LocalDateTime openingHour = LocalDateTime.now();
         LocalDateTime closingHour = LocalDateTime.now().plusHours(6);
@@ -204,6 +213,7 @@ class RestaurantControllerTest {
     }
 
     @Test
+    @Order(2)
     void testChangeNumberOfEmployees() throws Exception {
         // Get the restaurant and get the uuid of a slot
         HttpClient client;
@@ -238,6 +248,7 @@ class RestaurantControllerTest {
     }
 
     @Test
+    @Order(3)
     void testCannotAddItemToOrder() throws Exception {
         String deliveryTime = LocalDateTime.parse("2024-12-31T11:00:00").toString();
         HttpClient client = HttpClient.newHttpClient();
@@ -252,7 +263,8 @@ class RestaurantControllerTest {
     }
 
     @Test
-    void testCanAddItemToOrder() throws Exception {
+    @Order(3)
+    void testCanAddItemToIndividualOrder() throws Exception {
         // Get the individual order change the orderDelivery time save it and test if it can be added
         LocalDateTime deliveryTime = LocalDateTime.now().plusMinutes(20);
         ObjectMapper objectMapper = JacksonConfig.configureObjectMapper();
@@ -296,6 +308,38 @@ class RestaurantControllerTest {
     }
 
     @Test
+    @Order(6)
+    void testCanAddItemToOrder() throws Exception {
+        // Simulate groupOrder delivery time
+        LocalDateTime deliveryTime = LocalDateTime.now().plusMinutes(20);
+        HttpClient client;
+        HttpRequest request;
+        java.net.http.HttpResponse<String> response;
+
+        client = HttpClient.newHttpClient();
+        request = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_DATABASE_URL + "/orders/" + ORDER_UUID))
+                .GET()
+                .build();
+
+        response = client.send(request, java.net.http.HttpResponse.BodyHandlers.ofString());
+        assertNotNull(response.body());
+        assertEquals(200, response.statusCode());
+
+        client = HttpClient.newHttpClient();
+        request = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + "/" + RESTAURANT_UUID + "/orders/" + ORDER_UUID + "/item/" + MENU_ITEM_UUID + "?deliveryTime=" + deliveryTime))
+                .POST(HttpRequest.BodyPublishers.noBody())
+                .build();
+
+        response = client.send(request, java.net.http.HttpResponse.BodyHandlers.ofString());
+
+        assertNotNull(response.body());
+        assertEquals(200, response.statusCode());
+    }
+
+    @Test
+    @Order(5)
     void testCancelOrder() throws Exception {
         ObjectMapper objectMapper = JacksonConfig.configureObjectMapper();
         HttpClient client;
@@ -327,6 +371,7 @@ class RestaurantControllerTest {
     }
 
     @Test
+    @Order(1)
     void testGetMenu() throws Exception {
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
@@ -341,6 +386,7 @@ class RestaurantControllerTest {
     }
 
     @Test
+    @Order(4)
     void testGetTotalPrice() throws Exception {
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
@@ -355,6 +401,7 @@ class RestaurantControllerTest {
     }
 
     @Test
+    @Order(3)
     void testIsSlotCapacityAvailable() throws Exception {
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
@@ -369,16 +416,18 @@ class RestaurantControllerTest {
     }
 
     @Test
+    @Order(7)
     void testOnOrderPaid() throws Exception {
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(BASE_URL + "/" + RESTAURANT_UUID + "/orders/" + INDIVIDUAL_ORDER_UUID + "/paid"))
+                .uri(URI.create(BASE_URL + "/" + RESTAURANT_UUID + "/orders/" + ORDER_UUID + "/paid"))
                 .POST(HttpRequest.BodyPublishers.ofString(""))
                 .build();
 
         java.net.http.HttpResponse<String> response = client.send(request, java.net.http.HttpResponse.BodyHandlers.ofString());
 
         assertNotNull(response.body());
+        System.out.println(response.body());
         assertEquals(200, response.statusCode());
     }
 }

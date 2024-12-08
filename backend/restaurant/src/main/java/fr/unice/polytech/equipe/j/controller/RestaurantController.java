@@ -325,10 +325,10 @@ public class RestaurantController {
                 return createHttpResponse(HttpCode.HTTP_400, orderDTO == null ? "Order not found" : "Restaurant not found");
             }
             java.net.http.HttpResponse<String> response = restaurantProxy.onOrderPaid(orderDTO);
-            if (response.statusCode() == 200) {
+            if (response.statusCode() == 200 || response.statusCode() == 201) {
                 return createHttpResponse(HttpCode.HTTP_200, "Order paid successfully");
             }
-            return createHttpResponse(HttpCode.HTTP_500, "Internal server error: " + response.body());
+            return createHttpResponse(HttpCode.fromCode(response.statusCode()), response.body());
         } catch (Exception e) {
             return createHttpResponse(HttpCode.HTTP_500, "Internal server error: " + e.getMessage());
         }

@@ -386,13 +386,27 @@ public class Restaurant implements IRestaurant {
      */
     @Override
     public HttpResponse<String> onOrderPaid(OrderDTO orderDTO) {
-        // TODO: Do the request
-        return request(
-                RequestUtil.DATABASE_ORDER_SERVICE_URI,
-                "/" + orderDTO.getId() + "/validate",
-                HttpMethod.POST,
-                null
-        );
+        try {
+            ObjectMapper mapper = JacksonConfig.configureObjectMapper();
+            orderDTO.setStatus(OrderStatus.VALIDATED);
+            if (orderDTO instanceof IndividualOrderDTO individualOrderDTO) {
+                return request(
+                        RequestUtil.DATABASE_ORDER_SERVICE_URI,
+                        "/individual/update",
+                        HttpMethod.PUT,
+                        mapper.writeValueAsString(individualOrderDTO)
+                );
+            }
+            return request(
+                    RequestUtil.DATABASE_ORDER_SERVICE_URI,
+                    "/update",
+                    HttpMethod.PUT,
+                    mapper.writeValueAsString(orderDTO)
+            );
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new CustomHttpResponse(HttpCode.HTTP_500.getCode(), "An error occurred while updating the order status.");
+        }
     }
 
     /**

@@ -6,6 +6,7 @@ import fr.unice.polytech.equipe.j.HttpMethod;
 import fr.unice.polytech.equipe.j.JacksonConfig;
 import fr.unice.polytech.equipe.j.RequestUtil;
 import fr.unice.polytech.equipe.j.dto.OrderDTO;
+import fr.unice.polytech.equipe.j.dto.OrderStatus;
 import fr.unice.polytech.equipe.j.dto.RestaurantDTO;
 import fr.unice.polytech.equipe.j.mapper.DTOMapper;
 import fr.unice.polytech.equipe.j.menu.Menu;
@@ -93,6 +94,12 @@ public class RestaurantProxy implements IRestaurant {
 
     @Override
     public HttpResponse<String> onOrderPaid(OrderDTO orderDTO) {
+        if (!orderDTO.getStatus().equals(OrderStatus.PENDING)) {
+            return new CustomHttpResponse(400, "The order is already cancelled or delivered or validated");
+        }
+        if (orderDTO.getItems().isEmpty()) {
+            return new CustomHttpResponse(400, "The order is empty");
+        }
         return getRestaurant().onOrderPaid(orderDTO);
     }
 
