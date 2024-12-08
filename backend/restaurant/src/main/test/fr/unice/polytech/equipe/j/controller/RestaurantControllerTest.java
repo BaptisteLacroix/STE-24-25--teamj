@@ -204,7 +204,7 @@ class RestaurantControllerTest {
     @Test
     @Order(1)
     void testChangeRestaurantsHours() throws Exception {
-        LocalDateTime openingHour = LocalDateTime.now();
+        LocalDateTime openingHour = LocalDateTime.now().minusHours(1);
         LocalDateTime closingHour = LocalDateTime.now().plusHours(6);
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
@@ -239,6 +239,20 @@ class RestaurantControllerTest {
         ObjectMapper objectMapper = JacksonConfig.configureObjectMapper();
         RestaurantDTO restaurantDTO = objectMapper.readValue(response.body(), RestaurantDTO.class);
         UUID slotUUID = restaurantDTO.getSlots().get(0).getUuid();
+
+        int numberOfEmployees = 5;
+        client = HttpClient.newHttpClient();
+        request = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + "/" + RESTAURANT_UUID + "/manager/" + MANAGER_UUID + "/slots/" + slotUUID + "/changeNumberOfEmployees/" + numberOfEmployees))
+                .POST(HttpRequest.BodyPublishers.noBody())
+                .build();
+
+        response = client.send(request, java.net.http.HttpResponse.BodyHandlers.ofString());
+
+        assertNotNull(response.body());
+        assertEquals(201, response.statusCode());
+
+        slotUUID = restaurantDTO.getSlots().get(1).getUuid();
 
         int numberOfEmployees = 5;
         client = HttpClient.newHttpClient();
