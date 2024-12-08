@@ -6,10 +6,7 @@ import fr.unice.polytech.equipe.j.JacksonConfig;
 import fr.unice.polytech.equipe.j.delivery.DeliveryDetails;
 import fr.unice.polytech.equipe.j.httpresponse.HttpCode;
 import fr.unice.polytech.equipe.j.httpresponse.HttpResponse;
-import fr.unice.polytech.equipe.j.order.grouporder.dto.CampusUserDTO;
-import fr.unice.polytech.equipe.j.order.grouporder.dto.GroupOrderDTO;
-import fr.unice.polytech.equipe.j.order.grouporder.dto.OrderDTO;
-import org.json.HTTP;
+import fr.unice.polytech.equipe.j.order.grouporder.dto.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -22,7 +19,7 @@ import static fr.unice.polytech.equipe.j.RequestUtil.request;
 public class GroupOrder implements IGroupOrder {
     private UUID groupOrderId;
     private final List<OrderDTO> orders = new ArrayList<>();
-    private final DeliveryDetails deliveryDetails;
+    private final DeliveryDetailsDTO deliveryDetails;
     private final List<CampusUserDTO> campusUsers = new ArrayList<>();
     private OrderStatus status = OrderStatus.PENDING;
 
@@ -34,11 +31,10 @@ public class GroupOrder implements IGroupOrder {
     @Override
     public HttpResponse addUser(CampusUserDTO user) {
         try {
-            java.net.http.HttpResponse<String> groupOrder = request(DATABASE_GROUPORDER_SERVICE_URI,"/"+getGroupOrderId().toString(), HttpMethod.GET,null);
             this.getUsers().add(user);
             try {
                 ObjectMapper mapper = JacksonConfig.configureObjectMapper();
-                java.net.http.HttpResponse response = request(DATABASE_GROUPORDER_SERVICE_URI,"/update",HttpMethod.PUT,mapper.writeValueAsString(groupOrderDTO));
+                java.net.http.HttpResponse response = request(DATABASE_GROUPORDER_SERVICE_URI,"/update",HttpMethod.PUT,mapper.writeValueAsString(this));
                 if (response.statusCode()==201){
                     return new HttpResponse(HttpCode.HTTP_201, "GroupOrder Updated in database");
                 }  else {
@@ -52,7 +48,7 @@ public class GroupOrder implements IGroupOrder {
         }
     }
 
-    public GroupOrder(DeliveryDetails deliveryDetails) {
+    public GroupOrder(DeliveryDetailsDTO deliveryDetails) {
         this.groupOrderId = UUID.randomUUID();
         this.deliveryDetails = deliveryDetails;
     }
@@ -63,8 +59,9 @@ public class GroupOrder implements IGroupOrder {
     }
 
     @Override
-    public void validate(CampusUserDTO user) {
+    public HttpResponse validate(CampusUserDTO user) {
         setStatus(OrderStatus.VALIDATED);
+        return new HttpResponse(HttpCode.HTTP_200, "GroupOrder validated");
     }
 
     // Getters
@@ -74,12 +71,13 @@ public class GroupOrder implements IGroupOrder {
     }
 
     @Override
-    public HttpResponse<String> getOrders() {
-        return request(); // Regarder exemple
+    public List<OrderDTO> getOrders() {
+
+        return this.orders;
     }
 
     @Override
-    public DeliveryDetails getDeliveryDetails() {
+    public DeliveryDetailsDTO getDeliveryDetails() {
         return deliveryDetails;
     }
 

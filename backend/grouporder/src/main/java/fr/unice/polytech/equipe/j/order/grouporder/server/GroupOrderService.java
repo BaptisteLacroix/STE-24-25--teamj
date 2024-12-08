@@ -56,7 +56,6 @@ public class GroupOrderService {
     @Route(value="{userId}/create",method = HttpMethod.POST)
     private HttpResponse createGroupOrder(@PathParam("userId") UUID userdId) {
         try {
-
             GroupOrder groupOrder1 = new GroupOrder(null);
             GroupOrderDTO groupOrderDTO = new GroupOrderDTO(groupOrder1.getGroupOrderId(),null,new ArrayList<CampusUserDTO>(),null, "pending");
 
@@ -65,23 +64,15 @@ public class GroupOrderService {
             ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
             String json = ow.writeValueAsString(groupOrderDTO);
 
-            java.net.http.HttpResponse<String> response = request(DATABASE_ORDER_SERVICE_URI,"/create",HttpMethod.POST,json);
+            request(DATABASE_ORDER_SERVICE_URI,"/create",HttpMethod.POST,json);
 
             try {
                 java.net.http.HttpResponse<String> user = request(DATABASE_CAMPUS_USER_SERVICE_URI, "/" + userdId.toString(), HttpMethod.GET, null);
                 CampusUserDTO userDTO = new ObjectMapper().readValue(user.body(), CampusUserDTO.class);
-                groupOrderProxy.addUser(userDTO);
+                return groupOrderProxy.addUser(userDTO);
             } catch (Exception e) {
                 return new HttpResponse(HttpCode.HTTP_400,"User can't be added to his groupOrder Creation.");
             }
-
-            if(response == null){
-                return new HttpResponse(HttpCode.HTTP_400, "GroupOrder can't be created");
-            }
-            if (response.statusCode() == 200){
-                return new HttpResponse(HttpCode.HTTP_200, "GroupOrder created");
-            }
-            return new HttpResponse(HttpCode.HTTP_500, "Internal Server Error: "+response.body());
         } catch (Exception e) {
             return new HttpResponse(HttpCode.HTTP_500, "Internal server error: " + e.getMessage());
         }
@@ -100,6 +91,18 @@ public class GroupOrderService {
             return new HttpResponse(HttpCode.HTTP_500,"User can't join groupOrder");
         }
 
+    }
+
+    @Route(value = "{groupOrderId}/{userId}/validate", method = HttpMethod.PUT)
+    private HttpResponse validateGroupOrder(@PathParam("groupOrderId") UUID groupOrderId, @PathParam("userId") UUID userId) {
+        try{
+            IGroupOrder groupOrderProxy = createGroupOrderProxy(groupOrderId);
+            java.net.http.HttpResponse<String> response = request(DATABASE_CAMPUS_USER_SERVICE_URI, "/" + userId.toString(), HttpMethod.GET, null);
+            CampusUserDTO userDTO = new ObjectMapper().readValue(response.body(), CampusUserDTO.class);
+            return groupOrderProxy.validate(userDTO);
+        } catch (Exception e) {
+            return new HttpResponse(HttpCode.HTTP_500, "GroupOrder not validated");
+        }
     }
 
 

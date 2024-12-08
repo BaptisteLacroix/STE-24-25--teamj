@@ -1,9 +1,11 @@
 package fr.unice.polytech.equipe.j.order.grouporder.backend;
 
-import fr.unice.polytech.equipe.j.delivery.DeliveryDetails;
 import fr.unice.polytech.equipe.j.httpresponse.HttpCode;
 import fr.unice.polytech.equipe.j.httpresponse.HttpResponse;
 import fr.unice.polytech.equipe.j.order.grouporder.dto.CampusUserDTO;
+import fr.unice.polytech.equipe.j.order.grouporder.dto.DeliveryDetailsDTO;
+import fr.unice.polytech.equipe.j.order.grouporder.dto.OrderDTO;
+import fr.unice.polytech.equipe.j.order.grouporder.dto.OrderStatus;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -29,22 +31,22 @@ public class GroupOrderProxy implements IGroupOrder {
     }
 
     @Override
-    public void addOrder(Order order) {
+    public void addOrder(OrderDTO orderDTO) {
         if (groupOrder.getStatus() != OrderStatus.PENDING) {
             throw new IllegalArgumentException("Cannot join a group order that is not pending");
         }
-        if (!order.getRestaurant().canPrepareItemForGroupOrderDeliveryTime(this)) {
+        if (!orderDTO.getRestaurant().canPrepareItemForGroupOrderDeliveryTime(this)) {
             throw new IllegalArgumentException("Order cannot be added, restaurant cannot prepare items in time");
         }
         // Check that all items inside can be prepared in time
-        if (groupOrder.getDeliveryDetails().getDeliveryTime().isPresent() && !order.getRestaurant().canAccommodateDeliveryTime(order.getItems(), groupOrder.getDeliveryDetails().getDeliveryTime().get())) {
+        if (groupOrder.getDeliveryDetails().getDeliveryTime().isPresent() && !orderDTO.getRestaurant().canAccommodateDeliveryTime(orderDTO.getItems(), groupOrder.getDeliveryDetails().getDeliveryTime().get())) {
             throw new IllegalArgumentException("Cannot add order to group order, it will not be ready in time.");
         }
         // Check user is inside the group order
-        if (!groupOrder.getUsers().contains(order.getUser())) {
+        if (!groupOrder.getUsers().contains(orderDTO.getUser())) {
             throw new IllegalArgumentException("Cannot add order to group order, user is not part of the group.");
         }
-        groupOrder.addOrder(order);
+        groupOrder.addOrder(orderDTO);
     }
 
     private boolean isDeliveryTimeValid(LocalDateTime deliveryTime) {
@@ -62,11 +64,11 @@ public class GroupOrderProxy implements IGroupOrder {
     }
 
     @Override
-    public void validate(CampusUser user) {
+    public HttpResponse validate(CampusUserDTO user) {
         if (getStatus() != OrderStatus.PENDING) {
             throw new IllegalArgumentException("Cannot validate group order that is not pending.");
         }
-        if (getDeliveryDetails().getDeliveryTime().isEmpty()) {
+        if (getDeliveryDetails().getDeliveryTime() == null) {
             throw new IllegalArgumentException("Cannot validate group order with no delivery time.");
         }
         if (!getUsers().contains(user)) {
@@ -90,7 +92,7 @@ public class GroupOrderProxy implements IGroupOrder {
     }
 
     @Override
-    public List<CampusUser> getUsers() {
+    public List<CampusUserDTO> getUsers() {
         return groupOrder.getUsers();
     }
 
@@ -100,12 +102,12 @@ public class GroupOrderProxy implements IGroupOrder {
     }
 
     @Override
-    public DeliveryDetails getDeliveryDetails() {
+    public DeliveryDetailsDTO getDeliveryDetails() {
         return groupOrder.getDeliveryDetails();
     }
 
     @Override
-    public HttpResponse<String> getOrders() {
+    public List<OrderDTO> getOrders() {
         return groupOrder.getOrders();
     }
 }

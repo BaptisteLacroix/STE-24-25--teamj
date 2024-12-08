@@ -10,10 +10,19 @@ import fr.unice.polytech.equipe.j.order.grouporder.dto.GroupOrderDTO;
 public class DTOMapper {
 
     public static GroupOrder toGroupOrder(GroupOrderDTO groupOrderDTO) {
-        DeliveryDetails deliveryDetails = toDeliveryDetails(groupOrderDTO.getDeliveryDetails());
-        GroupOrder groupOrder = new GroupOrder(deliveryDetails);
+        GroupOrder groupOrder = new GroupOrder(groupOrderDTO.getDeliveryDetails());
         groupOrder.setGroupOrderId(groupOrderDTO.getGroupOrderId());
         return groupOrder;
+    }
+
+    public static GroupOrderDTO toGroupOrderDTO(GroupOrder groupOrder){
+        GroupOrderDTO groupOrderDTO = new GroupOrderDTO();
+        groupOrderDTO.setGroupOrderId(groupOrder.getGroupOrderId());
+        groupOrderDTO.setDeliveryDetails(groupOrder.getDeliveryDetails());
+        groupOrderDTO.setOrders(groupOrder.getOrders());
+        groupOrderDTO.setUsers(groupOrder.getUsers());
+        groupOrderDTO.setStatus(groupOrder.getStatus().name());
+        return groupOrderDTO;
     }
 
     private static DeliveryDetails toDeliveryDetails(DeliveryDetailsDTO deliveryDetailsDTO) {
@@ -25,6 +34,7 @@ public class DTOMapper {
 
     }
 
+    
     private static DeliveryLocation toDeliveryLocation(DeliveryLocationDTO deliveryLocationDTO) {
        return new DeliveryLocation(
                 deliveryLocationDTO.getLocationName(),

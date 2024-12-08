@@ -1,9 +1,10 @@
 package fr.unice.polytech.equipe.j.order.grouporder.backend;
 
-import fr.unice.polytech.equipe.j.delivery.DeliveryDetails;
 import fr.unice.polytech.equipe.j.httpresponse.HttpResponse;
+import fr.unice.polytech.equipe.j.order.grouporder.dto.DeliveryDetailsDTO;
 import fr.unice.polytech.equipe.j.order.grouporder.dto.OrderDTO;
 import fr.unice.polytech.equipe.j.order.grouporder.dto.CampusUserDTO;
+import fr.unice.polytech.equipe.j.order.grouporder.dto.OrderStatus;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -19,9 +20,9 @@ public interface IGroupOrder {
 
     UUID getGroupOrderId();
 
-    HttpResponse<String> getOrders();
+    List<OrderDTO> getOrders();
 
-    DeliveryDetails getDeliveryDetails();
+    DeliveryDetailsDTO getDeliveryDetails();
 
     void setDeliveryTime(LocalDateTime deliveryTime);
 
@@ -29,7 +30,7 @@ public interface IGroupOrder {
 
     void setStatus(OrderStatus status);
 
-    void validate(CampusUserDTO user);
+    HttpResponse validate(CampusUserDTO user);
 
     String toString();
 }
