@@ -14,7 +14,7 @@ import fr.unice.polytech.equipe.j.httpresponse.HttpResponse;
 import java.util.List;
 import java.util.UUID;
 
-@Controller("/api/delivery-locations")
+@Controller("/api/database/delivery-locations")
 public class DeliveryLocationController {
     @Route(value = "", method = HttpMethod.GET)
     public HttpResponse getDeliveryLocations() {

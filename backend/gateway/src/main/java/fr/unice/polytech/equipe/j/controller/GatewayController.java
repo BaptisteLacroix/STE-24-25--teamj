@@ -264,7 +264,7 @@ public class GatewayController {
         return new HttpResponse(HttpCode.fromCode(response.statusCode()), response.body());
     }
 
-    @Route(value = "/{userId}/deliveryLocation", method = HttpMethod.GET)
+    @Route(value = "/{userId}/delivery-location", method = HttpMethod.GET)
     public HttpResponse getDeliveryLocation(@PathParam("userId") String userId) {
         if (getUserById(userId).statusCode() != 200) {
             return new HttpResponse(HttpCode.HTTP_404, "User not found");
@@ -278,7 +278,7 @@ public class GatewayController {
         return new HttpResponse(HttpCode.fromCode(response.statusCode()), response.body());
     }
 
-    @Route(value = "/{userId}/deliveryLocation/{deliveryLocationId}", method = HttpMethod.GET)
+    @Route(value = "/{userId}/delivery-location/{deliveryLocationId}", method = HttpMethod.GET)
     public HttpResponse getDeliveryLocationById(@PathParam("userId") String userId, @PathParam("deliveryLocationId") String deliveryLocationId) {
         if (getUserById(userId).statusCode() != 200) {
             return new HttpResponse(HttpCode.HTTP_404, "User not found");
@@ -287,6 +287,36 @@ public class GatewayController {
                 RequestUtil.DATABASE_DELIVERY_LOCATION_SERVICE_URI,
                 "/" + deliveryLocationId,
                 HttpMethod.GET,
+                null
+        );
+        return new HttpResponse(HttpCode.fromCode(response.statusCode()), response.body());
+    }
+
+    @Route(value = "/{userId}/group-order", method = HttpMethod.POST)
+    public HttpResponse createGroupOrder(@PathParam("userId") String userId, @BeanParam DeliveryDetailsDTO deliveryDetailsDTO) {
+        if (getUserById(userId).statusCode() != 200) {
+            return new HttpResponse(HttpCode.HTTP_404, "User not found");
+        }
+
+        response = request(
+                RequestUtil.GROUP_ORDER_SERVICE_URI,
+                "/" + userId + "/create",
+                HttpMethod.POST,
+                objectMapper.valueToTree(deliveryDetailsDTO).toString()
+        );
+        return new HttpResponse(HttpCode.fromCode(response.statusCode()), response.body());
+    }
+
+    @Route(value = "/{userId}/group-order/{groupOrderId}/join", method = HttpMethod.PUT)
+    public HttpResponse joinGroupOrder(@PathParam("userId") String userId, @PathParam("groupOrderId") String groupOrderId) {
+        if (getUserById(userId).statusCode() != 200) {
+            return new HttpResponse(HttpCode.HTTP_404, "User not found");
+        }
+
+        response = request(
+                RequestUtil.GROUP_ORDER_SERVICE_URI,
+                "/" + groupOrderId + "/join/" + userId,
+                HttpMethod.PUT,
                 null
         );
         return new HttpResponse(HttpCode.fromCode(response.statusCode()), response.body());

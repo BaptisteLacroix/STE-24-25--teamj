@@ -1,10 +1,14 @@
 package fr.unice.polytech.equipe.j;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreType;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
+import com.sun.security.jgss.GSSUtil;
 import fr.unice.polytech.equipe.j.annotations.BeanParam;
 import fr.unice.polytech.equipe.j.annotations.Controller;
 import fr.unice.polytech.equipe.j.annotations.PathParam;
@@ -12,9 +16,11 @@ import fr.unice.polytech.equipe.j.annotations.QueryParam;
 import fr.unice.polytech.equipe.j.annotations.Route;
 import fr.unice.polytech.equipe.j.httpresponse.HttpResponse;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.net.InetSocketAddress;
@@ -67,11 +73,230 @@ public class FlexibleRestServer {
         List<Class<?>> controllerClasses = scanControllerClasses();
         initializeControllerHandlers(controllerClasses);
 
+        // Generate OpenAPI Documentation
+        try {
+            ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+            String fileName = classLoader.getResource(serverRoot.replace('.', '/') + "/").getPath();
+            // split by "backend" string and get last element
+            fileName = fileName.split("backend")[1].split("target")[0].replace("/", "");
+
+            ObjectNode openApiSpec = generateOpenApiSpec(controllerClasses);
+            File outputFile = new File("doc/openapi/" + fileName+ "OpenApi.json");
+            objectMapper.writerWithDefaultPrettyPrinter().writeValue(outputFile, openApiSpec);
+            System.out.println("OpenAPI specification generated: " + outputFile.getAbsolutePath());
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to generate OpenAPI documentation", e);
+        }
         server.createContext("/", this::handleRequest);
         server.setExecutor(null); // Use the default executor
         System.out.println("Server running on port " + port);
         server.start();
     }
+
+    private ObjectNode generateOpenApiSpec(List<Class<?>> controllerClasses) throws Exception {
+        ObjectNode openApi = objectMapper.createObjectNode();
+        openApi.put("openapi", "3.0.1");
+        openApi.set("info", createInfo());
+        // Server url: localhost:port
+        ArrayNode servers = objectMapper.createArrayNode();
+        ObjectNode serverNode = objectMapper.createObjectNode();
+        serverNode.put("url", "http://localhost:" + port);
+        servers.add(serverNode);
+        openApi.set("servers", servers);
+        openApi.set("paths", createPaths(controllerClasses));
+        openApi.set("components", createComponents(controllerClasses));
+        return openApi;
+    }
+
+    private ObjectNode createInfo() {
+        ObjectNode info = objectMapper.createObjectNode();
+        info.put("title", "Generated API");
+        info.put("version", "1.0.0");
+        return info;
+    }
+
+    private ObjectNode createPaths(List<Class<?>> controllerClasses) {
+        ObjectNode paths = objectMapper.createObjectNode();
+
+        for (Class<?> controllerClass : controllerClasses) {
+            if (controllerClass.isAnnotationPresent(Controller.class)) {
+                Controller controller = controllerClass.getAnnotation(Controller.class);
+                String basePath = controller.value();
+
+                for (Method method : controllerClass.getDeclaredMethods()) {
+                    if (method.isAnnotationPresent(Route.class)) {
+                        Route route = method.getAnnotation(Route.class);
+                        String fullPath = basePath + route.value();
+
+                        ObjectNode methodNode = objectMapper.createObjectNode();
+                        methodNode.put("summary", method.getName());
+                        methodNode.put("description", "Generated from method " + method.getName());
+
+                        // Generate parameters
+                        ArrayNode parameters = objectMapper.createArrayNode();
+                        for (Parameter param : method.getParameters()) {
+                            parameters.add(generateParameter(param));
+                        }
+                        methodNode.set("parameters", parameters);
+
+                        // Generate response
+                        ObjectNode responses = objectMapper.createObjectNode();
+                        responses.set("200", createResponse("Successful response", method.getReturnType()));
+                        methodNode.set("responses", responses);
+
+                        // Add to paths
+                        ObjectNode pathNode = paths.has(fullPath)
+                                ? (ObjectNode) paths.get(fullPath)
+                                : objectMapper.createObjectNode();
+                        pathNode.set(route.method().name().toLowerCase(), methodNode);
+                        paths.set(fullPath, pathNode);
+                    }
+                }
+            }
+        }
+
+        return paths;
+    }
+
+    private ObjectNode createResponse(String description, Class<?> responseType) {
+        ObjectNode responseNode = objectMapper.createObjectNode();
+        responseNode.put("description", description);
+
+        ObjectNode content = objectMapper.createObjectNode();
+        ObjectNode mediaType = objectMapper.createObjectNode();
+
+        if (responseType != null) {
+            if (isPrimitiveOrWrapper(responseType)) {
+                ObjectNode schema = objectMapper.createObjectNode();
+                schema.put("type", mapJavaTypeToOpenApiType(responseType));
+                mediaType.set("schema", schema);
+            } else {
+                mediaType.set("schema", createSchemaReference(responseType));
+            }
+        }
+
+        content.set("application/json", mediaType);
+        responseNode.set("content", content);
+
+        return responseNode;
+    }
+
+    private boolean isPrimitiveOrWrapper(Class<?> type) {
+        return type.isPrimitive() || type == Integer.class || type == Long.class ||
+                type == Double.class || type == Boolean.class || type == String.class;
+    }
+
+    private ObjectNode generateParameter(Parameter param) {
+        ObjectNode paramNode = objectMapper.createObjectNode();
+
+        if (param.isAnnotationPresent(PathParam.class)) {
+            PathParam pathParam = param.getAnnotation(PathParam.class);
+            paramNode.put("name", pathParam.value());
+            paramNode.put("in", "path");
+            paramNode.put("required", true);
+            paramNode.set("schema", generateSchemaForType(param.getType()));
+        } else if (param.isAnnotationPresent(QueryParam.class)) {
+            QueryParam queryParam = param.getAnnotation(QueryParam.class);
+            paramNode.put("name", queryParam.value());
+            paramNode.put("in", "query");
+            paramNode.put("required", false);
+            paramNode.set("schema", generateSchemaForType(param.getType()));
+        } else if (param.isAnnotationPresent(BeanParam.class)) {
+            // BeanParam: Inline schema or reference to the component
+            paramNode.put("name", param.getType().getSimpleName());
+            paramNode.put("in", "body");
+            paramNode.set("schema", createSchemaReference(param.getType()));
+        }
+
+        return paramNode;
+    }
+
+    private ObjectNode createSchemaReference(Class<?> type) {
+        ObjectNode schemaRef = objectMapper.createObjectNode();
+        schemaRef.put("$ref", "#/components/schemas/" + type.getSimpleName());
+        return schemaRef;
+    }
+
+    private ObjectNode createComponents(List<Class<?>> controllerClasses) {
+        ObjectNode components = objectMapper.createObjectNode();
+        ObjectNode schemas = objectMapper.createObjectNode();
+
+        schemas.set("HttpResponse", generateHttpResponseSchema());
+
+        // Scan for BeanParam types and DTOs
+        for (Class<?> controllerClass : controllerClasses) {
+            for (Method method : controllerClass.getDeclaredMethods()) {
+                for (Parameter param : method.getParameters()) {
+                    if (param.isAnnotationPresent(BeanParam.class)) {
+                        schemas.set(param.getType().getSimpleName(), generateSchemaForType(param.getType()));
+                    }
+                }
+            }
+        }
+        components.set("schemas", schemas);
+        return components;
+    }
+
+    private ObjectNode generateHttpResponseSchema() {
+        // Create a schema for HttpResponse
+        ObjectNode schema = objectMapper.createObjectNode();
+        schema.put("type", "object");
+
+        // Define the properties of HttpResponse, you can modify this based on your actual HttpResponse class
+        ObjectNode properties = objectMapper.createObjectNode();
+
+        ObjectNode statusCodeProperty = objectMapper.createObjectNode();
+        statusCodeProperty.put("type", "integer");
+        properties.set("statusCode", statusCodeProperty);
+
+        ObjectNode bodyProperty = objectMapper.createObjectNode();
+        bodyProperty.put("type", "string");  // Assuming HttpResponse has a body of type String
+        properties.set("body", bodyProperty);
+
+        schema.set("properties", properties);
+        return schema;
+    }
+
+    private ObjectNode generateSchemaForType(Class<?> type) {
+        ObjectNode schema = objectMapper.createObjectNode();
+        schema.put("type", "object");
+        ObjectNode properties = objectMapper.createObjectNode();
+
+        for (Field field : type.getDeclaredFields()) {
+            ObjectNode property = objectMapper.createObjectNode();
+            property.put("type", mapJavaTypeToOpenApiType(field.getType()));
+            properties.set(field.getName(), property);
+        }
+
+        schema.set("properties", properties);
+        return schema;
+    }
+
+    private String mapJavaTypeToOpenApiType(Class<?> javaType) {
+        if (javaType.equals(String.class)) {
+            return "string";
+        } else if (javaType.equals(Integer.class) || javaType.equals(int.class)) {
+            return "integer";
+        } else if (javaType.equals(Long.class) || javaType.equals(long.class)) {
+            return "integer";
+        } else if (javaType.equals(Double.class) || javaType.equals(double.class) ||
+                javaType.equals(Float.class) || javaType.equals(float.class)) {
+            return "number";
+        } else if (javaType.equals(Boolean.class) || javaType.equals(boolean.class)) {
+            return "boolean";
+        } else if (javaType.equals(UUID.class)) {
+            return "string";
+        } else if (javaType.equals(java.time.LocalDateTime.class) || javaType.equals(java.util.Date.class)) {
+            return "string";
+        } else if (javaType.equals(java.time.LocalDate.class)) {
+            return "string";
+        } else if (javaType.equals(List.class)) {
+            return "array"; // You'll need more details about the list's item type for a complete schema
+        }
+        return "object"; // Default for complex or unknown types
+    }
+
+
 
     /**
      * Scans for controller classes in the specified root package.
