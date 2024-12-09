@@ -51,3 +51,4 @@ pom.xml.next
 release.properties
 dependency-reduced-pom.xml
 node_modules/
+.vite/
