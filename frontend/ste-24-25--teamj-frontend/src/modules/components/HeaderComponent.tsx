@@ -1,11 +1,11 @@
-import {Badge, Button, Input, Navbar, NavbarContent} from "@nextui-org/react";
-import {ShoppingCartIcon} from "../utils/icons/ShoppingCartIcon.tsx";
-import {Link} from "react-router-dom";
-import {RestaurantModel} from "../model/RestaurantModel.ts";
-import {useEffect, useState} from "react";
-import {IndividualOrder, Order} from "../utils/types.ts";
-import {SearchIcon} from "../utils/icons/SearchIcon.tsx";
-import {useAppState} from "../AppStateContext.tsx";
+import { Badge, Button, Input, Navbar, NavbarContent } from "@nextui-org/react";
+import { ShoppingCartIcon } from "../utils/icons/ShoppingCartIcon.tsx";
+import { Link } from "react-router-dom";
+import { RestaurantModel } from "../model/RestaurantModel.ts";
+import { useEffect, useState } from "react";
+import { IndividualOrder, Order } from "../utils/types.ts";
+import { SearchIcon } from "../utils/icons/SearchIcon.tsx";
+import { useAppState } from "../AppStateContext.tsx";
 
 type PolyFoodHeaderProps = {
     restaurantModel: RestaurantModel;
@@ -14,12 +14,12 @@ type PolyFoodHeaderProps = {
 };
 
 export function PolyfoodHeader({
-                                   restaurantModel,
-                                   setIsNewGroupOrderModalOpen,
-                                   setIsJoinGroupOrderModalOpen
-                               }: PolyFoodHeaderProps) {
+    restaurantModel,
+    setIsNewGroupOrderModalOpen,
+    setIsJoinGroupOrderModalOpen
+}: PolyFoodHeaderProps) {
     const [order, setOrder] = useState<Order | IndividualOrder | null>(null);
-    const {userId, setUserId, orderId} = useAppState();
+    const { userId, setUserId, orderId } = useAppState();
 
     useEffect(() => {
         if (!orderId || !userId) return;
@@ -45,9 +45,9 @@ export function PolyfoodHeader({
                 {userId !== null ? (
                     <>
                         <Button variant={"bordered"} color={"default"} onClick={() => setIsNewGroupOrderModalOpen(true)}
-                                radius="full">New Group Order</Button>
+                            radius="full">New Group Order</Button>
                         <Button variant={"bordered"} color={"default"} radius="full"
-                                onClick={() => setIsJoinGroupOrderModalOpen(true)}>Join Group Order</Button></>
+                            onClick={() => setIsJoinGroupOrderModalOpen(true)}>Join Group Order</Button></>
                 ) : (
                     <>
                         <Button variant={"bordered"} color={"default"} radius="full" disabled>New Group Order</Button>
@@ -67,7 +67,7 @@ export function PolyfoodHeader({
                     }}
                     placeholder="Type to search..."
                     size="lg"
-                    startContent={<SearchIcon size={18}/>}
+                    startContent={<SearchIcon size={18} />}
                     type="search"
                 />
             </NavbarContent>
@@ -86,7 +86,7 @@ export function PolyfoodHeader({
                             radius="full"
                             variant="light"
                         >
-                            <ShoppingCartIcon className={"w-6 h-6"}/>
+                            <ShoppingCartIcon className={"w-6 h-6"} />
                         </Button>
                     </Link>
                 </Badge>

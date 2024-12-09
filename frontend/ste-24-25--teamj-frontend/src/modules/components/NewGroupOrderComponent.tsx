@@ -1,17 +1,18 @@
-import React, {useState, useEffect} from "react";
-import {Button, Modal, Select, SelectItem, DatePicker, ModalHeader, ModalBody, ModalFooter, ModalContent} from "@nextui-org/react";
-import {useAppState} from "../AppStateContext.tsx";
-import {RestaurantModel} from "../model/RestaurantModel.ts";
-import {DeliveryDetails, DeliveryLocation} from "../utils/types.ts";
-import {now, getLocalTimeZone} from "@internationalized/date";
+import React, { useState, useEffect } from "react";
+import { Button, Modal, Select, SelectItem, DatePicker, ModalHeader, ModalBody, ModalFooter, ModalContent } from "@nextui-org/react";
+import { useAppState } from "../AppStateContext.tsx";
+import { RestaurantModel } from "../model/RestaurantModel.ts";
+import { DeliveryDetails, DeliveryLocation } from "../utils/types.ts";
+import { now, getLocalTimeZone } from "@internationalized/date";
 
 type NewGroupOrderProps = {
     restaurantModel: RestaurantModel;
     setIsNewGroupOrderModalOpen: (isOpen: boolean) => void;
+    onSubmit: (locations: DeliveryLocation[], date?: Date | null) => void;
 };
 
-export const NewGroupOrder: React.FC<NewGroupOrderProps> = ({restaurantModel, setIsNewGroupOrderModalOpen}) => {
-    const {userId, setGroupOrderId} = useAppState();
+export const NewGroupOrder: React.FC<NewGroupOrderProps> = ({ restaurantModel, setIsNewGroupOrderModalOpen, onSubmit }) => {
+    const { userId, setGroupOrderId } = useAppState();
     const [deliveryLocation, setDeliveryLocation] = useState<DeliveryLocation | null>(null);
     const [deliveryLocations, setDeliveryLocations] = useState<DeliveryLocation[]>([]);
     const [deliveryDate, setDeliveryDate] = useState<Date | null>(null);
@@ -34,19 +35,20 @@ export const NewGroupOrder: React.FC<NewGroupOrderProps> = ({restaurantModel, se
                 setGroupOrderId(groupOrderId);
             });
             setIsNewGroupOrderModalOpen(false);
-            return;
         }
+        else {
+            const deliveryDetails: DeliveryDetails = {
+                deliveryLocation: deliveryLocation!,
+                deliveryTime: new Date(`${deliveryDate!.toDateString()}`),
+            };
 
-        const deliveryDetails: DeliveryDetails = {
-            deliveryLocation: deliveryLocation!,
-            deliveryTime: new Date(`${deliveryDate!.toDateString()}`),
-        };
+            restaurantModel.createGroupOrder(userId, deliveryDetails).then((groupOrderId: string) => {
+                setGroupOrderId(groupOrderId);
+            });
 
-        restaurantModel.createGroupOrder(userId, deliveryDetails).then((groupOrderId: string) => {
-            setGroupOrderId(groupOrderId);
-        });
-
-        setIsNewGroupOrderModalOpen(false);
+            setIsNewGroupOrderModalOpen(false);
+        }
+        onSubmit(deliveryLocations, deliveryDate)
     };
 
     return (
