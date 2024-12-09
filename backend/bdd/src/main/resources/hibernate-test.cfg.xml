@@ -30,7 +30,7 @@
         <!-- Order entities -->
         <mapping class="fr.unice.polytech.equipe.j.order.entities.OrderEntity"/>
         <mapping class="fr.unice.polytech.equipe.j.order.entities.DeliveryDetailsEntity"/>
-        <mapping class="fr.unice.polytech.equipe.j.order.entities.DeliveryLocationEntity"/>
+        <mapping class="fr.unice.polytech.equipe.j.deliverylocation.entities.DeliveryLocationEntity"/>
         <mapping class="fr.unice.polytech.equipe.j.order.entities.GroupOrderEntity"/>
         <mapping class="fr.unice.polytech.equipe.j.order.entities.IndividualOrderEntity"/>
         <mapping class="fr.unice.polytech.equipe.j.order.entities.TransactionEntity"/>

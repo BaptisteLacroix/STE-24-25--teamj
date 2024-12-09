@@ -1,7 +1,7 @@
-package fr.unice.polytech.equipe.j.order.mapper;
+package fr.unice.polytech.equipe.j.deliverylocation.mapper;
 
-import fr.unice.polytech.equipe.j.order.dto.DeliveryLocationDTO;
-import fr.unice.polytech.equipe.j.order.entities.DeliveryLocationEntity;
+import fr.unice.polytech.equipe.j.deliverylocation.dto.DeliveryLocationDTO;
+import fr.unice.polytech.equipe.j.deliverylocation.entities.DeliveryLocationEntity;
 
 public class DeliveryLocationMapper {
     public static DeliveryLocationDTO toDTO(DeliveryLocationEntity entity) {

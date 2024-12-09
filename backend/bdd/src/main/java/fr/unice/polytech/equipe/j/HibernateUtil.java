@@ -1,13 +1,11 @@
 package fr.unice.polytech.equipe.j;
 
-import fr.unice.polytech.equipe.j.order.DeliveryLocationDatabaseSeeder;
+import fr.unice.polytech.equipe.j.deliverylocation.DeliveryLocationDatabaseSeeder;
 import fr.unice.polytech.equipe.j.restaurant.RestaurantDatabaseSeeder;
 import fr.unice.polytech.equipe.j.user.UserDatabaseSeeder;
 import lombok.Getter;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
-
-import java.nio.file.Paths;
 
 public class HibernateUtil {
     @Getter

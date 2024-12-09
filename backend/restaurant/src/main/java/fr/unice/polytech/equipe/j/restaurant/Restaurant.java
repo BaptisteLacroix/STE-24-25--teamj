@@ -355,7 +355,9 @@ public class Restaurant implements IRestaurant {
             // Check if the slot has enough capacity to prepare the item, and the number of orders is less than the maximum (EX2)
             boolean isSlotCapacityAvailable = slot.getAvailableCapacity() >= menuItem.getPrepTime() && pendingOrders.get(slot).size() < this.getMaxOrdersForSlot(slot);
             // Check that the slot is between the current time and the delivery time
-            if (isSlotBeforeDeliveryTime && isSlotCapacityAvailable) {
+            boolean isSlotBetweenNowAndDeliveryTime = slot.getOpeningDate().isAfter(now) && slot.getOpeningDate().isBefore(deliveryTime);
+            // FIXME: Found why pipeline not OK, because of the .now()
+            if (isSlotBeforeDeliveryTime && isSlotBetweenNowAndDeliveryTime && isSlotCapacityAvailable) {
                 LocalDateTime preparationEndTime = now.plusSeconds(menuItem.getPrepTime());
                 if (preparationEndTime.isBefore(deliveryTime)) {
                     return true;

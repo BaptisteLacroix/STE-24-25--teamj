@@ -1,4 +1,4 @@
-package fr.unice.polytech.equipe.j.order.dto;
+package fr.unice.polytech.equipe.j.deliverylocation.dto;
 
 import lombok.Getter;
 import lombok.Setter;

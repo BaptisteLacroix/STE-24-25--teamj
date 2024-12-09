@@ -12,6 +12,7 @@ import java.nio.charset.StandardCharsets;
 
 public class RequestUtil {
     public static final String DATABASE_RESTAURANT_SERVICE_URI = "http://localhost:5000/api/database/restaurants";
+    public static final String DATABASE_DELIVERY_LOCATION_SERVICE_URI = "http://localhost:5000/api/database/delivery-locations";
     public static final String RESTAURANT_SERVICE_URI = "http://localhost:5007/api/restaurants";
     public static final String DATABASE_CAMPUS_USER_SERVICE_URI = "http://localhost:5000/api/database/campusUsers";
     public static final String DATABASE_MANAGER_SERVICE_URI = "http://localhost:5000/api/database/managers";

@@ -1,8 +1,8 @@
-package fr.unice.polytech.equipe.j.order;
+package fr.unice.polytech.equipe.j.deliverylocation;
 
-import fr.unice.polytech.equipe.j.order.dao.DeliveryLocationDAO;
-import fr.unice.polytech.equipe.j.order.dto.DeliveryLocationDTO;
-import fr.unice.polytech.equipe.j.order.mapper.DeliveryLocationMapper;
+import fr.unice.polytech.equipe.j.deliverylocation.dao.DeliveryLocationDAO;
+import fr.unice.polytech.equipe.j.deliverylocation.dto.DeliveryLocationDTO;
+import fr.unice.polytech.equipe.j.deliverylocation.mapper.DeliveryLocationMapper;
 
 import java.util.UUID;
 

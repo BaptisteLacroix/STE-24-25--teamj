@@ -1,7 +1,7 @@
-package fr.unice.polytech.equipe.j.order.dao;
+package fr.unice.polytech.equipe.j.deliverylocation.dao;
 
 import fr.unice.polytech.equipe.j.HibernateUtil;
-import fr.unice.polytech.equipe.j.order.entities.DeliveryLocationEntity;
+import fr.unice.polytech.equipe.j.deliverylocation.entities.DeliveryLocationEntity;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
