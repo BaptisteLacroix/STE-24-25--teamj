@@ -31,7 +31,7 @@ class GroupOrderControllerTest {
     private static final String DATABASE_HEALTH_URL = "http://localhost:5000/api/database/health";
     private static final UUID ORDER_UUID = UUID.fromString("178225f2-9f08-4a7f-add2-3783e89ffa6b"); // TEST Order
     private static final UUID USER_UUID = UUID.fromString("1aeb4480-305a-499d-885c-7d2d9f99153b"); // TEST User
-    private static final UUID GROUP_ORDER_UUID = UUID.fromString("d8bf3e62-3e37-4a0a-b0b8-e47310687715");
+    private static final UUID GROUP_ORDER_UUID = UUID.fromString("ef254832-dba4-44f8-8fa4-88720ee3e0a7");
     private static final String BASE_DATABASE_URL = "http://localhost:5000/api/database";
 
     @BeforeAll
@@ -103,13 +103,32 @@ class GroupOrderControllerTest {
             throw new RuntimeException("Database API did not start in time.");
         }
     }
+
     @Test
     @Order(1)
-    void testGetAllGroupOrders() throws Exception{
+    void createGroupOrder() throws Exception{
         HttpClient client = HttpClient.newHttpClient();
-        HttpRequest request = HttpRequest.newBuilder().uri(URI.create(BASE_URL+"/d8bf3e623e374a0ab0b8e47310687715/getOrder")).GET().build();
+        HttpRequest request = HttpRequest.newBuilder().uri(URI.create(BASE_URL+"/"+USER_UUID+"/create"))
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.noBody())
+                .build();
         java.net.http.HttpResponse<String> response = client.send(request, java.net.http.HttpResponse.BodyHandlers.ofString());
         assertNotNull(response.body());
-        System.out.println(response.body());
         assertEquals(200, response.statusCode());
-    }}
+    }
+
+
+    @Test
+    @Order(2)
+    void testGetAllGroupOrders() throws Exception{
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder().uri(URI.create(BASE_URL+"/"+USER_UUID+"/getOrders")).GET().build();
+        java.net.http.HttpResponse<String> response = client.send(request, java.net.http.HttpResponse.BodyHandlers.ofString());
+        assertNotNull(response.body());
+        assertEquals(200, response.statusCode());
+    }
+
+
+
+}
+

@@ -18,7 +18,11 @@ public class GroupOrderMapper {
     public static GroupOrderEntity toEntity(GroupOrderDTO dto) {
         GroupOrderEntity entity = new GroupOrderEntity();
         entity.setId(dto.getGroupOrderId());
-        entity.setDeliveryDetails(DeliveryDetailsMapper.toEntity(dto.getDeliveryDetails()));
+        if (dto.getDeliveryDetails() != null) {
+            entity.setDeliveryDetails(DeliveryDetailsMapper.toEntity(dto.getDeliveryDetails()));
+        } else {
+            entity.setDeliveryDetails(null);
+        }
         return entity;
     }
 }

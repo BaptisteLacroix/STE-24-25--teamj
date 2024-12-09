@@ -38,7 +38,7 @@ public class GroupOrder implements IGroupOrder {
                 ObjectMapper mapper = JacksonConfig.configureObjectMapper();
                 java.net.http.HttpResponse response = request(DATABASE_GROUPORDER_SERVICE_URI,"/update",HttpMethod.PUT,mapper.writeValueAsString(this));
                 if (response.statusCode()==201){
-                    return new HttpResponse(HttpCode.HTTP_201, this.groupOrderId    );
+                    return new HttpResponse(HttpCode.HTTP_201, this.groupOrderId);
                 }  else {
                     return new HttpResponse(HttpCode.HTTP_500, response.body());
                 }

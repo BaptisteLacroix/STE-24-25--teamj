@@ -30,9 +30,11 @@ public static HttpResponse save(GroupOrderEntity groupOrderEntity) {
         Transaction transaction = session.beginTransaction();
         session.merge(groupOrderEntity);
         transaction.commit();
+        System.out.println("GroupOrder saved with id : " + groupOrderEntity.getId());
         return new HttpResponse(HttpCode.HTTP_201, groupOrderEntity.getId().toString());
     } catch (Exception e) {
-        return new HttpResponse(HttpCode.HTTP_500, "Can't save in Database : " + e.getMessage());
+        e.printStackTrace();
+        return new HttpResponse(HttpCode.HTTP_500, "Internal server error");
         }
     }
 }

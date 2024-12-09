@@ -59,6 +59,7 @@ public class GroupOrderProxy implements IGroupOrder {
         if (groupOrder.getStatus() != OrderStatus.PENDING) {
             return new HttpResponse(HttpCode.HTTP_400, "Order cannot be added to groupOrder");
         }
+
         return groupOrder.addUser(user);
 
     }
