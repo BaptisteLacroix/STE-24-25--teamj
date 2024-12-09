@@ -114,17 +114,22 @@ class GroupOrderControllerTest {
                 .build();
         java.net.http.HttpResponse<String> response = client.send(request, java.net.http.HttpResponse.BodyHandlers.ofString());
         assertNotNull(response.body());
-        assertEquals(200, response.statusCode());
+        System.out.println(response.statusCode());
+        assertEquals(201, response.statusCode());
     }
 
 
     @Test
     @Order(2)
-    void testGetAllGroupOrders() throws Exception{
+    void testJoinGroupOrder() throws Exception{
         HttpClient client = HttpClient.newHttpClient();
-        HttpRequest request = HttpRequest.newBuilder().uri(URI.create(BASE_URL+"/"+USER_UUID+"/getOrders")).GET().build();
+        HttpRequest request = HttpRequest.newBuilder().uri(URI.create(BASE_URL+"/"+GROUP_ORDER_UUID+"/join/"+USER_UUID))
+                .header("Content-Type", "application/json")
+                .PUT(HttpRequest.BodyPublishers.noBody())
+                .build();
         java.net.http.HttpResponse<String> response = client.send(request, java.net.http.HttpResponse.BodyHandlers.ofString());
         assertNotNull(response.body());
+        System.out.println(response.statusCode());
         assertEquals(200, response.statusCode());
     }
 

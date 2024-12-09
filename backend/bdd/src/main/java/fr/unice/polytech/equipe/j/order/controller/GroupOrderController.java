@@ -35,8 +35,7 @@ public class GroupOrderController {
     public HttpResponse updateGroupOrder(@BeanParam GroupOrderDTO groupOrderDTO) {
         System.out.println("Update GroupOrder");
         GroupOrderEntity groupOrderEntity = GroupOrderMapper.toEntity(groupOrderDTO);
-        GroupOrderDAO.save(groupOrderEntity);
-        return new HttpResponse(HttpCode.HTTP_200, groupOrderDTO.getGroupOrderId().toString());
+        return GroupOrderDAO.save(groupOrderEntity);
     }
 
 

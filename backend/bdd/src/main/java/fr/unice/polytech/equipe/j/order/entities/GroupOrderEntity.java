@@ -41,7 +41,7 @@ public class GroupOrderEntity {
     @ManyToMany(fetch = FetchType.EAGER)
     private List<CampusUserEntity> users = new ArrayList<>();
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, optional = false)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private DeliveryDetailsEntity deliveryDetails;
 
     @Convert(converter = OrderStatusConverter.class)

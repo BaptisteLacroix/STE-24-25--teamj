@@ -10,7 +10,9 @@ public class GroupOrderMapper {
         dto.setGroupOrderId(entity.getId());
         dto.setOrders(entity.getOrders().stream().map(OrderMapper::toDTO).toList());
         dto.setUsers(entity.getUsers().stream().map(CampusUserMapper::toDTO).toList());
-        dto.setDeliveryDetails(DeliveryDetailsMapper.toDTO(entity.getDeliveryDetails()));
+        dto.setDeliveryDetails(entity.getDeliveryDetails() != null
+                ? DeliveryDetailsMapper.toDTO(entity.getDeliveryDetails())
+                : null);
         dto.setStatus(entity.getStatus().name());
         return dto;
     }
