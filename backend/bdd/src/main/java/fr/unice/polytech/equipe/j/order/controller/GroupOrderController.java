@@ -42,7 +42,7 @@ public class GroupOrderController {
 
     @Route(value = "/{id}", method = HttpMethod.GET)
     public HttpResponse getGroupOrderById(@PathParam("id") UUID id) {
-        GroupOrderEntity groupOrderEntity = GroupOrderDAO.getGroupOrderById(id);
+        GroupOrderEntity groupOrderEntity = GroupOrderDAO.getGroupOrderById(id);;
         if (groupOrderEntity != null) {
             ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
             try {
