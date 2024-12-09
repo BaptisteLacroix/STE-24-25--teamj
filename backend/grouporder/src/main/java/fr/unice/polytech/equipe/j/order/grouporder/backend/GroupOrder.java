@@ -7,6 +7,7 @@ import fr.unice.polytech.equipe.j.delivery.DeliveryDetails;
 import fr.unice.polytech.equipe.j.httpresponse.HttpCode;
 import fr.unice.polytech.equipe.j.httpresponse.HttpResponse;
 import fr.unice.polytech.equipe.j.order.grouporder.dto.*;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -17,6 +18,7 @@ import static fr.unice.polytech.equipe.j.RequestUtil.DATABASE_GROUPORDER_SERVICE
 import static fr.unice.polytech.equipe.j.RequestUtil.request;
 
 public class GroupOrder implements IGroupOrder {
+    @Setter
     private UUID groupOrderId;
     private final List<OrderDTO> orders = new ArrayList<>();
     private final DeliveryDetailsDTO deliveryDetails;
@@ -36,7 +38,7 @@ public class GroupOrder implements IGroupOrder {
                 ObjectMapper mapper = JacksonConfig.configureObjectMapper();
                 java.net.http.HttpResponse response = request(DATABASE_GROUPORDER_SERVICE_URI,"/update",HttpMethod.PUT,mapper.writeValueAsString(this));
                 if (response.statusCode()==201){
-                    return new HttpResponse(HttpCode.HTTP_201, "GroupOrder Updated in database");
+                    return new HttpResponse(HttpCode.HTTP_201, this.groupOrderId    );
                 }  else {
                     return new HttpResponse(HttpCode.HTTP_500, response.body());
                 }
@@ -106,7 +108,4 @@ public class GroupOrder implements IGroupOrder {
     }
 
 
-    public void setGroupOrderId(UUID groupOrderId) {
-        this.groupOrderId = groupOrderId;
-    }
 }

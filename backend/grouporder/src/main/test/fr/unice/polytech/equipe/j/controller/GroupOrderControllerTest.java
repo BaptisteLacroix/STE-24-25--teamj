@@ -1,5 +1,6 @@
 package fr.unice.polytech.equipe.j.controller;
 
+import fr.unice.polytech.equipe.j.Application;
 import fr.unice.polytech.equipe.j.FlexibleRestServer;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer;
@@ -26,13 +27,16 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class GroupOrderControllerTest {
-    private static final String BASE_URL = "http://localhost:5008/grouporder";
-
-
+    private static final String BASE_URL = "http://localhost:5008/api/group-order";
+    private static final String DATABASE_HEALTH_URL = "http://localhost:5000/api/database/health";
+    private static final UUID ORDER_UUID = UUID.fromString("178225f2-9f08-4a7f-add2-3783e89ffa6b"); // TEST Order
+    private static final UUID USER_UUID = UUID.fromString("1aeb4480-305a-499d-885c-7d2d9f99153b"); // TEST User
+    private static final UUID GROUP_ORDER_UUID = UUID.fromString("d8bf3e62-3e37-4a0a-b0b8-e47310687715");
+    private static final String BASE_DATABASE_URL = "http://localhost:5000/api/database";
 
     @BeforeAll
     public static void startServer(){
-        String dir = System.getProperty("user.dir");
+        String userDir = System.getProperty("user.dir");
         String bddModulePath = Paths.get(System.getProperty("user.dir")).getParent().toString();
         System.setProperty("user.dir", bddModulePath + "/bdd");
         // Set the hibernate.cfg.path system property to the test one hibernate-test.cfg.xml
@@ -54,7 +58,7 @@ class GroupOrderControllerTest {
         // Wait for the database API to be available
         waitForDatabaseToStart(DATABASE_HEALTH_URL);
 
-        FlexibleRestServer server = new FlexibleRestServer("fr.unice.polytech.equipe.j", 5003);
+        FlexibleRestServer server = new FlexibleRestServer("fr.unice.polytech.equipe.j", 5008);
         server.start();
 
 
@@ -99,6 +103,13 @@ class GroupOrderControllerTest {
             throw new RuntimeException("Database API did not start in time.");
         }
     }
-
-}
-
+    @Test
+    @Order(1)
+    void testGetAllGroupOrders() throws Exception{
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder().uri(URI.create(BASE_URL+"/d8bf3e623e374a0ab0b8e47310687715/getOrder")).GET().build();
+        java.net.http.HttpResponse<String> response = client.send(request, java.net.http.HttpResponse.BodyHandlers.ofString());
+        assertNotNull(response.body());
+        System.out.println(response.body());
+        assertEquals(200, response.statusCode());
+    }}

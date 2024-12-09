@@ -3,12 +3,14 @@ package fr.unice.polytech.equipe.j.order.grouporder.server;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import fr.unice.polytech.equipe.j.HttpMethod;
+import fr.unice.polytech.equipe.j.annotations.BeanParam;
 import fr.unice.polytech.equipe.j.annotations.Controller;
 import fr.unice.polytech.equipe.j.annotations.PathParam;
 import fr.unice.polytech.equipe.j.annotations.Route;
 import fr.unice.polytech.equipe.j.httpresponse.HttpCode;
 import fr.unice.polytech.equipe.j.httpresponse.HttpResponse;
 import fr.unice.polytech.equipe.j.order.grouporder.dto.CampusUserDTO;
+import fr.unice.polytech.equipe.j.order.grouporder.dto.DeliveryDetailsDTO;
 import fr.unice.polytech.equipe.j.order.grouporder.mapper.DTOMapper;
 import fr.unice.polytech.equipe.j.order.grouporder.dto.CampusUserDTO;
 
@@ -27,7 +29,7 @@ import static fr.unice.polytech.equipe.j.RequestUtil.DATABASE_ORDER_SERVICE_URI;
 import static fr.unice.polytech.equipe.j.RequestUtil.request;
 import static fr.unice.polytech.equipe.j.RequestUtil.*;
 
-@Controller("/GroupOrder")
+@Controller("/api/group-order")
 public class GroupOrderService {
     private final
     Logger logger = Logger.getLogger("GroupOrderService");
@@ -36,7 +38,7 @@ public class GroupOrderService {
     }
 
 
-    @Route(value = "{groupOrderId}/getOrders",method = HttpMethod.GET)
+    @Route(value = "/{groupOrderId}/getOrders",method = HttpMethod.GET)
     private HttpResponse answerWithAllOrders(@PathParam("groupOrderId") UUID groupOrderId) {
         IGroupOrder groupOrderProxy = createGroupOrderProxy(groupOrderId);
         ObjectMapper objectMapper = new ObjectMapper();
@@ -53,10 +55,10 @@ public class GroupOrderService {
         }
     }
 
-    @Route(value="{userId}/create",method = HttpMethod.POST)
-    private HttpResponse createGroupOrder(@PathParam("userId") UUID userdId) {
+    @Route(value="/{userId}/create",method = HttpMethod.POST)
+    private HttpResponse createGroupOrder(@PathParam("userId") UUID userdId, @BeanParam DeliveryDetailsDTO deliveryDetailsDTO) {
         try {
-            GroupOrder groupOrder1 = new GroupOrder(null);
+            GroupOrder groupOrder1 = new GroupOrder(deliveryDetailsDTO);
             GroupOrderDTO groupOrderDTO = new GroupOrderDTO(groupOrder1.getGroupOrderId(),null,new ArrayList<CampusUserDTO>(),null, "pending");
 
             IGroupOrder groupOrderProxy = createGroupOrderProxy(groupOrder1.getGroupOrderId());
@@ -80,7 +82,7 @@ public class GroupOrderService {
 
 
 
-    @Route(value = "{groupOrderId}/join/{userId}", method = HttpMethod.PUT)
+    @Route(value = "/{groupOrderId}/join/{userId}", method = HttpMethod.PUT)
     private HttpResponse joinGroupOrder(@PathParam("groupOrderId") UUID groupOrderId,@PathParam("userId") UUID userId) {
     try {
             java.net.http.HttpResponse<String> user = request(DATABASE_CAMPUS_USER_SERVICE_URI, "/"+userId.toString(),HttpMethod.GET, null);
@@ -93,7 +95,7 @@ public class GroupOrderService {
 
     }
 
-    @Route(value = "{groupOrderId}/{userId}/validate", method = HttpMethod.PUT)
+    @Route(value = "/{groupOrderId}/{userId}/validate", method = HttpMethod.PUT)
     private HttpResponse validateGroupOrder(@PathParam("groupOrderId") UUID groupOrderId, @PathParam("userId") UUID userId) {
         try{
             IGroupOrder groupOrderProxy = createGroupOrderProxy(groupOrderId);
