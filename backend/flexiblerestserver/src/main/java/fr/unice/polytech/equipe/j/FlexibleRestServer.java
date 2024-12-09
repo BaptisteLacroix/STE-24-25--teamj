@@ -1,6 +1,5 @@
 package fr.unice.polytech.equipe.j;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -8,7 +7,6 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
-import com.sun.security.jgss.GSSUtil;
 import fr.unice.polytech.equipe.j.annotations.BeanParam;
 import fr.unice.polytech.equipe.j.annotations.Controller;
 import fr.unice.polytech.equipe.j.annotations.PathParam;
@@ -25,7 +23,13 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -45,8 +49,9 @@ public class FlexibleRestServer {
 
     /**
      * Constructor to initialize the server with a root package and port.
+     *
      * @param serverRoot The root package to scan for controller classes.
-     * @param port The port on which the server will run.
+     * @param port       The port on which the server will run.
      */
     public FlexibleRestServer(String serverRoot, String classpath, int port) {
         this(serverRoot, port);
@@ -79,9 +84,17 @@ public class FlexibleRestServer {
             String fileName = classLoader.getResource(serverRoot.replace('.', '/') + "/").getPath();
             // split by "backend" string and get last element
             fileName = fileName.split("backend")[1].split("target")[0].replace("/", "");
-
+            // Get the root directory of the project (the directory where the project is located)
+            String projectRootDir = System.getProperty("user.dir");
+            // Define the target output directory for OpenAPI spec: doc/openapi/
+            String outputDir = projectRootDir + "/doc/openapi/";
+            File outputDirectory = new File(outputDir);
+            if (!outputDirectory.exists()) {
+                outputDirectory.mkdirs();
+            }
+            // Define the full path of the output file
+            File outputFile = new File(outputDir + fileName + "OpenApi.json");
             ObjectNode openApiSpec = generateOpenApiSpec(controllerClasses);
-            File outputFile = new File("doc/openapi/" + fileName+ "OpenApi.json");
             objectMapper.writerWithDefaultPrettyPrinter().writeValue(outputFile, openApiSpec);
             System.out.println("OpenAPI specification generated: " + outputFile.getAbsolutePath());
         } catch (Exception e) {
@@ -297,9 +310,9 @@ public class FlexibleRestServer {
     }
 
 
-
     /**
      * Scans for controller classes in the specified root package.
+     *
      * @return A list of controller classes.
      */
     private List<Class<?>> scanControllerClasses() {
@@ -312,6 +325,7 @@ public class FlexibleRestServer {
 
     /**
      * Initializes the handlers for all controller methods that are annotated with @Route.
+     *
      * @param controllerClasses The list of controller classes to process.
      */
     private void initializeControllerHandlers(List<Class<?>> controllerClasses) {
@@ -329,9 +343,10 @@ public class FlexibleRestServer {
 
     /**
      * Initializes a handler for a specific route defined by the method's @Route annotation.
+     *
      * @param controllerClass The controller class containing the method.
-     * @param method The controller method.
-     * @param basePath The base path for the controller.
+     * @param method          The controller method.
+     * @param basePath        The base path for the controller.
      */
     private void initializeRouteHandler(Class<?> controllerClass, Method method, String basePath) {
         Route route = method.getAnnotation(Route.class);
@@ -344,6 +359,7 @@ public class FlexibleRestServer {
 
     /**
      * Extracts dynamic segments from a route pattern, such as {id}.
+     *
      * @param routeValue The route pattern string.
      * @return A list of dynamic segment names.
      */
@@ -360,10 +376,14 @@ public class FlexibleRestServer {
 
     /**
      * Handles incoming HTTP requests by matching the request path to registered routes.
+     *
      * @param exchange The HTTP exchange containing the request.
      * @throws IOException If an I/O error occurs while handling the request.
      */
     private void handleRequest(HttpExchange exchange) throws IOException {
+        // Allow CORS headers
+        addCORSHeaders(exchange);
+
         String requestPath = exchange.getRequestURI().getPath();
         String matchedPattern = findMatchingRoute(requestPath);
 
@@ -381,8 +401,29 @@ public class FlexibleRestServer {
         }
     }
 
+    private void addCORSHeaders(HttpExchange exchange) {
+        // Allow all origins (or specify a specific origin, e.g., "http://example.com")
+        exchange.getResponseHeaders().set("Access-Control-Allow-Origin", "*");
+
+        // Specify allowed methods (e.g., GET, POST, OPTIONS)
+        exchange.getResponseHeaders().set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+
+        // Allow specific headers (you can add more headers if needed)
+        exchange.getResponseHeaders().set("Access-Control-Allow-Headers", "Content-Type, Authorization");
+
+        // Allow credentials (set to "true" if you want to allow cookies)
+        exchange.getResponseHeaders().set("Access-Control-Allow-Credentials", "true");
+
+        // Optionally handle pre-flight OPTIONS requests
+        if ("OPTIONS".equals(exchange.getRequestMethod())) {
+            sendResponse(exchange, 200, "");
+        }
+    }
+
+
     /**
      * Finds the first route that matches the request path.
+     *
      * @param requestPath The requested path.
      * @return The matching route pattern, or null if no match is found.
      */
@@ -396,6 +437,7 @@ public class FlexibleRestServer {
 
     /**
      * Normalizes a path by converting dynamic segments into regular expressions.
+     *
      * @param path The path to normalize.
      * @return The normalized path with dynamic segments as regex patterns.
      */
@@ -405,6 +447,7 @@ public class FlexibleRestServer {
 
     /**
      * Compares two route patterns to determine which should take precedence.
+     *
      * @param route1 The first route pattern.
      * @param route2 The second route pattern.
      * @return A comparison result for sorting.
@@ -420,10 +463,11 @@ public class FlexibleRestServer {
 
     /**
      * Registers a handler for a specific HTTP method and route.
+     *
      * @param controllerClass The controller class containing the method.
-     * @param method The controller method.
-     * @param fullPath The full path for the route.
-     * @param httpMethod The HTTP method for the route.
+     * @param method          The controller method.
+     * @param fullPath        The full path for the route.
+     * @param httpMethod      The HTTP method for the route.
      * @param dynamicSegments The dynamic segments in the route.
      */
     private void addContextHandler(Class<?> controllerClass, Method method, String fullPath, HttpMethod httpMethod, List<String> dynamicSegments) {
@@ -447,6 +491,7 @@ public class FlexibleRestServer {
 
     /**
      * Retrieves or creates an instance of a controller class.
+     *
      * @param controllerClass The controller class.
      * @return An instance of the controller.
      */
@@ -456,6 +501,7 @@ public class FlexibleRestServer {
 
     /**
      * Creates an instance of the specified controller class using reflection.
+     *
      * @param controllerClass The controller class to instantiate.
      * @return An instance of the controller class.
      */
@@ -469,6 +515,7 @@ public class FlexibleRestServer {
 
     /**
      * Reads the request body from an HTTP exchange.
+     *
      * @param exchange The HTTP exchange containing the request body.
      * @return The request body as a string.
      * @throws IOException If an I/O error occurs while reading the body.
@@ -481,8 +528,9 @@ public class FlexibleRestServer {
 
     /**
      * Prepares the method parameters for invoking a controller method.
-     * @param method The method to be invoked.
-     * @param pathParams The extracted path parameters.
+     *
+     * @param method      The method to be invoked.
+     * @param pathParams  The extracted path parameters.
      * @param queryParams The extracted query parameters.
      * @param requestBody The request body.
      * @return An array of method parameters to pass when invoking the method.
@@ -502,8 +550,9 @@ public class FlexibleRestServer {
 
     /**
      * Resolves the value of a method parameter, depending on annotations like @QueryParam, @PathParam, or @BeanParam.
-     * @param param The method parameter.
-     * @param pathParams The path parameters.
+     *
+     * @param param       The method parameter.
+     * @param pathParams  The path parameters.
      * @param queryParams The query parameters.
      * @param requestBody The request body (used for BeanParam).
      * @return The resolved parameter value.
@@ -523,7 +572,8 @@ public class FlexibleRestServer {
 
     /**
      * Parses the request body into an object of the specified type.
-     * @param paramType The type to which the request body should be converted.
+     *
+     * @param paramType   The type to which the request body should be converted.
      * @param requestBody The request body as a string.
      * @return The parsed object.
      * @throws IOException If an error occurs while parsing the request body.
@@ -538,8 +588,9 @@ public class FlexibleRestServer {
 
     /**
      * Handles the response after processing a controller method's result.
+     *
      * @param exchange The HTTP exchange.
-     * @param result The result object from the controller method.
+     * @param result   The result object from the controller method.
      * @throws IOException If an error occurs while sending the response.
      */
     void handleResponse(HttpExchange exchange, Object result) throws IOException {
@@ -555,6 +606,7 @@ public class FlexibleRestServer {
 
     /**
      * Converts the response content to JSON format.
+     *
      * @param content The content to be converted.
      * @return The JSON representation of the content.
      * @throws IOException If an error occurs while converting to JSON.
@@ -565,8 +617,9 @@ public class FlexibleRestServer {
 
     /**
      * Handles exceptions that occur during request processing by sending an internal server error response.
+     *
      * @param exchange The HTTP exchange.
-     * @param e The exception that was thrown.
+     * @param e        The exception that was thrown.
      */
     private void handleException(HttpExchange exchange, Exception e) {
         try {
@@ -579,8 +632,9 @@ public class FlexibleRestServer {
 
     /**
      * Extracts path parameters from the request path.
-     * @param requestPath The request path.
-     * @param routePattern The route pattern.
+     *
+     * @param requestPath     The request path.
+     * @param routePattern    The route pattern.
      * @param dynamicSegments The dynamic segments in the route.
      * @return A map of extracted path parameters.
      */
@@ -599,6 +653,7 @@ public class FlexibleRestServer {
 
     /**
      * Parses query parameters from the request URI.
+     *
      * @param exchange The HTTP exchange.
      * @return A map of query parameters.
      */
@@ -610,6 +665,7 @@ public class FlexibleRestServer {
 
     /**
      * Converts a query string to a map of key-value pairs.
+     *
      * @param query The query string to be converted.
      * @return A map of query parameters.
      */
@@ -624,8 +680,9 @@ public class FlexibleRestServer {
 
     /**
      * Converts a string value to the specified type.
+     *
      * @param value The value to convert.
-     * @param type The target type to convert to.
+     * @param type  The target type to convert to.
      * @return The converted value.
      */
     Object convertType(String value, Class<?> type) {
@@ -641,9 +698,10 @@ public class FlexibleRestServer {
 
     /**
      * Sends a response with the specified status code and message.
-     * @param exchange The HTTP exchange.
+     *
+     * @param exchange   The HTTP exchange.
      * @param statusCode The status code to send.
-     * @param message The message to include in the response.
+     * @param message    The message to include in the response.
      */
     private void sendResponse(HttpExchange exchange, int statusCode, String message) {
         try {
@@ -658,9 +716,14 @@ public class FlexibleRestServer {
 
     /**
      * Main method to start the server.
+     *
      * @param args Command-line arguments.
      */
     public static void main(String[] args) {
         new FlexibleRestServer("fr.unice.polytech.equipe.j", 5003).start();
+    }
+
+    public void stop() {
+        server.stop(0);
     }
 }

@@ -56,7 +56,7 @@ public class RestaurantServiceManager {
      */
     public List<IRestaurant> searchByTypeOfFood(List<IRestaurant> restaurants, String foodType) {
         return searchByCriteria(restaurants, restaurant -> restaurant.getMenu().getItems().stream()
-                .anyMatch(item -> item.getName().contains(foodType)));
+                .anyMatch(item -> item.getType().contains(foodType)));
     }
 
     /**

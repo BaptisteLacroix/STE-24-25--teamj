@@ -36,9 +36,9 @@ public class RestaurantManagerControllerTest {
 
     private RestaurantDTO getRestaurant() {
         List<MenuItemDTO> itemsRestaurant = List.of(
-                new MenuItemDTO(UUID.randomUUID(), "TEST", 0, 12.50),
-                new MenuItemDTO(UUID.randomUUID(), "TEST", 1, 25.00),
-                new MenuItemDTO(UUID.randomUUID(), "TEST", 2, 8.00)
+                new MenuItemDTO(UUID.randomUUID(), "TEST", 0, 12.50, "Appetizer"),
+                new MenuItemDTO(UUID.randomUUID(), "TEST", 1, 25.00, "Main Course"),
+                new MenuItemDTO(UUID.randomUUID(), "TEST", 2, 8.00, "Dessert")
         );
         MenuDTO menuDTO = new MenuDTO();
         menuDTO.setUuid(UUID.randomUUID());

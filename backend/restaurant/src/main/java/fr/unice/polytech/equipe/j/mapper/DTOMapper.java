@@ -128,7 +128,7 @@ public class DTOMapper {
     }
 
     public static MenuItem toMenuItem(MenuItemDTO item) {
-        return new MenuItem(item.getId(), item.getName(), item.getPrepTime(), item.getPrice());
+        return new MenuItem(item.getId(), item.getName(), item.getPrepTime(), item.getPrice(), item.getType());
     }
 
     public static MenuItemDTO toMenuItemDTO(MenuItem item) {
@@ -137,6 +137,7 @@ public class DTOMapper {
         dto.setName(item.getName());
         dto.setPrepTime(item.getPrepTime());
         dto.setPrice(item.getPrice());
+        dto.setType(item.getType());
         return dto;
     }
 }

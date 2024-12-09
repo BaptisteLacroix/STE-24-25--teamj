@@ -38,11 +38,24 @@ import static fr.unice.polytech.equipe.j.RequestUtil.request;
 
 @Controller("/api/restaurants")
 public class RestaurantController {
+    private final ObjectMapper objectMapper = JacksonConfig.configureObjectMapper();
+
+    @Route(value = "/types", method = HttpMethod.GET)
+    public HttpResponse getAllFoodTypes() {
+        try {
+            java.net.http.HttpResponse<String> response = request(RequestUtil.DATABASE_RESTAURANT_SERVICE_URI, "/types", HttpMethod.GET, null);
+            return createHttpResponse(HttpCode.HTTP_200, response.body());
+        } catch (Exception e) {
+            return createHttpResponse(HttpCode.HTTP_500, "Internal server error: " + e.getMessage());
+        }
+    }
 
     @Route(value = "/name/{name}", method = HttpMethod.GET)
     public HttpResponse searchByName(@PathParam("name") String name) {
         try {
             List<IRestaurant> restaurants = fetchRestaurantsFromDatabase();
+            // replace the + in the url by an empty space
+            name = name.replace("+", " ");
             List<IRestaurant> matchingRestaurants = RestaurantServiceManager.getInstance()
                     .searchByName(restaurants, name);
             if (matchingRestaurants.isEmpty()) {
@@ -81,9 +94,16 @@ public class RestaurantController {
             // Fetch the list of restaurants from the database
             List<IRestaurant> restaurants = fetchRestaurantsFromDatabase();
 
+            // transform the + in the url to a space
+            foodType = foodType.replace("+", " ");
+
             // Use the searchByTypeOfFood method from RestaurantServiceManager to filter restaurants by food type
             List<IRestaurant> matchingRestaurants = RestaurantServiceManager.getInstance()
                     .searchByTypeOfFood(restaurants, foodType);
+
+            List<RestaurantDTO> matchingRestaurantsDTO = matchingRestaurants.stream()
+                    .map(DTOMapper::toRestaurantDTO)
+                    .toList();
 
             // Return 404 if no matching restaurants are found
             if (matchingRestaurants.isEmpty()) {
@@ -91,7 +111,7 @@ public class RestaurantController {
             }
 
             // Return 200 with the list of matching restaurants in JSON format
-            return createHttpResponse(HttpCode.HTTP_200, convertRestaurantsToJson(matchingRestaurants));
+            return createHttpResponse(HttpCode.HTTP_200, objectMapper.writeValueAsString(matchingRestaurantsDTO));
 
         } catch (Exception e) {
             // Return 500 in case of any errors

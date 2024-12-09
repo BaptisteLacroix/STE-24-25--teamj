@@ -12,7 +12,7 @@ import {
     SelectItem, ModalContent,
 } from "@nextui-org/react";
 import {useParams} from "react-router-dom";
-import {DeliveryDetails, DeliveryLocation, Dish} from "../utils/types.ts";
+import {DeliveryDetails, DeliveryLocation, Dish, Restaurant} from "../utils/types.ts";
 import {AddIcon} from "../utils/icons/AddIcon.tsx";
 import {now, getLocalTimeZone} from "@internationalized/date";
 import {useAppState} from "../AppStateContext.tsx";
@@ -26,6 +26,7 @@ export const DishesComponent: React.FC<DishesComponentProps> = ({
                                                                 }) => {
     const {userId, setOrderId, orderId, groupOrderId} = useAppState();
     const {restaurantId} = useParams<{ restaurantId: string }>();
+    const [restaurant, setRestaurant] = useState<Restaurant | null>(null);
     const [dishes, setDishes] = useState<Dish[]>([]);
     const [selectedDishId, setSelectedDishId] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
@@ -38,7 +39,8 @@ export const DishesComponent: React.FC<DishesComponentProps> = ({
     useEffect(() => {
         if (restaurantId) {
             restaurantModel.getRestaurantById(restaurantId).then((restaurant) => {
-                setDishes(restaurant.dishes);
+                setRestaurant(restaurant);
+                setDishes(restaurant?.dishes || []);
                 setLoading(false);
             });
         }
@@ -111,7 +113,7 @@ export const DishesComponent: React.FC<DishesComponentProps> = ({
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 justify-items-center max-w-6xl">
                 {dishes.map((dish) => (
                     <Skeleton isLoaded={!loading} key={dish.id}>
-                        <div className="drop-shadow-md cursor-pointer">
+                        <div className={`drop-shadow-md ${!userId || !restaurant || restaurant.closingHours == null ? "cursor-not-allowed" : "cursor-pointer"}`}>
                             <div className="bg-gray-800 text-white rounded-lg overflow-hidden w-72 mt-10">
                                 <div className="bg-white text-black px-6 py-4 flex items-center">
                                     <img
@@ -124,9 +126,14 @@ export const DishesComponent: React.FC<DishesComponentProps> = ({
                                 <div className="px-6 py-4 flex justify-between items-center">
                                     <div className="text-sm">
                                         <p><strong>Price:</strong> ${dish.price.toFixed(2)}</p>
-                                        <p><strong>Preparation Time:</strong> {dish.prepTime} minutes</p>
+                                        <p>
+                                            <strong>Preparation Time: </strong>
+                                            {dish.prepTime > 60 ? Math.floor(dish.prepTime / 60) + ' minutes' : dish.prepTime + ' seconds'}
+                                        </p>
                                     </div>
-                                    <Button onClick={() => handleAddToOrder(dish.id)}>
+                                    <Button
+                                        isDisabled={!userId || !restaurant || restaurant.closingHours == null}
+                                            onClick={() => handleAddToOrder(dish.id)}>
                                         <AddIcon/>
                                     </Button>
                                 </div>

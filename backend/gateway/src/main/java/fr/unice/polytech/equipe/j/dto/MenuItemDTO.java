@@ -17,14 +17,17 @@ public class MenuItemDTO {
     private int prepTime;
     @NonNull
     private double price;
+    @NonNull
+    private String type;
 
     public MenuItemDTO() {
     }
 
-    public MenuItemDTO(UUID id, String name, int prepTime, double price) {
+    public MenuItemDTO(UUID id, String name, int prepTime, double price, String type) {
         this.id = id;
         this.name = name;
         this.prepTime = prepTime;
         this.price = price;
+        this.type = type;
     }
 }

@@ -18,6 +18,8 @@ public class MenuItemDTO {
     private int prepTime;
     @NonNull
     private double price;
+    @NonNull
+    private String type;
     @JsonBackReference
     private MenuDTO menuDTO;
 

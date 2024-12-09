@@ -36,6 +36,9 @@ public class MenuItemEntity {
     @Column(nullable = false)
     private double price;
 
+    @Column(nullable = false)
+    private String type;
+
     @ManyToOne
     @JoinColumn(name = "menu_id")
     private MenuEntity menuEntity;
@@ -53,6 +56,7 @@ public class MenuItemEntity {
                 ", prepTime=" + prepTime +
                 ", price=" + price +
                 ", menuEntity=" + menuEntity +
+                ", type='" + type + '\'' +
                 '}';
     }
 }

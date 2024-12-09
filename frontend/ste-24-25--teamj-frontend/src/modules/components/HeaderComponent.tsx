@@ -11,12 +11,16 @@ type PolyFoodHeaderProps = {
     restaurantModel: RestaurantModel;
     setIsNewGroupOrderModalOpen: (isOpen: boolean) => void;
     setIsJoinGroupOrderModalOpen: (isOpen: boolean) => void;
+    searchQuery: string;
+    setSearchQuery: (query: string) => void;
 };
 
 export function PolyfoodHeader({
     restaurantModel,
     setIsNewGroupOrderModalOpen,
-    setIsJoinGroupOrderModalOpen
+    setIsJoinGroupOrderModalOpen,
+    searchQuery,
+    setSearchQuery,
 }: PolyFoodHeaderProps) {
     const [order, setOrder] = useState<Order | IndividualOrder | null>(null);
     const { userId, setUserId, orderId } = useAppState();
@@ -69,6 +73,8 @@ export function PolyfoodHeader({
                     size="lg"
                     startContent={<SearchIcon size={18} />}
                     type="search"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
                 />
             </NavbarContent>
 

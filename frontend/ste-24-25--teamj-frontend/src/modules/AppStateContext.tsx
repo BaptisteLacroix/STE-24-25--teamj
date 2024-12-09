@@ -1,4 +1,4 @@
-import React, {createContext, useContext, useState, ReactNode, useEffect} from 'react';
+import React, {createContext, ReactNode, useContext, useEffect, useState} from 'react';
 
 interface AppStateContextType {
     userId: string | null;
@@ -20,7 +20,7 @@ export const useAppState = () => {
 };
 
 
-export const AppStateProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+export const AppStateProvider: React.FC<{ children: ReactNode }> = ({children}) => {
     const [userId, setUserId] = useState<string | null>(() => localStorage.getItem('userId') || null);
     const [orderId, setOrderId] = useState<string | null>(() => localStorage.getItem('orderId') || null);
     const [groupOrderId, setGroupOrderId] = useState<string | null>(() => localStorage.getItem('groupOrderId') || null);
@@ -49,8 +49,18 @@ export const AppStateProvider: React.FC<{ children: ReactNode }> = ({ children }
         }
     }, [groupOrderId]);
 
+    // Monitor userId changes - reset orderId and groupOrderId if userId becomes null
+    useEffect(() => {
+        if (userId === null) {
+            setOrderId(null);
+            setGroupOrderId(null);
+        }
+    }, [userId, setOrderId, setGroupOrderId]);
+
     return (
-        <AppStateContext.Provider value={{ userId, setUserId, orderId, setOrderId, groupOrderId, setGroupOrderId }}>
+        <AppStateContext.Provider
+            value={{userId, setUserId, orderId, setOrderId, groupOrderId, setGroupOrderId}}
+        >
             {children}
         </AppStateContext.Provider>
     );

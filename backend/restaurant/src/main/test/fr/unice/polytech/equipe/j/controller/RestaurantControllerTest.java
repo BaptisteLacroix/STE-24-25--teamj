@@ -155,7 +155,7 @@ class RestaurantControllerTest {
     @Test
     @Order(3)
     void testSearchByFoodType() throws Exception {
-        String foodType = "Mousse au chocolat";
+        String foodType = "Main Course";
         HttpClient client = HttpClient.newHttpClient();
         String encodedUri = URLEncoder.encode(foodType, StandardCharsets.UTF_8).replace("+", "%20");
         HttpRequest request = HttpRequest.newBuilder()

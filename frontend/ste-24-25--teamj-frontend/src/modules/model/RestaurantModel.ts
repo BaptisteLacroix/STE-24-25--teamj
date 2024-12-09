@@ -1,9 +1,23 @@
 import {DeliveryDetails, DeliveryLocation, IndividualOrder, Order, OrderStatus, Restaurant} from "../utils/types.ts";
-import {RESTAURANTS_MOCK} from "../utils/mocks.ts";
+import {API_BASE_URL} from "../utils/apiUtils.ts";
 
 export class RestaurantModel {
+
+    public async getRestaurantsTypes(): Promise<string[]> {
+        const response = await fetch(`${API_BASE_URL}/restaurants/types`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        if (response.status !== 200) {
+            return []
+        }
+        const data = await response.json()
+        return data
+    }
+
     public async getAllRestaurants(): Promise<Restaurant[]> {
-        /*
         const response = await fetch(`${API_BASE_URL}/restaurants/all`, {
             method: 'GET',
             headers: {
@@ -11,27 +25,26 @@ export class RestaurantModel {
             }
         })
         if (response.status !== 200) {
-            throw new Error('Failed to fetch restaurants')
+            return []
         }
-        const data = await response.json()
+        const data = await response.json();
         // Transform the data into the format we need
         return data.map((restaurant: any) => ({
-            id: restaurant.uuid,
+            id: restaurant.id,
             name: restaurant.restaurantName,
-            openingHours: new Date(restaurant.openingHours),
-            closingHours: new Date(restaurant.closingHours),
-            dishes: restaurant.dishes.map((dish: any) => ({
-                id: dish.id,
-                name: dish.name,
-                price: dish.price,
-                prepTime: dish.prepTime
-            }))
-        }))*/
-        return RESTAURANTS_MOCK
+            dishes: restaurant.menu.items.map((item: any) => ({
+                id: item.id,
+                name: item.name,
+                prepTime: item.prepTime,
+                price: item.price,
+                type: item.type
+            })),
+            openingHours: restaurant.openingTime ? this.parseLocalDateTimeArray(restaurant.openingTime) : null,
+            closingHours: restaurant.closingTime ? this.parseLocalDateTimeArray(restaurant.closingTime) : null
+        }));
     }
 
-    public async getRestaurantById(id: string): Promise<Restaurant> {
-        /*
+    public async getRestaurantById(id: string): Promise<Restaurant | null> {
         const response = await fetch(`${API_BASE_URL}/restaurants/${id}`, {
             method: 'GET',
             headers: {
@@ -39,27 +52,26 @@ export class RestaurantModel {
             }
         })
         if (response.status !== 200) {
-            throw new Error('Failed to fetch restaurant')
+            return null;
         }
         const restaurant = await response.json()
         // Transform the data into the format we need
         return {
-            id: restaurant.uuid,
+            id: restaurant.id,
             name: restaurant.restaurantName,
-            openingHours: new Date(restaurant.openingHours),
-            closingHours: new Date(restaurant.closingHours),
-            dishes: restaurant.dishes.map((dish: any) => ({
-                id: dish.id,
-                name: dish.name,
-                price: dish.price,
-                prepTime: dish.prepTime
-            }))
-        }*/
-        return RESTAURANTS_MOCK[0]
+            dishes: restaurant.menu.items.map((item: any) => ({
+                id: item.id,
+                name: item.name,
+                prepTime: item.prepTime,
+                price: item.price,
+                type: item.type
+            })),
+            openingHours: restaurant.openingTime ? this.parseLocalDateTimeArray(restaurant.openingTime) : null,
+            closingHours: restaurant.closingTime ? this.parseLocalDateTimeArray(restaurant.closingTime) : null
+        }
     }
 
     public async getRestaurantByFoodType(foodType: string): Promise<Restaurant[]> {
-        /*
         const response = await fetch(`${API_BASE_URL}/restaurants/foodType/${foodType}`, {
             method: 'GET',
             headers: {
@@ -67,27 +79,26 @@ export class RestaurantModel {
             }
         })
         if (response.status !== 200) {
-            throw new Error('Failed to fetch restaurants')
+            return []
         }
         const data = await response.json()
         // Transform the data into the format we need
         return data.map((restaurant: any) => ({
-            id: restaurant.uuid,
+            id: restaurant.id,
             name: restaurant.restaurantName,
-            openingHours: new Date(restaurant.openingHours),
-            closingHours: new Date(restaurant.closingHours),
-            dishes: restaurant.dishes.map((dish: any) => ({
-                id: dish.id,
-                name: dish.name,
-                price: dish.price,
-                prepTime: dish.prepTime
-            }))
-        }))*/
-        return RESTAURANTS_MOCK.slice(0, 3)
+            dishes: restaurant.menu.items.map((item: any) => ({
+                id: item.id,
+                name: item.name,
+                prepTime: item.prepTime,
+                price: item.price,
+                type: item.type
+            })),
+            openingHours: restaurant.openingTime ? this.parseLocalDateTimeArray(restaurant.openingTime) : null,
+            closingHours: restaurant.closingTime ? this.parseLocalDateTimeArray(restaurant.closingTime) : null
+        }));
     }
 
     public async getRestaurantsByName(name: string): Promise<Restaurant[]> {
-        /*
         const response = await fetch(`${API_BASE_URL}/restaurants/name/${name}`, {
             method: 'GET',
             headers: {
@@ -95,23 +106,23 @@ export class RestaurantModel {
             }
         })
         if (response.status !== 200) {
-            throw new Error('Failed to fetch restaurants')
+            return []
         }
         const data = await response.json()
         // Transform the data into the format we need
         return data.map((restaurant: any) => ({
-            id: restaurant.uuid,
+            id: restaurant.id,
             name: restaurant.restaurantName,
-            openingHours: new Date(restaurant.openingHours),
-            closingHours: new Date(restaurant.closingHours),
-            dishes: restaurant.dishes.map((dish: any) => ({
-                id: dish.id,
-                name: dish.name,
-                price: dish.price,
-                prepTime: dish.prepTime
-            }))
-        }))*/
-        return RESTAURANTS_MOCK.slice(0, 3)
+            dishes: restaurant.menu.items.map((item: any) => ({
+                id: item.id,
+                name: item.name,
+                prepTime: item.prepTime,
+                price: item.price,
+                type: item.type
+            })),
+            openingHours: restaurant.openingTime ? this.parseLocalDateTimeArray(restaurant.openingTime) : null,
+            closingHours: restaurant.closingTime ? this.parseLocalDateTimeArray(restaurant.closingTime) : null
+        }));
     }
 
     public async startNewOrder(userId: string, restaurantId: string, groupOrderId: string | null, deliveryDetails: DeliveryDetails | null): Promise<string> {
@@ -198,13 +209,15 @@ export class RestaurantModel {
                     id: "1",
                     name: "pastashiuta",
                     prepTime: 3,
-                    price: 7
+                    price: 7,
+                    type: "pasta"
                 },
                 {
                     id: "2",
                     name: "pizza",
                     prepTime: 10,
-                    price: 8
+                    price: 8,
+                    type: "pizza"
                 }
             ],
             status: OrderStatus.PENDING
@@ -314,5 +327,10 @@ export class RestaurantModel {
         const data = await response.json()
         return data.groupOrderId*/
         return "1"
+    }
+
+    private parseLocalDateTimeArray(arr: number[]): Date {
+        const [year, month, day, hours, minutes, seconds, milliseconds] = arr;
+        return new Date(year, month - 1, day, hours, minutes, seconds, milliseconds);
     }
 }

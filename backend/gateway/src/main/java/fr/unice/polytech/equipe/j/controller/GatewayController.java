@@ -26,6 +26,17 @@ public class GatewayController {
     private ObjectMapper objectMapper = JacksonConfig.configureObjectMapper();
     private java.net.http.HttpResponse<String> response;
 
+    @Route(value = "/restaurants/types", method = HttpMethod.GET)
+    public HttpResponse getAllFoodTypes() {
+        response = request(
+                RequestUtil.RESTAURANT_SERVICE_URI,
+                "/types",
+                HttpMethod.GET,
+                null
+        );
+        return new HttpResponse(HttpCode.fromCode(response.statusCode()), response.body());
+    }
+
     @Route(value = "/restaurants/all", method = HttpMethod.GET)
     public HttpResponse getAllRestaurants() {
         response = request(
@@ -56,6 +67,7 @@ public class GatewayController {
                 HttpMethod.GET,
                 null
         );
+        System.out.println(response.body());
         return new HttpResponse(HttpCode.fromCode(response.statusCode()), response.body());
     }
 

@@ -42,6 +42,8 @@ public class HibernateUtil {
         if (args.length > 0) {
             ExecuteSQLFileWithHibernate.main(args);
         }
+        // Stop the server
+        server.stop();
         return true;
     }
 }
