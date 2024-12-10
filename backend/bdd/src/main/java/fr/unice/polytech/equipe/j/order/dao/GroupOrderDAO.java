@@ -4,6 +4,7 @@ import fr.unice.polytech.equipe.j.HibernateUtil;
 import fr.unice.polytech.equipe.j.httpresponse.HttpCode;
 import fr.unice.polytech.equipe.j.httpresponse.HttpResponse;
 import fr.unice.polytech.equipe.j.order.entities.GroupOrderEntity;
+import fr.unice.polytech.equipe.j.user.entities.CampusUserEntity;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
@@ -41,6 +42,27 @@ public static HttpResponse save(GroupOrderEntity groupOrderEntity) {
             System.out.println("Error while getting groupOrder by id : " + e.getMessage());
             return null;
         }
+    }
+
+    /**
+     * Search for any occurence of the user in the group orders that are not validated
+     * @param userId
+     * @return
+     */
+    public static CampusUserEntity foundUserInGroupOrders(UUID userId) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            List<GroupOrderEntity> groupOrders = session.createQuery("FROM GroupOrderEntity", GroupOrderEntity.class).list();
+            for (GroupOrderEntity groupOrder : groupOrders) {
+                for (CampusUserEntity user : groupOrder.getUsers()) {
+                    if (user.getId().equals(userId)) {
+                        return user;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("Error while getting groupOrder by id : " + e.getMessage());
+        }
+        return null;
     }
 }
 

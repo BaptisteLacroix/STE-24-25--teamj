@@ -1,13 +1,15 @@
-package fr.unice.polytech.equipe.j.order.grouporder.backend;
+package fr.unice.polytech.equipe.j.backend;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.unice.polytech.equipe.j.HttpMethod;
-import fr.unice.polytech.equipe.j.JacksonConfig;
-import fr.unice.polytech.equipe.j.delivery.DeliveryDetails;
+import fr.unice.polytech.equipe.j.dto.CampusUserDTO;
+import fr.unice.polytech.equipe.j.dto.DeliveryDetailsDTO;
+import fr.unice.polytech.equipe.j.dto.OrderDTO;
+import fr.unice.polytech.equipe.j.dto.OrderStatus;
 import fr.unice.polytech.equipe.j.httpresponse.HttpCode;
 import fr.unice.polytech.equipe.j.httpresponse.HttpResponse;
-import fr.unice.polytech.equipe.j.order.grouporder.dto.*;
-import fr.unice.polytech.equipe.j.order.grouporder.mapper.DTOMapper;
+import fr.unice.polytech.equipe.j.mapper.DTOMapper;
+import fr.unice.polytech.equipe.j.utils.JacksonConfig;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
@@ -15,8 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import static fr.unice.polytech.equipe.j.RequestUtil.DATABASE_GROUPORDER_SERVICE_URI;
-import static fr.unice.polytech.equipe.j.RequestUtil.request;
+import static fr.unice.polytech.equipe.j.utils.RequestUtil.DATABASE_GROUPORDER_SERVICE_URI;
+import static fr.unice.polytech.equipe.j.utils.RequestUtil.request;
 
 public class GroupOrder implements IGroupOrder {
     @Setter
@@ -28,28 +30,30 @@ public class GroupOrder implements IGroupOrder {
 
     @Override
     public List<CampusUserDTO> getUsers() {
-        return this.campusUsers ;
+        return this.campusUsers;
     }
 
     @Override
     public HttpResponse addUser(CampusUserDTO user) {
         try {
-            System.out.println("Before adding user: " + this.campusUsers);
+            // if the user is not already in the group order, add it, check with the id
+            if (this.getUsers().stream().anyMatch(u -> u.getId().equals(user.getId()))) {
+                return new HttpResponse(HttpCode.HTTP_400, "User already in group order");
+            }
             this.getUsers().add(user);
-            System.out.println("After adding user: " + this.campusUsers);
             try {
                 ObjectMapper mapper = JacksonConfig.configureObjectMapper();
-                java.net.http.HttpResponse response = request(DATABASE_GROUPORDER_SERVICE_URI,"/update",HttpMethod.PUT,mapper.writeValueAsString(DTOMapper.toGroupOrderDTO(this)));
-                if (response.statusCode()==201){
+                java.net.http.HttpResponse response = request(DATABASE_GROUPORDER_SERVICE_URI, "/update", HttpMethod.PUT, mapper.writeValueAsString(DTOMapper.toGroupOrderDTO(this)));
+                if (response.statusCode() == 201) {
                     return new HttpResponse(HttpCode.HTTP_201, this.groupOrderId);
-                }  else {
+                } else {
                     return new HttpResponse(HttpCode.HTTP_500, response.body());
                 }
-            }catch (Exception e){
-                    return new HttpResponse(HttpCode.HTTP_400,"Can't update groupOrder");
+            } catch (Exception e) {
+                return new HttpResponse(HttpCode.HTTP_400, "Can't update groupOrder");
             }
-        } catch (Exception e){
-            return new HttpResponse(HttpCode.HTTP_404,"Can't find groupOrder");
+        } catch (Exception e) {
+            return new HttpResponse(HttpCode.HTTP_404, "Can't find groupOrder");
         }
     }
 
@@ -69,7 +73,7 @@ public class GroupOrder implements IGroupOrder {
         try {
             // Sauvegardez les changements dans la base de données
             ObjectMapper mapper = JacksonConfig.configureObjectMapper();
-            java.net.http.HttpResponse response = request(DATABASE_GROUPORDER_SERVICE_URI,"/update",HttpMethod.PUT,mapper.writeValueAsString(DTOMapper.toGroupOrderDTO(this)));
+            java.net.http.HttpResponse response = request(DATABASE_GROUPORDER_SERVICE_URI, "/update", HttpMethod.PUT, mapper.writeValueAsString(DTOMapper.toGroupOrderDTO(this)));
             if (response.statusCode() == 201) {
                 return new HttpResponse(HttpCode.HTTP_200, "GroupOrder validated successfully.");
             } else {

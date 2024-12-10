@@ -1,4 +1,4 @@
-package fr.unice.polytech.equipe.j.order.grouporder.dto;
+package fr.unice.polytech.equipe.j.dto;
 
 public enum OrderStatus {
     PENDING,

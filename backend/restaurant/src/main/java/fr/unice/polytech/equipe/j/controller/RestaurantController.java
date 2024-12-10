@@ -207,6 +207,7 @@ public class RestaurantController {
             @QueryParam("deliveryTime") String deliveryTime) {
 
         try {
+            if (deliveryTime.equals("null")) deliveryTime = null;
             // Fetch restaurant, order, and menu item details
             java.net.http.HttpResponse<String> menuItemResponse = request(
                     RequestUtil.DATABASE_RESTAURANT_SERVICE_URI,

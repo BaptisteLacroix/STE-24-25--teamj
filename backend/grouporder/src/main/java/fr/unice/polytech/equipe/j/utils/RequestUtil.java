@@ -1,5 +1,6 @@
-package fr.unice.polytech.equipe.j;
+package fr.unice.polytech.equipe.j.utils;
 
+import fr.unice.polytech.equipe.j.HttpMethod;
 import fr.unice.polytech.equipe.j.httpresponse.HttpCode;
 import fr.unice.polytech.equipe.j.httpresponse.HttpResponse;
 

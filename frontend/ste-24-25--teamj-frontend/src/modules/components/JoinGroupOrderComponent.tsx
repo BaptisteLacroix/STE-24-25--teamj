@@ -9,8 +9,8 @@ type NewGroupOrderProps = {
 };
 
 export const JoinGroupOrder: React.FC<NewGroupOrderProps> = ({restaurantModel, setIsJoinGroupOrderModalOpen}) => {
-    const {userId} = useAppState();
-    const [groupOrderId, setGroupOrderId] = useState<string | null>(null);
+    const {userId, setGroupOrderId} = useAppState();
+    const [groupOrderIdInput, setGroupOrderIdInput] = useState<string | null>(null);
 
     const handleSubmit = () => {
         if (!userId) {
@@ -18,7 +18,7 @@ export const JoinGroupOrder: React.FC<NewGroupOrderProps> = ({restaurantModel, s
             return;
         }
 
-        restaurantModel.joinGroupOrder(userId, groupOrderId).then((groupOrderId: string) => {
+        restaurantModel.joinGroupOrder(userId, groupOrderIdInput).then((groupOrderId: string) => {
             setGroupOrderId(groupOrderId);
         });
 
@@ -40,7 +40,7 @@ export const JoinGroupOrder: React.FC<NewGroupOrderProps> = ({restaurantModel, s
                 <ModalBody>
                     <Input
                         placeholder="Group Order ID"
-                        onChange={(e) => setGroupOrderId(e.target.value)}
+                        onChange={(e) => setGroupOrderIdInput(e.target.value)}
                     />
                 </ModalBody>
 

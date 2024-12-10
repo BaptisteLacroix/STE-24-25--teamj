@@ -1,11 +1,9 @@
-package java.fr.unice.polytech.equipe.j;
+package fr.unice.polytech.equipe.j.utils;
 
 import java.io.IOException;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.io.IOException;
 
 public class JaxsonUtils {
 

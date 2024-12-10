@@ -1,12 +1,12 @@
-package fr.unice.polytech.equipe.j.order.grouporder.mapper;
+package fr.unice.polytech.equipe.j.mapper;
 
 import fr.unice.polytech.equipe.j.delivery.DeliveryDetails;
 import fr.unice.polytech.equipe.j.delivery.DeliveryLocation;
-import fr.unice.polytech.equipe.j.order.grouporder.backend.GroupOrder;
-import fr.unice.polytech.equipe.j.order.grouporder.dto.DeliveryDetailsDTO;
-import fr.unice.polytech.equipe.j.order.grouporder.dto.DeliveryLocationDTO;
-import fr.unice.polytech.equipe.j.order.grouporder.dto.GroupOrderDTO;
-import fr.unice.polytech.equipe.j.order.grouporder.dto.OrderStatus;
+import fr.unice.polytech.equipe.j.backend.GroupOrder;
+import fr.unice.polytech.equipe.j.dto.DeliveryDetailsDTO;
+import fr.unice.polytech.equipe.j.dto.DeliveryLocationDTO;
+import fr.unice.polytech.equipe.j.dto.GroupOrderDTO;
+import fr.unice.polytech.equipe.j.dto.OrderStatus;
 
 public class DTOMapper {
 

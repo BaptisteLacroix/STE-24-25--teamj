@@ -1,40 +1,37 @@
-package fr.unice.polytech.equipe.j.order.grouporder.server;
+package fr.unice.polytech.equipe.j.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import fr.unice.polytech.equipe.j.HttpMethod;
-import fr.unice.polytech.equipe.j.JacksonConfig;
+import fr.unice.polytech.equipe.j.utils.JacksonConfig;
 import fr.unice.polytech.equipe.j.annotations.BeanParam;
 import fr.unice.polytech.equipe.j.annotations.Controller;
 import fr.unice.polytech.equipe.j.annotations.PathParam;
 import fr.unice.polytech.equipe.j.annotations.Route;
 import fr.unice.polytech.equipe.j.httpresponse.HttpCode;
 import fr.unice.polytech.equipe.j.httpresponse.HttpResponse;
-import fr.unice.polytech.equipe.j.order.grouporder.dto.CampusUserDTO;
-import fr.unice.polytech.equipe.j.order.grouporder.dto.DeliveryDetailsDTO;
-import fr.unice.polytech.equipe.j.order.grouporder.mapper.DTOMapper;
-import fr.unice.polytech.equipe.j.order.grouporder.dto.CampusUserDTO;
+import fr.unice.polytech.equipe.j.dto.CampusUserDTO;
+import fr.unice.polytech.equipe.j.dto.DeliveryDetailsDTO;
+import fr.unice.polytech.equipe.j.mapper.DTOMapper;
 
-import fr.unice.polytech.equipe.j.order.grouporder.backend.GroupOrder;
+import fr.unice.polytech.equipe.j.backend.GroupOrder;
 
-import fr.unice.polytech.equipe.j.order.grouporder.backend.GroupOrderProxy;
-import fr.unice.polytech.equipe.j.order.grouporder.backend.IGroupOrder;
-import fr.unice.polytech.equipe.j.order.grouporder.dto.GroupOrderDTO;
-import fr.unice.polytech.equipe.j.order.grouporder.mapper.DTOMapper;
+import fr.unice.polytech.equipe.j.backend.GroupOrderProxy;
+import fr.unice.polytech.equipe.j.backend.IGroupOrder;
+import fr.unice.polytech.equipe.j.dto.GroupOrderDTO;
 
 import java.util.ArrayList;
 import java.util.UUID;
 import java.util.logging.Logger;
 
-import static fr.unice.polytech.equipe.j.RequestUtil.DATABASE_ORDER_SERVICE_URI;
-import static fr.unice.polytech.equipe.j.RequestUtil.request;
-import static fr.unice.polytech.equipe.j.RequestUtil.*;
+import static fr.unice.polytech.equipe.j.utils.RequestUtil.request;
+import static fr.unice.polytech.equipe.j.utils.RequestUtil.*;
 
 @Controller("/api/group-order")
-public class GroupOrderService {
+public class GroupOrderController {
     private final Logger logger = Logger.getLogger("GroupOrderService");
 
-    public GroupOrderService() {
+    public GroupOrderController() {
     }
 
 
@@ -61,6 +58,7 @@ public class GroupOrderService {
     @Route(value = "/{userId}/create", method = HttpMethod.POST)
     public HttpResponse createGroupOrder(@PathParam("userId") UUID userdId, @BeanParam DeliveryDetailsDTO deliveryDetailsDTO) {
         try {
+            System.out.println("Creating groupOrder");
             GroupOrder groupOrder1 = new GroupOrder(deliveryDetailsDTO);
             GroupOrderDTO groupOrderDTO = new GroupOrderDTO(groupOrder1.getGroupOrderId(), null, new ArrayList<CampusUserDTO>(), null, "pending");
             ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
@@ -87,9 +85,12 @@ public class GroupOrderService {
     public HttpResponse joinGroupOrder(@PathParam("groupOrderId") UUID groupOrderId, @PathParam("userId") UUID userId) {
         try {
             java.net.http.HttpResponse<String> user = request(DATABASE_CAMPUS_USER_SERVICE_URI, "/" + userId.toString(), HttpMethod.GET, null);
+            System.out.println("User: " + user.statusCode() + " " + user.body());
             IGroupOrder groupOrderProxy = createGroupOrderProxy(groupOrderId);
+            System.out.println("Joining groupOrder: " + groupOrderId);
+            System.out.println("groupOrderProxy: " + groupOrderProxy);
             if (groupOrderProxy == null) {
-                return new HttpResponse(HttpCode.HTTP_500, "Error while processing orders");
+                return new HttpResponse(HttpCode.HTTP_500, "Error while processing groupOrder");
             }
             CampusUserDTO userDTO = new ObjectMapper().readValue(user.body(), CampusUserDTO.class);
             return groupOrderProxy.addUser(userDTO);
@@ -114,10 +115,20 @@ public class GroupOrderService {
         }
     }
 
+    @Route(value = "/user/{userId}", method = HttpMethod.GET)
+    public HttpResponse getGroupOrdersByUser(@PathParam("userId") UUID userId) {
+        try {
+            System.out.println("Get Group Orders by user id: " + userId);
+            java.net.http.HttpResponse<String> response = request(DATABASE_GROUPORDER_SERVICE_URI, "/user/" + userId.toString(), HttpMethod.GET, null);
+            return new HttpResponse(HttpCode.fromCode(response.statusCode()), response.body());
+        } catch (Exception e) {
+            return new HttpResponse(HttpCode.HTTP_500, "Error while processing orders");
+        }
+    }
+
 
     public IGroupOrder createGroupOrderProxy(UUID groupOrderId) {
         try {
-            System.out.println(groupOrderId);
             java.net.http.HttpResponse<String> groupOrderResponse = request(DATABASE_GROUPORDER_SERVICE_URI, "/" + groupOrderId, HttpMethod.GET, null);
             if (groupOrderResponse.statusCode() != HttpCode.HTTP_200.getCode()) {
                 return null;

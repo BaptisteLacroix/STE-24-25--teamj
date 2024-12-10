@@ -46,6 +46,29 @@ export type DeliveryLocation = {
     address: string,
 }
 
+export type CampusUser = {
+    id: string,
+    name: string,
+    balance: number,
+    defaultPaymentMethod: PaymentMethod,
+    ordersHistory: Order[],
+    transactions: Transaction[]
+}
+
+export type Transaction = {
+    id: string,
+    user: CampusUser,
+    order: Order,
+    amount: number,
+    timestamp: Date,
+}
+
+export enum PaymentMethod {
+    CREDIT_CARD,
+    PAYPAL,
+    PAYLIB,
+}
+
 export enum OrderStatus {
     PENDING,
     VALIDATED,

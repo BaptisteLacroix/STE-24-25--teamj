@@ -1,11 +1,14 @@
-import { Badge, Button, Input, Navbar, NavbarContent } from "@nextui-org/react";
-import { ShoppingCartIcon } from "../utils/icons/ShoppingCartIcon.tsx";
-import { Link } from "react-router-dom";
-import { RestaurantModel } from "../model/RestaurantModel.ts";
-import { useEffect } from "react";
-import { IndividualOrder, Order } from "../utils/types.ts";
-import { SearchIcon } from "../utils/icons/SearchIcon.tsx";
-import { useAppState } from "../AppStateContext.tsx";
+import {Badge, Button, Input, Navbar, NavbarContent} from "@nextui-org/react";
+import {ShoppingCartIcon} from "../utils/icons/ShoppingCartIcon.tsx";
+import {Link} from "react-router-dom";
+import {RestaurantModel} from "../model/RestaurantModel.ts";
+import {useEffect, useState} from "react";
+import {IndividualOrder, Order} from "../utils/types.ts";
+import {SearchIcon} from "../utils/icons/SearchIcon.tsx";
+import {useAppState} from "../AppStateContext.tsx";
+import {CopyIcon} from "../utils/icons/CopyIcon.tsx";
+import {ValidIcon} from "../utils/icons/validIcon.tsx";
+import Login from "./Login.tsx";
 
 type PolyFoodHeaderProps = {
     restaurantModel: RestaurantModel;
@@ -15,19 +18,19 @@ type PolyFoodHeaderProps = {
     setSearchQuery: (query: string) => void;
     order: Order | IndividualOrder | null;
     setOrder: (order: Order | IndividualOrder) => void;
-
 };
 
 export function PolyfoodHeader({
-    restaurantModel,
-    setIsNewGroupOrderModalOpen,
-    setIsJoinGroupOrderModalOpen,
-    searchQuery,
-    setSearchQuery,
-    order,
-    setOrder,
-}: PolyFoodHeaderProps) {
-    const { userId, setUserId, orderId } = useAppState();
+                                   restaurantModel,
+                                   setIsNewGroupOrderModalOpen,
+                                   setIsJoinGroupOrderModalOpen,
+                                   searchQuery,
+                                   setSearchQuery,
+                                   order,
+                                   setOrder,
+                               }: PolyFoodHeaderProps) {
+    const {userId, orderId, groupOrderId} = useAppState();
+    const [isCopied, setIsCopied] = useState(false);
 
     useEffect(() => {
         if (!orderId || !userId) return;
@@ -40,11 +43,14 @@ export function PolyfoodHeader({
         });
     }, [orderId, restaurantModel, order, userId]);
 
-    const handleLoginLogout = () => {
-        if (userId) {
-            setUserId(null);
-        } else {
-            setUserId("1aeb4480-305a-499d-885c-7d2d9f99153b");
+    const handleCopyGroupOrderId = () => {
+        if (groupOrderId) {
+            navigator.clipboard.writeText(groupOrderId).then(() => {
+                setIsCopied(true);  // Set copied state to true
+                setTimeout(() => {
+                    setIsCopied(false);  // Revert back to CopyIcon after 5 seconds
+                }, 2000);
+            });
         }
     };
 
@@ -56,10 +62,28 @@ export function PolyfoodHeader({
                 </Link>
                 {userId !== null ? (
                     <>
-                        <Button variant={"bordered"} color={"default"} onClick={() => setIsNewGroupOrderModalOpen(true)}
-                            radius="full">New Group Order</Button>
-                        <Button variant={"bordered"} color={"default"} radius="full"
-                            onClick={() => setIsJoinGroupOrderModalOpen(true)}>Join Group Order</Button></>
+                        {/* Group Order ID Button (if groupOrderId exists) */}
+                        {groupOrderId && (
+                            <Button
+                                variant={"bordered"}
+                                color={"default"}
+                                className={"opacity-50"}
+                                radius="full"
+                                onClick={handleCopyGroupOrderId}
+                                endContent={isCopied ? <ValidIcon /> : <CopyIcon />}
+                            >
+                                {groupOrderId}
+                            </Button>
+                        )}
+                        {!groupOrderId && (<><Button variant={"bordered"} color={"default"}
+                                                     onClick={() => setIsNewGroupOrderModalOpen(true)}
+                                                     radius="full">New Group Order</Button>
+                            <Button variant={"bordered"}
+                                    color={"default"}
+                                    radius="full"
+                                    onClick={() => setIsJoinGroupOrderModalOpen(true)}>Join
+                                Group Order</Button></>)}
+                    </>
                 ) : (
                     <>
                         <Button variant={"bordered"} color={"default"} radius="full" disabled>New Group Order</Button>
@@ -79,7 +103,7 @@ export function PolyfoodHeader({
                     }}
                     placeholder="Type to search..."
                     size="lg"
-                    startContent={<SearchIcon size={18} />}
+                    startContent={<SearchIcon size={18}/>}
                     type="search"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
@@ -87,10 +111,7 @@ export function PolyfoodHeader({
             </NavbarContent>
 
             <NavbarContent as="div" className="items-center" justify="end">
-                {/* Show login/logout button */}
-                <Button variant={"bordered"} color={"default"} onClick={handleLoginLogout} radius="full">
-                    {userId ? "Logout" : "Login"}
-                </Button>
+                <Login restaurantModel={restaurantModel}/>
 
                 <Badge color="primary" content={order?.items.length} className={"bg-none"}>
                     <Link to="/cart">
@@ -100,7 +121,7 @@ export function PolyfoodHeader({
                             radius="full"
                             variant="light"
                         >
-                            <ShoppingCartIcon className={"w-6 h-6"} />
+                            <ShoppingCartIcon className={"w-6 h-6"}/>
                         </Button>
                     </Link>
                 </Badge>

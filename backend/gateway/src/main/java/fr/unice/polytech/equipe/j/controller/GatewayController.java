@@ -319,11 +319,22 @@ public class GatewayController {
 
     @Route(value = "/{userId}/group-order", method = HttpMethod.POST)
     public HttpResponse createGroupOrder(@PathParam("userId") String userId, @BeanParam DeliveryDetailsDTO deliveryDetailsDTO) {
+        System.out.println("Creating group order for user: " + userId);
         if (getUserById(userId).statusCode() != 200) {
             return new HttpResponse(HttpCode.HTTP_404, "User not found");
         }
-
+        // Check that the user is not already part of a group order
         java.net.http.HttpResponse<String> response = request(
+                RequestUtil.GROUP_ORDER_SERVICE_URI,
+                "/user/" + userId,
+                null,
+                HttpMethod.GET,
+                null
+        );
+        if (response.statusCode() == 200) {
+            return new HttpResponse(HttpCode.HTTP_400, "User is already part of a group order");
+        }
+        response = request(
                 RequestUtil.GROUP_ORDER_SERVICE_URI,
                 "/" + userId + "/create",
                 null,
@@ -335,6 +346,7 @@ public class GatewayController {
 
     @Route(value = "/{userId}/group-order/{groupOrderId}/join", method = HttpMethod.PUT)
     public HttpResponse joinGroupOrder(@PathParam("userId") String userId, @PathParam("groupOrderId") String groupOrderId) {
+        System.out.println("Joining group order: " + groupOrderId + " for user: " + userId);
         if (getUserById(userId).statusCode() != 200) {
             return new HttpResponse(HttpCode.HTTP_404, "User not found");
         }
@@ -344,6 +356,19 @@ public class GatewayController {
                 "/" + groupOrderId + "/join/" + userId,
                 null,
                 HttpMethod.PUT,
+                null
+        );
+        return new HttpResponse(HttpCode.fromCode(response.statusCode()), response.body());
+    }
+
+
+    @Route(value = "/campus-users", method = HttpMethod.GET)
+    public HttpResponse getAllCampusUsers() {
+        java.net.http.HttpResponse<String> response = request(
+                RequestUtil.DATABASE_CAMPUS_USER_SERVICE_URI,
+                "/all",
+                null,
+                HttpMethod.GET,
                 null
         );
         return new HttpResponse(HttpCode.fromCode(response.statusCode()), response.body());
@@ -433,7 +458,6 @@ public class GatewayController {
                         null);
 
                 // Parse response as IndividualOrderDTO
-                System.out.println("Individual order response: " + individualOrderResponse.body());
                 return objectMapper.readValue(individualOrderResponse.body(), IndividualOrderDTO.class);
             } catch (Exception innerException) {
                 innerException.printStackTrace();

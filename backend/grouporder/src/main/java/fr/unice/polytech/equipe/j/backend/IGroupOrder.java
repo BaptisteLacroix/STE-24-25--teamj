@@ -1,10 +1,10 @@
-package fr.unice.polytech.equipe.j.order.grouporder.backend;
+package fr.unice.polytech.equipe.j.backend;
 
 import fr.unice.polytech.equipe.j.httpresponse.HttpResponse;
-import fr.unice.polytech.equipe.j.order.grouporder.dto.DeliveryDetailsDTO;
-import fr.unice.polytech.equipe.j.order.grouporder.dto.OrderDTO;
-import fr.unice.polytech.equipe.j.order.grouporder.dto.CampusUserDTO;
-import fr.unice.polytech.equipe.j.order.grouporder.dto.OrderStatus;
+import fr.unice.polytech.equipe.j.dto.DeliveryDetailsDTO;
+import fr.unice.polytech.equipe.j.dto.OrderDTO;
+import fr.unice.polytech.equipe.j.dto.CampusUserDTO;
+import fr.unice.polytech.equipe.j.dto.OrderStatus;
 
 import java.time.LocalDateTime;
 import java.util.List;

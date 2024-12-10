@@ -1,4 +1,4 @@
-import {DeliveryDetails, DeliveryLocation, IndividualOrder, Order, Restaurant} from "../utils/types.ts";
+import {CampusUser, DeliveryDetails, DeliveryLocation, IndividualOrder, Order, Restaurant} from "../utils/types.ts";
 import {API_BASE_URL} from "../utils/apiUtils.ts";
 
 export class RestaurantModel {
@@ -131,10 +131,16 @@ export class RestaurantModel {
     }
 
     public async addItemToOrder(userId: string, restaurantId: string, orderId: string, dishId: string, groupOrderId: string | null, deliveryDetails: DeliveryDetails | null): Promise<string> {
-        const body = JSON.stringify({
-            deliveryDetails: deliveryDetails,
-            groupOrderId: groupOrderId
-        })
+        // if one is null don't send it
+        let body = null;
+        if (groupOrderId != null && deliveryDetails != null) {
+            body = JSON.stringify({groupOrderId: groupOrderId, deliveryDetails: deliveryDetails});
+        } else if (groupOrderId != null) {
+            body = JSON.stringify({groupOrderId: groupOrderId});
+        } else if (deliveryDetails != null) {
+            body = JSON.stringify({deliveryDetails: deliveryDetails});
+        }
+        console.log(body)
         const response = await fetch(`${API_BASE_URL}/${userId}/restaurants/${restaurantId}/orders/${orderId}/item/${dishId}`, {
             method: 'POST',
             headers: {
@@ -281,39 +287,45 @@ export class RestaurantModel {
     }
 
     public async createGroupOrder(userId: string, deliveryDetails: DeliveryDetails | null): Promise<string> {
-        /*
-        const response = await fetch(`${API_BASE_URL}/${userId}/groupOrder`, {
+        const response = await fetch(`${API_BASE_URL}/${userId}/group-order`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({
-                deliveryTime: deliveryDetails.deliveryTime,
-                deliveryLocation: deliveryDetails.deliveryLocation
-            })
+            body: deliveryDetails != null ? JSON.stringify(deliveryDetails) : null
         })
-        if (response.status !== 200) {
+        if (response.status !== 201) {
             throw new Error('Failed to create group order')
         }
-        const data = await response.json()
-        return data.groupOrderId*/
-        return "e59811c9-9878-465e-a2ab-19870fbfe785"
+        return await response.json();
     }
 
     public async joinGroupOrder(userId: string, groupOrderId: string | null) {
-        /*
-        const response = await fetch(`${API_BASE_URL}/${userId}/groupOrder/${groupOrderId}`, {
-            method: 'POST',
+        const response = await fetch(`${API_BASE_URL}/${userId}/group-order/${groupOrderId}/join`, {
+            method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
             }
         })
-        if (response.status !== 200) {
+        if (response.status !== 201) {
             throw new Error('Failed to join group order')
         }
-        const data = await response.json()
-        return data.groupOrderId*/
-        return "e59811c9-9878-465e-a2ab-19870fbfe785"
+        return await response.json();
+    }
+
+    public async getAllCampusUsers(): Promise<CampusUser[]> {
+        const response = await fetch(`${API_BASE_URL}/campus-users`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }
+        })
+        if (response.status !== 200) {
+            return []
+        }
+        const data = await response.json();
+        return data as CampusUser[]
     }
 
     /**

@@ -1,6 +1,5 @@
-package fr.unice.polytech.equipe.j.order.grouporder.dto;
+package fr.unice.polytech.equipe.j.dto;
 
-import fr.unice.polytech.equipe.j.order.grouporder.dto.CampusUserDTO;
 import lombok.Getter;
 import lombok.Setter;
 

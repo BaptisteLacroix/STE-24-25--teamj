@@ -18,6 +18,7 @@ import fr.unice.polytech.equipe.j.order.mapper.GroupOrderMapper;
 import fr.unice.polytech.equipe.j.restaurant.dao.RestaurantDAO;
 import fr.unice.polytech.equipe.j.restaurant.entities.RestaurantEntity;
 import fr.unice.polytech.equipe.j.restaurant.mapper.RestaurantMapper;
+import fr.unice.polytech.equipe.j.user.mapper.CampusUserMapper;
 
 import java.util.UUID;
 
@@ -40,8 +41,18 @@ public class GroupOrderController {
         return new HttpResponse(HttpCode.HTTP_201,groupOrderEntity.getId());
     }
 
-
-
+    @Route(value = "/user/{userId}", method = HttpMethod.GET)
+    public HttpResponse getGroupOrdersByUserId(@PathParam("userId") UUID userId) {
+        System.out.println("Get Group Orders by user id: " + userId);
+        ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+        try {
+            String json = ow.writeValueAsString(CampusUserMapper.toDTO(GroupOrderDAO.foundUserInGroupOrders(userId)));
+            return new HttpResponse(HttpCode.HTTP_200, json);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new HttpResponse(HttpCode.HTTP_500, "Internal server error");
+        }
+    }
 
     @Route(value = "/{id}", method = HttpMethod.GET)
     public HttpResponse getGroupOrderById(@PathParam("id") UUID id) {

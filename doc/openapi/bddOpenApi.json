@@ -73,17 +73,153 @@
         }
       }
     },
-    "/api/database/orders/individual/create" : {
-      "post" : {
-        "summary" : "createIndividualOrder",
-        "description" : "Generated from method createIndividualOrder",
+    "/api/database/groupOrders/user/{userId}" : {
+      "get" : {
+        "summary" : "getGroupOrdersByUserId",
+        "description" : "Generated from method getGroupOrdersByUserId",
         "parameters" : [ {
-          "name" : "IndividualOrderDTO",
-          "in" : "body",
+          "name" : "userId",
+          "in" : "path",
+          "required" : true,
           "schema" : {
-            "$ref" : "#/components/schemas/IndividualOrderDTO"
+            "type" : "object",
+            "properties" : {
+              "serialVersionUID" : {
+                "type" : "integer"
+              },
+              "mostSigBits" : {
+                "type" : "integer"
+              },
+              "leastSigBits" : {
+                "type" : "integer"
+              },
+              "jla" : {
+                "type" : "object"
+              },
+              "NIBBLES" : {
+                "type" : "object"
+              },
+              "$assertionsDisabled" : {
+                "type" : "boolean"
+              }
+            }
           }
         } ],
+        "responses" : {
+          "200" : {
+            "description" : "Successful response",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/HttpResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/database/groupOrders/{id}" : {
+      "get" : {
+        "summary" : "getGroupOrderById",
+        "description" : "Generated from method getGroupOrderById",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "object",
+            "properties" : {
+              "serialVersionUID" : {
+                "type" : "integer"
+              },
+              "mostSigBits" : {
+                "type" : "integer"
+              },
+              "leastSigBits" : {
+                "type" : "integer"
+              },
+              "jla" : {
+                "type" : "object"
+              },
+              "NIBBLES" : {
+                "type" : "object"
+              },
+              "$assertionsDisabled" : {
+                "type" : "boolean"
+              }
+            }
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Successful response",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/HttpResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/database/groupOrders/update" : {
+      "put" : {
+        "summary" : "updateGroupOrder",
+        "description" : "Generated from method updateGroupOrder",
+        "parameters" : [ {
+          "name" : "GroupOrderDTO",
+          "in" : "body",
+          "schema" : {
+            "$ref" : "#/components/schemas/GroupOrderDTO"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Successful response",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/HttpResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/database/groupOrders/create" : {
+      "post" : {
+        "summary" : "createGroupOrder",
+        "description" : "Generated from method createGroupOrder",
+        "parameters" : [ {
+          "name" : "GroupOrderDTO",
+          "in" : "body",
+          "schema" : {
+            "$ref" : "#/components/schemas/GroupOrderDTO"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Successful response",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/HttpResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/database/orders/individual/all" : {
+      "get" : {
+        "summary" : "getAllIndividualOrders",
+        "description" : "Generated from method getAllIndividualOrders",
+        "parameters" : [ ],
         "responses" : {
           "200" : {
             "description" : "Successful response",
@@ -144,29 +280,10 @@
         }
       }
     },
-    "/api/database/orders/individual/all" : {
-      "get" : {
-        "summary" : "getAllIndividualOrders",
-        "description" : "Generated from method getAllIndividualOrders",
-        "parameters" : [ ],
-        "responses" : {
-          "200" : {
-            "description" : "Successful response",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/HttpResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/database/orders/individual/update" : {
-      "put" : {
-        "summary" : "updateOrder",
-        "description" : "Generated from method updateOrder",
+    "/api/database/orders/individual/create" : {
+      "post" : {
+        "summary" : "createIndividualOrder",
+        "description" : "Generated from method createIndividualOrder",
         "parameters" : [ {
           "name" : "IndividualOrderDTO",
           "in" : "body",
@@ -188,17 +305,11 @@
         }
       }
     },
-    "/api/database/orders/update" : {
-      "put" : {
-        "summary" : "updateOrder",
-        "description" : "Generated from method updateOrder",
-        "parameters" : [ {
-          "name" : "OrderDTO",
-          "in" : "body",
-          "schema" : {
-            "$ref" : "#/components/schemas/OrderDTO"
-          }
-        } ],
+    "/api/database/orders/all" : {
+      "get" : {
+        "summary" : "getAllOrders",
+        "description" : "Generated from method getAllOrders",
+        "parameters" : [ ],
         "responses" : {
           "200" : {
             "description" : "Successful response",
@@ -303,11 +414,42 @@
         }
       }
     },
-    "/api/database/orders/all" : {
-      "get" : {
-        "summary" : "getAllOrders",
-        "description" : "Generated from method getAllOrders",
-        "parameters" : [ ],
+    "/api/database/orders/individual/update" : {
+      "put" : {
+        "summary" : "updateOrder",
+        "description" : "Generated from method updateOrder",
+        "parameters" : [ {
+          "name" : "IndividualOrderDTO",
+          "in" : "body",
+          "schema" : {
+            "$ref" : "#/components/schemas/IndividualOrderDTO"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Successful response",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/HttpResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/database/orders/update" : {
+      "put" : {
+        "summary" : "updateOrder",
+        "description" : "Generated from method updateOrder",
+        "parameters" : [ {
+          "name" : "OrderDTO",
+          "in" : "body",
+          "schema" : {
+            "$ref" : "#/components/schemas/OrderDTO"
+          }
+        } ],
         "responses" : {
           "200" : {
             "description" : "Successful response",
@@ -347,10 +489,73 @@
         }
       }
     },
-    "/api/database/restaurants/{id}" : {
+    "/api/database/restaurants/types" : {
       "get" : {
-        "summary" : "getRestaurantById",
-        "description" : "Generated from method getRestaurantById",
+        "summary" : "getAllFoodTypes",
+        "description" : "Generated from method getAllFoodTypes",
+        "parameters" : [ ],
+        "responses" : {
+          "200" : {
+            "description" : "Successful response",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/HttpResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/database/restaurants/all" : {
+      "get" : {
+        "summary" : "getAllRestaurants",
+        "description" : "Generated from method getAllRestaurants",
+        "parameters" : [ ],
+        "responses" : {
+          "200" : {
+            "description" : "Successful response",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/HttpResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/database/restaurants/create" : {
+      "post" : {
+        "summary" : "createRestaurant",
+        "description" : "Generated from method createRestaurant",
+        "parameters" : [ {
+          "name" : "RestaurantDTO",
+          "in" : "body",
+          "schema" : {
+            "$ref" : "#/components/schemas/RestaurantDTO"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Successful response",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/HttpResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/database/restaurants/{id}" : {
+      "delete" : {
+        "summary" : "deleteRestaurant",
+        "description" : "Generated from method deleteRestaurant",
         "parameters" : [ {
           "name" : "id",
           "in" : "path",
@@ -392,9 +597,9 @@
           }
         }
       },
-      "delete" : {
-        "summary" : "deleteRestaurant",
-        "description" : "Generated from method deleteRestaurant",
+      "get" : {
+        "summary" : "getRestaurantById",
+        "description" : "Generated from method getRestaurantById",
         "parameters" : [ {
           "name" : "id",
           "in" : "path",
@@ -510,50 +715,6 @@
         }
       }
     },
-    "/api/database/restaurants/types" : {
-      "get" : {
-        "summary" : "getAllFoodTypes",
-        "description" : "Generated from method getAllFoodTypes",
-        "parameters" : [ ],
-        "responses" : {
-          "200" : {
-            "description" : "Successful response",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/HttpResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/database/restaurants/create" : {
-      "post" : {
-        "summary" : "createRestaurant",
-        "description" : "Generated from method createRestaurant",
-        "parameters" : [ {
-          "name" : "RestaurantDTO",
-          "in" : "body",
-          "schema" : {
-            "$ref" : "#/components/schemas/RestaurantDTO"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "Successful response",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/HttpResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/api/database/restaurants/update" : {
       "put" : {
         "summary" : "updateRestaurant",
@@ -565,25 +726,6 @@
             "$ref" : "#/components/schemas/RestaurantDTO"
           }
         } ],
-        "responses" : {
-          "200" : {
-            "description" : "Successful response",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/HttpResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/database/restaurants/all" : {
-      "get" : {
-        "summary" : "getAllRestaurants",
-        "description" : "Generated from method getAllRestaurants",
-        "parameters" : [ ],
         "responses" : {
           "200" : {
             "description" : "Successful response",
@@ -968,6 +1110,26 @@
             "type" : "integer"
           },
           "body" : {
+            "type" : "string"
+          }
+        }
+      },
+      "GroupOrderDTO" : {
+        "type" : "object",
+        "properties" : {
+          "groupOrderId" : {
+            "type" : "string"
+          },
+          "orders" : {
+            "type" : "array"
+          },
+          "users" : {
+            "type" : "array"
+          },
+          "deliveryDetails" : {
+            "type" : "object"
+          },
+          "status" : {
             "type" : "string"
           }
         }

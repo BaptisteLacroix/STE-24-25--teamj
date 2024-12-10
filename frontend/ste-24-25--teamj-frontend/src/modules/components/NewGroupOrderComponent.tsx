@@ -74,11 +74,13 @@ export const NewGroupOrder: React.FC<NewGroupOrderProps> = ({ restaurantModel, s
                             </SelectItem>
                         ))}
                     </Select>
-                    <DatePicker
-                        label="Select Delivery Date"
-                        value={now(getLocalTimeZone())}
-                        onChange={(date) => setDeliveryDate(date.toDate())}
-                        aria-label="Delivery Date"
+                    <DatePicker label="Delivery Date"
+                                hideTimeZone
+                                showMonthAndYearPickers
+                                defaultValue={now(getLocalTimeZone())}
+                                onChange={(date) => {
+                                    setDeliveryDate(date.toDate())
+                                }}
                     />
                 </ModalBody>
 

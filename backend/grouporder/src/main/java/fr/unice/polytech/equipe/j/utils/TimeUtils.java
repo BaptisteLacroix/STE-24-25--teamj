@@ -1,4 +1,4 @@
-package java.fr.unice.polytech.equipe.j;
+package fr.unice.polytech.equipe.j.utils;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
