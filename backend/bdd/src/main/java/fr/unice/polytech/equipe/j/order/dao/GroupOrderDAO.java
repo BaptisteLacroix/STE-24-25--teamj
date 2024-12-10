@@ -3,11 +3,7 @@ package fr.unice.polytech.equipe.j.order.dao;
 import fr.unice.polytech.equipe.j.HibernateUtil;
 import fr.unice.polytech.equipe.j.httpresponse.HttpCode;
 import fr.unice.polytech.equipe.j.httpresponse.HttpResponse;
-import fr.unice.polytech.equipe.j.order.entities.DeliveryLocationEntity;
 import fr.unice.polytech.equipe.j.order.entities.GroupOrderEntity;
-import fr.unice.polytech.equipe.j.order.entities.OrderEntity;
-import fr.unice.polytech.equipe.j.restaurant.entities.RestaurantEntity;
-import jakarta.persistence.criteria.Order;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 

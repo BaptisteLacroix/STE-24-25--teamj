@@ -29,7 +29,7 @@ public class GroupOrderController {
         System.out.println("Creating groupOrder: " + dto.getGroupOrderId());
         GroupOrderEntity groupOrderEntity = GroupOrderMapper.toEntity(dto);
         GroupOrderDAO.save(groupOrderEntity);
-        return new HttpResponse(HttpCode.HTTP_201, "GroupOrder created successfully");
+        return new HttpResponse(HttpCode.HTTP_201, groupOrderEntity.getId());
     }
 
     @Route(value = "/update", method = HttpMethod.PUT)
@@ -37,8 +37,7 @@ public class GroupOrderController {
         System.out.println("Update GroupOrder");
         GroupOrderEntity groupOrderEntity = GroupOrderMapper.toEntity(groupOrderDTO);
         GroupOrderDAO.save(groupOrderEntity);
-        System.out.println(GroupOrderDAO.getAllGroupOrders());
-        return new HttpResponse(HttpCode.HTTP_201,"");
+        return new HttpResponse(HttpCode.HTTP_201,groupOrderEntity.getId());
     }
 
 
@@ -47,9 +46,7 @@ public class GroupOrderController {
     @Route(value = "/{id}", method = HttpMethod.GET)
     public HttpResponse getGroupOrderById(@PathParam("id") UUID id) {
         System.out.println("Get Group Order by id: " + id);
-        System.out.println(GroupOrderDAO.getAllGroupOrders());
         GroupOrderEntity groupOrderEntity = GroupOrderDAO.getGroupOrderById(id);;
-        System.out.println(groupOrderEntity);
         if (groupOrderEntity != null) {
             ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
             try {
