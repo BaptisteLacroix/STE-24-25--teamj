@@ -172,6 +172,7 @@ export class RestaurantModel {
             throw new Error('Failed to fetch orders')
         }
         const data = await response.json()
+        console.log(data)
         // Transform the data into the format we need
         return {
             id: data.id,

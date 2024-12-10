@@ -2,7 +2,7 @@ import { Badge, Button, Input, Navbar, NavbarContent } from "@nextui-org/react";
 import { ShoppingCartIcon } from "../utils/icons/ShoppingCartIcon.tsx";
 import { Link } from "react-router-dom";
 import { RestaurantModel } from "../model/RestaurantModel.ts";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { IndividualOrder, Order } from "../utils/types.ts";
 import { SearchIcon } from "../utils/icons/SearchIcon.tsx";
 import { useAppState } from "../AppStateContext.tsx";
@@ -13,6 +13,9 @@ type PolyFoodHeaderProps = {
     setIsJoinGroupOrderModalOpen: (isOpen: boolean) => void;
     searchQuery: string;
     setSearchQuery: (query: string) => void;
+    order: Order | IndividualOrder | null;
+    setOrder: (order: Order | IndividualOrder) => void;
+
 };
 
 export function PolyfoodHeader({
@@ -21,16 +24,21 @@ export function PolyfoodHeader({
     setIsJoinGroupOrderModalOpen,
     searchQuery,
     setSearchQuery,
+    order,
+    setOrder,
 }: PolyFoodHeaderProps) {
-    const [order, setOrder] = useState<Order | IndividualOrder | null>(null);
     const { userId, setUserId, orderId } = useAppState();
 
     useEffect(() => {
         if (!orderId || !userId) return;
+
+        // Check if the order is already set to avoid unnecessary fetches
+        if (order && order.id === orderId) return;
+
         restaurantModel.getOrder(userId, orderId).then((order) => {
             setOrder(order);
         });
-    }, [orderId, userId, restaurantModel]);
+    }, [orderId, restaurantModel, order, userId]);
 
     const handleLoginLogout = () => {
         if (userId) {

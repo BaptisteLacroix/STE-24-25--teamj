@@ -6,19 +6,24 @@ import {useAppState} from "../AppStateContext.tsx";
 
 interface CartComponentProps {
     restaurantModel: RestaurantModel;
+    order: Order | IndividualOrder | null;
+    setOrder: (order: Order | IndividualOrder) => void;
 }
 
-export const CartComponent: React.FC<CartComponentProps> = ({restaurantModel}) => {
+export const CartComponent: React.FC<CartComponentProps> = ({restaurantModel, order, setOrder}) => {
     const {userId, orderId} = useAppState();
-    const [order, setOrder] = useState<Order | IndividualOrder | null>(null);
     const [total, setTotal] = useState<number>(0);
 
     useEffect(() => {
         if (!orderId || !userId) return;
+
+        // Check if the order is already set to avoid unnecessary fetches
+        if (order && order.id === orderId) return;
+
         restaurantModel.getOrder(userId, orderId).then((order) => {
             setOrder(order);
         });
-    }, [orderId, restaurantModel]);
+    }, [orderId, restaurantModel, order, userId]);
 
     useEffect(() => {
         const fetchTotal = async () => {

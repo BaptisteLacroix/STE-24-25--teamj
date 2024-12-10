@@ -2,28 +2,32 @@ import React, {useEffect, useState} from "react";
 import {RestaurantModel} from "../model/RestaurantModel.ts";
 import {
     Button,
-    Skeleton,
-    Modal,
     DatePicker,
+    Modal,
     ModalBody,
-    ModalHeader,
+    ModalContent,
     ModalFooter,
+    ModalHeader,
     Select,
-    SelectItem, ModalContent,
+    SelectItem,
+    Skeleton,
 } from "@nextui-org/react";
 import {useParams} from "react-router-dom";
-import {DeliveryDetails, DeliveryLocation, Dish, Restaurant} from "../utils/types.ts";
+import {DeliveryDetails, DeliveryLocation, Dish, IndividualOrder, Order, Restaurant} from "../utils/types.ts";
 import {AddIcon} from "../utils/icons/AddIcon.tsx";
-import {now, getLocalTimeZone} from "@internationalized/date";
+import {getLocalTimeZone, now} from "@internationalized/date";
 import {useAppState} from "../AppStateContext.tsx";
 import {uuidv4} from "../utils/apiUtils.ts";
 
 interface DishesComponentProps {
     restaurantModel: RestaurantModel;
+    setOrder: (order: Order | IndividualOrder) => void;
 }
+
 
 export const DishesComponent: React.FC<DishesComponentProps> = ({
                                                                     restaurantModel,
+                                                                    setOrder,
                                                                 }) => {
     const {userId, setOrderId, orderId, groupOrderId} = useAppState();
     const {restaurantId} = useParams<{ restaurantId: string }>();
@@ -35,6 +39,7 @@ export const DishesComponent: React.FC<DishesComponentProps> = ({
     const [deliveryLocationId, setDeliveryLocationId] = useState<string | null>(null);
     const [deliveryLocation, setDeliveryLocation] = useState<DeliveryLocation | null>(null);
     const [deliveryLocations, setDeliveryLocations] = useState<DeliveryLocation[]>([]);
+    const [deliveryDetails, setDeliveryDetails] = useState<DeliveryDetails | null>(null);
     const [deliveryDate, setDeliveryDate] = useState<Date | null>(null);
 
     useEffect(() => {
@@ -57,10 +62,6 @@ export const DishesComponent: React.FC<DishesComponentProps> = ({
     }, [userId, restaurantModel]);
 
     useEffect(() => {
-        console.log(deliveryLocations);
-    }, [deliveryLocations]);
-
-    useEffect(() => {
         if (deliveryLocationId && userId) {
             restaurantModel
                 .getDeliveryLocationById(userId, deliveryLocationId)
@@ -73,8 +74,9 @@ export const DishesComponent: React.FC<DishesComponentProps> = ({
         try {
             if (restaurantId && userId) {
                 await restaurantModel.addItemToOrder(userId, restaurantId, orderId || uuidv4(), dishId, groupOrderId, deliveryDetails).then((orderId: string) => {
-                    console.log("Item added to order", orderId);
                     setOrderId(orderId);
+                    console.log("Order ID", orderId);
+                    restaurantModel.getOrder(userId, orderId).then(order => setOrder(order));
                 });
             }
         } catch (error) {
@@ -88,24 +90,25 @@ export const DishesComponent: React.FC<DishesComponentProps> = ({
             alert("Please login to add items to the order");
             return;
         }
-
         if (groupOrderId) {
             // If user is part of a group order, directly add the item
             handleAddItemToOrder(dishId);
         } else {
             // Otherwise, show modal to enter delivery details
             setSelectedDishId(dishId);
-            setShowModal(true);
+            if (!deliveryDetails) setShowModal(true);
         }
     };
 
     const handleSubmitDeliveryDetails = () => {
         if (deliveryLocationId && deliveryDate && userId) {
+            console.log("Delivery Details", deliveryLocationId, deliveryDate, selectedDishId, uuidv4());
             const deliveryDetails: DeliveryDetails = {
                 id: uuidv4(),
                 deliveryLocation: deliveryLocation!,
                 deliveryTime: new Date(deliveryDate),
             };
+            setDeliveryDetails(deliveryDetails);
             handleAddItemToOrder(selectedDishId!, deliveryDetails);
             setShowModal(false);
         } else {
@@ -118,7 +121,8 @@ export const DishesComponent: React.FC<DishesComponentProps> = ({
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 justify-items-center max-w-6xl">
                 {dishes.map((dish) => (
                     <Skeleton isLoaded={!loading} key={dish.id}>
-                        <div className={`drop-shadow-md ${!userId || !restaurant || restaurant.closingHours == null ? "cursor-not-allowed" : "cursor-pointer"}`}>
+                        <div
+                            className={`drop-shadow-md ${!userId || !restaurant || restaurant.closingHours == null ? "cursor-not-allowed" : "cursor-pointer"}`}>
                             <div className="bg-gray-800 text-white rounded-lg overflow-hidden w-72 mt-10">
                                 <div className="bg-white text-black px-6 py-4 flex items-center">
                                     <img
@@ -138,7 +142,7 @@ export const DishesComponent: React.FC<DishesComponentProps> = ({
                                     </div>
                                     <Button
                                         isDisabled={!userId || !restaurant || restaurant.closingHours == null}
-                                            onClick={() => handleAddToOrder(dish.id)}>
+                                        onClick={() => handleAddToOrder(dish.id)}>
                                         <AddIcon/>
                                     </Button>
                                 </div>
@@ -179,7 +183,8 @@ export const DishesComponent: React.FC<DishesComponentProps> = ({
                         <Button variant={"bordered"} color="danger" onClick={() => setShowModal(false)}>
                             Close
                         </Button>
-                        <Button variant={"bordered"} color={"default"} onClick={handleSubmitDeliveryDetails}>Submit</Button>
+                        <Button variant={"bordered"} color={"default"}
+                                onClick={handleSubmitDeliveryDetails}>Submit</Button>
                     </ModalFooter>
                 </ModalContent>
             </Modal>

@@ -16,7 +16,6 @@ public class LocalDateTimeDeserializer extends JsonDeserializer<LocalDateTime> {
     @Override
     public LocalDateTime deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
         JsonNode node = p.getCodec().readTree(p);
-        System.out.println(node);
         // Check if the node is an array or a string
         if (node.isArray()) {
             // Handle the array format: [year, month, day, hour, minute, second, nanosecond]

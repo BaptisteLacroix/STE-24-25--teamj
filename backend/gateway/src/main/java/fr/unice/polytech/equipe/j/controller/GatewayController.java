@@ -100,11 +100,10 @@ public class GatewayController {
         if (userValidationResponse != null) return userValidationResponse;
 
         LocalDateTime deliveryTime = getDeliveryTime(addItemOrderRequestDTO.getGroupOrderId(), addItemOrderRequestDTO.getDeliveryDetails());
-        if (deliveryTime == null)
+        if (deliveryTime == null && addItemOrderRequestDTO.getGroupOrderId() == null)
             return new HttpResponse(HttpCode.HTTP_404, "Delivery details are required for an individual order");
         // Step 2: Validate and handle the order based on groupOrderId
-        HttpResponse orderResponse = processOrder(userId, orderId, restaurantId, dishId, deliveryTime, addItemOrderRequestDTO.getGroupOrderId(), addItemOrderRequestDTO.getDeliveryDetails());
-        return orderResponse;
+        return processOrder(userId, orderId, restaurantId, dishId, deliveryTime, addItemOrderRequestDTO.getGroupOrderId(), addItemOrderRequestDTO.getDeliveryDetails());
     }
 
     // Validate User
@@ -349,6 +348,7 @@ public class GatewayController {
         );
         return new HttpResponse(HttpCode.fromCode(response.statusCode()), response.body());
     }
+
 
     private java.net.http.HttpResponse<String> getUserById(String userId) {
         return request(

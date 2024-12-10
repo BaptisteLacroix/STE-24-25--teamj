@@ -138,6 +138,7 @@ public class OrderController {
     public HttpResponse updateOrder(@BeanParam IndividualOrderDTO orderDTO) {
         System.out.println("Update individual order");
         IndividualOrderEntity orderEntity = IndividualOrderMapper.toEntity(orderDTO);
+        System.out.println(orderEntity.getDeliveryDetails());
         return OrderDAO.save(orderEntity);
     }
 

@@ -169,6 +169,7 @@ public class Restaurant implements IRestaurant {
             if (response.statusCode() != HttpCode.HTTP_201.getCode() && response.statusCode() != HttpCode.HTTP_200.getCode()) {
                 return response;
             }
+
             if (orderDTO instanceof IndividualOrderDTO) {
                 response = request(
                         RequestUtil.DATABASE_ORDER_SERVICE_URI,
@@ -330,12 +331,6 @@ public class Restaurant implements IRestaurant {
      */
     private boolean isItemTooLate(MenuItem menuItem, LocalDateTime deliveryTime) {
         LocalDateTime estimatedReadyTime = TimeUtils.getNow().plusSeconds(menuItem.getPrepTime());
-        System.out.println(
-                "now: " + TimeUtils.getNow() +
-                        "\nestimatedReadyTime: " + estimatedReadyTime +
-                        "\ndeliveryTime: " + deliveryTime +
-                "\nestimatedReadyTime.isAfter(deliveryTime): " + estimatedReadyTime.isAfter(deliveryTime)
-        );
         return estimatedReadyTime.isAfter(deliveryTime);
     }
 
@@ -371,14 +366,6 @@ public class Restaurant implements IRestaurant {
             // Check that the slot is between the current time and the delivery time
             boolean isSlotBetweenNowAndDeliveryTime = slot.getOpeningDate().isAfter(now) && slot.getOpeningDate().isBefore(deliveryTime);
             // FIXME: Found why pipeline not OK, because of the .now()
-            System.out.println(
-                    "now: " + now +
-                            " slot: " + slot.getOpeningDate() +
-                            " deliveryTime: " + deliveryTime +
-                            " isSlotBeforeDeliveryTime: " + isSlotBeforeDeliveryTime +
-                            " isSlotBetweenNowAndDeliveryTime: " + isSlotBetweenNowAndDeliveryTime +
-                            " isSlotCapacityAvailable: " + isSlotCapacityAvailable
-            );
             if (isSlotBeforeDeliveryTime && isSlotBetweenNowAndDeliveryTime && isSlotCapacityAvailable) {
                 LocalDateTime preparationEndTime = now.plusSeconds(menuItem.getPrepTime());
                 if (preparationEndTime.isBefore(deliveryTime)) {

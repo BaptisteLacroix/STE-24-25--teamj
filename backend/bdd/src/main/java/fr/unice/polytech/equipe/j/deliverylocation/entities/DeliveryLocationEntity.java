@@ -28,5 +28,13 @@ public class DeliveryLocationEntity {
     @Column(nullable = false)
     private String address;
 
+    @Override
+    public String toString() {
+        return "DeliveryLocationEntity{" +
+                "id=" + id +
+                ", locationName='" + locationName + '\'' +
+                ", address='" + address + '\'' +
+                '}';
+    }
 
 }
