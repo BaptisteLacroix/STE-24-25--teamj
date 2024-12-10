@@ -1,4 +1,4 @@
-package fr.unice.polytech.equipe.j.dto;
+package fr.unice.polytech.equipe.j.order.grouporder.dto;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -19,14 +19,5 @@ public class DeliveryLocationDTO {
     }
 
     public DeliveryLocationDTO() {
-    }
-
-    @Override
-    public String toString() {
-        return "DeliveryLocationDTO{" +
-                "id=" + id +
-                ", locationName='" + locationName + '\'' +
-                ", address='" + address + '\'' +
-                '}';
     }
 }

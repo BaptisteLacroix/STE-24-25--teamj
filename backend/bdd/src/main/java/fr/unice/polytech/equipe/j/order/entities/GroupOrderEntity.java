@@ -41,10 +41,9 @@ public class GroupOrderEntity {
     @ManyToMany(fetch = FetchType.EAGER)
     private List<CampusUserEntity> users = new ArrayList<>();
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, optional = false)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private DeliveryDetailsEntity deliveryDetails;
 
-    @Convert(converter = OrderStatusConverter.class)
     @Column(name = "status", nullable = false)
     private OrderStatus status;
 
@@ -52,5 +51,16 @@ public class GroupOrderEntity {
 
     public GroupOrderEntity() {
         this.status = OrderStatus.PENDING;
+    }
+
+    @Override
+    public String toString() {
+        return "GroupOrderEntity{" +
+                "id=" + id +
+                ", orders=" + orders.size() +
+                ", users=" + users.size() +
+                ", deliveryDetails=" + deliveryDetails +
+                ", status=" + status +
+                '}';
     }
 }
