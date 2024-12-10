@@ -1,7 +1,7 @@
 export type Restaurant = {
     id: string
     name: string
-    dishes: Dish[]
+    dishes: Dish[],
     openingHours: Date | null
     closingHours: Date | null
 }
@@ -35,6 +35,7 @@ export type GroupOrder = {
 }
 
 export type DeliveryDetails = {
+    id: string,
     deliveryLocation: DeliveryLocation,
     deliveryTime: Date,
 }

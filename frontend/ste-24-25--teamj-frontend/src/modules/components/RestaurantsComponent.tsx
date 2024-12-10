@@ -38,6 +38,10 @@ export const RestaurantsComponent: React.FC<RestaurantsComponentProps> = ({
     }, [restaurantModel, searchQuery]);
 
     useEffect(() => {
+        console.log(restaurants);
+    }, [restaurants]);
+
+    useEffect(() => {
         restaurantModel.getRestaurantsTypes().then((types) => setFoodTypes(types));
     }, []);
 

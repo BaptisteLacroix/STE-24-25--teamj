@@ -175,6 +175,7 @@ public class RestaurantProxy implements IRestaurant {
         HttpResponse<String> response = request(
                 RequestUtil.DATABASE_MANAGER_SERVICE_URI,
                 "/" + managerId + "/restaurant/" + getRestaurantUUID(),
+                null,
                 HttpMethod.GET,
                 null
         );
@@ -200,6 +201,7 @@ public class RestaurantProxy implements IRestaurant {
         HttpResponse<String> response = request(
                 RequestUtil.DATABASE_MANAGER_SERVICE_URI,
                 "/" + managerId + "/restaurant/" + getRestaurantUUID(),
+                null,
                 HttpMethod.GET,
                 null
         );

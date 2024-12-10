@@ -62,6 +62,7 @@ public class DTOMapper {
         java.net.http.HttpResponse<String> response = request(
                 RequestUtil.DATABASE_ORDER_SERVICE_URI,
                 "/all",
+                null,
                 HttpMethod.GET,
                 null);
         ObjectMapper objectMapper = JacksonConfig.configureObjectMapper();
@@ -72,6 +73,7 @@ public class DTOMapper {
         response = request(
                 RequestUtil.DATABASE_ORDER_SERVICE_URI,
                 "/individual/all",
+                null,
                 HttpMethod.GET,
                 null);
         List<IndividualOrderDTO> individualOrderDTOList = objectMapper.readValue(response.body(), new TypeReference<List<IndividualOrderDTO>>() {

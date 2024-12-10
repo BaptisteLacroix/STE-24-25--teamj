@@ -43,7 +43,7 @@ public class RestaurantController {
     @Route(value = "/types", method = HttpMethod.GET)
     public HttpResponse getAllFoodTypes() {
         try {
-            java.net.http.HttpResponse<String> response = request(RequestUtil.DATABASE_RESTAURANT_SERVICE_URI, "/types", HttpMethod.GET, null);
+            java.net.http.HttpResponse<String> response = request(RequestUtil.DATABASE_RESTAURANT_SERVICE_URI, "/types", null, HttpMethod.GET, null);
             return createHttpResponse(HttpCode.HTTP_200, response.body());
         } catch (Exception e) {
             return createHttpResponse(HttpCode.HTTP_500, "Internal server error: " + e.getMessage());
@@ -71,7 +71,7 @@ public class RestaurantController {
     @Route(value = "/all", method = HttpMethod.GET)
     public HttpResponse getAllRestaurants() {
         try {
-            java.net.http.HttpResponse<String> response = request(RequestUtil.DATABASE_RESTAURANT_SERVICE_URI, "/all", HttpMethod.GET, null);
+            java.net.http.HttpResponse<String> response = request(RequestUtil.DATABASE_RESTAURANT_SERVICE_URI, "/all", null, HttpMethod.GET, null);
             return createHttpResponse(HttpCode.HTTP_200, response.body());
         } catch (Exception e) {
             return createHttpResponse(HttpCode.HTTP_500, "Internal server error: " + e.getMessage());
@@ -81,7 +81,7 @@ public class RestaurantController {
     @Route(value = "/{restaurantId}", method = HttpMethod.GET)
     public HttpResponse getRestaurant(@PathParam("restaurantId") UUID restaurantId) {
         try {
-            java.net.http.HttpResponse<String> response = request(RequestUtil.DATABASE_RESTAURANT_SERVICE_URI, "/" + restaurantId, HttpMethod.GET, null);
+            java.net.http.HttpResponse<String> response = request(RequestUtil.DATABASE_RESTAURANT_SERVICE_URI, "/" + restaurantId, null, HttpMethod.GET, null);
             return createHttpResponse(HttpCode.HTTP_200, response.body());
         } catch (Exception e) {
             return createHttpResponse(HttpCode.HTTP_500, "Internal server error: " + e.getMessage());
@@ -131,6 +131,7 @@ public class RestaurantController {
         java.net.http.HttpResponse<String> response = request(
                 RequestUtil.DATABASE_RESTAURANT_SERVICE_URI,
                 "/all",
+                null,
                 HttpMethod.GET,
                 null
         );
@@ -172,6 +173,7 @@ public class RestaurantController {
             java.net.http.HttpResponse<String> response = request(
                     RequestUtil.DATABASE_RESTAURANT_SERVICE_URI,
                     "/all",
+                    null,
                     HttpMethod.GET,
                     null
             );
@@ -209,6 +211,7 @@ public class RestaurantController {
             java.net.http.HttpResponse<String> menuItemResponse = request(
                     RequestUtil.DATABASE_RESTAURANT_SERVICE_URI,
                     "/" + restaurantId + "/menuItem/" + menuItemId,
+                    null,
                     HttpMethod.GET,
                     null);
             if (menuItemResponse == null || menuItemResponse.statusCode() != 200) {
@@ -231,7 +234,7 @@ public class RestaurantController {
             if (response.statusCode() != 201 && response.statusCode() != 200) {
                 return createHttpResponse(HttpCode.HTTP_400, response.body());
             }
-            return createHttpResponse(HttpCode.HTTP_200, "Item added to order successfully");
+            return createHttpResponse(HttpCode.HTTP_200, orderDTO.getId().toString());
         } catch (Exception e) {
             e.printStackTrace();
             return createHttpResponse(HttpCode.HTTP_500, "Internal server error: " + e.getMessage());
@@ -428,6 +431,7 @@ public class RestaurantController {
             java.net.http.HttpResponse<String> restaurantResponse = request(
                     RequestUtil.DATABASE_RESTAURANT_SERVICE_URI,
                     "/" + restaurantId,
+                    null,
                     HttpMethod.GET,
                     null);
             // Parse response
@@ -447,6 +451,7 @@ public class RestaurantController {
             java.net.http.HttpResponse<String> orderResponse = request(
                     RequestUtil.DATABASE_ORDER_SERVICE_URI,
                     "/" + orderId,
+                    null,
                     HttpMethod.GET,
                     null);
 
@@ -459,6 +464,7 @@ public class RestaurantController {
                 java.net.http.HttpResponse<String> individualOrderResponse = request(
                         RequestUtil.DATABASE_ORDER_SERVICE_URI,
                         "/individual/" + orderId,
+                        null,
                         HttpMethod.GET,
                         null);
 

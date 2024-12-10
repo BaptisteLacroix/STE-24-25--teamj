@@ -456,6 +456,7 @@ public class FlexibleRestServer {
         boolean isDynamic1 = route1.contains("([^/]+)");
         boolean isDynamic2 = route2.contains("([^/]+)");
 
+
         if (isDynamic1 && !isDynamic2) return 1;
         if (!isDynamic1 && isDynamic2) return -1;
         return route1.compareTo(route2);
@@ -478,7 +479,6 @@ public class FlexibleRestServer {
                 Map<String, String> pathParams = extractPathParams(requestPath, fullPath, dynamicSegments);
                 Map<String, String> queryParams = parseQueryParams(exchange);
                 String requestBody = readRequestBody(exchange);
-
                 Object[] methodParams = prepareMethodParameters(method, pathParams, queryParams, requestBody);
                 Object result = method.invoke(controller, methodParams);
 

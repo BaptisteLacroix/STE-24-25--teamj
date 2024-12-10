@@ -16,6 +16,7 @@ import {DeliveryDetails, DeliveryLocation, Dish, Restaurant} from "../utils/type
 import {AddIcon} from "../utils/icons/AddIcon.tsx";
 import {now, getLocalTimeZone} from "@internationalized/date";
 import {useAppState} from "../AppStateContext.tsx";
+import {uuidv4} from "../utils/apiUtils.ts";
 
 interface DishesComponentProps {
     restaurantModel: RestaurantModel;
@@ -56,6 +57,10 @@ export const DishesComponent: React.FC<DishesComponentProps> = ({
     }, [userId, restaurantModel]);
 
     useEffect(() => {
+        console.log(deliveryLocations);
+    }, [deliveryLocations]);
+
+    useEffect(() => {
         if (deliveryLocationId && userId) {
             restaurantModel
                 .getDeliveryLocationById(userId, deliveryLocationId)
@@ -67,11 +72,10 @@ export const DishesComponent: React.FC<DishesComponentProps> = ({
     const handleAddItemToOrder = async (dishId: string, deliveryDetails: DeliveryDetails | null = null) => {
         try {
             if (restaurantId && userId) {
-                const currentOrderId = orderId ?? await restaurantModel.startNewOrder(userId, restaurantId, groupOrderId, deliveryDetails);
-                if (currentOrderId) {
-                    await restaurantModel.addItemToOrder(userId, restaurantId, currentOrderId, dishId, groupOrderId, deliveryDetails);
-                    setOrderId(currentOrderId);
-                }
+                await restaurantModel.addItemToOrder(userId, restaurantId, orderId || uuidv4(), dishId, groupOrderId, deliveryDetails).then((orderId: string) => {
+                    console.log("Item added to order", orderId);
+                    setOrderId(orderId);
+                });
             }
         } catch (error) {
             console.error("Error adding item to order", error);
@@ -98,8 +102,9 @@ export const DishesComponent: React.FC<DishesComponentProps> = ({
     const handleSubmitDeliveryDetails = () => {
         if (deliveryLocationId && deliveryDate && userId) {
             const deliveryDetails: DeliveryDetails = {
+                id: uuidv4(),
                 deliveryLocation: deliveryLocation!,
-                deliveryTime: new Date(`${deliveryDate.toDateString()}`),
+                deliveryTime: new Date(deliveryDate),
             };
             handleAddItemToOrder(selectedDishId!, deliveryDetails);
             setShowModal(false);
@@ -125,7 +130,7 @@ export const DishesComponent: React.FC<DishesComponentProps> = ({
                                 </div>
                                 <div className="px-6 py-4 flex justify-between items-center">
                                     <div className="text-sm">
-                                        <p><strong>Price:</strong> ${dish.price.toFixed(2)}</p>
+                                        <p><strong>Price:</strong> {dish.price.toFixed(2)}€</p>
                                         <p>
                                             <strong>Preparation Time: </strong>
                                             {dish.prepTime > 60 ? Math.floor(dish.prepTime / 60) + ' minutes' : dish.prepTime + ' seconds'}
@@ -162,8 +167,12 @@ export const DishesComponent: React.FC<DishesComponentProps> = ({
                             ))}
                         </Select>
                         <DatePicker label="Delivery Date"
+                                    hideTimeZone
+                                    showMonthAndYearPickers
                                     defaultValue={now(getLocalTimeZone())}
-                                    onChange={(date) => setDeliveryDate(date.toDate())}
+                                    onChange={(date) => {
+                                        setDeliveryDate(date.toDate())
+                                    }}
                         />
                     </ModalBody>
                     <ModalFooter>

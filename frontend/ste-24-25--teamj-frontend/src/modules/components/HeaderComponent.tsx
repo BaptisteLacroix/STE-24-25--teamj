@@ -36,7 +36,7 @@ export function PolyfoodHeader({
         if (userId) {
             setUserId(null);
         } else {
-            setUserId("TODO");
+            setUserId("1aeb4480-305a-499d-885c-7d2d9f99153b");
         }
     };
 

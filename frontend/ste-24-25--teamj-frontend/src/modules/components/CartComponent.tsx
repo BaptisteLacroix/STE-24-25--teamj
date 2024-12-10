@@ -31,8 +31,8 @@ export const CartComponent: React.FC<CartComponentProps> = ({restaurantModel}) =
     }, [order]);
 
     const calculateTotal = async (): Promise<number> => {
-        if (!order) return 0;
-        return await restaurantModel.getTotalPriceOrder(order?.restaurantId, order?.id);
+        if (!order && !userId) return 0;
+        return await restaurantModel.getTotalPriceOrder(userId!, order?.restaurantId!, order?.id!);
     }
 
     return (
@@ -64,7 +64,7 @@ export const CartComponent: React.FC<CartComponentProps> = ({restaurantModel}) =
             </div>
             <div style={{marginTop: '20px', display: 'flex', justifyContent: 'space-between'}}>
                 <h4>Total:</h4>
-                <h4>${total}</h4>
+                <h4>{total}€</h4>
             </div>
 
             <Button color="primary" size="lg" style={{marginTop: '20px', width: '100%'}}>

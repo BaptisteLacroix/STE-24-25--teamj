@@ -7,6 +7,7 @@ import fr.unice.polytech.equipe.j.annotations.BeanParam;
 import fr.unice.polytech.equipe.j.annotations.Controller;
 import fr.unice.polytech.equipe.j.annotations.PathParam;
 import fr.unice.polytech.equipe.j.annotations.Route;
+import fr.unice.polytech.equipe.j.dto.AddItemOrderRequestDTO;
 import fr.unice.polytech.equipe.j.dto.DeliveryDetailsDTO;
 import fr.unice.polytech.equipe.j.dto.IndividualOrderDTO;
 import fr.unice.polytech.equipe.j.dto.OrderDTO;
@@ -17,6 +18,7 @@ import fr.unice.polytech.equipe.j.utils.JacksonConfig;
 import fr.unice.polytech.equipe.j.utils.RequestUtil;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.UUID;
 
 import static fr.unice.polytech.equipe.j.utils.RequestUtil.request;
@@ -24,13 +26,13 @@ import static fr.unice.polytech.equipe.j.utils.RequestUtil.request;
 @Controller("/api/gateway")
 public class GatewayController {
     private ObjectMapper objectMapper = JacksonConfig.configureObjectMapper();
-    private java.net.http.HttpResponse<String> response;
 
     @Route(value = "/restaurants/types", method = HttpMethod.GET)
     public HttpResponse getAllFoodTypes() {
-        response = request(
+        java.net.http.HttpResponse<String> response = request(
                 RequestUtil.RESTAURANT_SERVICE_URI,
                 "/types",
+                null,
                 HttpMethod.GET,
                 null
         );
@@ -39,9 +41,10 @@ public class GatewayController {
 
     @Route(value = "/restaurants/all", method = HttpMethod.GET)
     public HttpResponse getAllRestaurants() {
-        response = request(
+        java.net.http.HttpResponse<String> response = request(
                 RequestUtil.RESTAURANT_SERVICE_URI,
                 "/all",
+                null,
                 HttpMethod.GET,
                 null
         );
@@ -50,9 +53,10 @@ public class GatewayController {
 
     @Route(value = "/restaurants/{id}", method = HttpMethod.GET)
     public HttpResponse getRestaurantById(@PathParam("id") String id) {
-        response = request(
+        java.net.http.HttpResponse<String> response = request(
                 RequestUtil.RESTAURANT_SERVICE_URI,
                 "/" + id,
+                null,
                 HttpMethod.GET,
                 null
         );
@@ -61,54 +65,52 @@ public class GatewayController {
 
     @Route(value = "/restaurants/foodType/{foodType}", method = HttpMethod.GET)
     public HttpResponse getRestaurantsByFoodType(@PathParam("foodType") String foodType) {
-        response = request(
+        java.net.http.HttpResponse<String> response = request(
                 RequestUtil.RESTAURANT_SERVICE_URI,
                 "/foodType/" + foodType,
+                null,
                 HttpMethod.GET,
                 null
         );
-        System.out.println(response.body());
         return new HttpResponse(HttpCode.fromCode(response.statusCode()), response.body());
     }
 
     @Route(value = "/restaurants/name/{name}", method = HttpMethod.GET)
     public HttpResponse getRestaurantsByName(@PathParam("name") String name) {
-        response = request(
+        java.net.http.HttpResponse<String> response = request(
                 RequestUtil.RESTAURANT_SERVICE_URI,
                 "/name/" + name,
+                null,
                 HttpMethod.GET,
                 null
         );
         return new HttpResponse(HttpCode.fromCode(response.statusCode()), response.body());
     }
 
-    @Route(value = "/${userId}/restaurants/${restaurantId}/orders/${orderId}/item/${dishId}", method = HttpMethod.POST)
+    @Route(value = "/{userId}/restaurants/{restaurantId}/orders/{orderId}/item/{dishId}", method = HttpMethod.POST)
     public HttpResponse addItemToOrder(
             @PathParam("userId") String userId,
             @PathParam("restaurantId") String restaurantId,
             @PathParam("orderId") String orderId,
             @PathParam("dishId") String dishId,
-            @BeanParam DeliveryDetailsDTO deliveryDetailsDTO,
-            @BeanParam String groupOrderId
+            @BeanParam AddItemOrderRequestDTO addItemOrderRequestDTO
     ) {
         // Step 1: Validate user and get deliveryTime
         HttpResponse userValidationResponse = validateUser(userId);
         if (userValidationResponse != null) return userValidationResponse;
 
-        LocalDateTime deliveryTime = getDeliveryTime(groupOrderId, deliveryDetailsDTO);
+        LocalDateTime deliveryTime = getDeliveryTime(addItemOrderRequestDTO.getGroupOrderId(), addItemOrderRequestDTO.getDeliveryDetails());
         if (deliveryTime == null)
             return new HttpResponse(HttpCode.HTTP_404, "Delivery details are required for an individual order");
-
         // Step 2: Validate and handle the order based on groupOrderId
-        HttpResponse orderResponse = processOrder(userId, orderId, restaurantId, dishId, deliveryTime, groupOrderId, deliveryDetailsDTO);
-        if (orderResponse != null) return orderResponse;
-
-        return new HttpResponse(HttpCode.fromCode(response.statusCode()), response.body());
+        HttpResponse orderResponse = processOrder(userId, orderId, restaurantId, dishId, deliveryTime, addItemOrderRequestDTO.getGroupOrderId(), addItemOrderRequestDTO.getDeliveryDetails());
+        return orderResponse;
     }
 
     // Validate User
     private HttpResponse validateUser(String userId) {
-        if (getUserById(userId).statusCode() != 200) {
+        java.net.http.HttpResponse<String> response = getUserById(userId);
+        if (response.statusCode() != 200) {
             return new HttpResponse(HttpCode.fromCode(response.statusCode()), response.body());
         }
         return null;
@@ -126,7 +128,7 @@ public class GatewayController {
 
     // Extract delivery time from the group order response
     private LocalDateTime getDeliveryTimeFromGroupOrder(String groupOrderId) {
-        response = getGroupOrderById(groupOrderId);
+        java.net.http.HttpResponse<String> response = getGroupOrderById(groupOrderId);
         if (response.statusCode() != 200) {
             return null;
         }
@@ -157,7 +159,7 @@ public class GatewayController {
         } else if (deliveryDetailsDTO != null) {
             return handleIndividualOrder(userId, orderId, restaurantId, dishId, deliveryTime, statusCodeIndividual, deliveryDetailsDTO);
         }
-        return null;
+        return new HttpResponse(HttpCode.HTTP_400, "Invalid request");
     }
 
     // Handle Group Order Logic
@@ -174,8 +176,10 @@ public class GatewayController {
     // Handle Individual Order Logic
     private HttpResponse handleIndividualOrder(String userId, String orderId, String restaurantId, String dishId, LocalDateTime deliveryTime, int statusCodeIndividual, DeliveryDetailsDTO deliveryDetailsDTO) {
         if (statusCodeIndividual != 200) {
+            System.out.println("Individual order does not exist");
             return createNewIndividualOrderAndAddItem(userId, orderId, restaurantId, dishId, deliveryDetailsDTO);
         } else {
+            System.out.println("Individual order exists");
             return addItemToRestaurantOrder(restaurantId, orderId, dishId, deliveryTime);
         }
     }
@@ -186,8 +190,10 @@ public class GatewayController {
         orderDTO.setId(UUID.fromString(orderId));
         orderDTO.setUserId(UUID.fromString(userId));
         orderDTO.setStatus(OrderStatus.PENDING.toString());
-
-        if (updateOrder(orderDTO).statusCode() != 201) {
+        orderDTO.setRestaurantId(UUID.fromString(restaurantId));
+        orderDTO.setItems(new ArrayList<>());
+        java.net.http.HttpResponse<String> response = updateOrder(orderDTO);
+        if (response.statusCode() != 201) {
             return new HttpResponse(HttpCode.fromCode(response.statusCode()), response.body());
         }
         return addItemToRestaurantOrder(restaurantId, orderId, dishId, deliveryTime);
@@ -199,10 +205,12 @@ public class GatewayController {
         orderDTO.setId(UUID.fromString(orderId));
         orderDTO.setUserId(UUID.fromString(userId));
         orderDTO.setStatus(OrderStatus.PENDING.toString());
-
+        orderDTO.setRestaurantId(UUID.fromString(restaurantId));
+        orderDTO.setItems(new ArrayList<>());
+        deliveryDetailsDTO.setId(UUID.randomUUID());
         IndividualOrderDTO individualOrderDTO = new IndividualOrderDTO(orderDTO, deliveryDetailsDTO);
-
-        if (updateIndividualOrder(individualOrderDTO).statusCode() != 201) {
+        java.net.http.HttpResponse<String> response = updateIndividualOrder(individualOrderDTO);
+        if (response.statusCode() != 201) {
             return new HttpResponse(HttpCode.fromCode(response.statusCode()), response.body());
         }
         return addItemToRestaurantOrder(restaurantId, orderId, dishId, deliveryDetailsDTO.getDeliveryTime());
@@ -210,26 +218,28 @@ public class GatewayController {
 
     // Add item to the restaurant order
     private HttpResponse addItemToRestaurantOrder(String restaurantId, String orderId, String dishId, LocalDateTime deliveryTime) {
-        response = request(
+        java.net.http.HttpResponse<String> response = request(
                 RequestUtil.RESTAURANT_SERVICE_URI,
-                "/" + restaurantId + "/orders/" + orderId + "/item/" + dishId + "?deliveryTime=" + deliveryTime,
+                "/" + restaurantId + "/orders/" + orderId + "/item/" + dishId,
+                "?deliveryTime=" + deliveryTime,
                 HttpMethod.POST,
                 null
         );
         if (response.statusCode() != 200) {
             return new HttpResponse(HttpCode.fromCode(response.statusCode()), response.body());
         }
-        return null;
+        return new HttpResponse(HttpCode.fromCode(response.statusCode()), response.body());
     }
 
     @Route(value = "/{userId}/orders/{orderId}/cancel", method = HttpMethod.PUT)
     public HttpResponse cancelOrder(@PathParam("userId") String userId, @PathParam("orderId") String orderId) {
-        if (getUserById(userId).statusCode() != 200) {
-            return new HttpResponse(HttpCode.HTTP_404, "User not found");
+        java.net.http.HttpResponse<String> response = getUserById(userId);
+        if (response.statusCode() != 200) {
+            return new HttpResponse(HttpCode.fromCode(response.statusCode()), response.body());
         }
-
-        if (getOrderById(orderId).statusCode() != 200) {
-            return new HttpResponse(HttpCode.HTTP_404, "Order not found");
+        response = getOrderById(orderId);
+        if (response.statusCode() != 200) {
+            return new HttpResponse(HttpCode.fromCode(response.statusCode()), response.body());
         }
 
         OrderDTO orderDTO = objectMapper.convertValue(response.body(), OrderDTO.class);
@@ -243,16 +253,16 @@ public class GatewayController {
 
     @Route(value = "/{userId}/orders/{orderId}", method = HttpMethod.GET)
     public HttpResponse getOrder(@PathParam("userId") String userId, @PathParam("orderId") String orderId) {
-        if (getUserById(userId).statusCode() != 200) {
-            return new HttpResponse(HttpCode.HTTP_404, "User not found");
+        java.net.http.HttpResponse<String> response = getUserById(userId);
+        if (response.statusCode() != 200) {
+            return new HttpResponse(HttpCode.fromCode(response.statusCode()), response.body());
         }
-
-        if (getOrderById(orderId).statusCode() != 200) {
+        OrderDTO orderDTO = fetchOrderByIdOrIndividual(UUID.fromString(orderId));
+        if (orderDTO == null) {
             return new HttpResponse(HttpCode.HTTP_404, "Order not found");
         }
-        OrderDTO orderDTO = objectMapper.convertValue(response.body(), OrderDTO.class);
         if (orderDTO.getUserId().equals(UUID.fromString(userId))) {
-            return new HttpResponse(HttpCode.fromCode(response.statusCode()), response.body());
+            return new HttpResponse(HttpCode.HTTP_200, objectMapper.valueToTree(orderDTO).toString());
         }
         return new HttpResponse(HttpCode.HTTP_403, "Order not found for user: " + userId);
     }
@@ -263,13 +273,15 @@ public class GatewayController {
             return new HttpResponse(HttpCode.HTTP_404, "User not found");
         }
 
-        if (getOrderById(orderId).statusCode() != 200) {
+        OrderDTO orderDTO = fetchOrderByIdOrIndividual(UUID.fromString(orderId));
+        if (orderDTO == null) {
             return new HttpResponse(HttpCode.HTTP_404, "Order not found");
         }
 
-        response = request(
+        java.net.http.HttpResponse<String> response = request(
                 RequestUtil.RESTAURANT_SERVICE_URI,
                 "/" + restaurantId + "/orders/" + orderId + "/total-price",
+                null,
                 HttpMethod.GET,
                 null
         );
@@ -281,9 +293,10 @@ public class GatewayController {
         if (getUserById(userId).statusCode() != 200) {
             return new HttpResponse(HttpCode.HTTP_404, "User not found");
         }
-        response = request(
+        java.net.http.HttpResponse<String> response = request(
                 RequestUtil.DATABASE_DELIVERY_LOCATION_SERVICE_URI,
                 "",
+                null,
                 HttpMethod.GET,
                 null
         );
@@ -295,9 +308,10 @@ public class GatewayController {
         if (getUserById(userId).statusCode() != 200) {
             return new HttpResponse(HttpCode.HTTP_404, "User not found");
         }
-        response = request(
+        java.net.http.HttpResponse<String> response = request(
                 RequestUtil.DATABASE_DELIVERY_LOCATION_SERVICE_URI,
                 "/" + deliveryLocationId,
+                null,
                 HttpMethod.GET,
                 null
         );
@@ -310,9 +324,10 @@ public class GatewayController {
             return new HttpResponse(HttpCode.HTTP_404, "User not found");
         }
 
-        response = request(
+        java.net.http.HttpResponse<String> response = request(
                 RequestUtil.GROUP_ORDER_SERVICE_URI,
                 "/" + userId + "/create",
+                null,
                 HttpMethod.POST,
                 objectMapper.valueToTree(deliveryDetailsDTO).toString()
         );
@@ -325,9 +340,10 @@ public class GatewayController {
             return new HttpResponse(HttpCode.HTTP_404, "User not found");
         }
 
-        response = request(
+        java.net.http.HttpResponse<String> response = request(
                 RequestUtil.GROUP_ORDER_SERVICE_URI,
                 "/" + groupOrderId + "/join/" + userId,
+                null,
                 HttpMethod.PUT,
                 null
         );
@@ -335,62 +351,96 @@ public class GatewayController {
     }
 
     private java.net.http.HttpResponse<String> getUserById(String userId) {
-        response = request(
+        return request(
                 RequestUtil.DATABASE_CAMPUS_USER_SERVICE_URI,
                 "/" + userId,
+                null,
                 HttpMethod.GET,
                 null
         );
-        return response;
     }
 
     private java.net.http.HttpResponse<String> getGroupOrderById(String groupOrderId) {
-        response = request(
+        return request(
                 RequestUtil.DATABASE_ORDER_SERVICE_URI,
                 "/" + groupOrderId,
+                null,
                 HttpMethod.GET,
                 null
         );
-        return response;
     }
 
     private java.net.http.HttpResponse<String> getOrderById(String orderId) {
-        response = request(
+        return request(
                 RequestUtil.DATABASE_ORDER_SERVICE_URI,
                 "/" + orderId,
+                null,
                 HttpMethod.GET,
                 null
         );
-        return response;
     }
 
     private java.net.http.HttpResponse<String> getIndividualOrderById(String orderId) {
-        response = request(
+        return request(
                 RequestUtil.DATABASE_ORDER_SERVICE_URI,
                 "/individual/" + orderId,
+                null,
                 HttpMethod.GET,
                 null
         );
-        return response;
     }
 
     private java.net.http.HttpResponse<String> updateOrder(OrderDTO orderDTO) {
-        response = request(
+        return request(
                 RequestUtil.DATABASE_ORDER_SERVICE_URI,
                 "/update",
+                null,
                 HttpMethod.PUT,
                 objectMapper.valueToTree(orderDTO).toString()
         );
-        return response;
     }
 
     private java.net.http.HttpResponse<String> updateIndividualOrder(IndividualOrderDTO orderDTO) {
-        response = request(
+        return request(
                 RequestUtil.DATABASE_ORDER_SERVICE_URI,
                 "/individual/update",
+                null,
                 HttpMethod.PUT,
                 objectMapper.valueToTree(orderDTO).toString()
         );
-        return response;
+    }
+
+    private OrderDTO fetchOrderByIdOrIndividual(UUID orderId) {
+        try {
+            // Attempt to fetch regular order data
+            java.net.http.HttpResponse<String> orderResponse = request(
+                    RequestUtil.DATABASE_ORDER_SERVICE_URI,
+                    "/" + orderId,
+                    null,
+                    HttpMethod.GET,
+                    null);
+
+            // Parse response as OrderDTO
+            return objectMapper.readValue(orderResponse.body(), OrderDTO.class);
+        } catch (Exception e) {
+            // If regular order fails, attempt to fetch individual order data
+            try {
+                java.net.http.HttpResponse<String> individualOrderResponse = request(
+                        RequestUtil.DATABASE_ORDER_SERVICE_URI,
+                        "/individual/" + orderId,
+                        null,
+                        HttpMethod.GET,
+                        null);
+
+                // Parse response as IndividualOrderDTO
+                System.out.println("Individual order response: " + individualOrderResponse.body());
+                return objectMapper.readValue(individualOrderResponse.body(), IndividualOrderDTO.class);
+            } catch (Exception innerException) {
+                innerException.printStackTrace();
+                // Both fetching attempts failed
+                System.out.println("Failed to fetch order: " + innerException.getMessage());
+                return null;
+            }
+        }
     }
 }

@@ -427,7 +427,6 @@ class RestaurantControllerTest {
         java.net.http.HttpResponse<String> response = client.send(request, java.net.http.HttpResponse.BodyHandlers.ofString());
 
         assertNotNull(response.body());
-        System.out.println(response.body());
         assertEquals(200, response.statusCode());
     }
 }
