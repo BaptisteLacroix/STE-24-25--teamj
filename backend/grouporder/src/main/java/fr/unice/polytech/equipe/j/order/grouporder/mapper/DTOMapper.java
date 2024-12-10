@@ -6,16 +6,29 @@ import fr.unice.polytech.equipe.j.order.grouporder.backend.GroupOrder;
 import fr.unice.polytech.equipe.j.order.grouporder.dto.DeliveryDetailsDTO;
 import fr.unice.polytech.equipe.j.order.grouporder.dto.DeliveryLocationDTO;
 import fr.unice.polytech.equipe.j.order.grouporder.dto.GroupOrderDTO;
+import fr.unice.polytech.equipe.j.order.grouporder.dto.OrderStatus;
 
 public class DTOMapper {
 
     public static GroupOrder toGroupOrder(GroupOrderDTO groupOrderDTO) {
         GroupOrder groupOrder = new GroupOrder(groupOrderDTO.getDeliveryDetails());
         groupOrder.setGroupOrderId(groupOrderDTO.getGroupOrderId());
+
+        // Ajout des utilisateurs
+        if (groupOrderDTO.getUsers() != null) {
+            groupOrderDTO.getUsers().forEach(userDTO -> groupOrder.getUsers().add(userDTO));
+        }
+
+        // Ajout des commandes
+        if (groupOrderDTO.getOrders() != null) {
+            groupOrderDTO.getOrders().forEach(orderDTO -> groupOrder.getOrders().add(orderDTO));
+        }
+
+        groupOrder.setStatus(OrderStatus.valueOf(groupOrderDTO.getStatus()));
         return groupOrder;
     }
 
-    public static GroupOrderDTO toGroupOrderDTO(GroupOrder groupOrder){
+    public static GroupOrderDTO toGroupOrderDTO(GroupOrder groupOrder) {
         GroupOrderDTO groupOrderDTO = new GroupOrderDTO();
         groupOrderDTO.setGroupOrderId(groupOrder.getGroupOrderId());
         groupOrderDTO.setDeliveryDetails(groupOrder.getDeliveryDetails());
@@ -24,6 +37,8 @@ public class DTOMapper {
         groupOrderDTO.setStatus(groupOrder.getStatus().name());
         return groupOrderDTO;
     }
+
+
 
     private static DeliveryDetails toDeliveryDetails(DeliveryDetailsDTO deliveryDetailsDTO) {
         DeliveryLocation deliveryLocation = toDeliveryLocation(deliveryDetailsDTO.getDeliveryLocation());
@@ -34,7 +49,7 @@ public class DTOMapper {
 
     }
 
-    
+
     private static DeliveryLocation toDeliveryLocation(DeliveryLocationDTO deliveryLocationDTO) {
        return new DeliveryLocation(
                 deliveryLocationDTO.getLocationName(),

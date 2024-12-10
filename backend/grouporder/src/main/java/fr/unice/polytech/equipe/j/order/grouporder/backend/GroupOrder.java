@@ -7,6 +7,7 @@ import fr.unice.polytech.equipe.j.delivery.DeliveryDetails;
 import fr.unice.polytech.equipe.j.httpresponse.HttpCode;
 import fr.unice.polytech.equipe.j.httpresponse.HttpResponse;
 import fr.unice.polytech.equipe.j.order.grouporder.dto.*;
+import fr.unice.polytech.equipe.j.order.grouporder.mapper.DTOMapper;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
@@ -33,10 +34,12 @@ public class GroupOrder implements IGroupOrder {
     @Override
     public HttpResponse addUser(CampusUserDTO user) {
         try {
+            System.out.println("Before adding user: " + this.campusUsers);
             this.getUsers().add(user);
+            System.out.println("After adding user: " + this.campusUsers);
             try {
                 ObjectMapper mapper = JacksonConfig.configureObjectMapper();
-                java.net.http.HttpResponse response = request(DATABASE_GROUPORDER_SERVICE_URI,"/update",HttpMethod.PUT,mapper.writeValueAsString(this));
+                java.net.http.HttpResponse response = request(DATABASE_GROUPORDER_SERVICE_URI,"/update",HttpMethod.PUT,mapper.writeValueAsString(DTOMapper.toGroupOrderDTO(this)));
                 if (response.statusCode()==201){
                     return new HttpResponse(HttpCode.HTTP_201, this.groupOrderId);
                 }  else {

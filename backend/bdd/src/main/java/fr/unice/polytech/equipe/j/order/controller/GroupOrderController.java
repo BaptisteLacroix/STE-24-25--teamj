@@ -10,6 +10,7 @@ import fr.unice.polytech.equipe.j.annotations.Route;
 import fr.unice.polytech.equipe.j.httpresponse.HttpCode;
 import fr.unice.polytech.equipe.j.httpresponse.HttpResponse;
 import fr.unice.polytech.equipe.j.order.dao.GroupOrderDAO;
+import fr.unice.polytech.equipe.j.order.dao.OrderDAO;
 import fr.unice.polytech.equipe.j.order.dto.GroupOrderDTO;
 import fr.unice.polytech.equipe.j.order.dto.OrderDTO;
 import fr.unice.polytech.equipe.j.order.entities.GroupOrderEntity;
@@ -25,7 +26,7 @@ public class GroupOrderController {
 
     @Route(value = "/create", method = HttpMethod.POST)
     public HttpResponse createGroupOrder(@BeanParam GroupOrderDTO dto) {
-        System.out.println("Creating groupOrder: " + GroupOrderDTO.class);
+        System.out.println("Creating groupOrder: " + dto.getGroupOrderId());
         GroupOrderEntity groupOrderEntity = GroupOrderMapper.toEntity(dto);
         GroupOrderDAO.save(groupOrderEntity);
         return new HttpResponse(HttpCode.HTTP_201, "GroupOrder created successfully");
@@ -35,14 +36,20 @@ public class GroupOrderController {
     public HttpResponse updateGroupOrder(@BeanParam GroupOrderDTO groupOrderDTO) {
         System.out.println("Update GroupOrder");
         GroupOrderEntity groupOrderEntity = GroupOrderMapper.toEntity(groupOrderDTO);
-        return GroupOrderDAO.save(groupOrderEntity);
+        GroupOrderDAO.save(groupOrderEntity);
+        System.out.println(GroupOrderDAO.getAllGroupOrders());
+        return new HttpResponse(HttpCode.HTTP_201,"");
     }
+
 
 
 
     @Route(value = "/{id}", method = HttpMethod.GET)
     public HttpResponse getGroupOrderById(@PathParam("id") UUID id) {
+        System.out.println("Get Group Order by id: " + id);
+        System.out.println(GroupOrderDAO.getAllGroupOrders());
         GroupOrderEntity groupOrderEntity = GroupOrderDAO.getGroupOrderById(id);;
+        System.out.println(groupOrderEntity);
         if (groupOrderEntity != null) {
             ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
             try {

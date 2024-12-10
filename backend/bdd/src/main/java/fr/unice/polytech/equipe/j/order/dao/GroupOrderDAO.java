@@ -37,5 +37,14 @@ public static HttpResponse save(GroupOrderEntity groupOrderEntity) {
         return new HttpResponse(HttpCode.HTTP_500, "Internal server error");
         }
     }
+
+    public static List<GroupOrderEntity> getAllGroupOrders() {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            return session.createQuery("FROM GroupOrderEntity", GroupOrderEntity.class).list();
+        } catch (Exception e) {
+            System.out.println("Error while getting groupOrder by id : " + e.getMessage());
+            return null;
+        }
+    }
 }
 
