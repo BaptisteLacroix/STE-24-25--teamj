@@ -49,7 +49,7 @@ public class GroupOrder implements IGroupOrder {
                     return new HttpResponse(HttpCode.HTTP_400,"Can't update groupOrder");
             }
         } catch (Exception e){
-            return new HttpResponse(HttpCode.HTTP_400,"Can't find groupOrder");
+            return new HttpResponse(HttpCode.HTTP_404,"Can't find groupOrder");
         }
     }
 

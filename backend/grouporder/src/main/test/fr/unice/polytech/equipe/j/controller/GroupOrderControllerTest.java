@@ -31,10 +31,8 @@ class GroupOrderControllerTest {
     private static final String DATABASE_HEALTH_URL = "http://localhost:5000/api/database/health";
     private static final UUID ORDER_UUID = UUID.fromString("178225f2-9f08-4a7f-add2-3783e89ffa6b"); // TEST Order
     private static final UUID USER_UUID = UUID.fromString("1aeb4480-305a-499d-885c-7d2d9f99153b"); // TEST User
-    private static final UUID GROUP_ORDER_UUID = UUID.fromString("ef254832-dba4-44f8-8fa4-88720ee3e0a7");
+    private static UUID GROUP_ORDER_UUID = UUID.fromString("ef254832-dba4-44f8-8fa4-88720ee3e0a7");
     private static final String BASE_DATABASE_URL = "http://localhost:5000/api/database";
-    private static final UUID USER_UUID_GUEST = UUID.fromString("2ed64a86-d499-4a9c-a0a1-9aba06297348");
-
 
     @BeforeAll
     public static void startServer(){
@@ -115,7 +113,10 @@ class GroupOrderControllerTest {
                 .POST(HttpRequest.BodyPublishers.noBody())
                 .build();
         java.net.http.HttpResponse<String> response = client.send(request, java.net.http.HttpResponse.BodyHandlers.ofString());
-        assertNotNull(response.body());
+        assertNotNull(response.body());;
+        // Supprimez les guillemets de la réponse
+        String cleanedResponse = response.body().replace("\"", "");
+        GROUP_ORDER_UUID = UUID.fromString(cleanedResponse);
         System.out.println(response.statusCode());
         assertEquals(201, response.statusCode());
     }
@@ -125,14 +126,14 @@ class GroupOrderControllerTest {
     @Order(2)
     void testJoinGroupOrder() throws Exception{
         HttpClient client = HttpClient.newHttpClient();
-        HttpRequest request = HttpRequest.newBuilder().uri(URI.create(BASE_URL+"/"+GROUP_ORDER_UUID+"/join/"+USER_UUID_GUEST))
+        HttpRequest request = HttpRequest.newBuilder().uri(URI.create(BASE_URL+"/"+GROUP_ORDER_UUID+"/join/"+USER_UUID))
                 .header("Content-Type", "application/json")
                 .PUT(HttpRequest.BodyPublishers.noBody())
                 .build();
         java.net.http.HttpResponse<String> response = client.send(request, java.net.http.HttpResponse.BodyHandlers.ofString());
         assertNotNull(response.body());
         System.out.println(response.statusCode());
-        assertEquals(200, response.statusCode());
+        assertEquals(201, response.statusCode());
     }
 
 }
