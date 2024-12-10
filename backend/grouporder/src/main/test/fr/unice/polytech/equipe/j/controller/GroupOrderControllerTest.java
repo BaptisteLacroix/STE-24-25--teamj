@@ -160,10 +160,52 @@ class GroupOrderControllerTest {
                 .build();
         java.net.http.HttpResponse<String> response = client.send(request, java.net.http.HttpResponse.BodyHandlers.ofString());
         assertNotNull(response.body());
+
         System.out.println(response.statusCode());
         assertEquals(500, response.statusCode());
     }
 
+    /*@Test
+    @Order(5)
+    void testValidateGroupOrder() throws Exception{
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder().uri(URI.create(BASE_URL+"/"+GROUP_ORDER_UUID+"/"+USER_UUID+"/validate"))
+                .header("Content-Type", "application/json")
+                .PUT(HttpRequest.BodyPublishers.noBody())
+                .build();
+        java.net.http.HttpResponse<String> response = client.send(request, java.net.http.HttpResponse.BodyHandlers.ofString());
+        assertNotNull(response.body());
+        System.out.println(response.body());
+        assertEquals(200, response.statusCode());
+    }*/
+
+    @Test
+    @Order(6)
+    void testValidateGroupOrderWithInvalidGroupOrder() throws Exception{
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder().uri(URI.create(BASE_URL+"/"+UUID.randomUUID()+"/"+USER_UUID+"/validate"))
+                .header("Content-Type", "application/json")
+                .PUT(HttpRequest.BodyPublishers.noBody())
+                .build();
+        java.net.http.HttpResponse<String> response = client.send(request, java.net.http.HttpResponse.BodyHandlers.ofString());
+        assertNotNull(response.body());
+        System.out.println(response.statusCode());
+        assertEquals(500, response.statusCode());
+    }
+
+    @Test
+    @Order(7)
+    void testValidateGroupOrderWithInvalidUser() throws Exception{
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder().uri(URI.create(BASE_URL+"/"+GROUP_ORDER_UUID+"/"+UUID.randomUUID()+"/validate"))
+                .header("Content-Type", "application/json")
+                .PUT(HttpRequest.BodyPublishers.noBody())
+                .build();
+        java.net.http.HttpResponse<String> response = client.send(request, java.net.http.HttpResponse.BodyHandlers.ofString());
+        assertNotNull(response.body());
+        System.out.println(response.statusCode());
+        assertEquals(500, response.statusCode());
+    }
 
 }
 

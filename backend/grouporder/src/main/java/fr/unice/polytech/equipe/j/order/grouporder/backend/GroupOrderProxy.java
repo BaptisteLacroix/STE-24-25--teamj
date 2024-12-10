@@ -66,6 +66,7 @@ public class GroupOrderProxy implements IGroupOrder {
 
     @Override
     public HttpResponse validate(CampusUserDTO user) {
+        System.out.println("Users in GroupOrderEntity: " + groupOrder.getUsers());
         if (groupOrder.getStatus() != OrderStatus.PENDING) {
             return new HttpResponse(HttpCode.HTTP_400, "Cannot validate group order that is not pending.");
         }

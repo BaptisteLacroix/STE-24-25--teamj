@@ -31,4 +31,17 @@ public class CampusUserDTO {
         this.ordersHistory = ordersHistory;
         this.transactions = transactions;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        CampusUserDTO that = (CampusUserDTO) obj;
+        return id != null && id.equals(that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : 0;
+    }
 }

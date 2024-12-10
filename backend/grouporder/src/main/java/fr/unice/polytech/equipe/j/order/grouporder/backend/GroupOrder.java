@@ -66,7 +66,18 @@ public class GroupOrder implements IGroupOrder {
     @Override
     public HttpResponse validate(CampusUserDTO user) {
         setStatus(OrderStatus.VALIDATED);
-        return new HttpResponse(HttpCode.HTTP_200, "GroupOrder validated");
+        try {
+            // Sauvegardez les changements dans la base de données
+            ObjectMapper mapper = JacksonConfig.configureObjectMapper();
+            java.net.http.HttpResponse response = request(DATABASE_GROUPORDER_SERVICE_URI,"/update",HttpMethod.PUT,mapper.writeValueAsString(DTOMapper.toGroupOrderDTO(this)));
+            if (response.statusCode() == 201) {
+                return new HttpResponse(HttpCode.HTTP_200, "GroupOrder validated successfully.");
+            } else {
+                return new HttpResponse(HttpCode.HTTP_500, "Failed to update GroupOrder in database: " + response.body());
+            }
+        } catch (Exception e) {
+            return new HttpResponse(HttpCode.HTTP_500, "Internal server error while validating GroupOrder: " + e.getMessage());
+        }
     }
 
     // Getters
