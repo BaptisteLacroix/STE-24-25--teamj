@@ -136,5 +136,34 @@ class GroupOrderControllerTest {
         assertEquals(201, response.statusCode());
     }
 
+    @Test
+    @Order(3)
+    void testJoinGroupOrderWithInvalidGroupOrder() throws Exception{
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder().uri(URI.create(BASE_URL+"/"+UUID.randomUUID()+"/join/"+USER_UUID))
+                .header("Content-Type", "application/json")
+                .PUT(HttpRequest.BodyPublishers.noBody())
+                .build();
+        java.net.http.HttpResponse<String> response = client.send(request, java.net.http.HttpResponse.BodyHandlers.ofString());
+        assertNotNull(response.body());
+        System.out.println(response.statusCode());
+        assertEquals(500, response.statusCode());
+    }
+
+    @Test
+    @Order(4)
+    void testJoinGroupOrderWithInvalidUser() throws Exception{
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder().uri(URI.create(BASE_URL+"/"+GROUP_ORDER_UUID+"/join/"+UUID.randomUUID()))
+                .header("Content-Type", "application/json")
+                .PUT(HttpRequest.BodyPublishers.noBody())
+                .build();
+        java.net.http.HttpResponse<String> response = client.send(request, java.net.http.HttpResponse.BodyHandlers.ofString());
+        assertNotNull(response.body());
+        System.out.println(response.statusCode());
+        assertEquals(500, response.statusCode());
+    }
+
+
 }
 
