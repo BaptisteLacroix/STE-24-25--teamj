@@ -32,5 +32,6 @@
     <build>
         <!-- Specify Source Directories -->
         <sourceDirectory>src/main/java</sourceDirectory>
+        <testSourceDirectory>src/main/test</testSourceDirectory>
     </build>
 </project>
