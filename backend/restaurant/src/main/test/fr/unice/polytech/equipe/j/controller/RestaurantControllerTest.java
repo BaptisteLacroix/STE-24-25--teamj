@@ -304,7 +304,7 @@ class RestaurantControllerTest {
         response = client.send(request, java.net.http.HttpResponse.BodyHandlers.ofString());
 
         assertNotNull(response.body());
-        assertEquals(200, response.statusCode());
+        assertEquals(201, response.statusCode());
     }
 
     @Test
@@ -335,7 +335,7 @@ class RestaurantControllerTest {
         response = client.send(request, java.net.http.HttpResponse.BodyHandlers.ofString());
 
         assertNotNull(response.body());
-        assertEquals(200, response.statusCode());
+        assertEquals(201, response.statusCode());
     }
 
     @Test

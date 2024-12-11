@@ -102,10 +102,7 @@ public class GroupOrderController {
     public HttpResponse joinGroupOrder(@PathParam("groupOrderId") UUID groupOrderId, @PathParam("userId") UUID userId) {
         try {
             java.net.http.HttpResponse<String> user = request(DATABASE_CAMPUS_USER_SERVICE_URI, "/" + userId.toString(), HttpMethod.GET, null);
-            System.out.println("User: " + user.statusCode() + " " + user.body());
             IGroupOrder groupOrderProxy = createGroupOrderProxy(groupOrderId);
-            System.out.println("Joining groupOrder: " + groupOrderId);
-            System.out.println("groupOrderProxy: " + groupOrderProxy);
             if (groupOrderProxy == null) {
                 System.out.println("[joinGroupOrder] Error while processing orders");
                 return new HttpResponse(HttpCode.HTTP_500, "Error while processing groupOrder");
@@ -113,6 +110,7 @@ public class GroupOrderController {
             CampusUserDTO userDTO = objectMapper.readValue(user.body(), CampusUserDTO.class);
             return groupOrderProxy.addUser(userDTO);
         } catch (Exception e) {
+            System.out.println("[joinGroupOrder] Error while processing orders: " + e.getMessage());
             return new HttpResponse(HttpCode.HTTP_500, "User can't join groupOrder");
         }
 
