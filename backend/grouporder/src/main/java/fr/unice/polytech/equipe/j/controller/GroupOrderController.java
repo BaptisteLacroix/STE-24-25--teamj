@@ -3,6 +3,7 @@ package fr.unice.polytech.equipe.j.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import fr.unice.polytech.equipe.j.HttpMethod;
+import fr.unice.polytech.equipe.j.dto.OrderDTO;
 import fr.unice.polytech.equipe.j.utils.JacksonConfig;
 import fr.unice.polytech.equipe.j.annotations.BeanParam;
 import fr.unice.polytech.equipe.j.annotations.Controller;
@@ -29,19 +30,34 @@ import static fr.unice.polytech.equipe.j.utils.RequestUtil.*;
 
 @Controller("/api/group-order")
 public class GroupOrderController {
+    private ObjectMapper objectMapper = JacksonConfig.configureObjectMapper();
     private final Logger logger = Logger.getLogger("GroupOrderService");
 
     public GroupOrderController() {
     }
 
+    @Route(value = "/{groupOrderId}", method = HttpMethod.GET)
+    public HttpResponse getGroupOrder(@PathParam("groupOrderId") UUID groupOrderId) {
+        try {
+            IGroupOrder groupOrderProxy = createGroupOrderProxy(groupOrderId);
+            if (groupOrderProxy == null) {
+                System.out.println("[getGroupOrder] Error while processing orders");
+                return new HttpResponse(HttpCode.HTTP_500, "Error while processing orders");
+            }
+            String groupOrderJson = objectMapper.writeValueAsString(groupOrderProxy);
+            return new HttpResponse(HttpCode.HTTP_200, groupOrderJson);
+        } catch (Exception e) {
+            return new HttpResponse(HttpCode.HTTP_500, "Error while processing orders: " + e.getMessage());
+        }
+    }
 
     @Route(value = "/{groupOrderId}/getOrders", method = HttpMethod.GET)
     public HttpResponse answerWithAllOrders(@PathParam("groupOrderId") UUID groupOrderId) {
         IGroupOrder groupOrderProxy = createGroupOrderProxy(groupOrderId);
         if (groupOrderProxy == null) {
+            System.out.println("[answerWithAllOrders] Error while processing orders");
             return new HttpResponse(HttpCode.HTTP_500, "Error while processing orders");
         }
-        ObjectMapper objectMapper = new ObjectMapper();
         try {
             // Convertir la liste en une chaîne JSON
             String ordersJson = objectMapper.writeValueAsString(groupOrderProxy.getOrders());
@@ -61,25 +77,26 @@ public class GroupOrderController {
             System.out.println("Creating groupOrder");
             GroupOrder groupOrder1 = new GroupOrder(deliveryDetailsDTO);
             GroupOrderDTO groupOrderDTO = new GroupOrderDTO(groupOrder1.getGroupOrderId(), null, new ArrayList<CampusUserDTO>(), null, "pending");
-            ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+            ObjectWriter ow = objectMapper.writer().withDefaultPrettyPrinter();
             String json = ow.writeValueAsString(groupOrderDTO);
             request(DATABASE_GROUPORDER_SERVICE_URI, "/create", HttpMethod.POST, json);
             IGroupOrder groupOrderProxy = createGroupOrderProxy(groupOrder1.getGroupOrderId());
             if (groupOrderProxy == null) {
+                System.out.println("[createGroupOrder] Error while processing orders");
                 return new HttpResponse(HttpCode.HTTP_500, "Error while processing orders");
             }
             try {
                 java.net.http.HttpResponse<String> user = request(DATABASE_CAMPUS_USER_SERVICE_URI, "/" + userdId.toString(), HttpMethod.GET, null);
-                CampusUserDTO userDTO = new ObjectMapper().readValue(user.body(), CampusUserDTO.class);
+                CampusUserDTO userDTO = objectMapper.readValue(user.body(), CampusUserDTO.class);
                 return groupOrderProxy.addUser(userDTO);
             } catch (Exception e) {
+                System.out.println("[createGroupOrder] Error while processing orders");
                 return new HttpResponse(HttpCode.HTTP_400, "User can't be added to his groupOrder Creation.");
             }
         } catch (Exception e) {
             return new HttpResponse(HttpCode.HTTP_500, "Internal server error: " + e.getMessage());
         }
     }
-
 
     @Route(value = "/{groupOrderId}/join/{userId}", method = HttpMethod.PUT)
     public HttpResponse joinGroupOrder(@PathParam("groupOrderId") UUID groupOrderId, @PathParam("userId") UUID userId) {
@@ -90,9 +107,10 @@ public class GroupOrderController {
             System.out.println("Joining groupOrder: " + groupOrderId);
             System.out.println("groupOrderProxy: " + groupOrderProxy);
             if (groupOrderProxy == null) {
+                System.out.println("[joinGroupOrder] Error while processing orders");
                 return new HttpResponse(HttpCode.HTTP_500, "Error while processing groupOrder");
             }
-            CampusUserDTO userDTO = new ObjectMapper().readValue(user.body(), CampusUserDTO.class);
+            CampusUserDTO userDTO = objectMapper.readValue(user.body(), CampusUserDTO.class);
             return groupOrderProxy.addUser(userDTO);
         } catch (Exception e) {
             return new HttpResponse(HttpCode.HTTP_500, "User can't join groupOrder");
@@ -105,10 +123,11 @@ public class GroupOrderController {
         try {
             IGroupOrder groupOrderProxy = createGroupOrderProxy(groupOrderId);
             if (groupOrderProxy == null) {
+                System.out.println("[validateGroupOrder] Error while processing orders");
                 return new HttpResponse(HttpCode.HTTP_500, "Error while processing orders");
             }
             java.net.http.HttpResponse<String> response = request(DATABASE_CAMPUS_USER_SERVICE_URI, "/" + userId.toString(), HttpMethod.GET, null);
-            CampusUserDTO userDTO = new ObjectMapper().readValue(response.body(), CampusUserDTO.class);
+            CampusUserDTO userDTO = objectMapper.readValue(response.body(), CampusUserDTO.class);
             return groupOrderProxy.validate(userDTO);
         } catch (Exception e) {
             return new HttpResponse(HttpCode.HTTP_500, "GroupOrder not validated");
@@ -126,6 +145,32 @@ public class GroupOrderController {
         }
     }
 
+    @Route(value = "/{groupOrderId}/addOrder/{orderId}", method = HttpMethod.PUT)
+    public HttpResponse addOrderToGroupOrder(@PathParam("groupOrderId") UUID groupOrderId, @PathParam("orderId") UUID orderId) {
+        try {
+            System.out.println("Adding order to groupOrder: " + groupOrderId);
+            IGroupOrder groupOrderProxy = createGroupOrderProxy(groupOrderId);
+            if (groupOrderProxy == null) {
+                System.out.println("[addOrderToGroupOrder] Error while processing orders");
+                return new HttpResponse(HttpCode.HTTP_500, "Error while processing orders");
+            }
+            java.net.http.HttpResponse<String> response = request(DATABASE_ORDER_SERVICE_URI, "/" + orderId.toString(), HttpMethod.GET, null);
+            if (response.statusCode() != HttpCode.HTTP_200.getCode()) {
+                System.out.println("[addOrderToGroupOrder] Error while processing orders");
+                return new HttpResponse(HttpCode.HTTP_500, "Error while processing orders");
+            }
+            OrderDTO orderDTO = objectMapper.readValue(response.body(), OrderDTO.class);
+            groupOrderProxy.addOrder(orderDTO);
+            // Update the group order in the database
+            ObjectWriter ow = objectMapper.writer().withDefaultPrettyPrinter();
+            String json = ow.writeValueAsString(DTOMapper.toGroupOrderDTO(groupOrderProxy));
+            response = request(DATABASE_GROUPORDER_SERVICE_URI, "/update", HttpMethod.PUT, json);
+            return new HttpResponse(HttpCode.fromCode(response.statusCode()), response.body());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new HttpResponse(HttpCode.HTTP_500, "Error while processing orders");
+        }
+    }
 
     public IGroupOrder createGroupOrderProxy(UUID groupOrderId) {
         try {

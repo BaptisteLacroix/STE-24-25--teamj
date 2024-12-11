@@ -8,9 +8,10 @@ interface CartComponentProps {
     restaurantModel: RestaurantModel;
     order: Order | IndividualOrder | null;
     setOrder: (order: Order | IndividualOrder) => void;
+    setOrderValidated: (isValidated: boolean) => void;
 }
 
-export const CartComponent: React.FC<CartComponentProps> = ({restaurantModel, order, setOrder}) => {
+export const CartComponent: React.FC<CartComponentProps> = ({restaurantModel, order, setOrder, setOrderValidated}) => {
     const {userId, orderId} = useAppState();
     const [total, setTotal] = useState<number>(0);
 
@@ -19,7 +20,7 @@ export const CartComponent: React.FC<CartComponentProps> = ({restaurantModel, or
 
         // Check if the order is already set to avoid unnecessary fetches
         if (order && order.id === orderId) return;
-
+        console.log('Fetching order', orderId, userId);
         restaurantModel.getOrder(userId, orderId).then((order) => {
             setOrder(order);
         });
@@ -34,6 +35,15 @@ export const CartComponent: React.FC<CartComponentProps> = ({restaurantModel, or
         };
         fetchTotal();
     }, [order]);
+
+    const validateOrder = () => {
+        if (!order || !orderId || !userId) return;
+        // Validate the order
+        restaurantModel.validateOrder(userId, orderId).then(() => {
+            console.log('Order validated');
+            setOrderValidated(true);
+        });
+    }
 
     const calculateTotal = async (): Promise<number> => {
         if (!order && !userId) return 0;
@@ -72,7 +82,7 @@ export const CartComponent: React.FC<CartComponentProps> = ({restaurantModel, or
                 <h4>{total}€</h4>
             </div>
 
-            <Button color="primary" size="lg" style={{marginTop: '20px', width: '100%'}}>
+            <Button color="primary" size="lg" style={{marginTop: '20px', width: '100%'}} onClick={validateOrder}>
                 Checkout
             </Button>
         </div>

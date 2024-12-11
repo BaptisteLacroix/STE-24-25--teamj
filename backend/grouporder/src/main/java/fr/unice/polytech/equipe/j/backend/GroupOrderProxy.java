@@ -80,7 +80,7 @@ public class GroupOrderProxy implements IGroupOrder {
         }
 
         boolean userHasOrder = groupOrder.getOrders().stream()
-                .anyMatch(order -> order.getUser().equals(user));
+                .anyMatch(order -> order.getUserId().equals(user));
         if (!userHasOrder) {
             return new HttpResponse(HttpCode.HTTP_400, "Cannot validate group order if you have no order.");
         }

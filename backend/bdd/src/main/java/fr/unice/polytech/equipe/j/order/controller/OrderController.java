@@ -156,6 +156,6 @@ public class OrderController {
             IndividualOrderDTO individualOrderDTO = IndividualOrderMapper.toDTO(individualOrderEntity);
             return new HttpResponse(HttpCode.HTTP_200, individualOrderDTO);
         }
-        return new HttpResponse(HttpCode.HTTP_404, new ArrayList<>());
+        return new HttpResponse(HttpCode.HTTP_404, "Individual order not found");
     }
 }

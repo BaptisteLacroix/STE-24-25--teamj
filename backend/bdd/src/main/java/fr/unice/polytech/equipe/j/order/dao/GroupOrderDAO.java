@@ -7,6 +7,7 @@ import fr.unice.polytech.equipe.j.order.entities.GroupOrderEntity;
 import fr.unice.polytech.equipe.j.user.entities.CampusUserEntity;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.hibernate.query.Query;
 
 import java.util.List;
 import java.util.UUID;
@@ -28,7 +29,7 @@ public static HttpResponse save(GroupOrderEntity groupOrderEntity) {
         session.merge(groupOrderEntity);
         transaction.commit();
         System.out.println("GroupOrder saved with id : " + groupOrderEntity.getId());
-        return new HttpResponse(HttpCode.HTTP_201, groupOrderEntity.getId().toString());
+        return new HttpResponse(HttpCode.HTTP_201, groupOrderEntity.getId());
     } catch (Exception e) {
         e.printStackTrace();
         return new HttpResponse(HttpCode.HTTP_500, "Internal server error");
@@ -64,5 +65,27 @@ public static HttpResponse save(GroupOrderEntity groupOrderEntity) {
         }
         return null;
     }
+
+    public static GroupOrderEntity getGroupOrderByOrderId(UUID orderId) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            // Query to find the GroupOrderEntity where the orders list contains the given orderId
+            String hql = "FROM GroupOrderEntity go " +
+                    "JOIN FETCH go.orders o " +
+                    "WHERE o.id = :orderId";
+
+            // Create the query and set the parameter
+            Query<GroupOrderEntity> query = session.createQuery(hql, GroupOrderEntity.class);
+            query.setParameter("orderId", orderId);
+
+            // Execute the query and get the result
+            GroupOrderEntity groupOrder = query.uniqueResult();
+
+            return groupOrder;
+        } catch (Exception e) {
+            System.out.println("Error while getting groupOrder by order id: " + e.getMessage());
+            return null;
+        }
+    }
+
 }
 

@@ -52,8 +52,8 @@ export const AppStateProvider: React.FC<{ children: ReactNode }> = ({children}) 
     // Monitor userId changes - reset orderId and groupOrderId if userId becomes null
     useEffect(() => {
         if (userId === null) {
-            setOrderId(null);
-            setGroupOrderId(null);
+            localStorage.removeItem('orderId');
+            localStorage.removeItem('groupOrderId');
         }
     }, [userId, setOrderId, setGroupOrderId]);
 

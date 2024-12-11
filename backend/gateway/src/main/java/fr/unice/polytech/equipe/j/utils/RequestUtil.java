@@ -18,6 +18,7 @@ public class RequestUtil {
     public static final String DATABASE_CAMPUS_USER_SERVICE_URI = "http://localhost:5000/api/database/campusUsers";
     public static final String DATABASE_MANAGER_SERVICE_URI = "http://localhost:5000/api/database/managers";
     public static final String DATABASE_ORDER_SERVICE_URI = "http://localhost:5000/api/database/orders";
+    public static final String DATABASE_GROUPORDER_SERVICE_URI = "http://localhost:5000/api/database/groupOrders";
 
     public static java.net.http.HttpResponse<String> request(
             String basePath, String uri, String queryPath, HttpMethod method, String jsonBody) {

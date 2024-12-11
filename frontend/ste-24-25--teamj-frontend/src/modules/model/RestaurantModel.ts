@@ -1,7 +1,53 @@
-import {CampusUser, DeliveryDetails, DeliveryLocation, IndividualOrder, Order, Restaurant} from "../utils/types.ts";
+import {
+    CampusUser,
+    DeliveryDetails,
+    DeliveryLocation,
+    GroupOrder,
+    IndividualOrder,
+    Order,
+    Restaurant
+} from "../utils/types.ts";
 import {API_BASE_URL} from "../utils/apiUtils.ts";
 
 export class RestaurantModel {
+    public async getGroupOrder(userId: string | null, groupOrderId: string): Promise<GroupOrder> {
+        const response = await fetch(`${API_BASE_URL}/${userId}/group-order/${groupOrderId}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        if (response.status !== 200) {
+            throw new Error('Failed to fetch group order')
+        }
+        return await response.json() as GroupOrder;
+    }
+
+    public async validateOrder(userId: string, orderId: string) {
+        const response = await fetch(`${API_BASE_URL}/${userId}/orders/${orderId}/validate`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        if (response.status !== 200) {
+            throw new Error('Failed to validate order')
+        }
+        return await response.text();
+    }
+
+    public async validateGroupOrder(userId: string, groupOrderId: string) {
+        const response = await fetch(`${API_BASE_URL}/${userId}/group-order/${groupOrderId}/validate`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        if (response.status !== 200) {
+            throw new Error('Failed to validate group order')
+        }
+        return await response.text();
+    }
 
     public async getRestaurantsTypes(): Promise<string[]> {
         const response = await fetch(`${API_BASE_URL}/restaurants/types`, {
@@ -14,8 +60,7 @@ export class RestaurantModel {
         if (response.status !== 200) {
             return []
         }
-        const data = await response.json()
-        return data
+        return await response.json()
     }
 
     public async getAllRestaurants(): Promise<Restaurant[]> {
@@ -140,7 +185,6 @@ export class RestaurantModel {
         } else if (deliveryDetails != null) {
             body = JSON.stringify({deliveryDetails: deliveryDetails});
         }
-        console.log(body)
         const response = await fetch(`${API_BASE_URL}/${userId}/restaurants/${restaurantId}/orders/${orderId}/item/${dishId}`, {
             method: 'POST',
             headers: {
@@ -149,7 +193,7 @@ export class RestaurantModel {
             },
             body: body
         })
-        if (response.status !== 200) {
+        if (response.status !== 201) {
             throw new Error('Failed to add item to order')
         }
         return await response.text();
@@ -168,6 +212,7 @@ export class RestaurantModel {
     }
 
     public async getOrder(userId: string, orderId: string): Promise<Order | IndividualOrder> {
+        console.log("getOrder", userId, orderId)
         const response = await fetch(`${API_BASE_URL}/${userId}/orders/${orderId}`, {
             method: 'GET',
             headers: {
@@ -339,5 +384,4 @@ export class RestaurantModel {
         const date = new Date(year, month - 1, day, hours, minutes, seconds, milliseconds);
         return date;
     }
-
 }

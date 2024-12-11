@@ -1,5 +1,6 @@
 package fr.unice.polytech.equipe.j.mapper;
 
+import fr.unice.polytech.equipe.j.backend.IGroupOrder;
 import fr.unice.polytech.equipe.j.delivery.DeliveryDetails;
 import fr.unice.polytech.equipe.j.delivery.DeliveryLocation;
 import fr.unice.polytech.equipe.j.backend.GroupOrder;
@@ -28,7 +29,7 @@ public class DTOMapper {
         return groupOrder;
     }
 
-    public static GroupOrderDTO toGroupOrderDTO(GroupOrder groupOrder) {
+    public static GroupOrderDTO toGroupOrderDTO(IGroupOrder groupOrder) {
         GroupOrderDTO groupOrderDTO = new GroupOrderDTO();
         groupOrderDTO.setGroupOrderId(groupOrder.getGroupOrderId());
         groupOrderDTO.setDeliveryDetails(groupOrder.getDeliveryDetails());

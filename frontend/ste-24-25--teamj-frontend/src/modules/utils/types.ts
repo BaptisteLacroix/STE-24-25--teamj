@@ -29,7 +29,7 @@ export type Dish = {
 export type GroupOrder = {
     id: string,
     orders: Order[],
-    users: string[],
+    users: CampusUser[],
     deliveryDetails: DeliveryDetails,
     status: OrderStatus
 }
