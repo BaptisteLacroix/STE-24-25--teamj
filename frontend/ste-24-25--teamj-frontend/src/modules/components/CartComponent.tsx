@@ -7,12 +7,12 @@ import {useAppState} from "../AppStateContext.tsx";
 interface CartComponentProps {
     restaurantModel: RestaurantModel;
     order: Order | IndividualOrder | null;
-    setOrder: (order: Order | IndividualOrder) => void;
+    setOrder: (order: Order | IndividualOrder | null) => void;
     setOrderValidated: (isValidated: boolean) => void;
 }
 
 export const CartComponent: React.FC<CartComponentProps> = ({restaurantModel, order, setOrder, setOrderValidated}) => {
-    const {userId, orderId} = useAppState();
+    const {userId, orderId, setOrderId} = useAppState();
     const [total, setTotal] = useState<number>(0);
 
     useEffect(() => {
@@ -42,6 +42,8 @@ export const CartComponent: React.FC<CartComponentProps> = ({restaurantModel, or
         restaurantModel.validateOrder(userId, orderId).then(() => {
             console.log('Order validated');
             setOrderValidated(true);
+            setOrder(null);
+            setOrderId(null);
         });
     }
 

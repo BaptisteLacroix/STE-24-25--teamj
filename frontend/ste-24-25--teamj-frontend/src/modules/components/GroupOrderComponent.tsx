@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Button, Card, CardBody, CardHeader } from "@nextui-org/react";
-import { GroupOrder, Order } from "../utils/types.ts";
+import {CampusUser, GroupOrder, Order} from "../utils/types.ts";
 import { useAppState } from "../AppStateContext.tsx";
 import { RestaurantModel } from "../model/RestaurantModel.ts";
 
@@ -15,6 +15,7 @@ export const GroupOrderComponent: React.FC<GroupOrderComponentProps> = ({ restau
     const [total, setTotal] = useState<number>(0);
     const [orderTotals, setOrderTotals] = useState<Map<string, number>>(new Map());
     const [restaurantNames, setRestaurantNames] = useState<Map<string, string>>(new Map());
+    const [usersName, setUsersName] = useState<Map<string, string>>(new Map());
 
     // Fetch and calculate total price for all orders
     useEffect(() => {
@@ -22,6 +23,7 @@ export const GroupOrderComponent: React.FC<GroupOrderComponentProps> = ({ restau
             let totalAmount = 0;
             const updatedOrderTotals = new Map();
             const updatedRestaurantNames = new Map();
+            const updatedUserNames = new Map();
 
             for (const order of groupOrder.orders) {
                 // Fetch the total price for the order
@@ -32,10 +34,14 @@ export const GroupOrderComponent: React.FC<GroupOrderComponentProps> = ({ restau
                 // Fetch the restaurant name for the order
                 const restaurantName = await getRestaurantName(order.restaurantId!);
                 updatedRestaurantNames.set(order.restaurantId!, restaurantName);
+
+                const userName: CampusUser = await restaurantModel.getCampusUserById(order.userId);
+                updatedUserNames.set(order.userId, userName.name);
             }
 
             setOrderTotals(updatedOrderTotals);
             setRestaurantNames(updatedRestaurantNames);
+            setUsersName(updatedUserNames);
             setTotal(totalAmount);
         };
 
@@ -67,7 +73,7 @@ export const GroupOrderComponent: React.FC<GroupOrderComponentProps> = ({ restau
                         </CardHeader>
                         <CardBody className="py-2">
                             <div className="space-y-2">
-                                <h3>Order UUID: {order.id}</h3>
+                                <h3>User: {usersName.get(order.userId)}</h3>
                                 <h3>Total: {orderTotals.get(order.id!)} €</h3>
                                 <h3>Status: {order.status}</h3>
                             </div>

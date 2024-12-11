@@ -7,6 +7,8 @@ interface AppStateContextType {
     setOrderId: (orderId: string | null) => void;
     groupOrderId: string | null;
     setGroupOrderId: (groupOrderId: string | null) => void;
+    orderValidated: boolean;
+    setOrderValidated: (orderValidated: boolean) => void;
 }
 
 const AppStateContext = createContext<AppStateContextType | undefined>(undefined);
@@ -24,6 +26,16 @@ export const AppStateProvider: React.FC<{ children: ReactNode }> = ({children}) 
     const [userId, setUserId] = useState<string | null>(() => localStorage.getItem('userId') || null);
     const [orderId, setOrderId] = useState<string | null>(() => localStorage.getItem('orderId') || null);
     const [groupOrderId, setGroupOrderId] = useState<string | null>(() => localStorage.getItem('groupOrderId') || null);
+    const [orderValidated, setOrderValidated] = useState<boolean>(false);
+
+    // Store orderValidated in localStorage to persist across sessions (optional)
+    useEffect(() => {
+        if (orderValidated) {
+            localStorage.setItem('orderValidated', 'true');
+        } else {
+            localStorage.removeItem('orderValidated');
+        }
+    }, [orderValidated]);
 
     useEffect(() => {
         if (userId !== null) {
@@ -54,12 +66,13 @@ export const AppStateProvider: React.FC<{ children: ReactNode }> = ({children}) 
         if (userId === null) {
             localStorage.removeItem('orderId');
             localStorage.removeItem('groupOrderId');
+            localStorage.removeItem('orderValidated');
         }
-    }, [userId, setOrderId, setGroupOrderId]);
+    }, [userId]);
 
     return (
         <AppStateContext.Provider
-            value={{userId, setUserId, orderId, setOrderId, groupOrderId, setGroupOrderId}}
+            value={{userId, setUserId, orderId, setOrderId, groupOrderId, setGroupOrderId, orderValidated, setOrderValidated}}
         >
             {children}
         </AppStateContext.Provider>

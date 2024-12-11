@@ -27,6 +27,12 @@ import static fr.unice.polytech.equipe.j.utils.RequestUtil.request;
 public class GatewayController {
     private ObjectMapper objectMapper = JacksonConfig.configureObjectMapper();
 
+    @Route(value = "/campus-users/{userId}", method = HttpMethod.GET)
+    public HttpResponse getCampusUserById(@PathParam("userId") String userId) {
+        java.net.http.HttpResponse<String> response = getUserById(userId);
+        return new HttpResponse(HttpCode.fromCode(response.statusCode()), response.body());
+    }
+
     @Route(value = "/{userId}/group-order/{groupOrderId}", method = HttpMethod.GET)
     public HttpResponse getGroupOrder(@PathParam("userId") String userId, @PathParam("groupOrderId") String groupOrderId) {
         java.net.http.HttpResponse<String> response = getUserById(userId);

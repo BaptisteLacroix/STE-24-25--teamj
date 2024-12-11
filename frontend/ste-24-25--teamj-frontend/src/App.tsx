@@ -15,10 +15,9 @@ import {GroupOrderComponent} from "./modules/components/GroupOrderComponent.tsx"
 
 function App() {
     const restaurantModel = new RestaurantModel();
-    const {userId, setGroupOrderId, groupOrderId} = useAppState();
+    const { userId, setGroupOrderId, groupOrderId, orderValidated, setOrderValidated } = useAppState();
     const [createGroupOrder, setIsNewGroupOrderModalOpen] = useState(false);
     const [joinGroupOrder, setIsJoinGroupOrderModalOpen] = useState(false);
-    const [orderValidated, setOrderValidated] = useState(false);
     const [searchQuery, setSearchQuery] = useState<string>('');
     const [foodTypeQuery, setFoodTypeQuery] = useState<string>('');
     const [showCode, setShowCode] = useState(false);

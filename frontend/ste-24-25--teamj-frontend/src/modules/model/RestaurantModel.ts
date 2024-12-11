@@ -10,6 +10,19 @@ import {
 import {API_BASE_URL} from "../utils/apiUtils.ts";
 
 export class RestaurantModel {
+    public async getCampusUserById(userId: string) {
+        const response = await fetch(`${API_BASE_URL}/campus-users/${userId}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        if (response.status !== 200) {
+            throw new Error('Failed to fetch campus user')
+        }
+        return await response.json();
+    }
+
     public async getGroupOrder(userId: string | null, groupOrderId: string): Promise<GroupOrder> {
         const response = await fetch(`${API_BASE_URL}/${userId}/group-order/${groupOrderId}`, {
             method: 'GET',
