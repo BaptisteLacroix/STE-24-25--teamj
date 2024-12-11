@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
-import { Button, Card, CardBody, CardHeader } from "@nextui-org/react";
+import React, {useEffect, useState} from "react";
+import {Button, Card, CardBody, CardHeader} from "@nextui-org/react";
 import {CampusUser, GroupOrder, Order} from "../utils/types.ts";
-import { useAppState } from "../AppStateContext.tsx";
-import { RestaurantModel } from "../model/RestaurantModel.ts";
+import {useAppState} from "../AppStateContext.tsx";
+import {RestaurantModel} from "../model/RestaurantModel.ts";
 
 interface GroupOrderComponentProps {
     restaurantModel: RestaurantModel;
@@ -10,12 +10,18 @@ interface GroupOrderComponentProps {
     validateGroupOrder: (groupOrderId: string) => void;
 }
 
-export const GroupOrderComponent: React.FC<GroupOrderComponentProps> = ({ restaurantModel, groupOrder, validateGroupOrder }) => {
-    const { userId } = useAppState();
+export const GroupOrderComponent: React.FC<GroupOrderComponentProps> = ({
+                                                                            restaurantModel,
+                                                                            groupOrder,
+                                                                            validateGroupOrder
+                                                                        }) => {
+    const {userId} = useAppState();
     const [total, setTotal] = useState<number>(0);
     const [orderTotals, setOrderTotals] = useState<Map<string, number>>(new Map());
     const [restaurantNames, setRestaurantNames] = useState<Map<string, string>>(new Map());
     const [usersName, setUsersName] = useState<Map<string, string>>(new Map());
+
+    console.log("Group Order", groupOrder);
 
     // Fetch and calculate total price for all orders
     useEffect(() => {
@@ -64,7 +70,10 @@ export const GroupOrderComponent: React.FC<GroupOrderComponentProps> = ({ restau
 
     return (
         <div className="w-full p-5">
-            <h2>Group Order for {groupOrder.id}</h2>
+            <div className="mt-6 mb-6 p-4 rounded-lg bg-gray-100 shadow-md">
+                <h4 className="font-semibold text-xl mb-4">Group Order UUID:</h4>
+                <h2 className="font-bold text-xl">{groupOrder.id}</h2>
+            </div>
             <div className="flex flex-wrap justify-start gap-4">
                 {groupOrder.orders.map((order) => (
                     <Card className="w-[200px]" key={order.id}>
@@ -85,6 +94,17 @@ export const GroupOrderComponent: React.FC<GroupOrderComponentProps> = ({ restau
             <div className="mt-4 flex justify-between items-center">
                 <h4 className="font-bold text-xl">Group Order Total:</h4>
                 <h4 className="font-bold text-xl">{total}€</h4>
+            </div>
+
+            {/* Delivery Details Section */}
+            <div className="mt-6 p-4 rounded-lg bg-gray-100 shadow-md">
+                <h4 className="font-semibold text-xl mb-4">Delivery Details:</h4>
+                <div>
+                    <p><strong>Location:</strong> {groupOrder.deliveryDetails.deliveryLocation.locationName}</p>
+                    <p><strong>Address:</strong> {groupOrder.deliveryDetails.deliveryLocation.address}</p>
+                    <p><strong>Delivery
+                        Time:</strong> {new Date(groupOrder.deliveryDetails.deliveryTime).toLocaleString()}</p>
+                </div>
             </div>
 
             <Button
