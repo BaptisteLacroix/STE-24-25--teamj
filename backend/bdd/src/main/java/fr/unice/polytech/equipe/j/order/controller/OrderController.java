@@ -137,6 +137,7 @@ public class OrderController {
     @Route(value = "/individual/update", method = HttpMethod.PUT)
     public HttpResponse updateOrder(@BeanParam IndividualOrderDTO orderDTO) {
         System.out.println("Update individual order");
+        System.out.println(OrderDAO.getAllDeliveryLocations());
         IndividualOrderEntity orderEntity = IndividualOrderMapper.toEntity(orderDTO);
         System.out.println(orderEntity.getDeliveryDetails());
         return OrderDAO.save(orderEntity);

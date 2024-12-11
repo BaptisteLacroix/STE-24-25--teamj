@@ -22,7 +22,7 @@ public class DeliveryLocationEntity {
     @Column(name = "id", updatable = false, nullable = false, unique = true)
     private UUID id;
 
-    @Column(name = "location_name", nullable = false, unique = true)
+    @Column(name = "location_name", nullable = false)
     private String locationName;
 
     @Column(nullable = false)
