@@ -241,7 +241,7 @@ public class RestaurantController {
                 System.out.println("[AddItemToOrder] Error while adding item to order: " + response.body());
                 return createHttpResponse(HttpCode.HTTP_400, response.body());
             }
-            return createHttpResponse(HttpCode.HTTP_200, orderDTO.getId().toString());
+            return createHttpResponse(HttpCode.HTTP_201, orderDTO.getId().toString());
         } catch (Exception e) {
             e.printStackTrace();
             return createHttpResponse(HttpCode.HTTP_500, "Internal server error: " + e.getMessage());

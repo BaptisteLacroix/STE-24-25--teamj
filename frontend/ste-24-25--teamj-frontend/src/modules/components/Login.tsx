@@ -51,7 +51,10 @@ const Login: React.FC<LoginProps> = ({restaurantModel}) => {
                         </Select>
                     </ModalBody>
                     <ModalFooter>
-                        <Button color="danger" onClick={() => setIsModalOpen(false)}>
+                        <Button color="danger" onClick={() => {
+                            setIsModalOpen(false);
+                            setSelectedUserId(null);
+                        }}>
                             Cancel
                         </Button>
                         <Button onClick={handleLoginLogout}>

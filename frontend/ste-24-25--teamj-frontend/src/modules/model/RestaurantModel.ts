@@ -214,9 +214,13 @@ export class RestaurantModel {
             body: body
         })
         if (response.status !== 201) {
-            throw new Error('Failed to add item to order')
+            const errorDetails = await response.text();
+            console.error("Failed to add item to order. Status:", response.status, "Response:", errorDetails);
+            throw new Error('Failed to add item to order');
         }
-        return await response.text();
+        const data = await response.text();
+        console.log('addItemToORder ', data);
+        return data;
     }
 
     public async cancelOrder(userId: string, restaurantId: string, orderId: string): Promise<void> {

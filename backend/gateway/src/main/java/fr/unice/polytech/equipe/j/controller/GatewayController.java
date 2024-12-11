@@ -302,7 +302,7 @@ public class GatewayController {
                 HttpMethod.POST,
                 null
         );
-        if (response.statusCode() != 200) {
+        if (response.statusCode() != 201) {
             System.out.println("[addItemToRestaurantOrder] Failed to add item to order: " + response.body());
             return new HttpResponse(HttpCode.fromCode(response.statusCode()), response.body());
         }

@@ -42,7 +42,6 @@ export const CartComponent: React.FC<CartComponentProps> = ({restaurantModel, or
         restaurantModel.validateOrder(userId, orderId).then(() => {
             console.log('Order validated');
             setOrderValidated(true);
-            setOrder(null);
             setOrderId(null);
         });
     }

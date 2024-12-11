@@ -70,10 +70,11 @@ export const DishesComponent: React.FC<DishesComponentProps> = ({
         }
     }, [deliveryLocationId, userId, restaurantModel]);
 
-    const handleAddItemToOrder = async (dishId: string, deliveryDetails: DeliveryDetails | null = null) => {
+    const handleAddItemToOrder = (dishId: string, deliveryDetails: DeliveryDetails | null = null) => {
         try {
             if (restaurantId && userId) {
-                await restaurantModel.addItemToOrder(userId, restaurantId, orderId || uuidv4(), dishId, groupOrderId, deliveryDetails).then((orderId: string) => {
+                console.log('Adding item to order', userId, restaurantId, orderId, dishId, groupOrderId, deliveryDetails);
+                restaurantModel.addItemToOrder(userId, restaurantId, orderId || uuidv4(), dishId, groupOrderId, deliveryDetails).then((orderId: string) => {
                     setOrderId(orderId);
                     console.log("Order ID", orderId);
                     restaurantModel.getOrder(userId, orderId).then(order => setOrder(order));

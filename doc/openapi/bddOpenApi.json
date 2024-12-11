@@ -261,96 +261,6 @@
         }
       }
     },
-    "/api/database/orders/individual/{id}" : {
-      "get" : {
-        "summary" : "getIndividualOrderById",
-        "description" : "Generated from method getIndividualOrderById",
-        "parameters" : [ {
-          "name" : "id",
-          "in" : "path",
-          "required" : true,
-          "schema" : {
-            "type" : "object",
-            "properties" : {
-              "serialVersionUID" : {
-                "type" : "integer"
-              },
-              "mostSigBits" : {
-                "type" : "integer"
-              },
-              "leastSigBits" : {
-                "type" : "integer"
-              },
-              "jla" : {
-                "type" : "object"
-              },
-              "NIBBLES" : {
-                "type" : "object"
-              },
-              "$assertionsDisabled" : {
-                "type" : "boolean"
-              }
-            }
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "Successful response",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/HttpResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/database/orders/individual/create" : {
-      "post" : {
-        "summary" : "createIndividualOrder",
-        "description" : "Generated from method createIndividualOrder",
-        "parameters" : [ {
-          "name" : "IndividualOrderDTO",
-          "in" : "body",
-          "schema" : {
-            "$ref" : "#/components/schemas/IndividualOrderDTO"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "Successful response",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/HttpResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/database/orders/individual/all" : {
-      "get" : {
-        "summary" : "getAllIndividualOrders",
-        "description" : "Generated from method getAllIndividualOrders",
-        "parameters" : [ ],
-        "responses" : {
-          "200" : {
-            "description" : "Successful response",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/HttpResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/api/database/orders/individual/update" : {
       "put" : {
         "summary" : "updateOrder",
@@ -380,6 +290,31 @@
       "put" : {
         "summary" : "updateOrder",
         "description" : "Generated from method updateOrder",
+        "parameters" : [ {
+          "name" : "OrderDTO",
+          "in" : "body",
+          "schema" : {
+            "$ref" : "#/components/schemas/OrderDTO"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Successful response",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/HttpResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/database/orders/create" : {
+      "post" : {
+        "summary" : "createOrder",
+        "description" : "Generated from method createOrder",
         "parameters" : [ {
           "name" : "OrderDTO",
           "in" : "body",
@@ -491,10 +426,81 @@
         }
       }
     },
-    "/api/database/orders/all" : {
+    "/api/database/orders/individual/{id}" : {
       "get" : {
-        "summary" : "getAllOrders",
-        "description" : "Generated from method getAllOrders",
+        "summary" : "getIndividualOrderById",
+        "description" : "Generated from method getIndividualOrderById",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "object",
+            "properties" : {
+              "serialVersionUID" : {
+                "type" : "integer"
+              },
+              "mostSigBits" : {
+                "type" : "integer"
+              },
+              "leastSigBits" : {
+                "type" : "integer"
+              },
+              "jla" : {
+                "type" : "object"
+              },
+              "NIBBLES" : {
+                "type" : "object"
+              },
+              "$assertionsDisabled" : {
+                "type" : "boolean"
+              }
+            }
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Successful response",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/HttpResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/database/orders/individual/create" : {
+      "post" : {
+        "summary" : "createIndividualOrder",
+        "description" : "Generated from method createIndividualOrder",
+        "parameters" : [ {
+          "name" : "IndividualOrderDTO",
+          "in" : "body",
+          "schema" : {
+            "$ref" : "#/components/schemas/IndividualOrderDTO"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Successful response",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/HttpResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/database/orders/individual/all" : {
+      "get" : {
+        "summary" : "getAllIndividualOrders",
+        "description" : "Generated from method getAllIndividualOrders",
         "parameters" : [ ],
         "responses" : {
           "200" : {
@@ -510,90 +516,11 @@
         }
       }
     },
-    "/api/database/orders/create" : {
-      "post" : {
-        "summary" : "createOrder",
-        "description" : "Generated from method createOrder",
-        "parameters" : [ {
-          "name" : "OrderDTO",
-          "in" : "body",
-          "schema" : {
-            "$ref" : "#/components/schemas/OrderDTO"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "Successful response",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/HttpResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/database/restaurants/{restaurantId}/menuItem/{menuItemId}" : {
+    "/api/database/orders/all" : {
       "get" : {
-        "summary" : "getMenuItem",
-        "description" : "Generated from method getMenuItem",
-        "parameters" : [ {
-          "name" : "restaurantId",
-          "in" : "path",
-          "required" : true,
-          "schema" : {
-            "type" : "object",
-            "properties" : {
-              "serialVersionUID" : {
-                "type" : "integer"
-              },
-              "mostSigBits" : {
-                "type" : "integer"
-              },
-              "leastSigBits" : {
-                "type" : "integer"
-              },
-              "jla" : {
-                "type" : "object"
-              },
-              "NIBBLES" : {
-                "type" : "object"
-              },
-              "$assertionsDisabled" : {
-                "type" : "boolean"
-              }
-            }
-          }
-        }, {
-          "name" : "menuItemId",
-          "in" : "path",
-          "required" : true,
-          "schema" : {
-            "type" : "object",
-            "properties" : {
-              "serialVersionUID" : {
-                "type" : "integer"
-              },
-              "mostSigBits" : {
-                "type" : "integer"
-              },
-              "leastSigBits" : {
-                "type" : "integer"
-              },
-              "jla" : {
-                "type" : "object"
-              },
-              "NIBBLES" : {
-                "type" : "object"
-              },
-              "$assertionsDisabled" : {
-                "type" : "boolean"
-              }
-            }
-          }
-        } ],
+        "summary" : "getAllOrders",
+        "description" : "Generated from method getAllOrders",
+        "parameters" : [ ],
         "responses" : {
           "200" : {
             "description" : "Successful response",
@@ -736,10 +663,10 @@
         }
       }
     },
-    "/api/database/restaurants/create" : {
-      "post" : {
-        "summary" : "createRestaurant",
-        "description" : "Generated from method createRestaurant",
+    "/api/database/restaurants/update" : {
+      "put" : {
+        "summary" : "updateRestaurant",
+        "description" : "Generated from method updateRestaurant",
         "parameters" : [ {
           "name" : "RestaurantDTO",
           "in" : "body",
@@ -761,10 +688,83 @@
         }
       }
     },
-    "/api/database/restaurants/update" : {
-      "put" : {
-        "summary" : "updateRestaurant",
-        "description" : "Generated from method updateRestaurant",
+    "/api/database/restaurants/{restaurantId}/menuItem/{menuItemId}" : {
+      "get" : {
+        "summary" : "getMenuItem",
+        "description" : "Generated from method getMenuItem",
+        "parameters" : [ {
+          "name" : "restaurantId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "object",
+            "properties" : {
+              "serialVersionUID" : {
+                "type" : "integer"
+              },
+              "mostSigBits" : {
+                "type" : "integer"
+              },
+              "leastSigBits" : {
+                "type" : "integer"
+              },
+              "jla" : {
+                "type" : "object"
+              },
+              "NIBBLES" : {
+                "type" : "object"
+              },
+              "$assertionsDisabled" : {
+                "type" : "boolean"
+              }
+            }
+          }
+        }, {
+          "name" : "menuItemId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "object",
+            "properties" : {
+              "serialVersionUID" : {
+                "type" : "integer"
+              },
+              "mostSigBits" : {
+                "type" : "integer"
+              },
+              "leastSigBits" : {
+                "type" : "integer"
+              },
+              "jla" : {
+                "type" : "object"
+              },
+              "NIBBLES" : {
+                "type" : "object"
+              },
+              "$assertionsDisabled" : {
+                "type" : "boolean"
+              }
+            }
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Successful response",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/HttpResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/database/restaurants/create" : {
+      "post" : {
+        "summary" : "createRestaurant",
+        "description" : "Generated from method createRestaurant",
         "parameters" : [ {
           "name" : "RestaurantDTO",
           "in" : "body",
@@ -811,11 +811,38 @@
         }
       }
     },
-    "/api/database/campusUsers/all" : {
+    "/api/database/campusUsers/{id}" : {
       "get" : {
-        "summary" : "getAllUsers",
-        "description" : "Generated from method getAllUsers",
-        "parameters" : [ ],
+        "summary" : "getUserById",
+        "description" : "Generated from method getUserById",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "object",
+            "properties" : {
+              "serialVersionUID" : {
+                "type" : "integer"
+              },
+              "mostSigBits" : {
+                "type" : "integer"
+              },
+              "leastSigBits" : {
+                "type" : "integer"
+              },
+              "jla" : {
+                "type" : "object"
+              },
+              "NIBBLES" : {
+                "type" : "object"
+              },
+              "$assertionsDisabled" : {
+                "type" : "boolean"
+              }
+            }
+          }
+        } ],
         "responses" : {
           "200" : {
             "description" : "Successful response",
@@ -828,9 +855,7 @@
             }
           }
         }
-      }
-    },
-    "/api/database/campusUsers/{id}" : {
+      },
       "delete" : {
         "summary" : "deleteUserById",
         "description" : "Generated from method deleteUserById",
@@ -874,38 +899,13 @@
             }
           }
         }
-      },
+      }
+    },
+    "/api/database/campusUsers/all" : {
       "get" : {
-        "summary" : "getUserById",
-        "description" : "Generated from method getUserById",
-        "parameters" : [ {
-          "name" : "id",
-          "in" : "path",
-          "required" : true,
-          "schema" : {
-            "type" : "object",
-            "properties" : {
-              "serialVersionUID" : {
-                "type" : "integer"
-              },
-              "mostSigBits" : {
-                "type" : "integer"
-              },
-              "leastSigBits" : {
-                "type" : "integer"
-              },
-              "jla" : {
-                "type" : "object"
-              },
-              "NIBBLES" : {
-                "type" : "object"
-              },
-              "$assertionsDisabled" : {
-                "type" : "boolean"
-              }
-            }
-          }
-        } ],
+        "summary" : "getAllUsers",
+        "description" : "Generated from method getAllUsers",
+        "parameters" : [ ],
         "responses" : {
           "200" : {
             "description" : "Successful response",
@@ -994,50 +994,6 @@
       }
     },
     "/api/database/managers/{id}" : {
-      "get" : {
-        "summary" : "getManagerById",
-        "description" : "Generated from method getManagerById",
-        "parameters" : [ {
-          "name" : "id",
-          "in" : "path",
-          "required" : true,
-          "schema" : {
-            "type" : "object",
-            "properties" : {
-              "serialVersionUID" : {
-                "type" : "integer"
-              },
-              "mostSigBits" : {
-                "type" : "integer"
-              },
-              "leastSigBits" : {
-                "type" : "integer"
-              },
-              "jla" : {
-                "type" : "object"
-              },
-              "NIBBLES" : {
-                "type" : "object"
-              },
-              "$assertionsDisabled" : {
-                "type" : "boolean"
-              }
-            }
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "Successful response",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/HttpResponse"
-                }
-              }
-            }
-          }
-        }
-      },
       "delete" : {
         "summary" : "deleteManagerById",
         "description" : "Generated from method deleteManagerById",
@@ -1081,17 +1037,36 @@
             }
           }
         }
-      }
-    },
-    "/api/database/managers/create" : {
-      "post" : {
-        "summary" : "createManager",
-        "description" : "Generated from method createManager",
+      },
+      "get" : {
+        "summary" : "getManagerById",
+        "description" : "Generated from method getManagerById",
         "parameters" : [ {
-          "name" : "RestaurantManagerDTO",
-          "in" : "body",
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
           "schema" : {
-            "$ref" : "#/components/schemas/RestaurantManagerDTO"
+            "type" : "object",
+            "properties" : {
+              "serialVersionUID" : {
+                "type" : "integer"
+              },
+              "mostSigBits" : {
+                "type" : "integer"
+              },
+              "leastSigBits" : {
+                "type" : "integer"
+              },
+              "jla" : {
+                "type" : "object"
+              },
+              "NIBBLES" : {
+                "type" : "object"
+              },
+              "$assertionsDisabled" : {
+                "type" : "boolean"
+              }
+            }
           }
         } ],
         "responses" : {
@@ -1113,6 +1088,31 @@
         "summary" : "getAllManagers",
         "description" : "Generated from method getAllManagers",
         "parameters" : [ ],
+        "responses" : {
+          "200" : {
+            "description" : "Successful response",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/HttpResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/database/managers/create" : {
+      "post" : {
+        "summary" : "createManager",
+        "description" : "Generated from method createManager",
+        "parameters" : [ {
+          "name" : "RestaurantManagerDTO",
+          "in" : "body",
+          "schema" : {
+            "$ref" : "#/components/schemas/RestaurantManagerDTO"
+          }
+        } ],
         "responses" : {
           "200" : {
             "description" : "Successful response",
