@@ -8,10 +8,10 @@
     "url" : "http://localhost:5008"
   } ],
   "paths" : {
-    "/api/group-order/{groupOrderId}/addOrder/{orderId}" : {
+    "/api/group-order/{groupOrderId}/{userId}/validate" : {
       "put" : {
-        "summary" : "addOrderToGroupOrder",
-        "description" : "Generated from method addOrderToGroupOrder",
+        "summary" : "validateGroupOrder",
+        "description" : "Generated from method validateGroupOrder",
         "parameters" : [ {
           "name" : "groupOrderId",
           "in" : "path",
@@ -40,7 +40,7 @@
             }
           }
         }, {
-          "name" : "orderId",
+          "name" : "userId",
           "in" : "path",
           "required" : true,
           "schema" : {
@@ -81,12 +81,39 @@
         }
       }
     },
-    "/api/group-order/{groupOrderId}/getOrders" : {
-      "get" : {
-        "summary" : "answerWithAllOrders",
-        "description" : "Generated from method answerWithAllOrders",
+    "/api/group-order/{groupOrderId}/addOrder/{orderId}" : {
+      "put" : {
+        "summary" : "addOrderToGroupOrder",
+        "description" : "Generated from method addOrderToGroupOrder",
         "parameters" : [ {
           "name" : "groupOrderId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "object",
+            "properties" : {
+              "serialVersionUID" : {
+                "type" : "integer"
+              },
+              "mostSigBits" : {
+                "type" : "integer"
+              },
+              "leastSigBits" : {
+                "type" : "integer"
+              },
+              "jla" : {
+                "type" : "object"
+              },
+              "NIBBLES" : {
+                "type" : "object"
+              },
+              "$assertionsDisabled" : {
+                "type" : "boolean"
+              }
+            }
+          }
+        }, {
+          "name" : "orderId",
           "in" : "path",
           "required" : true,
           "schema" : {
@@ -173,85 +200,12 @@
         }
       }
     },
-    "/api/group-order/{groupOrderId}" : {
+    "/api/group-order/{groupOrderId}/getOrders" : {
       "get" : {
-        "summary" : "getGroupOrder",
-        "description" : "Generated from method getGroupOrder",
+        "summary" : "answerWithAllOrders",
+        "description" : "Generated from method answerWithAllOrders",
         "parameters" : [ {
           "name" : "groupOrderId",
-          "in" : "path",
-          "required" : true,
-          "schema" : {
-            "type" : "object",
-            "properties" : {
-              "serialVersionUID" : {
-                "type" : "integer"
-              },
-              "mostSigBits" : {
-                "type" : "integer"
-              },
-              "leastSigBits" : {
-                "type" : "integer"
-              },
-              "jla" : {
-                "type" : "object"
-              },
-              "NIBBLES" : {
-                "type" : "object"
-              },
-              "$assertionsDisabled" : {
-                "type" : "boolean"
-              }
-            }
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "Successful response",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/HttpResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/group-order/{groupOrderId}/join/{userId}" : {
-      "put" : {
-        "summary" : "joinGroupOrder",
-        "description" : "Generated from method joinGroupOrder",
-        "parameters" : [ {
-          "name" : "groupOrderId",
-          "in" : "path",
-          "required" : true,
-          "schema" : {
-            "type" : "object",
-            "properties" : {
-              "serialVersionUID" : {
-                "type" : "integer"
-              },
-              "mostSigBits" : {
-                "type" : "integer"
-              },
-              "leastSigBits" : {
-                "type" : "integer"
-              },
-              "jla" : {
-                "type" : "object"
-              },
-              "NIBBLES" : {
-                "type" : "object"
-              },
-              "$assertionsDisabled" : {
-                "type" : "boolean"
-              }
-            }
-          }
-        }, {
-          "name" : "userId",
           "in" : "path",
           "required" : true,
           "schema" : {
@@ -344,10 +298,10 @@
         }
       }
     },
-    "/api/group-order/{groupOrderId}/{userId}/validate" : {
+    "/api/group-order/{groupOrderId}/join/{userId}" : {
       "put" : {
-        "summary" : "validateGroupOrder",
-        "description" : "Generated from method validateGroupOrder",
+        "summary" : "joinGroupOrder",
+        "description" : "Generated from method joinGroupOrder",
         "parameters" : [ {
           "name" : "groupOrderId",
           "in" : "path",
@@ -377,6 +331,52 @@
           }
         }, {
           "name" : "userId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "object",
+            "properties" : {
+              "serialVersionUID" : {
+                "type" : "integer"
+              },
+              "mostSigBits" : {
+                "type" : "integer"
+              },
+              "leastSigBits" : {
+                "type" : "integer"
+              },
+              "jla" : {
+                "type" : "object"
+              },
+              "NIBBLES" : {
+                "type" : "object"
+              },
+              "$assertionsDisabled" : {
+                "type" : "boolean"
+              }
+            }
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Successful response",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/HttpResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/group-order/{groupOrderId}" : {
+      "get" : {
+        "summary" : "getGroupOrder",
+        "description" : "Generated from method getGroupOrder",
+        "parameters" : [ {
+          "name" : "groupOrderId",
           "in" : "path",
           "required" : true,
           "schema" : {

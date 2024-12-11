@@ -20,7 +20,6 @@ export const CartComponent: React.FC<CartComponentProps> = ({restaurantModel, or
 
         // Check if the order is already set to avoid unnecessary fetches
         if (order && order.id === orderId) return;
-        console.log('Fetching order', orderId, userId);
         restaurantModel.getOrder(userId, orderId).then((order) => {
             setOrder(order);
         });
@@ -40,7 +39,6 @@ export const CartComponent: React.FC<CartComponentProps> = ({restaurantModel, or
         if (!order || !orderId || !userId) return;
         // Validate the order
         restaurantModel.validateOrder(userId, orderId).then(() => {
-            console.log('Order validated');
             setOrderValidated(true);
             setOrderId(null);
         });
@@ -50,11 +48,24 @@ export const CartComponent: React.FC<CartComponentProps> = ({restaurantModel, or
         if (!order && !userId) return 0;
         return await restaurantModel.getTotalPriceOrder(userId!, order?.restaurantId!, order?.id!);
     }
-
+    const formatTime = (seconds: number) => {
+        if (seconds < 60) {
+            return `${seconds} sec`;
+        } else if (seconds < 3600) {
+            const minutes = Math.floor(seconds / 60);
+            return `${minutes} min`;
+        } else if (seconds < 86400) {
+            const hours = Math.floor(seconds / 3600);
+            return `${hours} hour`;
+        } else {
+            const days = Math.floor(seconds / 86400);
+            return `${days} day`;
+        }
+    }
     return (
         <div className={'w-[80%]'}>
             <h2>Your Cart</h2>
-            <div className={'flex flex-row'}>
+            <div className={'flex flex-row flex-wrap'}>
                 {order && order.items.map((item: Dish) => (
                     <Card className="py-4 m-10 items-center align-middle w-[200px]" key={item.id}>
                         <CardHeader className="pb-0 pt-2 px-4 flex-col items-center">
@@ -70,7 +81,7 @@ export const CartComponent: React.FC<CartComponentProps> = ({restaurantModel, or
                         </CardBody>
                         <CardBody className="flex justify-between items-center">
                             <p>{item.price} €</p>
-                            <p>{item.prepTime} sec</p>
+                            <p>{formatTime(item.prepTime)}</p>
                             <Button color="danger" size="sm" className={"mt-5"}>
                                 Remove
                             </Button>

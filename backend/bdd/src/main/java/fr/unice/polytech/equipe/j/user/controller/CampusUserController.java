@@ -76,4 +76,16 @@ public class CampusUserController {
         System.out.println("Delete user by id: " + id);
         return CampusUserDAO.delete(id);
     }
+
+    /**
+     * Updates the details of a campus user.
+     *
+     * @param dto the CampusUserDTO containing the updated details of the user.
+     * @return an HttpResponse with the status of the update operation.
+     */
+    @Route(value = "/update", method = HttpMethod.PUT)
+    public HttpResponse updateUser(@BeanParam CampusUserDTO dto) {
+        System.out.println("Update user");
+        return CampusUserDAO.save(CampusUserMapper.toEntity(dto));
+    }
 }

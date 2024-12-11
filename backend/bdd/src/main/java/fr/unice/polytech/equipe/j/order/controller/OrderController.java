@@ -154,6 +154,7 @@ public class OrderController {
         IndividualOrderEntity individualOrderEntity = OrderDAO.getIndividualOrderById(id);
         if (individualOrderEntity != null) {
             IndividualOrderDTO individualOrderDTO = IndividualOrderMapper.toDTO(individualOrderEntity);
+            System.out.println(individualOrderDTO);
             return new HttpResponse(HttpCode.HTTP_200, individualOrderDTO);
         }
         return new HttpResponse(HttpCode.HTTP_404, "Individual order not found");

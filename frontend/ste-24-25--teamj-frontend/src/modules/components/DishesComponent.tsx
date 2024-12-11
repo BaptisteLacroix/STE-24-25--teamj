@@ -73,10 +73,8 @@ export const DishesComponent: React.FC<DishesComponentProps> = ({
     const handleAddItemToOrder = (dishId: string, deliveryDetails: DeliveryDetails | null = null) => {
         try {
             if (restaurantId && userId) {
-                console.log('Adding item to order', userId, restaurantId, orderId, dishId, groupOrderId, deliveryDetails);
                 restaurantModel.addItemToOrder(userId, restaurantId, orderId || uuidv4(), dishId, groupOrderId, deliveryDetails).then((orderId: string) => {
                     setOrderId(orderId);
-                    console.log("Order ID", orderId);
                     restaurantModel.getOrder(userId, orderId).then(order => setOrder(order));
                 });
             }
@@ -91,19 +89,47 @@ export const DishesComponent: React.FC<DishesComponentProps> = ({
             alert("Please login to add items to the order");
             return;
         }
+
         if (groupOrderId) {
             // If user is part of a group order, directly add the item
             handleAddItemToOrder(dishId);
         } else {
-            // Otherwise, show modal to enter delivery details
-            setSelectedDishId(dishId);
-            if (!deliveryDetails) setShowModal(true);
+            // Get the order using the uuid if it exists get the deliveryDetails
+            if (orderId) {
+                restaurantModel.getIndividualOrder(userId, orderId).then((order) => {
+                    console.log(order, orderId);
+                    if (order) {
+                        const deliveryDetails = order.deliveryDetails;
+                        if (deliveryDetails) {
+                            // If deliveryDetails are set, directly add the item to the order
+                            handleAddItemToOrder(dishId, deliveryDetails);
+                        } else {
+                            // Otherwise, show modal to enter delivery details
+                            setSelectedDishId(dishId);
+                            setShowModal(true);
+                        }
+                    } else {
+                        // Otherwise, show modal to enter delivery details
+                        setSelectedDishId(dishId);
+                        setShowModal(true);
+                    }
+                });
+            } else {
+                // If groupOrderId is null, check if deliveryDetails are already set
+                if (deliveryDetails) {
+                    // If deliveryDetails are set, directly add the item to the order
+                    handleAddItemToOrder(dishId, deliveryDetails);
+                } else {
+                    // Otherwise, show modal to enter delivery details
+                    setSelectedDishId(dishId);
+                    setShowModal(true);
+                }
+            }
         }
     };
 
     const handleSubmitDeliveryDetails = () => {
         if (deliveryLocationId && deliveryDate && userId) {
-            console.log("Delivery Details", deliveryLocationId, deliveryDate, selectedDishId, uuidv4());
             const deliveryDetails: DeliveryDetails = {
                 id: uuidv4(),
                 deliveryLocation: deliveryLocation!,
@@ -116,6 +142,7 @@ export const DishesComponent: React.FC<DishesComponentProps> = ({
             alert("Please fill in all delivery details");
         }
     };
+
 
     return (
         <>

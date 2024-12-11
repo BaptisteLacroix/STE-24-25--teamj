@@ -170,6 +170,7 @@ public class GatewayController {
             @PathParam("dishId") String dishId,
             @BeanParam AddItemOrderRequestDTO addItemOrderRequestDTO
     ) {
+        System.out.println("Adding item to order: " + addItemOrderRequestDTO.getGroupOrderId() + " - " + addItemOrderRequestDTO.getDeliveryDetails());
         // Step 1: Validate user and get deliveryTime
         HttpResponse userValidationResponse = validateUser(userId);
         if (userValidationResponse != null) return userValidationResponse;
@@ -364,6 +365,36 @@ public class GatewayController {
             return new HttpResponse(HttpCode.HTTP_200, objectMapper.valueToTree(orderDTO).toString());
         }
         System.out.println("[getOrder] Order not found for user: " + userId);
+        return new HttpResponse(HttpCode.HTTP_403, "Order not found for user: " + userId);
+    }
+
+    @Route(value = "/{userId}/orders/individual/{orderId}", method = HttpMethod.GET)
+    public HttpResponse getIndividualOrder(@PathParam("userId") String userId, @PathParam("orderId") String orderId) {
+        java.net.http.HttpResponse<String> response = getUserById(userId);
+        if (response.statusCode() != 200) {
+            System.out.println("[getIndividualOrder] User not found");
+            return new HttpResponse(HttpCode.fromCode(response.statusCode()), response.body());
+        }
+        response = getIndividualOrderById(orderId);
+        if (response.statusCode() != 200) {
+            System.out.println("[getIndividualOrder] Order not found");
+            return new HttpResponse(HttpCode.HTTP_404, "Order not found");
+        }
+        IndividualOrderDTO individualOrderDTO;
+        try {
+            individualOrderDTO = objectMapper.readValue(response.body(), IndividualOrderDTO.class);
+        } catch (Exception e) {
+            System.out.println("[getIndividualOrder] Failed to parse individual order: " + e.getMessage());
+            return new HttpResponse(HttpCode.HTTP_500, "Failed to parse individual order");
+        }
+        if (individualOrderDTO == null) {
+            System.out.println("[getIndividualOrder] Order not found");
+            return new HttpResponse(HttpCode.HTTP_404, "Order not found");
+        }
+        if (individualOrderDTO.getUserId().equals(UUID.fromString(userId))) {
+            return new HttpResponse(HttpCode.HTTP_200, objectMapper.valueToTree(individualOrderDTO).toString());
+        }
+        System.out.println("[getIndividualOrder] Order not found for user: " + userId);
         return new HttpResponse(HttpCode.HTTP_403, "Order not found for user: " + userId);
     }
 

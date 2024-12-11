@@ -8,10 +8,144 @@
     "url" : "http://localhost:5007"
   } ],
   "paths" : {
+    "/api/restaurants/{restaurantId}/can-prepare" : {
+      "get" : {
+        "summary" : "canPrepareItemForDeliveryTime",
+        "description" : "Generated from method canPrepareItemForDeliveryTime",
+        "parameters" : [ {
+          "name" : "restaurantId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "object",
+            "properties" : {
+              "serialVersionUID" : {
+                "type" : "integer"
+              },
+              "mostSigBits" : {
+                "type" : "integer"
+              },
+              "leastSigBits" : {
+                "type" : "integer"
+              },
+              "jla" : {
+                "type" : "object"
+              },
+              "NIBBLES" : {
+                "type" : "object"
+              },
+              "$assertionsDisabled" : {
+                "type" : "boolean"
+              }
+            }
+          }
+        }, {
+          "name" : "deliveryTime",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "object",
+            "properties" : {
+              "value" : {
+                "type" : "object"
+              },
+              "coder" : {
+                "type" : "object"
+              },
+              "hash" : {
+                "type" : "integer"
+              },
+              "hashIsZero" : {
+                "type" : "boolean"
+              },
+              "serialVersionUID" : {
+                "type" : "integer"
+              },
+              "COMPACT_STRINGS" : {
+                "type" : "boolean"
+              },
+              "serialPersistentFields" : {
+                "type" : "object"
+              },
+              "REPL" : {
+                "type" : "object"
+              },
+              "CASE_INSENSITIVE_ORDER" : {
+                "type" : "object"
+              },
+              "LATIN1" : {
+                "type" : "object"
+              },
+              "UTF16" : {
+                "type" : "object"
+              }
+            }
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Successful response",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/HttpResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/restaurants/{restaurantId}/menu" : {
       "get" : {
         "summary" : "getMenu",
         "description" : "Generated from method getMenu",
+        "parameters" : [ {
+          "name" : "restaurantId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "object",
+            "properties" : {
+              "serialVersionUID" : {
+                "type" : "integer"
+              },
+              "mostSigBits" : {
+                "type" : "integer"
+              },
+              "leastSigBits" : {
+                "type" : "integer"
+              },
+              "jla" : {
+                "type" : "object"
+              },
+              "NIBBLES" : {
+                "type" : "object"
+              },
+              "$assertionsDisabled" : {
+                "type" : "boolean"
+              }
+            }
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Successful response",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/HttpResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/restaurants/{restaurantId}" : {
+      "get" : {
+        "summary" : "getRestaurant",
+        "description" : "Generated from method getRestaurant",
         "parameters" : [ {
           "name" : "restaurantId",
           "in" : "path",
@@ -115,10 +249,48 @@
         }
       }
     },
-    "/api/restaurants/{restaurantId}/orders/{orderId}/item/{menuItemId}" : {
-      "post" : {
-        "summary" : "addItemToOrder",
-        "description" : "Generated from method addItemToOrder",
+    "/api/restaurants/all" : {
+      "get" : {
+        "summary" : "getAllRestaurants",
+        "description" : "Generated from method getAllRestaurants",
+        "parameters" : [ ],
+        "responses" : {
+          "200" : {
+            "description" : "Successful response",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/HttpResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/restaurants/types" : {
+      "get" : {
+        "summary" : "getAllFoodTypes",
+        "description" : "Generated from method getAllFoodTypes",
+        "parameters" : [ ],
+        "responses" : {
+          "200" : {
+            "description" : "Successful response",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/HttpResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/restaurants/{restaurantId}/orders/{orderId}/total-price" : {
+      "get" : {
+        "summary" : "getTotalPrice",
+        "description" : "Generated from method getTotalPrice",
         "parameters" : [ {
           "name" : "restaurantId",
           "in" : "path",
@@ -170,75 +342,6 @@
               },
               "$assertionsDisabled" : {
                 "type" : "boolean"
-              }
-            }
-          }
-        }, {
-          "name" : "menuItemId",
-          "in" : "path",
-          "required" : true,
-          "schema" : {
-            "type" : "object",
-            "properties" : {
-              "serialVersionUID" : {
-                "type" : "integer"
-              },
-              "mostSigBits" : {
-                "type" : "integer"
-              },
-              "leastSigBits" : {
-                "type" : "integer"
-              },
-              "jla" : {
-                "type" : "object"
-              },
-              "NIBBLES" : {
-                "type" : "object"
-              },
-              "$assertionsDisabled" : {
-                "type" : "boolean"
-              }
-            }
-          }
-        }, {
-          "name" : "deliveryTime",
-          "in" : "query",
-          "required" : false,
-          "schema" : {
-            "type" : "object",
-            "properties" : {
-              "value" : {
-                "type" : "object"
-              },
-              "coder" : {
-                "type" : "object"
-              },
-              "hash" : {
-                "type" : "integer"
-              },
-              "hashIsZero" : {
-                "type" : "boolean"
-              },
-              "serialVersionUID" : {
-                "type" : "integer"
-              },
-              "COMPACT_STRINGS" : {
-                "type" : "boolean"
-              },
-              "serialPersistentFields" : {
-                "type" : "object"
-              },
-              "REPL" : {
-                "type" : "object"
-              },
-              "CASE_INSENSITIVE_ORDER" : {
-                "type" : "object"
-              },
-              "LATIN1" : {
-                "type" : "object"
-              },
-              "UTF16" : {
-                "type" : "object"
               }
             }
           }
@@ -493,79 +596,6 @@
         }
       }
     },
-    "/api/restaurants/{restaurantId}/orders/{orderId}/total-price" : {
-      "get" : {
-        "summary" : "getTotalPrice",
-        "description" : "Generated from method getTotalPrice",
-        "parameters" : [ {
-          "name" : "restaurantId",
-          "in" : "path",
-          "required" : true,
-          "schema" : {
-            "type" : "object",
-            "properties" : {
-              "serialVersionUID" : {
-                "type" : "integer"
-              },
-              "mostSigBits" : {
-                "type" : "integer"
-              },
-              "leastSigBits" : {
-                "type" : "integer"
-              },
-              "jla" : {
-                "type" : "object"
-              },
-              "NIBBLES" : {
-                "type" : "object"
-              },
-              "$assertionsDisabled" : {
-                "type" : "boolean"
-              }
-            }
-          }
-        }, {
-          "name" : "orderId",
-          "in" : "path",
-          "required" : true,
-          "schema" : {
-            "type" : "object",
-            "properties" : {
-              "serialVersionUID" : {
-                "type" : "integer"
-              },
-              "mostSigBits" : {
-                "type" : "integer"
-              },
-              "leastSigBits" : {
-                "type" : "integer"
-              },
-              "jla" : {
-                "type" : "object"
-              },
-              "NIBBLES" : {
-                "type" : "object"
-              },
-              "$assertionsDisabled" : {
-                "type" : "boolean"
-              }
-            }
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "Successful response",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/HttpResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/api/restaurants/{restaurantId}/orders/{orderUUID}/paid" : {
       "post" : {
         "summary" : "onOrderPaid",
@@ -639,33 +669,95 @@
         }
       }
     },
-    "/api/restaurants/all" : {
-      "get" : {
-        "summary" : "getAllRestaurants",
-        "description" : "Generated from method getAllRestaurants",
-        "parameters" : [ ],
-        "responses" : {
-          "200" : {
-            "description" : "Successful response",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/HttpResponse"
-                }
+    "/api/restaurants/{restaurantId}/orders/{orderId}/item/{menuItemId}" : {
+      "post" : {
+        "summary" : "addItemToOrder",
+        "description" : "Generated from method addItemToOrder",
+        "parameters" : [ {
+          "name" : "restaurantId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "object",
+            "properties" : {
+              "serialVersionUID" : {
+                "type" : "integer"
+              },
+              "mostSigBits" : {
+                "type" : "integer"
+              },
+              "leastSigBits" : {
+                "type" : "integer"
+              },
+              "jla" : {
+                "type" : "object"
+              },
+              "NIBBLES" : {
+                "type" : "object"
+              },
+              "$assertionsDisabled" : {
+                "type" : "boolean"
               }
             }
           }
-        }
-      }
-    },
-    "/api/restaurants/foodType/{foodType}" : {
-      "get" : {
-        "summary" : "searchByFoodType",
-        "description" : "Generated from method searchByFoodType",
-        "parameters" : [ {
-          "name" : "foodType",
+        }, {
+          "name" : "orderId",
           "in" : "path",
           "required" : true,
+          "schema" : {
+            "type" : "object",
+            "properties" : {
+              "serialVersionUID" : {
+                "type" : "integer"
+              },
+              "mostSigBits" : {
+                "type" : "integer"
+              },
+              "leastSigBits" : {
+                "type" : "integer"
+              },
+              "jla" : {
+                "type" : "object"
+              },
+              "NIBBLES" : {
+                "type" : "object"
+              },
+              "$assertionsDisabled" : {
+                "type" : "boolean"
+              }
+            }
+          }
+        }, {
+          "name" : "menuItemId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "object",
+            "properties" : {
+              "serialVersionUID" : {
+                "type" : "integer"
+              },
+              "mostSigBits" : {
+                "type" : "integer"
+              },
+              "leastSigBits" : {
+                "type" : "integer"
+              },
+              "jla" : {
+                "type" : "object"
+              },
+              "NIBBLES" : {
+                "type" : "object"
+              },
+              "$assertionsDisabled" : {
+                "type" : "boolean"
+              }
+            }
+          }
+        }, {
+          "name" : "deliveryTime",
+          "in" : "query",
+          "required" : false,
           "schema" : {
             "type" : "object",
             "properties" : {
@@ -719,106 +811,14 @@
         }
       }
     },
-    "/api/restaurants/{restaurantId}" : {
+    "/api/restaurants/foodType/{foodType}" : {
       "get" : {
-        "summary" : "getRestaurant",
-        "description" : "Generated from method getRestaurant",
+        "summary" : "searchByFoodType",
+        "description" : "Generated from method searchByFoodType",
         "parameters" : [ {
-          "name" : "restaurantId",
+          "name" : "foodType",
           "in" : "path",
           "required" : true,
-          "schema" : {
-            "type" : "object",
-            "properties" : {
-              "serialVersionUID" : {
-                "type" : "integer"
-              },
-              "mostSigBits" : {
-                "type" : "integer"
-              },
-              "leastSigBits" : {
-                "type" : "integer"
-              },
-              "jla" : {
-                "type" : "object"
-              },
-              "NIBBLES" : {
-                "type" : "object"
-              },
-              "$assertionsDisabled" : {
-                "type" : "boolean"
-              }
-            }
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "Successful response",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/HttpResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/restaurants/types" : {
-      "get" : {
-        "summary" : "getAllFoodTypes",
-        "description" : "Generated from method getAllFoodTypes",
-        "parameters" : [ ],
-        "responses" : {
-          "200" : {
-            "description" : "Successful response",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/HttpResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/restaurants/{restaurantId}/can-prepare" : {
-      "get" : {
-        "summary" : "canPrepareItemForDeliveryTime",
-        "description" : "Generated from method canPrepareItemForDeliveryTime",
-        "parameters" : [ {
-          "name" : "restaurantId",
-          "in" : "path",
-          "required" : true,
-          "schema" : {
-            "type" : "object",
-            "properties" : {
-              "serialVersionUID" : {
-                "type" : "integer"
-              },
-              "mostSigBits" : {
-                "type" : "integer"
-              },
-              "leastSigBits" : {
-                "type" : "integer"
-              },
-              "jla" : {
-                "type" : "object"
-              },
-              "NIBBLES" : {
-                "type" : "object"
-              },
-              "$assertionsDisabled" : {
-                "type" : "boolean"
-              }
-            }
-          }
-        }, {
-          "name" : "deliveryTime",
-          "in" : "query",
-          "required" : false,
           "schema" : {
             "type" : "object",
             "properties" : {
@@ -902,93 +902,6 @@
                 "type" : "boolean"
               }
             }
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "Successful response",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/HttpResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/restaurants/deliveryTime/{hour}/{minutes}" : {
-      "get" : {
-        "summary" : "searchByDeliveryTime",
-        "description" : "Generated from method searchByDeliveryTime",
-        "parameters" : [ {
-          "name" : "hour",
-          "in" : "path",
-          "required" : true,
-          "schema" : {
-            "type" : "object",
-            "properties" : { }
-          }
-        }, {
-          "name" : "minutes",
-          "in" : "path",
-          "required" : true,
-          "schema" : {
-            "type" : "object",
-            "properties" : { }
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "Successful response",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/HttpResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/restaurants/{restaurantId}/order-price-strategy" : {
-      "post" : {
-        "summary" : "setOrderPriceStrategy",
-        "description" : "Generated from method setOrderPriceStrategy",
-        "parameters" : [ {
-          "name" : "restaurantId",
-          "in" : "path",
-          "required" : true,
-          "schema" : {
-            "type" : "object",
-            "properties" : {
-              "serialVersionUID" : {
-                "type" : "integer"
-              },
-              "mostSigBits" : {
-                "type" : "integer"
-              },
-              "leastSigBits" : {
-                "type" : "integer"
-              },
-              "jla" : {
-                "type" : "object"
-              },
-              "NIBBLES" : {
-                "type" : "object"
-              },
-              "$assertionsDisabled" : {
-                "type" : "boolean"
-              }
-            }
-          }
-        }, {
-          "name" : "OrderPriceStrategy",
-          "in" : "body",
-          "schema" : {
-            "$ref" : "#/components/schemas/OrderPriceStrategy"
           }
         } ],
         "responses" : {
@@ -1092,6 +1005,93 @@
           }
         }, {
           "name" : "numberOfEmployees",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "object",
+            "properties" : { }
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Successful response",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/HttpResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/restaurants/{restaurantId}/order-price-strategy" : {
+      "post" : {
+        "summary" : "setOrderPriceStrategy",
+        "description" : "Generated from method setOrderPriceStrategy",
+        "parameters" : [ {
+          "name" : "restaurantId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "object",
+            "properties" : {
+              "serialVersionUID" : {
+                "type" : "integer"
+              },
+              "mostSigBits" : {
+                "type" : "integer"
+              },
+              "leastSigBits" : {
+                "type" : "integer"
+              },
+              "jla" : {
+                "type" : "object"
+              },
+              "NIBBLES" : {
+                "type" : "object"
+              },
+              "$assertionsDisabled" : {
+                "type" : "boolean"
+              }
+            }
+          }
+        }, {
+          "name" : "OrderPriceStrategy",
+          "in" : "body",
+          "schema" : {
+            "$ref" : "#/components/schemas/OrderPriceStrategy"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Successful response",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/HttpResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/restaurants/deliveryTime/{hour}/{minutes}" : {
+      "get" : {
+        "summary" : "searchByDeliveryTime",
+        "description" : "Generated from method searchByDeliveryTime",
+        "parameters" : [ {
+          "name" : "hour",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "object",
+            "properties" : { }
+          }
+        }, {
+          "name" : "minutes",
           "in" : "path",
           "required" : true,
           "schema" : {

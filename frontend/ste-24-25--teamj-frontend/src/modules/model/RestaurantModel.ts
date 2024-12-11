@@ -50,7 +50,7 @@ export class RestaurantModel {
                 'Content-Type': 'application/json',
             }
         })
-        if (response.status !== 200) {
+        if (response.status !== 201) {
             throw new Error('Failed to validate order')
         }
         return await response.text();
@@ -218,9 +218,7 @@ export class RestaurantModel {
             console.error("Failed to add item to order. Status:", response.status, "Response:", errorDetails);
             throw new Error('Failed to add item to order');
         }
-        const data = await response.text();
-        console.log('addItemToORder ', data);
-        return data;
+        return await response.text();
     }
 
     public async cancelOrder(userId: string, restaurantId: string, orderId: string): Promise<void> {
@@ -236,7 +234,6 @@ export class RestaurantModel {
     }
 
     public async getOrder(userId: string, orderId: string): Promise<Order | IndividualOrder> {
-        console.log("getOrder", userId, orderId)
         const response = await fetch(`${API_BASE_URL}/${userId}/orders/${orderId}`, {
             method: 'GET',
             headers: {
@@ -244,10 +241,9 @@ export class RestaurantModel {
             }
         })
         if (response.status !== 200) {
-            throw new Error('Failed to fetch orders')
+            throw new Error('Failed to fetch order')
         }
         const data = await response.json()
-        console.log(data)
         // Transform the data into the format we need
         return {
             id: data.id,
@@ -260,6 +256,38 @@ export class RestaurantModel {
                 price: item.price
             })),
             status: data.status
+        }
+    }
+
+    public async getIndividualOrder(userId: string, orderId: string): Promise<IndividualOrder | null> {
+        try {
+            const response = await fetch(`${API_BASE_URL}/${userId}/orders/individual/${orderId}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            if (response.status !== 200) {
+                return null;
+            }
+            const data = await response.json()
+            // Transform the data into the format we need
+            return {
+                id: data.id,
+                restaurantId: data.restaurantId,
+                userId: data.userId,
+                items: data.items.map((item: any) => ({
+                    id: item.id,
+                    name: item.name,
+                    prepTime: item.prepTime,
+                    price: item.price
+                })),
+                status: data.status,
+                deliveryDetails: data.deliveryDetails
+            }
+        } catch (e) {
+            console.error("Failed to fetch individual order", e);
+            return null;
         }
     }
 

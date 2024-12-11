@@ -12,6 +12,7 @@ import fr.unice.polytech.equipe.j.annotations.Controller;
 import fr.unice.polytech.equipe.j.annotations.PathParam;
 import fr.unice.polytech.equipe.j.annotations.QueryParam;
 import fr.unice.polytech.equipe.j.annotations.Route;
+import fr.unice.polytech.equipe.j.dto.CampusUserDTO;
 import fr.unice.polytech.equipe.j.dto.GroupOrderDTO;
 import fr.unice.polytech.equipe.j.dto.IndividualOrderDTO;
 import fr.unice.polytech.equipe.j.dto.MenuItemDTO;
@@ -377,6 +378,22 @@ public class RestaurantController {
                 System.out.println("[OnOrderPaid] Order not found");
                 return createHttpResponse(HttpCode.HTTP_400, orderDTO == null ? "Order not found" : "Restaurant not found");
             }
+
+            // Get the user who paid the order, add the order to his history
+            java.net.http.HttpResponse<String> response = request(
+                    RequestUtil.DATABASE_CAMPUS_USER_SERVICE_URI,
+                    "/" + orderDTO.getUserId(),
+                    null,
+                    HttpMethod.GET,
+                    null
+            );
+            if (response.statusCode() != 200) {
+                System.out.println("[OnOrderPaid] User not found");
+                return createHttpResponse(HttpCode.HTTP_400, "User not found");
+            }
+            CampusUserDTO user = objectMapper.readValue(response.body(), CampusUserDTO.class);
+            user.getOrdersHistory().add(orderDTO);
+
             // Check that if the Order is not an instance of IndividualOrder and the groupOrder is already validated
             if (!(orderDTO instanceof IndividualOrderDTO) && restaurantProxy.isOrderValid(orderDTO)) {
                 // Get the GroupOrder corresponding to the Order
@@ -393,12 +410,25 @@ public class RestaurantController {
                     return createHttpResponse(HttpCode.HTTP_400, "GroupOrder already validated");
                 }
             }
-            java.net.http.HttpResponse<String> response = restaurantProxy.onOrderPaid(orderDTO);
-            if (response.statusCode() == 200 || response.statusCode() == 201) {
-                return createHttpResponse(HttpCode.HTTP_200, orderDTO.getId().toString());
+            response = restaurantProxy.onOrderPaid(orderDTO);
+            if (response.statusCode() != 200 || response.statusCode() != 201) {
+                System.out.println("[OnOrderPaid] Error while processing order: " + response.body());
+                return createHttpResponse(HttpCode.fromCode(response.statusCode()), response.body());
             }
-            System.out.println("[OnOrderPaid] Error while processing order: " + response.body());
-            return createHttpResponse(HttpCode.fromCode(response.statusCode()), response.body());
+
+            // Save the user
+            response = request(
+                    RequestUtil.DATABASE_CAMPUS_USER_SERVICE_URI,
+                    "/update",
+                    null,
+                    HttpMethod.PUT,
+                    objectMapper.writeValueAsString(user)
+            );
+            if (response.statusCode() != 200 || response.statusCode() != 201) {
+                System.out.println("[OnOrderPaid] Error while saving user: " + response.body());
+                return createHttpResponse(HttpCode.HTTP_400, response.body());
+            }
+            return createHttpResponse(HttpCode.HTTP_200, orderDTO.getId().toString());
         } catch (Exception e) {
             return createHttpResponse(HttpCode.HTTP_500, "Internal server error: " + e.getMessage());
         }

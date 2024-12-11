@@ -21,8 +21,6 @@ export const GroupOrderComponent: React.FC<GroupOrderComponentProps> = ({
     const [restaurantNames, setRestaurantNames] = useState<Map<string, string>>(new Map());
     const [usersName, setUsersName] = useState<Map<string, string>>(new Map());
 
-    console.log("Group Order", groupOrder);
-
     // Fetch and calculate total price for all orders
     useEffect(() => {
         const calculateGroupOrderTotal = async () => {

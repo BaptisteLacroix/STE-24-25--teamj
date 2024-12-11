@@ -70,6 +70,12 @@ public class GroupOrder implements IGroupOrder {
     @Override
     public HttpResponse validate(CampusUserDTO user) {
         setStatus(OrderStatus.VALIDATED);
+        // Set Cancelled all orders that are not validated
+        for (OrderDTO order : orders) {
+            if (!order.getStatus().equals(OrderStatus.VALIDATED.toString())) {
+                order.setStatus(OrderStatus.CANCELLED.toString());
+            }
+        }
         try {
             // Sauvegardez les changements dans la base de données
             ObjectMapper mapper = JacksonConfig.configureObjectMapper();
