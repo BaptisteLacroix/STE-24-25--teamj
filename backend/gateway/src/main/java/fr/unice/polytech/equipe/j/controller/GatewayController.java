@@ -77,6 +77,7 @@ public class GatewayController {
                 HttpMethod.POST,
                 null
         );
+        System.out.println("[validateOrder] Order validated: " + response.body());
         return new HttpResponse(HttpCode.fromCode(response.statusCode()), response.body());
     }
 

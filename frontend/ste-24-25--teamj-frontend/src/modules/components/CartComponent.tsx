@@ -79,6 +79,13 @@ export const CartComponent: React.FC<CartComponentProps> = ({
     return (
         <div className={"w-[80%]"}>
             <h2>Your Cart</h2>
+            {/* Display the Order UUID */}
+            {order && (
+                <div className="mt-4 p-4 rounded-lg bg-gray-100 shadow-md">
+                    <h4 className="font-semibold text-xl mb-4">Order UUID:</h4>
+                    <h2 className="font-bold text-xl">{order.id}</h2>
+                </div>
+            )}
             <div className={"flex flex-row flex-wrap"}>
                 {order &&
                     order.items.map((item: Dish) => (
