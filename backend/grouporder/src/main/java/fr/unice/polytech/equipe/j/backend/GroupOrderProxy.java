@@ -66,22 +66,25 @@ public class GroupOrderProxy implements IGroupOrder {
 
     @Override
     public HttpResponse validate(CampusUserDTO user) {
-        System.out.println("Users in GroupOrderEntity: " + groupOrder.getUsers());
         if (groupOrder.getStatus() != OrderStatus.PENDING) {
+            System.out.println("[GroupOrderProxy] Cannot validate group order that is not pending.");
             return new HttpResponse(HttpCode.HTTP_400, "Cannot validate group order that is not pending.");
         }
 
         if (groupOrder.getDeliveryDetails() == null || groupOrder.getDeliveryDetails().getDeliveryTime() == null) {
+            System.out.println("[GroupOrderProxy] Cannot validate group order with no delivery time.");
             return new HttpResponse(HttpCode.HTTP_400, "Cannot validate group order with no delivery time.");
         }
 
         if (!groupOrder.getUsers().contains(user)) {
+            System.out.println("[GroupOrderProxy] Cannot validate group order if you are not part of it.");
             return new HttpResponse(HttpCode.HTTP_403, "Cannot validate group order if you are not part of it.");
         }
 
         boolean userHasOrder = groupOrder.getOrders().stream()
-                .anyMatch(order -> order.getUserId().equals(user));
+                .anyMatch(order -> order.getUserId().equals(user.getId()));
         if (!userHasOrder) {
+            System.out.println("[GroupOrderProxy] Cannot validate group order if you have no order.");
             return new HttpResponse(HttpCode.HTTP_400, "Cannot validate group order if you have no order.");
         }
 

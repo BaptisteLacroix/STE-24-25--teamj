@@ -33,7 +33,14 @@ export class RestaurantModel {
         if (response.status !== 200) {
             throw new Error('Failed to fetch group order')
         }
-        return await response.json() as GroupOrder;
+        const data = await response.json();
+        return {
+            id: data.groupOrderId,
+            orders: data.orders,
+            users: data.users,
+            deliveryDetails: data.deliveryDetails,
+            status: data.status
+        }
     }
 
     public async validateOrder(userId: string, orderId: string) {
@@ -50,7 +57,7 @@ export class RestaurantModel {
     }
 
     public async validateGroupOrder(userId: string, groupOrderId: string) {
-        const response = await fetch(`${API_BASE_URL}/${userId}/group-order/${groupOrderId}/validate`, {
+        const response = await fetch(`${API_BASE_URL}/${userId}/group-orders/${groupOrderId}/validate`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',

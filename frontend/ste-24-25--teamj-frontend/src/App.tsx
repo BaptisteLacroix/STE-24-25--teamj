@@ -28,6 +28,7 @@ function App() {
     useEffect(() => {
         if (orderValidated && groupOrderId) {
             restaurantModel.getGroupOrder(userId, groupOrderId).then((groupOrder: GroupOrder) => {
+                console.log('Group order', groupOrder);
                 setGroupOrder(groupOrder);
                 navigator('/group-order');
             });
@@ -88,8 +89,8 @@ function App() {
                                        setGroupOrderId(groupOrderId);
                                    });
                                    setShowCode(true);
-                               }
-                               }/>
+                               }}
+                />
             }
             {joinGroupOrder && <JoinGroupOrder restaurantModel={restaurantModel}
                                                setIsJoinGroupOrderModalOpen={setIsJoinGroupOrderModalOpen}/>}

@@ -76,7 +76,7 @@ public class GroupOrderController {
         try {
             System.out.println("Creating groupOrder");
             GroupOrder groupOrder1 = new GroupOrder(deliveryDetailsDTO);
-            GroupOrderDTO groupOrderDTO = new GroupOrderDTO(groupOrder1.getGroupOrderId(), null, new ArrayList<CampusUserDTO>(), null, "pending");
+            GroupOrderDTO groupOrderDTO = new GroupOrderDTO(groupOrder1.getGroupOrderId(), null, new ArrayList<>(), deliveryDetailsDTO, "pending");
             ObjectWriter ow = objectMapper.writer().withDefaultPrettyPrinter();
             String json = ow.writeValueAsString(groupOrderDTO);
             request(DATABASE_GROUPORDER_SERVICE_URI, "/create", HttpMethod.POST, json);

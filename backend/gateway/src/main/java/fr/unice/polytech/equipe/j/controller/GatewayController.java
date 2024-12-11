@@ -80,6 +80,28 @@ public class GatewayController {
         return new HttpResponse(HttpCode.fromCode(response.statusCode()), response.body());
     }
 
+    @Route(value = "/{userId}/group-orders/{groupOrderId}/validate", method = HttpMethod.PUT)
+    public HttpResponse validateGroupOrder(@PathParam("userId") String userId, @PathParam("groupOrderId") String groupOrderId) {
+        java.net.http.HttpResponse<String> response = getUserById(userId);
+        if (response.statusCode() != 200) {
+            System.out.println("[validateGroupOrder] User not found");
+            return new HttpResponse(HttpCode.fromCode(response.statusCode()), response.body());
+        }
+        response = getGroupOrderById(groupOrderId);
+        if (response.statusCode() != 200) {
+            System.out.println("[validateGroupOrder] Group order not found");
+            return new HttpResponse(HttpCode.fromCode(response.statusCode()), response.body());
+        }
+        response = request(
+                RequestUtil.GROUP_ORDER_SERVICE_URI,
+                "/" + groupOrderId + "/" + userId + "/validate",
+                null,
+                HttpMethod.PUT,
+                null
+        );
+        return new HttpResponse(HttpCode.fromCode(response.statusCode()), response.body());
+    }
+
     @Route(value = "/restaurants/types", method = HttpMethod.GET)
     public HttpResponse getAllFoodTypes() {
         java.net.http.HttpResponse<String> response = request(
