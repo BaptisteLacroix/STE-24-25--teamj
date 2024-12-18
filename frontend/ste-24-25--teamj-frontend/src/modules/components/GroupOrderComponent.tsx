@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from "react";
 import {Button, Card, CardBody, CardHeader} from "@nextui-org/react";
 import {CampusUser, GroupOrder, Order} from "../utils/types.ts";
+import {toDate} from "../utils/apiUtils.ts";
 import {useAppState} from "../AppStateContext.tsx";
 import {RestaurantModel} from "../model/RestaurantModel.ts";
 
@@ -100,8 +101,10 @@ export const GroupOrderComponent: React.FC<GroupOrderComponentProps> = ({
                 <div>
                     <p><strong>Location:</strong> {groupOrder.deliveryDetails.deliveryLocation.locationName}</p>
                     <p><strong>Address:</strong> {groupOrder.deliveryDetails.deliveryLocation.address}</p>
-                    <p><strong>Delivery
-                        Time:</strong> {new Date(groupOrder.deliveryDetails.deliveryTime).toLocaleString()}</p>
+                    <p><strong>Delivery Time:</strong> {
+                        // @ts-ignore
+                        toDate(groupOrder.deliveryDetails.deliveryTime).toLocaleString()
+                    }</p>
                 </div>
             </div>
 

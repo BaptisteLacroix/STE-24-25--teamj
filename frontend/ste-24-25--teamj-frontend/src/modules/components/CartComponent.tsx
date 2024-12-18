@@ -1,8 +1,9 @@
-import { RestaurantModel } from "../model/RestaurantModel.ts";
-import React, { useEffect, useState } from "react";
-import { Dish, IndividualOrder, Order } from "../utils/types.ts";
-import { Button, Card, CardBody, CardHeader, Image } from "@nextui-org/react";
-import { useAppState } from "../AppStateContext.tsx";
+import {RestaurantModel} from "../model/RestaurantModel.ts";
+import React, {useEffect, useState} from "react";
+import {Dish, IndividualOrder, Order} from "../utils/types.ts";
+import {toDate} from "../utils/apiUtils.ts";
+import {Button, Card, CardBody, CardHeader, Image} from "@nextui-org/react";
+import {useAppState} from "../AppStateContext.tsx";
 
 interface CartComponentProps {
     restaurantModel: RestaurantModel;
@@ -17,7 +18,7 @@ export const CartComponent: React.FC<CartComponentProps> = ({
                                                                 setOrder,
                                                                 setOrderValidated,
                                                             }) => {
-    const { userId, orderId, setOrderId } = useAppState();
+    const {userId, orderId, setOrderId} = useAppState();
     const [total, setTotal] = useState<number>(0);
     const [individualOrder, setIndividualOrder] = useState<IndividualOrder | null>(null);
 
@@ -76,6 +77,12 @@ export const CartComponent: React.FC<CartComponentProps> = ({
             setIndividualOrder(order);
         });
     }, [order]);
+
+    useEffect(() => {
+        if (!individualOrder) return;
+        console.log(individualOrder.deliveryDetails.deliveryTime)
+    }, [individualOrder]);
+
     return (
         <div className={"w-[80%]"}>
             <h2>Your Cart</h2>
@@ -112,7 +119,7 @@ export const CartComponent: React.FC<CartComponentProps> = ({
                     ))}
             </div>
 
-            <div style={{ marginTop: "20px", display: "flex", justifyContent: "space-between" }}>
+            <div style={{marginTop: "20px", display: "flex", justifyContent: "space-between"}}>
                 <h4>Total:</h4>
                 <h4>{total}€</h4>
             </div>
@@ -126,12 +133,15 @@ export const CartComponent: React.FC<CartComponentProps> = ({
                             <strong>Location:</strong> {individualOrder.deliveryDetails.deliveryLocation.locationName}
                         </p>
                         <p><strong>Address:</strong> {individualOrder.deliveryDetails.deliveryLocation.address}</p>
-                        <p><strong>Delivery Time:</strong> {new Date(individualOrder.deliveryDetails.deliveryTime).toLocaleString()}</p>
+                        <p><strong>Delivery Time:</strong> {
+                            // @ts-ignore
+                            toDate(individualOrder.deliveryDetails.deliveryTime).toLocaleString()
+                        }</p>
                     </div>
                 </div>
             )}
 
-            <Button color="primary" size="lg" style={{ marginTop: "20px", width: "100%" }} onClick={validateOrder}>
+            <Button color="primary" size="lg" style={{marginTop: "20px", width: "100%"}} onClick={validateOrder}>
                 Checkout
             </Button>
         </div>
