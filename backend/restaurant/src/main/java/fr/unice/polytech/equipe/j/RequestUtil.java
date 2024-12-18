@@ -14,37 +14,43 @@ public class RequestUtil {
     public static final String DATABASE_CAMPUS_USER_SERVICE_URI = "http://localhost:5000/api/database/campusUsers";
     public static final String DATABASE_MANAGER_SERVICE_URI = "http://localhost:5000/api/database/managers";
     public static final String DATABASE_ORDER_SERVICE_URI = "http://localhost:5000/api/database/orders";
+    public static final String DATABASE_GROUPORDER_SERVICE_URI = "http://localhost:5000/api/database/groupOrders";
 
-    public static java.net.http.HttpResponse<String> request(String basePath, String uri, HttpMethod method, String jsonBody) {
-        try{
+    public static java.net.http.HttpResponse<String> request(
+            String basePath, String uri, String queryPath, HttpMethod method, String jsonBody) {
+        try {
+            // If ? inside uri, it will be encoded as %3F, so we need to encode it again
             String encodedUri = URLEncoder.encode(uri, StandardCharsets.UTF_8);
+            String fullUri = basePath + encodedUri + (queryPath != null ? queryPath : "");
+
             HttpClient client = HttpClient.newHttpClient();
             HttpRequest request;
+
             switch (method) {
                 case HttpMethod.GET:
                     request = HttpRequest.newBuilder()
-                            .uri(URI.create(basePath + encodedUri))
+                            .uri(URI.create(fullUri))
                             .header("Content-Type", "application/json")
                             .GET()
                             .build();
                     break;
                 case HttpMethod.POST:
                     request = HttpRequest.newBuilder()
-                            .uri(URI.create(basePath + encodedUri))
+                            .uri(URI.create(fullUri))
                             .header("Content-Type", "application/json")
-                            .POST(HttpRequest.BodyPublishers.ofString(jsonBody))
+                            .POST(jsonBody == null ? HttpRequest.BodyPublishers.noBody() : HttpRequest.BodyPublishers.ofString(jsonBody))
                             .build();
                     break;
                 case HttpMethod.PUT:
                     request = HttpRequest.newBuilder()
-                            .uri(URI.create(basePath + encodedUri))
+                            .uri(URI.create(fullUri))
                             .header("Content-Type", "application/json")
-                            .PUT(HttpRequest.BodyPublishers.ofString(jsonBody))
+                            .PUT(jsonBody == null ? HttpRequest.BodyPublishers.noBody() : HttpRequest.BodyPublishers.ofString(jsonBody))
                             .build();
                     break;
                 case HttpMethod.DELETE:
                     request = HttpRequest.newBuilder()
-                            .uri(URI.create(basePath + encodedUri))
+                            .uri(URI.create(fullUri))
                             .header("Content-Type", "application/json")
                             .DELETE()
                             .build();
@@ -52,8 +58,10 @@ public class RequestUtil {
                 default:
                     return null;
             }
+
             return client.send(request, java.net.http.HttpResponse.BodyHandlers.ofString());
         } catch (Exception e) {
+            e.printStackTrace(); // For better debugging
             return null;
         }
     }

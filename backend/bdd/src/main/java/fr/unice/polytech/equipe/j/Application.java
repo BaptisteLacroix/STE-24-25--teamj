@@ -1,6 +1,7 @@
 package fr.unice.polytech.equipe.j;
 
 import java.nio.file.Paths;
+import java.util.concurrent.TimeUnit;
 
 public class Application {
     public static void main(String[] args) {
@@ -16,6 +17,13 @@ public class Application {
             server.start();
             System.setProperty("user.dir", userDir);
         } else {
+            while (!HibernateUtil.populateDatabase(new String[]{})) {
+                try {
+                    TimeUnit.SECONDS.sleep(1);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
             FlexibleRestServer server = new FlexibleRestServer("fr.unice.polytech.equipe.j", 5000);
             server.start();
         }

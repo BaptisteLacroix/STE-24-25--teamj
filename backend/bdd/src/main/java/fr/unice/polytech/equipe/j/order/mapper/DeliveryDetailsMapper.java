@@ -1,5 +1,6 @@
 package fr.unice.polytech.equipe.j.order.mapper;
 
+import fr.unice.polytech.equipe.j.deliverylocation.mapper.DeliveryLocationMapper;
 import fr.unice.polytech.equipe.j.order.dto.DeliveryDetailsDTO;
 import fr.unice.polytech.equipe.j.order.entities.DeliveryDetailsEntity;
 

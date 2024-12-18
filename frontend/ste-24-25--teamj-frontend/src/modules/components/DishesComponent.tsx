@@ -2,30 +2,36 @@ import React, {useEffect, useState} from "react";
 import {RestaurantModel} from "../model/RestaurantModel.ts";
 import {
     Button,
-    Skeleton,
-    Modal,
     DatePicker,
+    Modal,
     ModalBody,
-    ModalHeader,
+    ModalContent,
     ModalFooter,
+    ModalHeader,
     Select,
-    SelectItem, ModalContent,
+    SelectItem,
+    Skeleton,
 } from "@nextui-org/react";
 import {useParams} from "react-router-dom";
-import {DeliveryDetails, DeliveryLocation, Dish} from "../utils/types.ts";
+import {DeliveryDetails, DeliveryLocation, Dish, IndividualOrder, Order, Restaurant} from "../utils/types.ts";
 import {AddIcon} from "../utils/icons/AddIcon.tsx";
-import {now, getLocalTimeZone} from "@internationalized/date";
+import {getLocalTimeZone, now} from "@internationalized/date";
 import {useAppState} from "../AppStateContext.tsx";
+import {uuidv4} from "../utils/apiUtils.ts";
 
 interface DishesComponentProps {
     restaurantModel: RestaurantModel;
+    setOrder: (order: Order | IndividualOrder) => void;
 }
+
 
 export const DishesComponent: React.FC<DishesComponentProps> = ({
                                                                     restaurantModel,
+                                                                    setOrder,
                                                                 }) => {
     const {userId, setOrderId, orderId, groupOrderId} = useAppState();
     const {restaurantId} = useParams<{ restaurantId: string }>();
+    const [restaurant, setRestaurant] = useState<Restaurant | null>(null);
     const [dishes, setDishes] = useState<Dish[]>([]);
     const [selectedDishId, setSelectedDishId] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
@@ -33,12 +39,14 @@ export const DishesComponent: React.FC<DishesComponentProps> = ({
     const [deliveryLocationId, setDeliveryLocationId] = useState<string | null>(null);
     const [deliveryLocation, setDeliveryLocation] = useState<DeliveryLocation | null>(null);
     const [deliveryLocations, setDeliveryLocations] = useState<DeliveryLocation[]>([]);
+    const [deliveryDetails, setDeliveryDetails] = useState<DeliveryDetails | null>(null);
     const [deliveryDate, setDeliveryDate] = useState<Date | null>(null);
 
     useEffect(() => {
         if (restaurantId) {
             restaurantModel.getRestaurantById(restaurantId).then((restaurant) => {
-                setDishes(restaurant.dishes);
+                setRestaurant(restaurant);
+                setDishes(restaurant?.dishes || []);
                 setLoading(false);
             });
         }
@@ -62,14 +70,13 @@ export const DishesComponent: React.FC<DishesComponentProps> = ({
         }
     }, [deliveryLocationId, userId, restaurantModel]);
 
-    const handleAddItemToOrder = async (dishId: string, deliveryDetails: DeliveryDetails | null = null) => {
+    const handleAddItemToOrder = (dishId: string, deliveryDetails: DeliveryDetails | null = null) => {
         try {
             if (restaurantId && userId) {
-                const currentOrderId = orderId ?? await restaurantModel.startNewOrder(userId, restaurantId, groupOrderId, deliveryDetails);
-                if (currentOrderId) {
-                    await restaurantModel.addItemToOrder(userId, restaurantId, currentOrderId, dishId, groupOrderId, deliveryDetails);
-                    setOrderId(currentOrderId);
-                }
+                restaurantModel.addItemToOrder(userId, restaurantId, orderId || uuidv4(), dishId, groupOrderId, deliveryDetails).then((orderId: string) => {
+                    setOrderId(orderId);
+                    restaurantModel.getOrder(userId, orderId).then(order => setOrder(order));
+                });
             }
         } catch (error) {
             console.error("Error adding item to order", error);
@@ -87,18 +94,48 @@ export const DishesComponent: React.FC<DishesComponentProps> = ({
             // If user is part of a group order, directly add the item
             handleAddItemToOrder(dishId);
         } else {
-            // Otherwise, show modal to enter delivery details
-            setSelectedDishId(dishId);
-            setShowModal(true);
+            // Get the order using the uuid if it exists get the deliveryDetails
+            if (orderId) {
+                restaurantModel.getIndividualOrder(userId, orderId).then((order) => {
+                    console.log(order, orderId);
+                    if (order) {
+                        const deliveryDetails = order.deliveryDetails;
+                        if (deliveryDetails) {
+                            // If deliveryDetails are set, directly add the item to the order
+                            handleAddItemToOrder(dishId, deliveryDetails);
+                        } else {
+                            // Otherwise, show modal to enter delivery details
+                            setSelectedDishId(dishId);
+                            setShowModal(true);
+                        }
+                    } else {
+                        // Otherwise, show modal to enter delivery details
+                        setSelectedDishId(dishId);
+                        setShowModal(true);
+                    }
+                });
+            } else {
+                // If groupOrderId is null, check if deliveryDetails are already set
+                if (deliveryDetails) {
+                    // If deliveryDetails are set, directly add the item to the order
+                    handleAddItemToOrder(dishId, deliveryDetails);
+                } else {
+                    // Otherwise, show modal to enter delivery details
+                    setSelectedDishId(dishId);
+                    setShowModal(true);
+                }
+            }
         }
     };
 
     const handleSubmitDeliveryDetails = () => {
         if (deliveryLocationId && deliveryDate && userId) {
             const deliveryDetails: DeliveryDetails = {
+                id: uuidv4(),
                 deliveryLocation: deliveryLocation!,
-                deliveryTime: new Date(`${deliveryDate.toDateString()}`),
+                deliveryTime: new Date(deliveryDate),
             };
+            setDeliveryDetails(deliveryDetails);
             handleAddItemToOrder(selectedDishId!, deliveryDetails);
             setShowModal(false);
         } else {
@@ -106,12 +143,14 @@ export const DishesComponent: React.FC<DishesComponentProps> = ({
         }
     };
 
+
     return (
         <>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 justify-items-center max-w-6xl">
                 {dishes.map((dish) => (
                     <Skeleton isLoaded={!loading} key={dish.id}>
-                        <div className="drop-shadow-md cursor-pointer">
+                        <div
+                            className={`drop-shadow-md ${!userId || !restaurant || restaurant.closingHours == null ? "cursor-not-allowed" : "cursor-pointer"}`}>
                             <div className="bg-gray-800 text-white rounded-lg overflow-hidden w-72 mt-10">
                                 <div className="bg-white text-black px-6 py-4 flex items-center">
                                     <img
@@ -123,10 +162,15 @@ export const DishesComponent: React.FC<DishesComponentProps> = ({
                                 </div>
                                 <div className="px-6 py-4 flex justify-between items-center">
                                     <div className="text-sm">
-                                        <p><strong>Price:</strong> ${dish.price.toFixed(2)}</p>
-                                        <p><strong>Preparation Time:</strong> {dish.prepTime} minutes</p>
+                                        <p><strong>Price:</strong> {dish.price.toFixed(2)}€</p>
+                                        <p>
+                                            <strong>Preparation Time: </strong>
+                                            {dish.prepTime > 60 ? Math.floor(dish.prepTime / 60) + ' minutes' : dish.prepTime + ' seconds'}
+                                        </p>
                                     </div>
-                                    <Button onClick={() => handleAddToOrder(dish.id)}>
+                                    <Button
+                                        isDisabled={!userId || !restaurant || restaurant.closingHours == null}
+                                        onClick={() => handleAddToOrder(dish.id)}>
                                         <AddIcon/>
                                     </Button>
                                 </div>
@@ -155,15 +199,20 @@ export const DishesComponent: React.FC<DishesComponentProps> = ({
                             ))}
                         </Select>
                         <DatePicker label="Delivery Date"
+                                    hideTimeZone
+                                    showMonthAndYearPickers
                                     defaultValue={now(getLocalTimeZone())}
-                                    onChange={(date) => setDeliveryDate(date.toDate())}
+                                    onChange={(date) => {
+                                        setDeliveryDate(date.toDate())
+                                    }}
                         />
                     </ModalBody>
                     <ModalFooter>
                         <Button variant={"bordered"} color="danger" onClick={() => setShowModal(false)}>
                             Close
                         </Button>
-                        <Button variant={"bordered"} color={"default"} onClick={handleSubmitDeliveryDetails}>Submit</Button>
+                        <Button variant={"bordered"} color={"default"}
+                                onClick={handleSubmitDeliveryDetails}>Submit</Button>
                     </ModalFooter>
                 </ModalContent>
             </Modal>

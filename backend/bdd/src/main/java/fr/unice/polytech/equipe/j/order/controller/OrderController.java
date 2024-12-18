@@ -137,7 +137,9 @@ public class OrderController {
     @Route(value = "/individual/update", method = HttpMethod.PUT)
     public HttpResponse updateOrder(@BeanParam IndividualOrderDTO orderDTO) {
         System.out.println("Update individual order");
+        System.out.println(OrderDAO.getAllDeliveryLocations());
         IndividualOrderEntity orderEntity = IndividualOrderMapper.toEntity(orderDTO);
+        System.out.println(orderEntity.getDeliveryDetails());
         return OrderDAO.save(orderEntity);
     }
 
@@ -153,8 +155,9 @@ public class OrderController {
         IndividualOrderEntity individualOrderEntity = OrderDAO.getIndividualOrderById(id);
         if (individualOrderEntity != null) {
             IndividualOrderDTO individualOrderDTO = IndividualOrderMapper.toDTO(individualOrderEntity);
+            System.out.println(individualOrderDTO);
             return new HttpResponse(HttpCode.HTTP_200, individualOrderDTO);
         }
-        return new HttpResponse(HttpCode.HTTP_404, new ArrayList<>());
+        return new HttpResponse(HttpCode.HTTP_404, "Individual order not found");
     }
 }

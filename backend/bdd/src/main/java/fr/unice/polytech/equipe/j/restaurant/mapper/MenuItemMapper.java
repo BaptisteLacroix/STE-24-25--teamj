@@ -12,6 +12,7 @@ public class MenuItemMapper {
         menuItemDTO.setName(entity.getName());
         menuItemDTO.setPrice(entity.getPrice());
         menuItemDTO.setPrepTime(entity.getPrepTime());
+        menuItemDTO.setType(entity.getType());
         return menuItemDTO;
     }
 
@@ -22,6 +23,7 @@ public class MenuItemMapper {
         menuItemEntity.setPrice(dto.getPrice());
         menuItemEntity.setPrepTime(dto.getPrepTime());
         menuItemEntity.setMenuEntity(RestaurantDAO.getMenuByMenuItemId(dto.getId()));
+        menuItemEntity.setType(dto.getType());
         return menuItemEntity;
     }
 }
