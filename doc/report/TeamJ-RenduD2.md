@@ -1,6 +1,23 @@
-# 4 Architecture et Justification de l'Architecture
+# 1 Périmètre fonctionnel
 
-## 4.1 Organisation du code
+## 1.1 Hypothèse de travail
+
+Livraison & temps de préparation:
+- Livraison, nous n’avons pas pris en compte le temps de livraison entre le moment où la commande est prête et le moment où elle se fait livrer. Donc nous partons du principe qu’il est compris dans le temps de préparation.
+
+Système de paiement:
+- Nous avons implémenté une stratégie de paiement qui pour le moment ne fait rien a part faire un affichage. Donc pour le moment tous les paiements sont validés automatiquement
+   
+## 1.2 Points non implémentés
+
+## 1.3 Fonctionnalités: points forts, points faibles
+### 1.3.1 Points forts
+### 1.3.2 Points faibles
+
+
+# 2 Architecture et Justification de l'Architecture
+
+## 2.1 Organisation du code
 
 Le projet est organisé en modules pour une meilleure lisibilité et maintenabilité. Chaque module contient des fichiers
 pertinents pour une responsabilité claire :
@@ -24,7 +41,7 @@ Des liens vers les fichiers importants sont inclus pour guider les développeurs
 - Backend : [Lien vers le répertoire](../../backend)
 - Frontend : [Lien vers le répertoire](../../frontend/ste-24-25--teamj-frontend)
 
-## 4.2 Décomposition en services
+## 2.2 Décomposition en services
 
 La solution repose sur une architecture basée sur les microservices, avec une nette séparation des responsabilités :
 
@@ -41,7 +58,7 @@ La solution repose sur une architecture basée sur les microservices, avec une n
 
 Les services sont éventuellement décomposables en fonction des besoins futurs.
 
-## 4.3 Entités persistantes
+## 2.3 Entités persistantes
 
 Les entités persistantes de l’application incluent :
 
@@ -58,7 +75,7 @@ Les entités persistantes de l’application incluent :
 Chaque entité est modélisée sous forme d’objets et mappée dans la base de données avec des ORM (Object-Relational
 Mapping).
 
-## 4.4 Objets de communication (DTO)
+## 2.4 Objets de communication (DTO)
 
 Les DTO (Data Transfer Objects) facilitent la communication entre services. Ces objets sont localisés dans chaque
 service sous le dossier `dto` :
@@ -79,7 +96,7 @@ service sous le dossier `dto` :
 
 Ces DTO standardisent les données transmises et permettent une meilleure validation.
 
-## 4.5 APIs utilisées
+## 2.5 APIs utilisées
 
 L’ensemble des APIs est documenté en OpenAPI (fichiers `openapi.yaml`). Les fichiers pertinents sont disponibles ici :
 
@@ -88,7 +105,7 @@ L’ensemble des APIs est documenté en OpenAPI (fichiers `openapi.yaml`). Les f
 - Group Order API : [Lien vers ](../openapi/grouporderOpenApi.json)`group-order/openapi.yaml`
 - Database API : [Lien vers ](../openapi/bddOpenApi.json)`database/openapi.yaml`
 
-## 4.6 Interface utilisateur
+## 2.6 Interface utilisateur
 
 L’interface utilisateur est conçue avec :
 
@@ -134,9 +151,9 @@ Voici un exemple de l'interface utilisateur connecté, pour un Group Order:
 ### Validation de la commande groupée, Affichage du récapitulatif de la commande de groupe
 ![Validation de la commande groupée, Affichage du récapitulatif de la commande de groupe](./images/connected-group-order-before-validation-summary.png)
 
-## 4.7 Cheminement des requêtes
+## 2.7 Cheminement des requêtes
 
-### 4.7.1 Récupération des restaurants
+### 2.7.1 Récupération des restaurants
 
 1. **Frontend** : Une requête HTTP GET est initiée vers la passerelle (route `/api/restaurants/all`).
 2. **Gateway** : Transfère la requête au service `RestaurantsService`.
@@ -145,7 +162,7 @@ Voici un exemple de l'interface utilisateur connecté, pour un Group Order:
     - Retourne une liste formatée via un `RestaurantDTO`.
 4. **Frontend** : Affiche les résultats dans une vue utilisateur.
 
-### 4.7.2 Une étape de la prise de commande
+### 2.7.2 Une étape de la prise de commande
 
 1. **Frontend** : Envoie une requête POST pour créer un group order.
 2. **Gateway** : Route la requête vers `GroupOrderService`.
@@ -156,7 +173,7 @@ Voici un exemple de l'interface utilisateur connecté, pour un Group Order:
 
 Un diagramme de séquence illustre ces flux (voir [Diagramme](#diagramme-sequence)).
 
-## 4.8 Optimisations réalisées
+## 2.8 Optimisations réalisées
 
 ### Côté Backend
 
