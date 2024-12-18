@@ -7,11 +7,11 @@ pertinents pour une responsabilité claire :
 
 - **Backend** : Structure en microservices, chacun responsable d'une fonctionnalité unique.
     - Exemple :
-        - [Gateway](../backend/gateway/) : Point d'entrée pour les requêtes.
-        - [RestaurantsService](../backend/restaurant/) : Gestion des restaurants.
-        - [GroupOrderService](../backend/grouporder/) : Gestion des commandes groupées.
-        - [DatabaseService](../backend/bdd/) : Actions sur la base de données.
-        - [Flexible Rest Server](../backend/flexiblerestserver/) : Custom Framework pour les services REST.
+        - [Gateway](../../backend/gateway) : Point d'entrée pour les requêtes.
+        - [RestaurantsService](../../backend/restaurant) : Gestion des restaurants.
+        - [GroupOrderService](../../backend/grouporder) : Gestion des commandes groupées.
+        - [DatabaseService](../../backend/bdd) : Actions sur la base de données.
+        - [Flexible Rest Server](../../backend/flexiblerestserver) : Custom Framework pour les services REST.
 - **Frontend** : Application React structurée par composants avec organisation en dossiers par fonctionnalités (e.g.,
   `components`, `model`, `utils`). Les composants sont réutilisables et modulaires.
     - Exemple :
@@ -21,8 +21,8 @@ pertinents pour une responsabilité claire :
 
 Des liens vers les fichiers importants sont inclus pour guider les développeurs :
 
-- Backend : [Lien vers le répertoire](../backend/)
-- Frontend : [Lien vers le répertoire](../frontend/ste-24-25--teamj-frontend/)
+- Backend : [Lien vers le répertoire](../../backend)
+- Frontend : [Lien vers le répertoire](../../frontend/ste-24-25--teamj-frontend)
 
 ## 4.2 Décomposition en services
 
