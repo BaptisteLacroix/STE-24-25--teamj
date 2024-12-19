@@ -1,0 +1,40 @@
+@startuml
+!theme plain
+actor User
+participant "Frontend" as FE
+participant "Backend Gateway" as BG
+participant ":GatewayController" as GC
+participant "Restaurant Service" as RS
+participant ":RestaurantService" as RS2
+participant "BDD Service" as BDD
+
+User -> FE : Navigate to Home Page
+activate FE
+
+FE -> BG : GET /restaurants/all
+activate BG
+
+BG -> GC : getAllRestaurants()
+activate GC
+
+GC -> RS : GET /restaurants/all
+activate RS
+
+RS -> RS2: getAllRestaurants()
+activate RS2
+
+RS2 --> RS : List<RestaurantDTO>
+deactivate RS
+
+RS --> GC : List<RestaurantDTO>
+deactivate RS
+
+GC --> BG : List<RestaurantDTO>
+deactivate GC
+
+BG --> FE : List<Restaurants>
+deactivate BG
+
+FE --> User : Display Restaurants
+deactivate FE
+@enduml

@@ -3,17 +3,22 @@
 ## 1.1 Hypothèse de travail
 
 Livraison & temps de préparation:
-- Livraison, nous n’avons pas pris en compte le temps de livraison entre le moment où la commande est prête et le moment où elle se fait livrer. Donc nous partons du principe qu’il est compris dans le temps de préparation.
+
+- Livraison, nous n’avons pas pris en compte le temps de livraison entre le moment où la commande est prête et le moment
+  où elle se fait livrer. Donc nous partons du principe qu’il est compris dans le temps de préparation.
 
 Système de paiement:
-- Nous avons implémenté une stratégie de paiement qui pour le moment ne fait rien a part faire un affichage. Donc pour le moment tous les paiements sont validés automatiquement
-   
+
+- Nous avons implémenté une stratégie de paiement qui pour le moment ne fait rien a part faire un affichage. Donc pour
+  le moment tous les paiements sont validés automatiquement
+
 ## 1.2 Points non implémentés
 
 ## 1.3 Fonctionnalités: points forts, points faibles
-### 1.3.1 Points forts
-### 1.3.2 Points faibles
 
+### 1.3.1 Points forts
+
+### 1.3.2 Points faibles
 
 # 2 Architecture et Justification de l'Architecture
 
@@ -81,13 +86,13 @@ Les DTO (Data Transfer Objects) facilitent la communication entre services. Ces 
 service sous le dossier `dto` :
 
 - Tous les dossiers dto:
-  - [Gateway](../../backend/gateway/src/main/java/fr/unice/polytech/equipe/j/dto)
-  - [RestaurantsService](../../backend/restaurant/src/main/java/fr/unice/polytech/equipe/j/dto)
-  - [GroupOrderService](../../backend/grouporder/src/main/java/fr/unice/polytech/equipe/j/dto)
-  - [DatabaseService/Order](../../backend/bdd/src/main/java/fr/unice/polytech/equipe/j/order/dto)
-  - [DatabaseService/Restaurant](../../backend/bdd/src/main/java/fr/unice/polytech/equipe/j/restaurant/dto)
-  - [DatabaseService/DeliveryLocation](../../backend/bdd/src/main/java/fr/unice/polytech/equipe/j/deliverylocation/dto)
-  - [DatabaseService/User](../../backend/bdd/src/main/java/fr/unice/polytech/equipe/j/user/dto)
+    - [Gateway](../../backend/gateway/src/main/java/fr/unice/polytech/equipe/j/dto)
+    - [RestaurantsService](../../backend/restaurant/src/main/java/fr/unice/polytech/equipe/j/dto)
+    - [GroupOrderService](../../backend/grouporder/src/main/java/fr/unice/polytech/equipe/j/dto)
+    - [DatabaseService/Order](../../backend/bdd/src/main/java/fr/unice/polytech/equipe/j/order/dto)
+    - [DatabaseService/Restaurant](../../backend/bdd/src/main/java/fr/unice/polytech/equipe/j/restaurant/dto)
+    - [DatabaseService/DeliveryLocation](../../backend/bdd/src/main/java/fr/unice/polytech/equipe/j/deliverylocation/dto)
+    - [DatabaseService/User](../../backend/bdd/src/main/java/fr/unice/polytech/equipe/j/user/dto)
 
 - Exemple :
     - `bdd/src/main/java/fr/unice/polytech/equipe/j/restaurant/dto/RestaurantDTO.java`
@@ -121,34 +126,55 @@ Lien vers les fichiers front-end : [Frontend](../../frontend/ste-24-25--teamj-fr
 Voici un exemple de l'interface utilisateur déconnecté:
 
 ### Page d'accueil
+
 ![Page d'accueil](./images/home-page-disconnected.png)
+
 ### Filtre par items
+
 ![Filtre par items](./images/home-page-disconnected-filter.png)
+
 ### Recherche par nom
+
 ![Recherche par nom](./images/home-page-disconnected-search.png)
+
 ### Affichage du menu d'un restaurant
+
 ![Affichage du menu d'un restaurant](./images/home-page-disconnected-menu-items.png)
 
 Voici un exemple de l'interface utilisateur connecté, pour un Individual Order:
 
 ### Saisie des détails de livraison
+
 ![Saisie des détails de livraison](./images/connected-individual-order-delivery-details.png)
+
 ### Ajout d'un item au panier
+
 ![Ajout d'un item au panier](./images/connected-individual-order-cart-notification.png)
+
 ### Affichage du panier
+
 ![Affichage du panier](./images/connected-individual-order-cart-summary.png)
 
 Voici un exemple de l'interface utilisateur connecté, pour un Group Order:
 
 ### Création d'une commande groupée
+
 ![Création d'une commande groupée](./images/connected-create-group-order.png)
+
 ### Affichage du code de la commande groupée
+
 ![Affichage du code de la commande groupée](./images/connected-share-group-order-code.png)
+
 ### Rejoindre une commande groupée
+
 ![Rejoindre une commande groupée](./images/connected-join-group-order.png)
+
 ### Affichage du panier pour un utilisateur au sein d'une commande groupée
+
 ![Affichage du panier pour un utilisateur au sein d'une commande groupée](./images/connected-group-order-cart-summary.png)
+
 ### Validation de la commande groupée, Affichage du récapitulatif de la commande de groupe
+
 ![Validation de la commande groupée, Affichage du récapitulatif de la commande de groupe](./images/connected-group-order-before-validation-summary.png)
 
 ## 2.7 Cheminement des requêtes
