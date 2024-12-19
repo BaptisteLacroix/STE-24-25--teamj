@@ -20,6 +20,15 @@ import java.util.UUID;
  */
 public class RestaurantDAO {
 
+    public static List<String> getAllFoodTypes() {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            return session.createQuery("SELECT DISTINCT m.type FROM MenuItemEntity m", String.class).list();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+
     /**
      * Retrieves all restaurants from the database.
      *

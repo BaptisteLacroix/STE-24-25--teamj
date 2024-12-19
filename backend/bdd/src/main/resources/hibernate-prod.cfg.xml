@@ -8,7 +8,8 @@
         <property name="hibernate.connection.driver_class">org.hsqldb.jdbc.JDBCDriver</property>
         <property name="hibernate.connection.url">jdbc:hsqldb:file:${user.dir}/backend/bdd/src/main/resources/data/bdd.db</property>
         <property name="hibernate.dialect">org.hibernate.dialect.HSQLDialect</property>
-        <property name="hibernate.hbm2ddl.auto">update</property>
+        <property name="hibernate.hbm2ddl.auto">create-drop</property>
+        <property name="hibernate.event.merge.entity_copy_observer">allow</property>
 
         <!-- JDBC connection pool settings -->
         <property name="hibernate.connection.pool_size">10</property>
@@ -30,7 +31,7 @@
         <!-- Order entities -->
         <mapping class="fr.unice.polytech.equipe.j.order.entities.OrderEntity"/>
         <mapping class="fr.unice.polytech.equipe.j.order.entities.DeliveryDetailsEntity"/>
-        <mapping class="fr.unice.polytech.equipe.j.order.entities.DeliveryLocationEntity"/>
+        <mapping class="fr.unice.polytech.equipe.j.deliverylocation.entities.DeliveryLocationEntity"/>
         <mapping class="fr.unice.polytech.equipe.j.order.entities.GroupOrderEntity"/>
         <mapping class="fr.unice.polytech.equipe.j.order.entities.IndividualOrderEntity"/>
         <mapping class="fr.unice.polytech.equipe.j.order.entities.TransactionEntity"/>

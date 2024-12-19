@@ -23,6 +23,7 @@ import fr.unice.polytech.equipe.j.slot.Slot;
 import lombok.Setter;
 
 import java.net.http.HttpResponse;
+import java.sql.SQLOutput;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -161,16 +162,19 @@ public class Restaurant implements IRestaurant {
             HttpResponse<String> response = request(
                     RequestUtil.DATABASE_RESTAURANT_SERVICE_URI,
                     "/update",
+                    null,
                     HttpMethod.PUT,
                     mapper.writeValueAsString(DTOMapper.toRestaurantDTO(this))
             );
             if (response.statusCode() != HttpCode.HTTP_201.getCode() && response.statusCode() != HttpCode.HTTP_200.getCode()) {
                 return response;
             }
+
             if (orderDTO instanceof IndividualOrderDTO) {
                 response = request(
                         RequestUtil.DATABASE_ORDER_SERVICE_URI,
                         "/individual/update",
+                        null,
                         HttpMethod.PUT,
                         mapper.writeValueAsString(orderDTO)
                 );
@@ -178,6 +182,7 @@ public class Restaurant implements IRestaurant {
                 response = request(
                         RequestUtil.DATABASE_ORDER_SERVICE_URI,
                         "/update",
+                        null,
                         HttpMethod.PUT,
                         mapper.writeValueAsString(orderDTO)
                 );
@@ -189,6 +194,7 @@ public class Restaurant implements IRestaurant {
                 request(
                         RequestUtil.DATABASE_RESTAURANT_SERVICE_URI,
                         "/update",
+                        null,
                         HttpMethod.PUT,
                         mapper.writeValueAsString(DTOMapper.toRestaurantDTO(this))
                 );
@@ -235,6 +241,7 @@ public class Restaurant implements IRestaurant {
             HttpResponse<String> restaurantUpdateResponse = request(
                     RequestUtil.DATABASE_RESTAURANT_SERVICE_URI,
                     "/update",
+                    null,
                     HttpMethod.PUT,
                     mapper.writeValueAsString(DTOMapper.toRestaurantDTO(this))
             );
@@ -250,6 +257,7 @@ public class Restaurant implements IRestaurant {
                 orderUpdateResponse = request(
                         RequestUtil.DATABASE_ORDER_SERVICE_URI,
                         "/individual/update",
+                        null,
                         HttpMethod.PUT,
                         mapper.writeValueAsString(orderDTO)
                 );
@@ -257,6 +265,7 @@ public class Restaurant implements IRestaurant {
                 orderUpdateResponse = request(
                         RequestUtil.DATABASE_ORDER_SERVICE_URI,
                         "/update",
+                        null,
                         HttpMethod.PUT,
                         mapper.writeValueAsString(orderDTO)
                 );
@@ -355,7 +364,9 @@ public class Restaurant implements IRestaurant {
             // Check if the slot has enough capacity to prepare the item, and the number of orders is less than the maximum (EX2)
             boolean isSlotCapacityAvailable = slot.getAvailableCapacity() >= menuItem.getPrepTime() && pendingOrders.get(slot).size() < this.getMaxOrdersForSlot(slot);
             // Check that the slot is between the current time and the delivery time
-            if (isSlotBeforeDeliveryTime && isSlotCapacityAvailable) {
+            //boolean isSlotBetweenNowAndDeliveryTime = slot.getOpeningDate().isAfter(now) && slot.getOpeningDate().isBefore(deliveryTime);
+            // FIXME: Found why pipeline not OK, because of the .now()
+            if (isSlotBeforeDeliveryTime && isSlotCapacityAvailable /*&& isSlotBetweenNowAndDeliveryTime*/) {
                 LocalDateTime preparationEndTime = now.plusSeconds(menuItem.getPrepTime());
                 if (preparationEndTime.isBefore(deliveryTime)) {
                     return true;
@@ -392,6 +403,7 @@ public class Restaurant implements IRestaurant {
                 return request(
                         RequestUtil.DATABASE_ORDER_SERVICE_URI,
                         "/individual/update",
+                        null,
                         HttpMethod.PUT,
                         mapper.writeValueAsString(individualOrderDTO)
                 );
@@ -399,6 +411,7 @@ public class Restaurant implements IRestaurant {
             return request(
                     RequestUtil.DATABASE_ORDER_SERVICE_URI,
                     "/update",
+                    null,
                     HttpMethod.PUT,
                     mapper.writeValueAsString(orderDTO)
             );
@@ -532,6 +545,7 @@ public class Restaurant implements IRestaurant {
         HttpResponse<String> response = request(
                 RequestUtil.DATABASE_RESTAURANT_SERVICE_URI,
                 "/" + getRestaurantUUID() + "/history",
+                null,
                 HttpMethod.GET,
                 null
         );
@@ -585,6 +599,7 @@ public class Restaurant implements IRestaurant {
             return request(
                     RequestUtil.DATABASE_RESTAURANT_SERVICE_URI,
                     "/update",
+                    null,
                     HttpMethod.PUT,
                     mapper.writeValueAsString(restaurantDTO)
             );
@@ -611,6 +626,7 @@ public class Restaurant implements IRestaurant {
             return request(
                     RequestUtil.DATABASE_RESTAURANT_SERVICE_URI,
                     "/update",
+                    null,
                     HttpMethod.PUT,
                     mapper.writeValueAsString(restaurantDTO)
             );

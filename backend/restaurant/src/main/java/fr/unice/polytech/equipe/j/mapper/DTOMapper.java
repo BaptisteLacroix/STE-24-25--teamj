@@ -62,6 +62,7 @@ public class DTOMapper {
         java.net.http.HttpResponse<String> response = request(
                 RequestUtil.DATABASE_ORDER_SERVICE_URI,
                 "/all",
+                null,
                 HttpMethod.GET,
                 null);
         ObjectMapper objectMapper = JacksonConfig.configureObjectMapper();
@@ -72,6 +73,7 @@ public class DTOMapper {
         response = request(
                 RequestUtil.DATABASE_ORDER_SERVICE_URI,
                 "/individual/all",
+                null,
                 HttpMethod.GET,
                 null);
         List<IndividualOrderDTO> individualOrderDTOList = objectMapper.readValue(response.body(), new TypeReference<List<IndividualOrderDTO>>() {
@@ -128,7 +130,7 @@ public class DTOMapper {
     }
 
     public static MenuItem toMenuItem(MenuItemDTO item) {
-        return new MenuItem(item.getId(), item.getName(), item.getPrepTime(), item.getPrice());
+        return new MenuItem(item.getId(), item.getName(), item.getPrepTime(), item.getPrice(), item.getType());
     }
 
     public static MenuItemDTO toMenuItemDTO(MenuItem item) {
@@ -137,6 +139,7 @@ public class DTOMapper {
         dto.setName(item.getName());
         dto.setPrepTime(item.getPrepTime());
         dto.setPrice(item.getPrice());
+        dto.setType(item.getType());
         return dto;
     }
 }

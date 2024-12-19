@@ -31,7 +31,8 @@ public class RestaurantMapper {
                 item.getId(),
                 item.getName(),
                 item.getPrepTime(),
-                item.getPrice()
+                item.getPrice(),
+                item.getType()
         )).toList());
         // Initialize pendingOrders as a LinkedHashMap to preserve the order of slots
         Map<UUID, Set<UUID>> pendingOrders = new LinkedHashMap<>();
@@ -75,6 +76,7 @@ public class RestaurantMapper {
                         menuItemEntity.setPrepTime(item.getPrepTime());
                         menuItemEntity.setPrice(item.getPrice());
                         menuItemEntity.setMenuEntity(menuEntity);
+                        menuItemEntity.setType(item.getType());
                         return menuItemEntity;
                     }).toList());
         } else {

@@ -1,9 +1,9 @@
 export type Restaurant = {
     id: string
     name: string
-    dishes: Dish[]
-    openingHours: Date
-    closingHours: Date
+    dishes: Dish[],
+    openingHours: Date | null
+    closingHours: Date | null
 }
 
 export type Order = {
@@ -23,17 +23,19 @@ export type Dish = {
     name: string
     prepTime: number
     price: number
+    type: string
 }
 
 export type GroupOrder = {
     id: string,
     orders: Order[],
-    users: string[],
+    users: CampusUser[],
     deliveryDetails: DeliveryDetails,
     status: OrderStatus
 }
 
 export type DeliveryDetails = {
+    id: string,
     deliveryLocation: DeliveryLocation,
     deliveryTime: Date,
 }
@@ -42,6 +44,29 @@ export type DeliveryLocation = {
     id: string,
     locationName: string,
     address: string,
+}
+
+export type CampusUser = {
+    id: string,
+    name: string,
+    balance: number,
+    defaultPaymentMethod: PaymentMethod,
+    ordersHistory: Order[],
+    transactions: Transaction[]
+}
+
+export type Transaction = {
+    id: string,
+    user: CampusUser,
+    order: Order,
+    amount: number,
+    timestamp: Date,
+}
+
+export enum PaymentMethod {
+    CREDIT_CARD,
+    PAYPAL,
+    PAYLIB,
 }
 
 export enum OrderStatus {

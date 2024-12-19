@@ -2,13 +2,13 @@ package fr.unice.polytech.equipe.j.restaurant.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.unice.polytech.equipe.j.HttpMethod;
+import fr.unice.polytech.equipe.j.JacksonConfig;
 import fr.unice.polytech.equipe.j.annotations.BeanParam;
 import fr.unice.polytech.equipe.j.annotations.Controller;
 import fr.unice.polytech.equipe.j.annotations.PathParam;
 import fr.unice.polytech.equipe.j.annotations.Route;
 import fr.unice.polytech.equipe.j.httpresponse.HttpCode;
 import fr.unice.polytech.equipe.j.httpresponse.HttpResponse;
-import fr.unice.polytech.equipe.j.JacksonConfig;
 import fr.unice.polytech.equipe.j.restaurant.dao.RestaurantDAO;
 import fr.unice.polytech.equipe.j.restaurant.dto.MenuItemDTO;
 import fr.unice.polytech.equipe.j.restaurant.dto.RestaurantDTO;
@@ -25,6 +25,23 @@ import java.util.UUID;
 @Controller("/api/database/restaurants")
 public class RestaurantController {
     private final ObjectMapper objectMapper = JacksonConfig.configureObjectMapper();
+
+    /**
+     * Retrieves all food types from the database.
+     *
+     * @return an HttpResponse containing a list of all food types in the system.
+     */
+    @Route(value = "/types", method = HttpMethod.GET)
+    public HttpResponse getAllFoodTypes() {
+        System.out.println("Get all food types");
+        List<String> foodTypes = RestaurantDAO.getAllFoodTypes();
+        try {
+            return new HttpResponse(HttpCode.HTTP_200, objectMapper.writeValueAsString(foodTypes));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new HttpResponse(HttpCode.HTTP_500, "Internal server error");
+        }
+    }
 
     /**
      * Retrieves all restaurants from the database.
@@ -107,7 +124,7 @@ public class RestaurantController {
      * Retrieves a menu item from a restaurant by its UUID and the UUID of the menu item.
      *
      * @param restaurantId the UUID of the restaurant.
-     * @param menuItemId the UUID of the menu item to retrieve.
+     * @param menuItemId   the UUID of the menu item to retrieve.
      * @return an HttpResponse containing the MenuItemDTO of the requested menu item or an error message if not found.
      */
     @Route(value = "/{restaurantId}/menuItem/{menuItemId}", method = HttpMethod.GET)

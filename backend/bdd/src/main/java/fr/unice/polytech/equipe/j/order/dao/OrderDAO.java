@@ -3,6 +3,7 @@ package fr.unice.polytech.equipe.j.order.dao;
 import fr.unice.polytech.equipe.j.HibernateUtil;
 import fr.unice.polytech.equipe.j.httpresponse.HttpCode;
 import fr.unice.polytech.equipe.j.httpresponse.HttpResponse;
+import fr.unice.polytech.equipe.j.order.entities.DeliveryDetailsEntity;
 import fr.unice.polytech.equipe.j.order.entities.IndividualOrderEntity;
 import fr.unice.polytech.equipe.j.order.entities.OrderEntity;
 import org.hibernate.Session;
@@ -130,6 +131,18 @@ public class OrderDAO {
         } catch (Exception e) {
             System.out.println("Error while saving individual order: " + e.getMessage());
             return new HttpResponse(HttpCode.HTTP_500, "Error while saving individual order");
+        }
+    }
+
+    /**
+     * Get all deliveryLocations saved in database
+     */
+    public static List<DeliveryDetailsEntity> getAllDeliveryLocations() {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            return session.createQuery("FROM DeliveryDetailsEntity", DeliveryDetailsEntity.class).list();
+        } catch (Exception e) {
+            System.out.println("Error while getting all delivery locations: " + e.getMessage());
+            return Collections.emptyList();
         }
     }
 }

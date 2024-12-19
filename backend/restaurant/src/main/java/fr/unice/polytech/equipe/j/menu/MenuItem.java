@@ -12,12 +12,14 @@ public class MenuItem {
     private String name;
     private int prepTime;
     private double price;
+    private String type;
 
-    public MenuItem(UUID uuid, String name, int prepTime, double price) {
+    public MenuItem(UUID uuid, String name, int prepTime, double price, String type) {
         this.uuid = uuid;
         this.name = name;
         this.prepTime = prepTime;
         this.price = price;
+        this.type = type;
     }
 
     public MenuItem() {

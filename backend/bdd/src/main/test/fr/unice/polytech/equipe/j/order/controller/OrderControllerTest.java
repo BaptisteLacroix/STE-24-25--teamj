@@ -4,15 +4,15 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.unice.polytech.equipe.j.FlexibleRestServer;
 import fr.unice.polytech.equipe.j.JacksonConfig;
-import fr.unice.polytech.equipe.j.order.dao.DeliveryLocationDAO;
+import fr.unice.polytech.equipe.j.deliverylocation.dao.DeliveryLocationDAO;
 import fr.unice.polytech.equipe.j.order.dao.OrderDAO;
 import fr.unice.polytech.equipe.j.order.dto.DeliveryDetailsDTO;
-import fr.unice.polytech.equipe.j.order.dto.DeliveryLocationDTO;
+import fr.unice.polytech.equipe.j.deliverylocation.dto.DeliveryLocationDTO;
 import fr.unice.polytech.equipe.j.order.dto.IndividualOrderDTO;
 import fr.unice.polytech.equipe.j.order.dto.OrderDTO;
 import fr.unice.polytech.equipe.j.order.dto.OrderStatus;
 import fr.unice.polytech.equipe.j.order.dto.PaymentMethod;
-import fr.unice.polytech.equipe.j.order.mapper.DeliveryLocationMapper;
+import fr.unice.polytech.equipe.j.deliverylocation.mapper.DeliveryLocationMapper;
 import fr.unice.polytech.equipe.j.order.mapper.OrderMapper;
 import fr.unice.polytech.equipe.j.restaurant.dao.RestaurantDAO;
 import fr.unice.polytech.equipe.j.restaurant.dto.MenuDTO;
@@ -32,8 +32,6 @@ import java.net.http.HttpRequest;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalUnit;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.UUID;
@@ -72,9 +70,9 @@ class OrderControllerTest {
 
     private RestaurantDTO getRestaurant() {
         List<MenuItemDTO> itemsRestaurant = List.of(
-                new MenuItemDTO(UUID.randomUUID(), "TEST", 0, 12.50),
-                new MenuItemDTO(UUID.randomUUID(), "TEST", 1, 25.00),
-                new MenuItemDTO(UUID.randomUUID(), "TEST", 2, 8.00)
+                new MenuItemDTO(UUID.randomUUID(), "TEST", 0, 12.50, "Appetizer"),
+                new MenuItemDTO(UUID.randomUUID(), "TEST", 1, 25.00, "Main Course"),
+                new MenuItemDTO(UUID.randomUUID(), "TEST", 2, 8.00, "Dessert")
         );
         MenuDTO menuDTO = new MenuDTO();
         menuDTO.setUuid(UUID.randomUUID());

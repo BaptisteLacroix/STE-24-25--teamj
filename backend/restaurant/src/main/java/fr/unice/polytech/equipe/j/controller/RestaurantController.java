@@ -12,9 +12,12 @@ import fr.unice.polytech.equipe.j.annotations.Controller;
 import fr.unice.polytech.equipe.j.annotations.PathParam;
 import fr.unice.polytech.equipe.j.annotations.QueryParam;
 import fr.unice.polytech.equipe.j.annotations.Route;
+import fr.unice.polytech.equipe.j.dto.CampusUserDTO;
+import fr.unice.polytech.equipe.j.dto.GroupOrderDTO;
 import fr.unice.polytech.equipe.j.dto.IndividualOrderDTO;
 import fr.unice.polytech.equipe.j.dto.MenuItemDTO;
 import fr.unice.polytech.equipe.j.dto.OrderDTO;
+import fr.unice.polytech.equipe.j.dto.OrderStatus;
 import fr.unice.polytech.equipe.j.dto.RestaurantDTO;
 import fr.unice.polytech.equipe.j.httpresponse.HttpCode;
 import fr.unice.polytech.equipe.j.httpresponse.HttpResponse;
@@ -38,11 +41,41 @@ import static fr.unice.polytech.equipe.j.RequestUtil.request;
 
 @Controller("/api/restaurants")
 public class RestaurantController {
+    private final ObjectMapper objectMapper = JacksonConfig.configureObjectMapper();
+
+    @Route(value = "/types", method = HttpMethod.GET)
+    public HttpResponse getAllFoodTypes() {
+        try {
+            java.net.http.HttpResponse<String> response = request(RequestUtil.DATABASE_RESTAURANT_SERVICE_URI, "/types", null, HttpMethod.GET, null);
+            return createHttpResponse(HttpCode.HTTP_200, response.body());
+        } catch (Exception e) {
+            return createHttpResponse(HttpCode.HTTP_500, "Internal server error: " + e.getMessage());
+        }
+    }
+
+    @Route(value = "/name/{name}", method = HttpMethod.GET)
+    public HttpResponse searchByName(@PathParam("name") String name) {
+        try {
+            List<IRestaurant> restaurants = fetchRestaurantsFromDatabase();
+            // replace the + in the url by an empty space
+            name = name.replace("+", " ");
+            List<IRestaurant> matchingRestaurants = RestaurantServiceManager.getInstance()
+                    .searchByName(restaurants, name);
+            if (matchingRestaurants.isEmpty()) {
+                System.out.println("[RestaurantController] No restaurants found with the given name");
+                return createHttpResponse(HttpCode.HTTP_404, "No restaurants found with the given name");
+            } else {
+                return createHttpResponse(HttpCode.HTTP_200, convertRestaurantsToJson(matchingRestaurants));
+            }
+        } catch (Exception e) {
+            return createHttpResponse(HttpCode.HTTP_500, "Internal server error: " + e.getMessage());
+        }
+    }
 
     @Route(value = "/all", method = HttpMethod.GET)
     public HttpResponse getAllRestaurants() {
         try {
-            java.net.http.HttpResponse<String> response = request(RequestUtil.DATABASE_RESTAURANT_SERVICE_URI, "/all", HttpMethod.GET, null);
+            java.net.http.HttpResponse<String> response = request(RequestUtil.DATABASE_RESTAURANT_SERVICE_URI, "/all", null, HttpMethod.GET, null);
             return createHttpResponse(HttpCode.HTTP_200, response.body());
         } catch (Exception e) {
             return createHttpResponse(HttpCode.HTTP_500, "Internal server error: " + e.getMessage());
@@ -52,7 +85,7 @@ public class RestaurantController {
     @Route(value = "/{restaurantId}", method = HttpMethod.GET)
     public HttpResponse getRestaurant(@PathParam("restaurantId") UUID restaurantId) {
         try {
-            java.net.http.HttpResponse<String> response = request(RequestUtil.DATABASE_RESTAURANT_SERVICE_URI, "/" + restaurantId, HttpMethod.GET, null);
+            java.net.http.HttpResponse<String> response = request(RequestUtil.DATABASE_RESTAURANT_SERVICE_URI, "/" + restaurantId, null, HttpMethod.GET, null);
             return createHttpResponse(HttpCode.HTTP_200, response.body());
         } catch (Exception e) {
             return createHttpResponse(HttpCode.HTTP_500, "Internal server error: " + e.getMessage());
@@ -65,17 +98,25 @@ public class RestaurantController {
             // Fetch the list of restaurants from the database
             List<IRestaurant> restaurants = fetchRestaurantsFromDatabase();
 
+            // transform the + in the url to a space
+            foodType = foodType.replace("+", " ");
+
             // Use the searchByTypeOfFood method from RestaurantServiceManager to filter restaurants by food type
             List<IRestaurant> matchingRestaurants = RestaurantServiceManager.getInstance()
                     .searchByTypeOfFood(restaurants, foodType);
 
+            List<RestaurantDTO> matchingRestaurantsDTO = matchingRestaurants.stream()
+                    .map(DTOMapper::toRestaurantDTO)
+                    .toList();
+
             // Return 404 if no matching restaurants are found
             if (matchingRestaurants.isEmpty()) {
+                System.out.println("[RestaurantController] No restaurants found with the given food type");
                 return createHttpResponse(HttpCode.HTTP_404, "No restaurants found with the given food type");
             }
 
             // Return 200 with the list of matching restaurants in JSON format
-            return createHttpResponse(HttpCode.HTTP_200, convertRestaurantsToJson(matchingRestaurants));
+            return createHttpResponse(HttpCode.HTTP_200, objectMapper.writeValueAsString(matchingRestaurantsDTO));
 
         } catch (Exception e) {
             // Return 500 in case of any errors
@@ -95,6 +136,7 @@ public class RestaurantController {
         java.net.http.HttpResponse<String> response = request(
                 RequestUtil.DATABASE_RESTAURANT_SERVICE_URI,
                 "/all",
+                null,
                 HttpMethod.GET,
                 null
         );
@@ -136,6 +178,7 @@ public class RestaurantController {
             java.net.http.HttpResponse<String> response = request(
                     RequestUtil.DATABASE_RESTAURANT_SERVICE_URI,
                     "/all",
+                    null,
                     HttpMethod.GET,
                     null
             );
@@ -169,10 +212,12 @@ public class RestaurantController {
             @QueryParam("deliveryTime") String deliveryTime) {
 
         try {
+            if (deliveryTime.equals("null")) deliveryTime = null;
             // Fetch restaurant, order, and menu item details
             java.net.http.HttpResponse<String> menuItemResponse = request(
                     RequestUtil.DATABASE_RESTAURANT_SERVICE_URI,
                     "/" + restaurantId + "/menuItem/" + menuItemId,
+                    null,
                     HttpMethod.GET,
                     null);
             if (menuItemResponse == null || menuItemResponse.statusCode() != 200) {
@@ -182,6 +227,7 @@ public class RestaurantController {
             IRestaurant restaurantProxy = createRestaurantProxy(restaurantId);
             OrderDTO orderDTO = fetchOrderByIdOrIndividual(orderId);
             if (orderDTO == null || restaurantProxy == null) {
+                System.out.println("[AddItemToOrder] Order not found");
                 return createHttpResponse(HttpCode.HTTP_404, orderDTO == null ? "Order not found" : "Restaurant not found");
             }
             // Map responses to DTOs
@@ -193,9 +239,10 @@ public class RestaurantController {
             if (deliveryTime != null) deliveryDateTime = LocalDateTime.parse(deliveryTime);
             java.net.http.HttpResponse<String> response = restaurantProxy.addItemToOrder(orderDTO, DTOMapper.toMenuItem(menuItem), deliveryDateTime);
             if (response.statusCode() != 201 && response.statusCode() != 200) {
+                System.out.println("[AddItemToOrder] Error while adding item to order: " + response.body());
                 return createHttpResponse(HttpCode.HTTP_400, response.body());
             }
-            return createHttpResponse(HttpCode.HTTP_200, "Item added to order successfully");
+            return createHttpResponse(HttpCode.HTTP_201, orderDTO.getId().toString());
         } catch (Exception e) {
             e.printStackTrace();
             return createHttpResponse(HttpCode.HTTP_500, "Internal server error: " + e.getMessage());
@@ -213,6 +260,7 @@ public class RestaurantController {
             IRestaurant restaurantProxy = createRestaurantProxy(restaurantId);
 
             if (orderDTO == null || restaurantProxy == null) {
+                System.out.println("[CancelOrder] Order not found");
                 String errorMessage = orderDTO == null ? "Order not found" : "Restaurant not found";
                 return createHttpResponse(HttpCode.HTTP_400, errorMessage);
             }
@@ -236,6 +284,7 @@ public class RestaurantController {
             LocalDateTime closingHourDateTime = LocalDateTime.parse(closingHour);
             IRestaurant restaurantProxy = createRestaurantProxy(restaurantId);
             if (restaurantProxy == null) {
+                System.out.println("[ChangeHours] Restaurant not found");
                 return createHttpResponse(HttpCode.HTTP_400, "Restaurant not found");
             }
             java.net.http.HttpResponse<String> response = restaurantProxy.changeHours(managerId, openingHourDateTime, closingHourDateTime);
@@ -254,6 +303,7 @@ public class RestaurantController {
         try {
             IRestaurant restaurantProxy = createRestaurantProxy(restaurantId);
             if (restaurantProxy == null) {
+                System.out.println("[ChangeNumberOfEmployees] Restaurant not found");
                 return createHttpResponse(HttpCode.HTTP_400, "Restaurant not found");
             }
             java.net.http.HttpResponse<String> response = restaurantProxy.changeNumberOfEmployees(managerId, slotId, numberOfEmployees);
@@ -268,6 +318,7 @@ public class RestaurantController {
         try {
             IRestaurant restaurantProxy = createRestaurantProxy(restaurantId);
             if (restaurantProxy == null) {
+                System.out.println("[GetMenu] Restaurant not found");
                 return createHttpResponse(HttpCode.HTTP_400, "Restaurant not found");
             }
             Menu menu = restaurantProxy.getMenu();
@@ -290,6 +341,7 @@ public class RestaurantController {
             OrderDTO orderDTO = fetchOrderByIdOrIndividual(orderId);
             IRestaurant restaurantProxy = createRestaurantProxy(restaurantId);
             if (orderDTO == null || restaurantProxy == null) {
+                System.out.println("[GetTotalPrice] Order not found");
                 return createHttpResponse(HttpCode.HTTP_400, orderDTO == null ? "Order not found" : "Restaurant not found");
             }
             double totalPrice = restaurantProxy.getTotalPrice(orderDTO);
@@ -304,6 +356,7 @@ public class RestaurantController {
         try {
             IRestaurant restaurantProxy = createRestaurantProxy(restaurantId);
             if (restaurantProxy == null) {
+                System.out.println("[IsSlotCapacityAvailable] Restaurant not found");
                 return createHttpResponse(HttpCode.HTTP_400, "Restaurant not found");
             }
             boolean isAvailable = restaurantProxy.isSlotCapacityAvailable();
@@ -322,13 +375,60 @@ public class RestaurantController {
             OrderDTO orderDTO = fetchOrderByIdOrIndividual(orderId);
             IRestaurant restaurantProxy = createRestaurantProxy(restaurantId);
             if (orderDTO == null || restaurantProxy == null) {
+                System.out.println("[OnOrderPaid] Order not found");
                 return createHttpResponse(HttpCode.HTTP_400, orderDTO == null ? "Order not found" : "Restaurant not found");
             }
-            java.net.http.HttpResponse<String> response = restaurantProxy.onOrderPaid(orderDTO);
-            if (response.statusCode() == 200 || response.statusCode() == 201) {
-                return createHttpResponse(HttpCode.HTTP_200, "Order paid successfully");
+
+            // Get the user who paid the order, add the order to his history
+            java.net.http.HttpResponse<String> response = request(
+                    RequestUtil.DATABASE_CAMPUS_USER_SERVICE_URI,
+                    "/" + orderDTO.getUserId(),
+                    null,
+                    HttpMethod.GET,
+                    null
+            );
+            if (response.statusCode() != 200) {
+                System.out.println("[OnOrderPaid] User not found");
+                return createHttpResponse(HttpCode.HTTP_400, "User not found");
             }
-            return createHttpResponse(HttpCode.fromCode(response.statusCode()), response.body());
+            CampusUserDTO user = objectMapper.readValue(response.body(), CampusUserDTO.class);
+            user.getOrdersHistory().add(orderDTO);
+
+            // Check that if the Order is not an instance of IndividualOrder and the groupOrder is already validated
+            if (!(orderDTO instanceof IndividualOrderDTO) && restaurantProxy.isOrderValid(orderDTO)) {
+                // Get the GroupOrder corresponding to the Order
+                java.net.http.HttpResponse<String> groupOrderResponse = request(
+                        RequestUtil.DATABASE_GROUPORDER_SERVICE_URI,
+                        "/order/" + orderId,
+                        null,
+                        HttpMethod.GET,
+                        null);
+                GroupOrderDTO groupOrderDTO = objectMapper.readValue(groupOrderResponse.body(), GroupOrderDTO.class);
+                // Check if the GroupOrder is validated
+                if (!groupOrderDTO.getStatus().equals(OrderStatus.PENDING.name())) {
+                    System.out.println("[OnOrderPaid] GroupOrder already validated");
+                    return createHttpResponse(HttpCode.HTTP_400, "GroupOrder already validated");
+                }
+            }
+            response = restaurantProxy.onOrderPaid(orderDTO);
+            if (response.statusCode() != 200 || response.statusCode() != 201) {
+                System.out.println("[OnOrderPaid] Error while processing order: " + response.body());
+                return createHttpResponse(HttpCode.fromCode(response.statusCode()), response.body());
+            }
+
+            // Save the user
+            response = request(
+                    RequestUtil.DATABASE_CAMPUS_USER_SERVICE_URI,
+                    "/update",
+                    null,
+                    HttpMethod.PUT,
+                    objectMapper.writeValueAsString(user)
+            );
+            if (response.statusCode() != 200 || response.statusCode() != 201) {
+                System.out.println("[OnOrderPaid] Error while saving user: " + response.body());
+                return createHttpResponse(HttpCode.HTTP_400, response.body());
+            }
+            return createHttpResponse(HttpCode.HTTP_200, orderDTO.getId().toString());
         } catch (Exception e) {
             return createHttpResponse(HttpCode.HTTP_500, "Internal server error: " + e.getMessage());
         }
@@ -343,6 +443,7 @@ public class RestaurantController {
         try {
             IRestaurant restaurantProxy = createRestaurantProxy(restaurantId);
             if (restaurantProxy == null) {
+                System.out.println("[SetOrderPriceStrategy] Restaurant not found");
                 return createHttpResponse(HttpCode.HTTP_400, "Restaurant not found");
             }
             restaurantProxy.setOrderPriceStrategy(orderPriceStrategy);
@@ -364,6 +465,7 @@ public class RestaurantController {
             // Fetch restaurant proxy
             IRestaurant restaurantProxy = createRestaurantProxy(restaurantId);
             if (restaurantProxy == null) {
+                System.out.println("[CanPrepareItemForDeliveryTime] Restaurant not found");
                 return createHttpResponse(HttpCode.HTTP_400, "Restaurant not found");
             }
 
@@ -392,6 +494,7 @@ public class RestaurantController {
             java.net.http.HttpResponse<String> restaurantResponse = request(
                     RequestUtil.DATABASE_RESTAURANT_SERVICE_URI,
                     "/" + restaurantId,
+                    null,
                     HttpMethod.GET,
                     null);
             // Parse response
@@ -411,6 +514,7 @@ public class RestaurantController {
             java.net.http.HttpResponse<String> orderResponse = request(
                     RequestUtil.DATABASE_ORDER_SERVICE_URI,
                     "/" + orderId,
+                    null,
                     HttpMethod.GET,
                     null);
 
@@ -423,6 +527,7 @@ public class RestaurantController {
                 java.net.http.HttpResponse<String> individualOrderResponse = request(
                         RequestUtil.DATABASE_ORDER_SERVICE_URI,
                         "/individual/" + orderId,
+                        null,
                         HttpMethod.GET,
                         null);
 
