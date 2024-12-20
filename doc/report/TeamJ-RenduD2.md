@@ -238,7 +238,7 @@ Pour garantir une organisation efficace et structurée, nous avons adopté plusi
         - `dev` : branche de développement intégrant les fonctionnalités validées.
         - Branches spécifiques pour chaque **feature**, nommées de manière explicite, par exemple :
           `feature/<numero-issue>-<nom_de_la_feature>`.
-    
+
 ![Branching Model](./images/gitflow.png)
 
 3. **Utilisation d’un tableau Kanban**
@@ -392,3 +392,13 @@ et le découpage des tâches. La communication et la réactivité face aux impr�
   lacunes sur certains aspects du projet.
 
 ---
+
+## 5 Répartition des points
+
+| Répartition des points | Tom | Antoine | Baptiste | Abderrahmen | Total |
+|------------------------|-----|---------|----------|-------------|-------|
+| **Tom**                |     |         |          |             |       |
+| **Antoine**            | 30  | 20      | 35       | 15          | 100   |
+| **Baptiste**           | 30  | 20      | 35       | 15          | 100   |
+| **Abderrahmen**        | 25  | 23      | 30       | 22          | 100   |
+| **TOTAL :**            |     |         |          |             | 400   |
