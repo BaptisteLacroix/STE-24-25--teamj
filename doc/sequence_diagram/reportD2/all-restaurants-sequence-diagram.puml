@@ -5,8 +5,10 @@ participant "Frontend" as FE
 participant "Backend Gateway" as BG
 participant ":GatewayController" as GC
 participant "Restaurant Service" as RS
-participant ":RestaurantService" as RS2
+participant ":RestaurantController" as RS2
 participant "BDD Service" as BDD
+participant ":RestaurantController" as BDD2
+participant ":RestaurantDAO" as RDAO
 
 User -> FE : Navigate to Home Page
 activate FE
@@ -22,6 +24,24 @@ activate RS
 
 RS -> RS2: getAllRestaurants()
 activate RS2
+
+RS2 -> BDD : GET /database/restaurants/all
+activate BDD
+
+BDD -> BDD2 : getAllRestaurants()
+activate BDD2
+
+BDD2 -> RDAO : getAllRestaurants()
+activate RDAO
+
+RDAO --> BDD2 : List<Restaurant>
+deactivate RDAO
+
+BDD2 --> BDD : List<RestaurantDTO>
+deactivate BDD2
+
+BDD --> RS2 : List<RestaurantDTO>
+deactivate BDD
 
 RS2 --> RS : List<RestaurantDTO>
 deactivate RS
