@@ -14,7 +14,6 @@
         <module>backend/flexiblerestserver</module>
         <module>backend/restaurant</module>
         <module>backend/grouporder</module>
-        <module>backend/transaction</module>
     </modules>
 
     <repositories>
