@@ -90,7 +90,7 @@ else User found
     activate GC
     GC -> GC: processOrder(userId, orderId, restaurantId, dishId, deliveryTime, groupOrderId(), deliveryDetails())
 
-    alt GroupOrderId is not null CHECK GROUP ORDER EXIST AND USER INSIDE
+    alt GroupOrderId is not null
         GC -> GC: handleGroupOrder(userId, orderId, restaurantId, dishId, deliveryTime, statusCodeOrder, statusCodeIndividual, groupOrderId)
 
         alt Order not exist
@@ -184,9 +184,8 @@ else User found
             FE -> User: Display error message
             deactivate FE
         end
-        RC -> RC: fetchOrderByIdOrIndividual(orderId)
-        activate RC
         RC -> BDD: GET /orderId
+        activate RC
         activate BDD
         BDD -> BDDOC: getOrderById(orderId)
         activate BDDOC
@@ -199,37 +198,23 @@ else User found
         BDD -> RC: HttpResponse
         deactivate BDD
         alt HttpResponse is not 200
-            RC -> BDD: GET /individual/{orderId}
+            RC -> RS: HttpResponse
             deactivate RC
-            activate BDD
-            BDD -> BDDOC: getIndividualOrderById(orderId)
-            activate BDDOC
-            BDDOC -> ODAO: getIndividualOrderById(orderId)
-            activate ODAO
-            ODAO -> BDDOC: HttpResponse
-            deactivate ODAO
-            BDDOC -> BDD: HttpResponse
-            deactivate BDDOC
-            BDD -> RC: HttpResponse
-            deactivate BDD
-            alt HttpResponse is not 200
-                RC -> RS: HttpResponse
-                deactivate RC
-                activate RS
-                RS -> GC: HttpResponse
-                deactivate RS
-                activate GC
-                GC -> BG: HttpResponse
-                deactivate GC
-                activate BG
-                BG -> FE: HttpResponse
-                deactivate BG
-                activate FE
-                FE -> User: Display error message
-                deactivate FE
-            end
+            activate RS
+            RS -> GC: HttpResponse
+            deactivate RS
+            activate GC
+            GC -> BG: HttpResponse
+            deactivate GC
+            activate BG
+            BG -> FE: HttpResponse
+            deactivate BG
+            activate FE
+            FE -> User: Display error message
+            deactivate FE
         end
         RC -> RP: addItemToOrder(orderId, menuItemId, deliveryTime)
+        activate RC
         activate RP
         RP -> R: canAddItemToOrder(orderDTO, menuItem, deliveryTime)
         activate R
@@ -254,6 +239,7 @@ else User found
             FE -> User: Display error message
             deactivate FE
         end
+        deactivate RC
         RP -> R: addItemToOrder(orderDTO, menuItem, deliveryTime)
         activate R
         R -> BDD: PUT /update
@@ -290,11 +276,40 @@ else User found
             FE -> User: Display error message
             deactivate FE
         end
-
+        R -> BDD: PUT /update
+        activate BDD
+        BDD -> BDDRC: updateRestaurant(restaurantDTO)
+        activate BDDRC
+        BDDRC -> RDAO: save(restaurantEntity)
+        activate RDAO
+        RDAO -> BDDRC: HttpResponse
+        deactivate RDAO
+        BDDRC -> BDD: HttpResponse
+        deactivate BDDRC
+        BDD -> R: HttpResponse
+        deactivate BDD
+        R -> RP: HttpResponse
+        deactivate R
+        activate RP
+        RP -> RC: HttpResponse
+        deactivate RP
+        activate RC
+        RC -> RS: HttpResponse
+        deactivate RC
+        activate RS
+        RS -> GC: HttpResponse
+        deactivate RS
+        activate GC
+        GC -> BG: HttpResponse
+        deactivate GC
+        activate BG
+        BG -> FE: HttpResponse
+        deactivate BG
+        activate FE
+        FE -> User: Display error message
+        deactivate FE
         deactivate RC
         deactivate GC
-    else
-
     end
 end
 
