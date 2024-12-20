@@ -183,23 +183,11 @@ Voici un exemple de l'interface utilisateur connecté, pour un Group Order:
 
 ### 2.7.1 Récupération des restaurants
 
-1. **Frontend** : Une requête HTTP GET est initiée vers la passerelle (route `/api/restaurants/all`).
-2. **Gateway** : Transfère la requête au service `RestaurantsService`.
-3. **RestaurantsService** :
-    - Interroge la base de données pour récupérer les restaurants. (route `/api/database/restaurants/all`)
-    - Retourne une liste formatée via un `RestaurantDTO`.
-4. **Frontend** : Affiche les résultats dans une vue utilisateur.
+![Order Flow](../sequence_diagram/reportD2/all-restaurants-sequence-diagram.png)
 
 ### 2.7.2 Une étape de la prise de commande
 
-1. **Frontend** : Envoie une requête POST pour créer un group order.
-2. **Gateway** : Route la requête vers `GroupOrderService`.
-3. **GroupOrderService** :
-    - Valide les données reçues.
-    - Persiste l’entité `GroupOrder` dans la base de données.
-4. **Frontend** : Affiche un message de confirmation.
-
-Un diagramme de séquence illustre ces flux (voir [Diagramme](#diagramme-sequence)).
+![Order Flow](../sequence_diagram/reportD2/add-item-to-order-sequence-diagram.png)
 
 ## 2.8 Optimisations réalisées
 
