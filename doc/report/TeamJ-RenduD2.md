@@ -206,6 +206,62 @@ Voici un exemple de l'interface utilisateur connecté, pour un Group Order:
 - **TailwindCSS** : Productivité accrue pour le design.
 - **NextUI** : Composants réutilisables pour une interface cohérente.
 
+
+### Un mot sur notre Framework FlexibleRestServer
+
+FlexibleRestServer est un serveur REST léger et personnalisable écrit en Java, conçu pour simplifier la création d'API REST. Ce serveur a été développé pour résoudre un problème récurrent que nous avons identifié dans notre architecture : la répétition de code similaire dans nos différents microservices. En centralisant et en standardisant la gestion des routes et des réponses HTTP, nous avons pu réduire ces duplications tout en rendant notre code plus cohérent et maintenable.
+
+### Fonctionnalités principales
+
+#### Annotations
+
+- **`@Controller`** : Marque une classe comme contrôleur contenant des routes.
+  - `value` → la racine de l’URL des routes du contrôleur
+- **`@Route`** : Définit une route spécifique pour un point d'accès.
+  - `value` → la suite de l’URL du serveur (après la `value` de l’annotation du contrôleur parent)
+  - `method` → la méthode HTTP à utiliser pour la route
+- **`@PathParam`** et **`@QueryParam`** : Extraient les paramètres de chemin ou de requête.
+  - `value` → Nom attendu du paramètre dans le lien ou le corps de la méthode
+- **`@BeanParam`** : Lie des objets complexes aux paramètres de requête.
+
+#### Gestion HTTP
+
+- Prise en charge des méthodes HTTP standards (GET, POST, PUT, DELETE, etc.).
+- Réponses structurées avec codes HTTP via **`HttpResponse`** et **`HttpCode`**.
+
+#### Utilitaires
+
+- Enregistrement automatique des routes via **`ClassScanner`**.
+- Méthodes utilitaires pour manipuler les réponses HTTP (**`ResponseUtils`**).
+
+### Pourquoi avons-nous créé ce framework ?
+
+Dans nos différents microservices, nous avons constaté une duplication importante de logique commune, notamment pour :
+
+- La gestion des routes et des réponses HTTP.
+- L’extraction et la validation des paramètres de requête.
+- La structuration des codes d’état et des corps de réponse.
+
+FlexibleRestServer est notre solution pour centraliser ces fonctionnalités répétitives, permettant de les réutiliser facilement dans différents contextes, tout en améliorant la lisibilité et la maintenabilité du code.
+
+### Avantages
+
+- **Réduction des duplications** : Une seule implémentation réutilisable dans tous les microservices.
+- **Léger et rapide** : Idéal pour des microservices ou des API REST simples.
+- **Personnalisable** : Permet de configurer simplement les routes et réponses selon les besoins spécifiques.
+- **Annotation-driven** : Simplifie la définition des endpoints via des annotations claires.
+
+### Cas d'utilisation
+
+- Prototypage rapide d'API.
+- Serveur REST pour microservices.
+- Applications nécessitant un routage ou une gestion HTTP sur mesure.
+
+---
+
+FlexibleRestServer nous a permis, non seulement de gagner en efficacité tout en évitant la redondance dans nos microservices, mais aussi de comprendre le fonctionnement des frameworks complexes que nous utilisions naïvement jusqu’alors. Il s’agit certes d’une alternative légère, mais elle reste parfaitement adaptée à nos besoins dans le cadre de ce projet.
+
+
 ---
 
 # 3. Qualité des codes et gestion de projets
