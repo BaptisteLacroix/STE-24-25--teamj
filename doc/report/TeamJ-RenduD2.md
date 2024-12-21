@@ -314,6 +314,42 @@ FlexibleRestServer nous a permis, non seulement de gagner en efficacité tout en
 
 ---
 
+## Preuve de Concept : Déployabilité de nos Microservices
+
+Dans le cadre de notre projet, nous avons développé et démontré une preuve de concept visant à mettre en évidence la déployabilité de nos microservices dans un environnement cloud-native. Cette preuve de concept a été réalisée en suivant les étapes suivantes :
+
+### Étapes pour Déployer le Microservice de Paiement
+
+1. **Création d'une Image Docker** :
+   - Construction d'une image Docker pour le microservice de paiement afin d'assurer la portabilité et une cohérence du runtime.
+
+2. **Création d'un Chart Helm** :
+   - Élaboration d'un chart Helm pour le microservice de paiement, permettant de faciliter le déploiement et la gestion des configurations dans Kubernetes.
+
+3. **Mise en Place d'un Cluster Azure Kubernetes Service (AKS)** :
+   - Provisionnement d'un cluster AKS pour héberger le microservice dans un environnement cloud-native évolutif.
+
+4. **Installation d'ArgoCD** :
+   - Déploiement d'ArgoCD dans le cluster AKS pour gérer les workflows de livraison continue et de GitOps.
+
+5. **Déploiement de l'Application** :
+   - Utilisation d'ArgoCD pour récupérer le chart Helm et déployer le microservice de paiement sur le cluster AKS.
+
+6. **Configuration du Sous-Domaine** :
+   - Ajout d'un sous-domaine `payment.sophia-eats.food` aux enregistrements DNS de notre fournisseur de noms de domaine, garantissant l'accessibilité externe du service.
+
+### Améliorations Futures
+
+- Étendre la preuve de concept à d'autres microservices pour garantir des stratégies de déploiement uniformes.
+- Intégrer des outils de monitoring et d'alerte (par exemple, Prometheus, Grafana) pour améliorer l'observabilité.
+- Automatiser la configuration de tout le pipeline de déploiement pour accélérer les itérations et réduire les interventions manuelles.
+
+![aks](./images/aks.png)
+![argo](./images/argo.png)
+![domain](./images/domain.png)
+
+
+
 # 3. Qualité des codes et gestion de projets
 
 ## **Gestion du projet**
