@@ -40,10 +40,6 @@ Les fonctionnalités suivantes ont été intégralement implémentées conformé
   - Les menus et restaurants disponibles peuvent être filtrés en fonction de l’heure de livraison souhaitée.
   - Offre une navigation fluide et intuitive à travers les options.
 
-
-Ces fonctionnalités respectent les attentes du projet tout en offrant une expérience utilisateur fonctionnelle et efficace. Elles peuvent être testées et démontrées avec l’interface graphique fournie.
-
-
 ### 1.3.1 Points forts
 
 1. **Prise de commande au sein d’une commande de groupe**:
@@ -466,9 +462,6 @@ exit 0
     - Une documentation claire accompagnait le code, facilitant sa compréhension et son maintien à long terme.
 
 ---
-
-Ce texte synthétise vos efforts sur la gestion de projet et la qualité des codes tout en mettant en avant vos
-méthodologies, outils, et pratiques pour assurer un travail collaboratif efficace et une livraison de qualité.
 
 # 4. Rétrospective et Auto-évaluation
 
