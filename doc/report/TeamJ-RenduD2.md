@@ -312,6 +312,18 @@ FlexibleRestServer nous a permis, non seulement de gagner en efficacité tout en
 
 # 3. Qualité des codes et gestion de projets
 
+## **Qualité des codes**
+
+1. **Tests**
+
+Pour les tests, nous avons vu majoritairement des tests unitaires et une partie de tests Cucumber. En effet, de part le découpage en service, l'entièreté de nos tests Cucumber ne passait plus (puisque nous passions par des requêtes HTTP). Malheureusement, nous n'avons pas eut le temps de tout réimplémenter, ce qui implique une dimininution de nos tests sur notre code backend sur cette version (on peut toujours aller voir le restant des tests à implémenter sur le premier rendu). Cependant, nous jugeons que les tests unitaire que nous avons implémenté sont pertinents car ils permettent de vérifier qu'une route fait bien ce qu'on attend d'elle, et qu'elle renvoie bien le résultat attendu.
+Ensuite, le coverage est difficilement mesurable puisque nous sommes passés que par des requêtes aux APIs, donc pas d'appels direct de méthodes dans les tests. Cependant, nous jugeons nos tests pertinent car nous avons pu évalués chaque donnée et vérifier que nos appels fonctionnent correctement.
+
+2. **Qualité du code**
+
+Nous jugeons que notre code a de la qualité grâce à notre découpage qui est pertinent. De plus, nous avons mis en place quelques classes Utils pour nous faciliter le développement comme la classe RequestUtil qui nous permet d'éviter la redondance de code pour les appels vers les API. 
+Cependant, pour les axes d'amélioration, il est important de noter que parfois il y a trop d'appels vers les APIs pour une simple action. Par exemple, le code pour créer un groupOrder appelle 2 fois la base de données pour d'abord créer le groupe, puis ensuite ajouter le user donc ça multiplie nos appels alors que l'on pourrait factoriser le tout en un seul appel. De plus, un autre axe d'amélioration c'est d'éviter la surcharge de traitements par la gateway avant de renvoyer aux services respectifs (par exemple la méthode addItemToOrder). 
+
 ## **Gestion du projet**
 
 Pour garantir une organisation efficace et structurée, nous avons adopté plusieurs pratiques méthodologiques :
@@ -511,8 +523,8 @@ et le découpage des tâches. La communication et la réactivité face aux impr�
 
 | Répartition des points | Tom | Antoine | Baptiste | Abderrahmen | Total |
 |------------------------|-----|---------|----------|-------------|-------|
-| **Tom**                |     |         |          |             |       |
+| **Tom**                | 25  | 25      | 33       | 17          | 100   |
 | **Antoine**            | 30  | 20      | 35       | 15          | 100   |
 | **Baptiste**           | 30  | 20      | 35       | 15          | 100   |
 | **Abderrahmen**        | 25  | 23      | 30       | 22          | 100   |
-| **TOTAL :**            |     |         |          |             | 400   |
+| **TOTAL :**            | 110 | 88      | 133      | 69          | 400   |
