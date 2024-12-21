@@ -160,7 +160,7 @@ Le frontend est construit avec React, TypeScript et Vite, offrant un environneme
 **User Story**: [#48](https://github.com/PNS-Conception/STE-24-25--teamj/issues/48)  
 **Titre**: GroupOrder Micro-service
 
-### Référence à une histoire utilisateur
+### Gestion de projet
 le lien vers notre kanban  : [kanban Équipe J](https://github.com/orgs/PNS-Conception/projects/69/views/1)
 
 ### Le lien vers le rapport détaillé
