@@ -13,7 +13,7 @@ public class Application {
             // Set the hibernate.cfg.path system property to the test one hibernate-test.cfg.xml
             System.setProperty("hibernate.cfg.path", "hibernate-test.cfg.xml");
 
-            FlexibleRestServer server = new FlexibleRestServer("fr.unice.polytech.equipe.j", args[0], 5000);
+            FlexibleRestServer server = new FlexibleRestServer("fr.unice.polytech.equipe.j", args[0], 5002);
             server.start();
             System.setProperty("user.dir", userDir);
         } else {
@@ -24,7 +24,7 @@ public class Application {
                     e.printStackTrace();
                 }
             }
-            FlexibleRestServer server = new FlexibleRestServer("fr.unice.polytech.equipe.j", 5000);
+            FlexibleRestServer server = new FlexibleRestServer("fr.unice.polytech.equipe.j", 5002);
             server.start();
         }
     }
