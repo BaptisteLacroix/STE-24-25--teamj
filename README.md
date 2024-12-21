@@ -25,7 +25,7 @@ Conception : [README.md](./doc/README.md)
 
 ---
 
-# Comment tester le projet et le lancer
+# Comment tester et lancer le projet
 
 ## Exécution des Tests
 
