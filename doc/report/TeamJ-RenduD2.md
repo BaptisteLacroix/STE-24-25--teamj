@@ -13,14 +13,16 @@ Système de paiement:
   le moment tous les paiements sont validés automatiquement
 
 ## 1.2 Points non implémentés
+RAS
 
 ## 1.3 Fonctionnalités: points forts, points faibles
 
 ### Fonctionnalités
+Les fonctionnalités suivantes ont été intégralement implémentées conformément aux exigences :
 
 #### 1. Prise de commande au sein d’une commande de groupe
 
-- **Ajout de menus** : Les utilisateurs peuvent ajouter des menus à une commande de groupe, en respectant les délais de préparation.
+- **Ajout de menus** : Les utilisateurs peuvent ajouter des menus à une commande de groupe, en respectant les délais de préparation. issue #62
 - **Paiement** : 
   - Le paiement est géré via un proxy simulant un service de paiement potentiel.
 - **Validation de la commande** : Bien que la validation finale de la commande de groupe (fermeture, exigence O6) ne soit pas obligatoire, notre système gère efficacement les commandes jusqu’à l’étape de validation.
@@ -44,7 +46,31 @@ Ces fonctionnalités respectent les attentes du projet tout en offrant une expé
 
 ### 1.3.1 Points forts
 
+1. **Prise de commande au sein d’une commande de groupe**:
+   - **Performance**: Le processus de prise de commande est fluide et optimisé pour gérer plusieurs utilisateurs ajoutant des menus simultanément. 
+   - **Originalité**: L'implémentation du proxy pour simuler le service de paiement ajoute une flexibilité au système et permet une extensibilité future.
+   - **Structuration**: Le système organise efficacement les commandes associées à une commande groupée, assurant une bonne lisibilité et maintenabilité du code.
+   - **Issue liée**: [[Issue #48](https://github.com/PNS-Conception/STE-24-25--teamj/issues/48)](#)
+     
+2. **Création de la commande groupée**:
+   - **Simplicité**: Interface utilisateur intuitive permettant la création rapide de commandes groupées.
+   - **Collaboratif**: Fonctionnalité permettant de gérer des commandes partagées, essentielle pour le concept du projet.
+   - **Issue liée**: [[Issue #48](https://github.com/PNS-Conception/STE-24-25--teamj/issues/48)](#)
+
+3. **Navigation parmi les restaurants et leurs menus**:
+   - **Flexibilité**: Filtrage par heure de livraison, offrant une personnalisation pour les utilisateurs selon leurs besoins.
+   - **Issue liée**: [[Issue #60](https://github.com/PNS-Conception/STE-24-25--teamj/issues/60)](#)
+
 ### 1.3.2 Points faibles
+
+ **Paiement simulé**:
+   - **Problème**: Le service REST déployé pour le paiement est aléatoire et non sécurisé, ce qui le rend non viable pour un déploiement réel.
+   - **Amélioration**: Intégrer un service de paiement plus sophistiqué.
+
+ **Gestion des utilisateurs et comptes utilisateur**:
+   - **Problème**: La gestion des utilisateurs et des comptes utilisateur aurait pu être mieux conçue.
+   - **Amélioration**: Ajouter des fonctionnalités avancées pour gérer les comptes et les rôles (des comptes pour le personnel, etudiants -  un système de crédit utilisateur).
+  
 
 ---
 
