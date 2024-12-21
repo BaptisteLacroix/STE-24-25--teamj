@@ -38,4 +38,4 @@
 
 ## Diagramme de séquence
 
-![Diagramme de séquence](./sequence_diagram/sequence.png)
+![Diagramme de séquence](sequence_diagram/reportD1/sequence.png)

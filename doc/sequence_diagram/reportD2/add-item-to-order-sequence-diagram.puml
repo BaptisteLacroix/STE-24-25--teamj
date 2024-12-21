@@ -1,0 +1,316 @@
+@startuml
+!theme plain
+actor User
+participant "Frontend" as FE
+participant "Backend Gateway" as BG
+participant ":GatewayController" as GC
+participant "Restaurant Service" as RS
+participant ":RestaurantController" as RC
+participant ":RestaurantProxy" as RP
+participant ":Restaurant" as R
+participant "BDD Service" as BDD
+participant ":RestaurantController" as BDDRC
+participant ":RestaurantDAO" as RDAO
+participant ":OrderController" as BDDOC
+participant ":OrderDAO" as ODAO
+
+User -> FE: Select a restaurant
+activate FE
+FE -> BG: GET /{restaurantId}/menu
+activate BG
+
+BG -> GC: getMenuItems(restaurantId)
+activate GC
+
+GC -> RS: GET /{restaurantId}/menu
+activate RS
+
+RS -> RC: getMenuItems(restaurantId)
+activate RC
+
+RC -> BDD: GET /{restaurantId}/menuItem
+activate BDD
+
+BDD -> BDDRC: getMenuItemByRestaurantId(restaurantId)
+activate BDDRC
+
+BDDRC -> RDAO
+activate RDAO
+RDAO --> BDDRC: MenuItems
+deactivate RDAO
+BDDRC -> BDD: MenuItems
+deactivate BDDRC
+
+BDD --> RC: MenuItems
+deactivate BDD
+
+RC --> RS: MenuItems
+deactivate RC
+
+RS --> GC: MenuItems
+deactivate RS
+
+GC --> BG: MenuItems
+deactivate GC
+
+BG --> FE: MenuItems
+deactivate BG
+
+FE -> User: Display Menu Items
+deactivate FE
+
+User -> FE: Add item to order
+activate FE
+
+FE -> BG: POST /{userId}/restaurants/{restaurantId}/orders/{orderId}/item/{dishId}
+activate BG
+
+BG -> GC: addItemToOrder(userId, restaurantId, orderId, dishId)
+activate GC
+
+GC -> GC: validateUser(userId)
+GC -> BDD: /{userId}
+activate BDD
+BDD -> RDAO: getUserById(userId)
+activate RDAO
+RDAO --> BDD: User
+deactivate RDAO
+
+BDD --> GC: User
+deactivate BDD
+
+alt User not found
+    GC --> BG: 404 User not found
+    BG --> FE: 404 User not found
+    deactivate GC
+    deactivate BG
+    FE --> User: Display error message
+    deactivate FE
+else User found
+    activate GC
+    GC -> GC: processOrder(userId, orderId, restaurantId, dishId, deliveryTime, groupOrderId(), deliveryDetails())
+
+    alt GroupOrderId is not null
+        GC -> GC: handleGroupOrder(userId, orderId, restaurantId, dishId, deliveryTime, statusCodeOrder, statusCodeIndividual, groupOrderId)
+
+        alt Order not exist
+            GC -> GC: createNewOrderAndAddItem(userId, orderId, restaurantId, dishId, deliveryTime, groupOrderId)
+            activate GC
+            GC -> GC: updateOrder(orderDTO)
+            GC -> BDD: PUT /update
+            activate BDD
+            BDD -> BDDOC: updateOrder(orderDTO))
+            activate BDDOC
+            BDDOC -> ODAO: save(orderEntity)
+            activate ODAO
+            ODAO -> BDDOC: HttpResponse
+            deactivate ODAO
+            BDDOC -> BDD: HttpResponse
+            deactivate BDDOC
+            BDD -> GC: HttpResponse
+            deactivate BDD
+            alt Response is not 201
+                GC -> BG: HttpResponse
+                deactivate GC
+                activate BG
+                BG -> FE: HttpResponse
+                deactivate BG
+                activate FE
+                FE -> User: Display error message
+                deactivate FE
+            end
+        end
+        activate GC
+        GC -> GC: addItemToRestaurantOrder(restaurantId, orderId, dishId, deliveryTime, groupOrderId)
+        GC -> RS: POST /{restaurantId}/orders/{orderId}/item/{menuItemId}
+        activate RS
+        RS -> RC: addItemToOrder(restaurantId, orderId, menuItemId, deliveryDetails)
+        activate RC
+        RC -> BDD: GET /{restaurantId}/menuItem/{menuItemId}
+        activate BDD
+        BDD -> BDDRC: getMenuItem(restaurantId, menuItemId)
+        activate BDDRC
+        BDDRC -> RDAO: getRestaurantById(restaurantId)
+        activate RDAO
+        RDAO -> BDDRC: HttpResponse
+        deactivate RDAO
+        BDDRC -> BDD: HttpResponse
+        deactivate BDDRC
+        BDD -> RC: HttpResponse
+        deactivate BDD
+        alt HttpResponse is not 200
+            RC -> RS: HttpResponse
+            deactivate RC
+            activate RS
+            RS -> GC: HttpResponse
+            deactivate RS
+            activate GC
+            GC -> BG: HttpResponse
+            deactivate GC
+            activate BG
+            BG -> FE: HttpResponse
+            deactivate BG
+            activate FE
+            FE -> User: Display error message
+            deactivate FE
+        end
+        RC -> RC: createRestaurantProxy(restaurantId)
+        activate RC
+        RC -> BDD: GET /{restaurantId}
+        activate BDD
+        BDD -> BDDRC: getRestaurantById(restaurantId)
+        activate BDDRC
+        BDDRC -> RDAO: getRestaurantById(restaurantId)
+        activate RDAO
+        RDAO -> BDDRC: HttpResponse
+        deactivate RDAO
+        BDDRC -> BDD: HttpResponse
+        deactivate BDDRC
+        BDD -> RC: HttpResponse
+        deactivate BDD
+        alt HttpResponse is not 200
+            RC -> RS: HttpResponse
+            deactivate RC
+            activate RS
+            RS -> GC: HttpResponse
+            deactivate RS
+            activate GC
+            GC -> BG: HttpResponse
+            deactivate GC
+            activate BG
+            BG -> FE: HttpResponse
+            deactivate BG
+            activate FE
+            FE -> User: Display error message
+            deactivate FE
+        end
+        RC -> BDD: GET /orderId
+        activate RC
+        activate BDD
+        BDD -> BDDOC: getOrderById(orderId)
+        activate BDDOC
+        BDDOC -> ODAO: getOrderById(orderId)
+        activate ODAO
+        ODAO -> BDDOC: HttpResponse
+        deactivate ODAO
+        BDDOC -> BDD: HttpResponse
+        deactivate BDDOC
+        BDD -> RC: HttpResponse
+        deactivate BDD
+        alt HttpResponse is not 200
+            RC -> RS: HttpResponse
+            deactivate RC
+            activate RS
+            RS -> GC: HttpResponse
+            deactivate RS
+            activate GC
+            GC -> BG: HttpResponse
+            deactivate GC
+            activate BG
+            BG -> FE: HttpResponse
+            deactivate BG
+            activate FE
+            FE -> User: Display error message
+            deactivate FE
+        end
+        RC -> RP: addItemToOrder(orderId, menuItemId, deliveryTime)
+        activate RC
+        activate RP
+        RP -> R: canAddItemToOrder(orderDTO, menuItem, deliveryTime)
+        activate R
+        R -> RP: response
+        deactivate R
+        alt response is not true
+            RP -> RC: HttpResponse
+            deactivate RP
+            activate RC
+            RC -> RS: HttpResponse
+            deactivate RC
+            activate RS
+            RS -> GC: HttpResponse
+            deactivate RS
+            activate GC
+            GC -> BG: HttpResponse
+            deactivate GC
+            activate BG
+            BG -> FE: HttpResponse
+            deactivate BG
+            activate FE
+            FE -> User: Display error message
+            deactivate FE
+        end
+        deactivate RC
+        RP -> R: addItemToOrder(orderDTO, menuItem, deliveryTime)
+        activate R
+        R -> BDD: PUT /update
+        activate BDD
+        BDD -> BDDOC: updateOrder(orderDTO)
+        activate BDDOC
+        BDDOC -> ODAO: save(orderEntity)
+        activate ODAO
+        ODAO -> BDDOC: HttpResponse
+        deactivate ODAO
+        BDDOC -> BDD: HttpResponse
+        deactivate BDDOC
+        BDD -> R: HttpResponse
+        deactivate BDD
+        alt HttpResponse is not 200
+            R -> RP: HttpResponse
+            deactivate R
+            activate RP
+            RP -> RC: HttpResponse
+            deactivate RP
+            activate RC
+            RC -> RS: HttpResponse
+            deactivate RC
+            activate RS
+            RS -> GC: HttpResponse
+            deactivate RS
+            activate GC
+            GC -> BG: HttpResponse
+            deactivate GC
+            activate BG
+            BG -> FE: HttpResponse
+            deactivate BG
+            activate FE
+            FE -> User: Display error message
+            deactivate FE
+        end
+        R -> BDD: PUT /update
+        activate BDD
+        BDD -> BDDRC: updateRestaurant(restaurantDTO)
+        activate BDDRC
+        BDDRC -> RDAO: save(restaurantEntity)
+        activate RDAO
+        RDAO -> BDDRC: HttpResponse
+        deactivate RDAO
+        BDDRC -> BDD: HttpResponse
+        deactivate BDDRC
+        BDD -> R: HttpResponse
+        deactivate BDD
+        R -> RP: HttpResponse
+        deactivate R
+        activate RP
+        RP -> RC: HttpResponse
+        deactivate RP
+        activate RC
+        RC -> RS: HttpResponse
+        deactivate RC
+        activate RS
+        RS -> GC: HttpResponse
+        deactivate RS
+        activate GC
+        GC -> BG: HttpResponse
+        deactivate GC
+        activate BG
+        BG -> FE: HttpResponse
+        deactivate BG
+        activate FE
+        FE -> User: Display error message
+        deactivate FE
+        deactivate RC
+        deactivate GC
+    end
+end
+
+@enduml

@@ -1,0 +1,1643 @@
+{
+  "openapi" : "3.0.1",
+  "info" : {
+    "title" : "Generated API",
+    "version" : "1.0.0"
+  },
+  "servers" : [ {
+    "url" : "http://localhost:8080"
+  } ],
+  "paths" : {
+    "/api/gateway/{userId}/orders/{orderId}/validate" : {
+      "put" : {
+        "summary" : "validateOrder",
+        "description" : "Generated from method validateOrder",
+        "parameters" : [ {
+          "name" : "userId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "object",
+            "properties" : {
+              "value" : {
+                "type" : "object"
+              },
+              "coder" : {
+                "type" : "object"
+              },
+              "hash" : {
+                "type" : "integer"
+              },
+              "hashIsZero" : {
+                "type" : "boolean"
+              },
+              "serialVersionUID" : {
+                "type" : "integer"
+              },
+              "COMPACT_STRINGS" : {
+                "type" : "boolean"
+              },
+              "serialPersistentFields" : {
+                "type" : "object"
+              },
+              "REPL" : {
+                "type" : "object"
+              },
+              "CASE_INSENSITIVE_ORDER" : {
+                "type" : "object"
+              },
+              "LATIN1" : {
+                "type" : "object"
+              },
+              "UTF16" : {
+                "type" : "object"
+              }
+            }
+          }
+        }, {
+          "name" : "orderId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "object",
+            "properties" : {
+              "value" : {
+                "type" : "object"
+              },
+              "coder" : {
+                "type" : "object"
+              },
+              "hash" : {
+                "type" : "integer"
+              },
+              "hashIsZero" : {
+                "type" : "boolean"
+              },
+              "serialVersionUID" : {
+                "type" : "integer"
+              },
+              "COMPACT_STRINGS" : {
+                "type" : "boolean"
+              },
+              "serialPersistentFields" : {
+                "type" : "object"
+              },
+              "REPL" : {
+                "type" : "object"
+              },
+              "CASE_INSENSITIVE_ORDER" : {
+                "type" : "object"
+              },
+              "LATIN1" : {
+                "type" : "object"
+              },
+              "UTF16" : {
+                "type" : "object"
+              }
+            }
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Successful response",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/HttpResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/gateway/restaurants/types" : {
+      "get" : {
+        "summary" : "getAllFoodTypes",
+        "description" : "Generated from method getAllFoodTypes",
+        "parameters" : [ ],
+        "responses" : {
+          "200" : {
+            "description" : "Successful response",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/HttpResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/gateway/campus-users/{userId}" : {
+      "get" : {
+        "summary" : "getCampusUserById",
+        "description" : "Generated from method getCampusUserById",
+        "parameters" : [ {
+          "name" : "userId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "object",
+            "properties" : {
+              "value" : {
+                "type" : "object"
+              },
+              "coder" : {
+                "type" : "object"
+              },
+              "hash" : {
+                "type" : "integer"
+              },
+              "hashIsZero" : {
+                "type" : "boolean"
+              },
+              "serialVersionUID" : {
+                "type" : "integer"
+              },
+              "COMPACT_STRINGS" : {
+                "type" : "boolean"
+              },
+              "serialPersistentFields" : {
+                "type" : "object"
+              },
+              "REPL" : {
+                "type" : "object"
+              },
+              "CASE_INSENSITIVE_ORDER" : {
+                "type" : "object"
+              },
+              "LATIN1" : {
+                "type" : "object"
+              },
+              "UTF16" : {
+                "type" : "object"
+              }
+            }
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Successful response",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/HttpResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/gateway/{userId}/group-orders/{groupOrderId}/validate" : {
+      "put" : {
+        "summary" : "validateGroupOrder",
+        "description" : "Generated from method validateGroupOrder",
+        "parameters" : [ {
+          "name" : "userId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "object",
+            "properties" : {
+              "value" : {
+                "type" : "object"
+              },
+              "coder" : {
+                "type" : "object"
+              },
+              "hash" : {
+                "type" : "integer"
+              },
+              "hashIsZero" : {
+                "type" : "boolean"
+              },
+              "serialVersionUID" : {
+                "type" : "integer"
+              },
+              "COMPACT_STRINGS" : {
+                "type" : "boolean"
+              },
+              "serialPersistentFields" : {
+                "type" : "object"
+              },
+              "REPL" : {
+                "type" : "object"
+              },
+              "CASE_INSENSITIVE_ORDER" : {
+                "type" : "object"
+              },
+              "LATIN1" : {
+                "type" : "object"
+              },
+              "UTF16" : {
+                "type" : "object"
+              }
+            }
+          }
+        }, {
+          "name" : "groupOrderId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "object",
+            "properties" : {
+              "value" : {
+                "type" : "object"
+              },
+              "coder" : {
+                "type" : "object"
+              },
+              "hash" : {
+                "type" : "integer"
+              },
+              "hashIsZero" : {
+                "type" : "boolean"
+              },
+              "serialVersionUID" : {
+                "type" : "integer"
+              },
+              "COMPACT_STRINGS" : {
+                "type" : "boolean"
+              },
+              "serialPersistentFields" : {
+                "type" : "object"
+              },
+              "REPL" : {
+                "type" : "object"
+              },
+              "CASE_INSENSITIVE_ORDER" : {
+                "type" : "object"
+              },
+              "LATIN1" : {
+                "type" : "object"
+              },
+              "UTF16" : {
+                "type" : "object"
+              }
+            }
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Successful response",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/HttpResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/gateway/restaurants/all" : {
+      "get" : {
+        "summary" : "getAllRestaurants",
+        "description" : "Generated from method getAllRestaurants",
+        "parameters" : [ ],
+        "responses" : {
+          "200" : {
+            "description" : "Successful response",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/HttpResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/gateway/{userId}/group-order/{groupOrderId}" : {
+      "get" : {
+        "summary" : "getGroupOrder",
+        "description" : "Generated from method getGroupOrder",
+        "parameters" : [ {
+          "name" : "userId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "object",
+            "properties" : {
+              "value" : {
+                "type" : "object"
+              },
+              "coder" : {
+                "type" : "object"
+              },
+              "hash" : {
+                "type" : "integer"
+              },
+              "hashIsZero" : {
+                "type" : "boolean"
+              },
+              "serialVersionUID" : {
+                "type" : "integer"
+              },
+              "COMPACT_STRINGS" : {
+                "type" : "boolean"
+              },
+              "serialPersistentFields" : {
+                "type" : "object"
+              },
+              "REPL" : {
+                "type" : "object"
+              },
+              "CASE_INSENSITIVE_ORDER" : {
+                "type" : "object"
+              },
+              "LATIN1" : {
+                "type" : "object"
+              },
+              "UTF16" : {
+                "type" : "object"
+              }
+            }
+          }
+        }, {
+          "name" : "groupOrderId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "object",
+            "properties" : {
+              "value" : {
+                "type" : "object"
+              },
+              "coder" : {
+                "type" : "object"
+              },
+              "hash" : {
+                "type" : "integer"
+              },
+              "hashIsZero" : {
+                "type" : "boolean"
+              },
+              "serialVersionUID" : {
+                "type" : "integer"
+              },
+              "COMPACT_STRINGS" : {
+                "type" : "boolean"
+              },
+              "serialPersistentFields" : {
+                "type" : "object"
+              },
+              "REPL" : {
+                "type" : "object"
+              },
+              "CASE_INSENSITIVE_ORDER" : {
+                "type" : "object"
+              },
+              "LATIN1" : {
+                "type" : "object"
+              },
+              "UTF16" : {
+                "type" : "object"
+              }
+            }
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Successful response",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/HttpResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/gateway/{userId}/orders/{orderId}" : {
+      "get" : {
+        "summary" : "getOrder",
+        "description" : "Generated from method getOrder",
+        "parameters" : [ {
+          "name" : "userId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "object",
+            "properties" : {
+              "value" : {
+                "type" : "object"
+              },
+              "coder" : {
+                "type" : "object"
+              },
+              "hash" : {
+                "type" : "integer"
+              },
+              "hashIsZero" : {
+                "type" : "boolean"
+              },
+              "serialVersionUID" : {
+                "type" : "integer"
+              },
+              "COMPACT_STRINGS" : {
+                "type" : "boolean"
+              },
+              "serialPersistentFields" : {
+                "type" : "object"
+              },
+              "REPL" : {
+                "type" : "object"
+              },
+              "CASE_INSENSITIVE_ORDER" : {
+                "type" : "object"
+              },
+              "LATIN1" : {
+                "type" : "object"
+              },
+              "UTF16" : {
+                "type" : "object"
+              }
+            }
+          }
+        }, {
+          "name" : "orderId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "object",
+            "properties" : {
+              "value" : {
+                "type" : "object"
+              },
+              "coder" : {
+                "type" : "object"
+              },
+              "hash" : {
+                "type" : "integer"
+              },
+              "hashIsZero" : {
+                "type" : "boolean"
+              },
+              "serialVersionUID" : {
+                "type" : "integer"
+              },
+              "COMPACT_STRINGS" : {
+                "type" : "boolean"
+              },
+              "serialPersistentFields" : {
+                "type" : "object"
+              },
+              "REPL" : {
+                "type" : "object"
+              },
+              "CASE_INSENSITIVE_ORDER" : {
+                "type" : "object"
+              },
+              "LATIN1" : {
+                "type" : "object"
+              },
+              "UTF16" : {
+                "type" : "object"
+              }
+            }
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Successful response",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/HttpResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/gateway/restaurants/name/{name}" : {
+      "get" : {
+        "summary" : "getRestaurantsByName",
+        "description" : "Generated from method getRestaurantsByName",
+        "parameters" : [ {
+          "name" : "name",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "object",
+            "properties" : {
+              "value" : {
+                "type" : "object"
+              },
+              "coder" : {
+                "type" : "object"
+              },
+              "hash" : {
+                "type" : "integer"
+              },
+              "hashIsZero" : {
+                "type" : "boolean"
+              },
+              "serialVersionUID" : {
+                "type" : "integer"
+              },
+              "COMPACT_STRINGS" : {
+                "type" : "boolean"
+              },
+              "serialPersistentFields" : {
+                "type" : "object"
+              },
+              "REPL" : {
+                "type" : "object"
+              },
+              "CASE_INSENSITIVE_ORDER" : {
+                "type" : "object"
+              },
+              "LATIN1" : {
+                "type" : "object"
+              },
+              "UTF16" : {
+                "type" : "object"
+              }
+            }
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Successful response",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/HttpResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/gateway/{userId}/delivery-location" : {
+      "get" : {
+        "summary" : "getDeliveryLocation",
+        "description" : "Generated from method getDeliveryLocation",
+        "parameters" : [ {
+          "name" : "userId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "object",
+            "properties" : {
+              "value" : {
+                "type" : "object"
+              },
+              "coder" : {
+                "type" : "object"
+              },
+              "hash" : {
+                "type" : "integer"
+              },
+              "hashIsZero" : {
+                "type" : "boolean"
+              },
+              "serialVersionUID" : {
+                "type" : "integer"
+              },
+              "COMPACT_STRINGS" : {
+                "type" : "boolean"
+              },
+              "serialPersistentFields" : {
+                "type" : "object"
+              },
+              "REPL" : {
+                "type" : "object"
+              },
+              "CASE_INSENSITIVE_ORDER" : {
+                "type" : "object"
+              },
+              "LATIN1" : {
+                "type" : "object"
+              },
+              "UTF16" : {
+                "type" : "object"
+              }
+            }
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Successful response",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/HttpResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/gateway/{userId}/delivery-location/{deliveryLocationId}" : {
+      "get" : {
+        "summary" : "getDeliveryLocationById",
+        "description" : "Generated from method getDeliveryLocationById",
+        "parameters" : [ {
+          "name" : "userId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "object",
+            "properties" : {
+              "value" : {
+                "type" : "object"
+              },
+              "coder" : {
+                "type" : "object"
+              },
+              "hash" : {
+                "type" : "integer"
+              },
+              "hashIsZero" : {
+                "type" : "boolean"
+              },
+              "serialVersionUID" : {
+                "type" : "integer"
+              },
+              "COMPACT_STRINGS" : {
+                "type" : "boolean"
+              },
+              "serialPersistentFields" : {
+                "type" : "object"
+              },
+              "REPL" : {
+                "type" : "object"
+              },
+              "CASE_INSENSITIVE_ORDER" : {
+                "type" : "object"
+              },
+              "LATIN1" : {
+                "type" : "object"
+              },
+              "UTF16" : {
+                "type" : "object"
+              }
+            }
+          }
+        }, {
+          "name" : "deliveryLocationId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "object",
+            "properties" : {
+              "value" : {
+                "type" : "object"
+              },
+              "coder" : {
+                "type" : "object"
+              },
+              "hash" : {
+                "type" : "integer"
+              },
+              "hashIsZero" : {
+                "type" : "boolean"
+              },
+              "serialVersionUID" : {
+                "type" : "integer"
+              },
+              "COMPACT_STRINGS" : {
+                "type" : "boolean"
+              },
+              "serialPersistentFields" : {
+                "type" : "object"
+              },
+              "REPL" : {
+                "type" : "object"
+              },
+              "CASE_INSENSITIVE_ORDER" : {
+                "type" : "object"
+              },
+              "LATIN1" : {
+                "type" : "object"
+              },
+              "UTF16" : {
+                "type" : "object"
+              }
+            }
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Successful response",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/HttpResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/gateway/restaurants/foodType/{foodType}" : {
+      "get" : {
+        "summary" : "getRestaurantsByFoodType",
+        "description" : "Generated from method getRestaurantsByFoodType",
+        "parameters" : [ {
+          "name" : "foodType",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "object",
+            "properties" : {
+              "value" : {
+                "type" : "object"
+              },
+              "coder" : {
+                "type" : "object"
+              },
+              "hash" : {
+                "type" : "integer"
+              },
+              "hashIsZero" : {
+                "type" : "boolean"
+              },
+              "serialVersionUID" : {
+                "type" : "integer"
+              },
+              "COMPACT_STRINGS" : {
+                "type" : "boolean"
+              },
+              "serialPersistentFields" : {
+                "type" : "object"
+              },
+              "REPL" : {
+                "type" : "object"
+              },
+              "CASE_INSENSITIVE_ORDER" : {
+                "type" : "object"
+              },
+              "LATIN1" : {
+                "type" : "object"
+              },
+              "UTF16" : {
+                "type" : "object"
+              }
+            }
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Successful response",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/HttpResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/gateway/{userId}/restaurants/{restaurantId}/orders/{orderId}/total-price" : {
+      "get" : {
+        "summary" : "getTotalPrice",
+        "description" : "Generated from method getTotalPrice",
+        "parameters" : [ {
+          "name" : "userId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "object",
+            "properties" : {
+              "value" : {
+                "type" : "object"
+              },
+              "coder" : {
+                "type" : "object"
+              },
+              "hash" : {
+                "type" : "integer"
+              },
+              "hashIsZero" : {
+                "type" : "boolean"
+              },
+              "serialVersionUID" : {
+                "type" : "integer"
+              },
+              "COMPACT_STRINGS" : {
+                "type" : "boolean"
+              },
+              "serialPersistentFields" : {
+                "type" : "object"
+              },
+              "REPL" : {
+                "type" : "object"
+              },
+              "CASE_INSENSITIVE_ORDER" : {
+                "type" : "object"
+              },
+              "LATIN1" : {
+                "type" : "object"
+              },
+              "UTF16" : {
+                "type" : "object"
+              }
+            }
+          }
+        }, {
+          "name" : "restaurantId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "object",
+            "properties" : {
+              "value" : {
+                "type" : "object"
+              },
+              "coder" : {
+                "type" : "object"
+              },
+              "hash" : {
+                "type" : "integer"
+              },
+              "hashIsZero" : {
+                "type" : "boolean"
+              },
+              "serialVersionUID" : {
+                "type" : "integer"
+              },
+              "COMPACT_STRINGS" : {
+                "type" : "boolean"
+              },
+              "serialPersistentFields" : {
+                "type" : "object"
+              },
+              "REPL" : {
+                "type" : "object"
+              },
+              "CASE_INSENSITIVE_ORDER" : {
+                "type" : "object"
+              },
+              "LATIN1" : {
+                "type" : "object"
+              },
+              "UTF16" : {
+                "type" : "object"
+              }
+            }
+          }
+        }, {
+          "name" : "orderId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "object",
+            "properties" : {
+              "value" : {
+                "type" : "object"
+              },
+              "coder" : {
+                "type" : "object"
+              },
+              "hash" : {
+                "type" : "integer"
+              },
+              "hashIsZero" : {
+                "type" : "boolean"
+              },
+              "serialVersionUID" : {
+                "type" : "integer"
+              },
+              "COMPACT_STRINGS" : {
+                "type" : "boolean"
+              },
+              "serialPersistentFields" : {
+                "type" : "object"
+              },
+              "REPL" : {
+                "type" : "object"
+              },
+              "CASE_INSENSITIVE_ORDER" : {
+                "type" : "object"
+              },
+              "LATIN1" : {
+                "type" : "object"
+              },
+              "UTF16" : {
+                "type" : "object"
+              }
+            }
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Successful response",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/HttpResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/gateway/{userId}/group-order/{groupOrderId}/join" : {
+      "put" : {
+        "summary" : "joinGroupOrder",
+        "description" : "Generated from method joinGroupOrder",
+        "parameters" : [ {
+          "name" : "userId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "object",
+            "properties" : {
+              "value" : {
+                "type" : "object"
+              },
+              "coder" : {
+                "type" : "object"
+              },
+              "hash" : {
+                "type" : "integer"
+              },
+              "hashIsZero" : {
+                "type" : "boolean"
+              },
+              "serialVersionUID" : {
+                "type" : "integer"
+              },
+              "COMPACT_STRINGS" : {
+                "type" : "boolean"
+              },
+              "serialPersistentFields" : {
+                "type" : "object"
+              },
+              "REPL" : {
+                "type" : "object"
+              },
+              "CASE_INSENSITIVE_ORDER" : {
+                "type" : "object"
+              },
+              "LATIN1" : {
+                "type" : "object"
+              },
+              "UTF16" : {
+                "type" : "object"
+              }
+            }
+          }
+        }, {
+          "name" : "groupOrderId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "object",
+            "properties" : {
+              "value" : {
+                "type" : "object"
+              },
+              "coder" : {
+                "type" : "object"
+              },
+              "hash" : {
+                "type" : "integer"
+              },
+              "hashIsZero" : {
+                "type" : "boolean"
+              },
+              "serialVersionUID" : {
+                "type" : "integer"
+              },
+              "COMPACT_STRINGS" : {
+                "type" : "boolean"
+              },
+              "serialPersistentFields" : {
+                "type" : "object"
+              },
+              "REPL" : {
+                "type" : "object"
+              },
+              "CASE_INSENSITIVE_ORDER" : {
+                "type" : "object"
+              },
+              "LATIN1" : {
+                "type" : "object"
+              },
+              "UTF16" : {
+                "type" : "object"
+              }
+            }
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Successful response",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/HttpResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/gateway/{userId}/group-order" : {
+      "post" : {
+        "summary" : "createGroupOrder",
+        "description" : "Generated from method createGroupOrder",
+        "parameters" : [ {
+          "name" : "userId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "object",
+            "properties" : {
+              "value" : {
+                "type" : "object"
+              },
+              "coder" : {
+                "type" : "object"
+              },
+              "hash" : {
+                "type" : "integer"
+              },
+              "hashIsZero" : {
+                "type" : "boolean"
+              },
+              "serialVersionUID" : {
+                "type" : "integer"
+              },
+              "COMPACT_STRINGS" : {
+                "type" : "boolean"
+              },
+              "serialPersistentFields" : {
+                "type" : "object"
+              },
+              "REPL" : {
+                "type" : "object"
+              },
+              "CASE_INSENSITIVE_ORDER" : {
+                "type" : "object"
+              },
+              "LATIN1" : {
+                "type" : "object"
+              },
+              "UTF16" : {
+                "type" : "object"
+              }
+            }
+          }
+        }, {
+          "name" : "DeliveryDetailsDTO",
+          "in" : "body",
+          "schema" : {
+            "$ref" : "#/components/schemas/DeliveryDetailsDTO"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Successful response",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/HttpResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/gateway/restaurants/{id}" : {
+      "get" : {
+        "summary" : "getRestaurantById",
+        "description" : "Generated from method getRestaurantById",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "object",
+            "properties" : {
+              "value" : {
+                "type" : "object"
+              },
+              "coder" : {
+                "type" : "object"
+              },
+              "hash" : {
+                "type" : "integer"
+              },
+              "hashIsZero" : {
+                "type" : "boolean"
+              },
+              "serialVersionUID" : {
+                "type" : "integer"
+              },
+              "COMPACT_STRINGS" : {
+                "type" : "boolean"
+              },
+              "serialPersistentFields" : {
+                "type" : "object"
+              },
+              "REPL" : {
+                "type" : "object"
+              },
+              "CASE_INSENSITIVE_ORDER" : {
+                "type" : "object"
+              },
+              "LATIN1" : {
+                "type" : "object"
+              },
+              "UTF16" : {
+                "type" : "object"
+              }
+            }
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Successful response",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/HttpResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/gateway/{userId}/restaurants/{restaurantId}/orders/{orderId}/item/{dishId}" : {
+      "post" : {
+        "summary" : "addItemToOrder",
+        "description" : "Generated from method addItemToOrder",
+        "parameters" : [ {
+          "name" : "userId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "object",
+            "properties" : {
+              "value" : {
+                "type" : "object"
+              },
+              "coder" : {
+                "type" : "object"
+              },
+              "hash" : {
+                "type" : "integer"
+              },
+              "hashIsZero" : {
+                "type" : "boolean"
+              },
+              "serialVersionUID" : {
+                "type" : "integer"
+              },
+              "COMPACT_STRINGS" : {
+                "type" : "boolean"
+              },
+              "serialPersistentFields" : {
+                "type" : "object"
+              },
+              "REPL" : {
+                "type" : "object"
+              },
+              "CASE_INSENSITIVE_ORDER" : {
+                "type" : "object"
+              },
+              "LATIN1" : {
+                "type" : "object"
+              },
+              "UTF16" : {
+                "type" : "object"
+              }
+            }
+          }
+        }, {
+          "name" : "restaurantId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "object",
+            "properties" : {
+              "value" : {
+                "type" : "object"
+              },
+              "coder" : {
+                "type" : "object"
+              },
+              "hash" : {
+                "type" : "integer"
+              },
+              "hashIsZero" : {
+                "type" : "boolean"
+              },
+              "serialVersionUID" : {
+                "type" : "integer"
+              },
+              "COMPACT_STRINGS" : {
+                "type" : "boolean"
+              },
+              "serialPersistentFields" : {
+                "type" : "object"
+              },
+              "REPL" : {
+                "type" : "object"
+              },
+              "CASE_INSENSITIVE_ORDER" : {
+                "type" : "object"
+              },
+              "LATIN1" : {
+                "type" : "object"
+              },
+              "UTF16" : {
+                "type" : "object"
+              }
+            }
+          }
+        }, {
+          "name" : "orderId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "object",
+            "properties" : {
+              "value" : {
+                "type" : "object"
+              },
+              "coder" : {
+                "type" : "object"
+              },
+              "hash" : {
+                "type" : "integer"
+              },
+              "hashIsZero" : {
+                "type" : "boolean"
+              },
+              "serialVersionUID" : {
+                "type" : "integer"
+              },
+              "COMPACT_STRINGS" : {
+                "type" : "boolean"
+              },
+              "serialPersistentFields" : {
+                "type" : "object"
+              },
+              "REPL" : {
+                "type" : "object"
+              },
+              "CASE_INSENSITIVE_ORDER" : {
+                "type" : "object"
+              },
+              "LATIN1" : {
+                "type" : "object"
+              },
+              "UTF16" : {
+                "type" : "object"
+              }
+            }
+          }
+        }, {
+          "name" : "dishId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "object",
+            "properties" : {
+              "value" : {
+                "type" : "object"
+              },
+              "coder" : {
+                "type" : "object"
+              },
+              "hash" : {
+                "type" : "integer"
+              },
+              "hashIsZero" : {
+                "type" : "boolean"
+              },
+              "serialVersionUID" : {
+                "type" : "integer"
+              },
+              "COMPACT_STRINGS" : {
+                "type" : "boolean"
+              },
+              "serialPersistentFields" : {
+                "type" : "object"
+              },
+              "REPL" : {
+                "type" : "object"
+              },
+              "CASE_INSENSITIVE_ORDER" : {
+                "type" : "object"
+              },
+              "LATIN1" : {
+                "type" : "object"
+              },
+              "UTF16" : {
+                "type" : "object"
+              }
+            }
+          }
+        }, {
+          "name" : "AddItemOrderRequestDTO",
+          "in" : "body",
+          "schema" : {
+            "$ref" : "#/components/schemas/AddItemOrderRequestDTO"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Successful response",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/HttpResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/gateway/{userId}/orders/{orderId}/cancel" : {
+      "put" : {
+        "summary" : "cancelOrder",
+        "description" : "Generated from method cancelOrder",
+        "parameters" : [ {
+          "name" : "userId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "object",
+            "properties" : {
+              "value" : {
+                "type" : "object"
+              },
+              "coder" : {
+                "type" : "object"
+              },
+              "hash" : {
+                "type" : "integer"
+              },
+              "hashIsZero" : {
+                "type" : "boolean"
+              },
+              "serialVersionUID" : {
+                "type" : "integer"
+              },
+              "COMPACT_STRINGS" : {
+                "type" : "boolean"
+              },
+              "serialPersistentFields" : {
+                "type" : "object"
+              },
+              "REPL" : {
+                "type" : "object"
+              },
+              "CASE_INSENSITIVE_ORDER" : {
+                "type" : "object"
+              },
+              "LATIN1" : {
+                "type" : "object"
+              },
+              "UTF16" : {
+                "type" : "object"
+              }
+            }
+          }
+        }, {
+          "name" : "orderId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "object",
+            "properties" : {
+              "value" : {
+                "type" : "object"
+              },
+              "coder" : {
+                "type" : "object"
+              },
+              "hash" : {
+                "type" : "integer"
+              },
+              "hashIsZero" : {
+                "type" : "boolean"
+              },
+              "serialVersionUID" : {
+                "type" : "integer"
+              },
+              "COMPACT_STRINGS" : {
+                "type" : "boolean"
+              },
+              "serialPersistentFields" : {
+                "type" : "object"
+              },
+              "REPL" : {
+                "type" : "object"
+              },
+              "CASE_INSENSITIVE_ORDER" : {
+                "type" : "object"
+              },
+              "LATIN1" : {
+                "type" : "object"
+              },
+              "UTF16" : {
+                "type" : "object"
+              }
+            }
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Successful response",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/HttpResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/gateway/campus-users" : {
+      "get" : {
+        "summary" : "getAllCampusUsers",
+        "description" : "Generated from method getAllCampusUsers",
+        "parameters" : [ ],
+        "responses" : {
+          "200" : {
+            "description" : "Successful response",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/HttpResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/gateway/{userId}/orders/individual/{orderId}" : {
+      "get" : {
+        "summary" : "getIndividualOrder",
+        "description" : "Generated from method getIndividualOrder",
+        "parameters" : [ {
+          "name" : "userId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "object",
+            "properties" : {
+              "value" : {
+                "type" : "object"
+              },
+              "coder" : {
+                "type" : "object"
+              },
+              "hash" : {
+                "type" : "integer"
+              },
+              "hashIsZero" : {
+                "type" : "boolean"
+              },
+              "serialVersionUID" : {
+                "type" : "integer"
+              },
+              "COMPACT_STRINGS" : {
+                "type" : "boolean"
+              },
+              "serialPersistentFields" : {
+                "type" : "object"
+              },
+              "REPL" : {
+                "type" : "object"
+              },
+              "CASE_INSENSITIVE_ORDER" : {
+                "type" : "object"
+              },
+              "LATIN1" : {
+                "type" : "object"
+              },
+              "UTF16" : {
+                "type" : "object"
+              }
+            }
+          }
+        }, {
+          "name" : "orderId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "object",
+            "properties" : {
+              "value" : {
+                "type" : "object"
+              },
+              "coder" : {
+                "type" : "object"
+              },
+              "hash" : {
+                "type" : "integer"
+              },
+              "hashIsZero" : {
+                "type" : "boolean"
+              },
+              "serialVersionUID" : {
+                "type" : "integer"
+              },
+              "COMPACT_STRINGS" : {
+                "type" : "boolean"
+              },
+              "serialPersistentFields" : {
+                "type" : "object"
+              },
+              "REPL" : {
+                "type" : "object"
+              },
+              "CASE_INSENSITIVE_ORDER" : {
+                "type" : "object"
+              },
+              "LATIN1" : {
+                "type" : "object"
+              },
+              "UTF16" : {
+                "type" : "object"
+              }
+            }
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Successful response",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/HttpResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components" : {
+    "schemas" : {
+      "HttpResponse" : {
+        "type" : "object",
+        "properties" : {
+          "statusCode" : {
+            "type" : "integer"
+          },
+          "body" : {
+            "type" : "string"
+          }
+        }
+      },
+      "DeliveryDetailsDTO" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "string"
+          },
+          "deliveryLocation" : {
+            "type" : "object"
+          },
+          "deliveryTime" : {
+            "type" : "string"
+          }
+        }
+      },
+      "AddItemOrderRequestDTO" : {
+        "type" : "object",
+        "properties" : {
+          "deliveryDetails" : {
+            "type" : "object"
+          },
+          "groupOrderId" : {
+            "type" : "string"
+          }
+        }
+      }
+    }
+  }
+}
