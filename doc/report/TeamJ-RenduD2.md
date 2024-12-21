@@ -438,7 +438,7 @@ méthodologies, outils, et pratiques pour assurer un travail collaboratif effica
 
 J'ai joué un rôle clé dans le bon déroulement de notre projet en :
 
-- **Créant les issues correspondant aux User Stories (US)** : Cela a permis de structurer clairement les tâches et
+- **Résolvant des problèmes CI/CD** : Cela a permis de structurer clairement les tâches et
   d'assurer que chaque élément de la demande du client soit pris en compte.
 - **Attribuant des rôles spécifiques à chaque membre de l’équipe** : Cette démarche a facilité la collaboration en
   assignant des responsabilités adaptées à chacun.
@@ -466,18 +466,45 @@ Ces erreurs m'ont permis de comprendre que :
 - Le Product Owner doit s’assurer de connaître les compétences de chaque membre pour attribuer les tâches de manière
   plus stratégique.
 
-#### **Bilan d'équipe**
+## **Ops (TLILI Abderrahmen)**
+- **Résolvant des problèmes CI/CD et d'automatisation des tests** : Cela a permis d'assurer que le processus de test avant les merges restent fonctionnels tout au long du projet.
+
+- **Contribuant au développement malgré une courbe d'apprentissage** : J'ai assisté sur des tâches spécifiques tout en apprenant Java, un langage que je n'avais jamais utilisé auparavant.
+- **Collaborant sur la division des tâches** : J'ai travaillé avec l'équipe pour répartir les issues et garder la gestion de projet sur GitHub à jour.
+- - **Travaillant sur un proof of concept** : J'ai élaboré un proof of concept pour un déploiement cloud-native d'un de nos microservices dans Microsoft Azure.
+
+
+#### **Ce qui a bien été mené**
+
+- Une **gestion efficace des opérations** : Les corrections de pipelines et des tests automatisés ont permis d'éviter des retards supplémentaires.  
+- Une **collaboration constructive avec l'équipe** : La division des tâches et les échanges réguliers ont permis de surmonter les obstacles rapidement.  
+- Un **apprentissage significatif** : Acquérir des compétences en Java a élargi mon expertise et m'a permis de contribuer au codebase.
+
+#### **Leçons apprises et erreurs**
+
+- **Contribution limitée initiale** : Le manque d'expérience avec Java a ralenti mes premières contributions et réduit ma capacité à traiter des tâches complexes au début.  
+- **Période d'adaptation difficile** : Apprendre Java pendant le projet a causé des ralentissements, mettant en lumière l'importance de se familiariser avec les technologies en amont.  
+- **Préparation insuffisante** : Une meilleure préparation technique aurait permis une plus grande efficacité et un impact plus important.
+
+Ces expériences m'ont permis de comprendre que :
+
+- Une **préparation proactive** et une maîtrise des technologies nécessaires avant le début du projet sont essentielles.  
+- Une **bonne collaboration d'équipe** et des échanges réguliers permettent de surmonter efficacement les défis techniques.
+
+
+
+### **Bilan d'équipe**
 
 L’équipe a bien collaboré dans l’ensemble, malgré quelques ajustements nécessaires dans la gestion des responsabilités
 et le découpage des tâches. La communication et la réactivité face aux imprévus ont été des points forts.
 
-#### **Ce que nous aurions fait autrement**
+### **Ce que nous aurions fait autrement**
 
 - Découper les tâches encore plus précisément pour éviter de surcharger certains membres ou de les placer dans des
   situations difficiles.
 - Instaurer des points réguliers pour mieux évaluer la progression et ajuster les assignations si nécessaire.
 
-#### **Améliorations souhaitées**
+### **Améliorations souhaitées**
 
 - **Affiner la répartition des tâches** : Prendre en compte les niveaux et les compétences des membres de manière plus
   détaillée.
