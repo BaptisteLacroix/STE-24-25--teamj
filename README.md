@@ -20,7 +20,7 @@
 Rapport : [TeamJ-renduD1.pdf](./doc/report/TeamJ-renduD1.pdf)<br>
 Conception : [README.md](./doc/README.md)
 
-**Rendu Final D2** : [README.md](./doc/README.md)
+**Rendu Final D2** : [README.md](./doc/report/README.md)
 
 
 ---
@@ -142,71 +142,17 @@ Le frontend est dans le répertoire `./frontend`.
 Le frontend est construit avec React, TypeScript et Vite, offrant un environnement de développement moderne et rapide. Il intègre Tailwind CSS pour des interfaces utilisateurs réactives.
 
 
+----
 
 
-### Branch Naming Convention
+### Référence à une histoire utilisateur
+**User Story**: [#48](https://github.com/PNS-Conception/STE-24-25--teamj/issues/48)  
+**Titre**: GroupOrder Micro-service
 
-- **Feature Branches**:  
-  `feature/<usecase-number>-<short-description>`  
-  Example: `feature/R2-group-order-validation`
-- **Bugfix Branches**:  
-  `bugfix/<issue-number>-<short-description>`  
-  Example: `bugfix/42-fix-group-order-validation`
+### Référence à une histoire utilisateur
+le lien vers notre kanban  : [kanban Équipe J](https://github.com/orgs/PNS-Conception/projects/69/views/1)
 
-### Commit Message Convention
+### Le lien vers le rapport détaillé
 
-- **Commit Message Format**:  
-  `<type>(<scope>): <subject> #<issue-number>`  
-  Example: `feat(orders): add group order validation feature. #4`
+**Rendu Final D2** : [README.md](./doc/report/README.md)
 
----
-
-### Project Structure
-This part provides an overview of the project structure, designed to ensure clear organization and easy maintenance.
-
-
-- **.git/**: Contains version control data managed by Git, tracking changes to the codebase over time.
-- **.github/**: Contains GitHub-specific configurations, including templates for issues and workflows for continuous integration.
-- **.idea/**: Stores configuration files specific to the IntelliJ IDEA development environment.
-- **doc/**: Holds technical documentation, project reports, and other related resources.
-- **src/**: The core source code of the application, organized into functional packages.
-  - **main/**: Primary application code, organized by core functionalities.
-    - **Restaurant/**: Contains modules for managing restaurantEntity data and functionality, including restaurantEntity creation, menuEntity management, and related operations.
-    - **Slot/**: Handles scheduling and time slots, supporting features such as reservation management and availability tracking.
-    - **Order/**: Manages order processing, including order creation, updates, and tracking.
-    - **Payment/**: Implements payment processing features, such as payment initiation, validation, and transaction management.
-    - **Delivery/**: Contains modules related to delivery management.
-  - **test/**: Contains testing files, definitions, and resources to validate application features, ensuring reliable and functional code.
-- **pom.xml**: The Project Object Model file for Maven. It manages project dependencies, plugins, and build configurations, essential for compiling and packaging the application.
-- **README.md**: Provides an overview of the project, including setup instructions and usage guidelines.
-- **LICENSE**: Details the licensing terms governing the project.
-- **target/**: Directory for build outputs, such as compiled code and packaged artifacts.
-
-### User Story Reference
-
-**User Story ID**: [#25](https://github.com/PNS-Conception/STE-24-25--teamj/issues/25)  
-**Title**: Validation of group orders by members
-
-**Description**:  
-As a registered user, I want to validate the group order at the end of my individual order and, if necessary, specify a
-compatible delivery time so that the group order can be finalized and closed.
-
-**Feature Demonstration**:  
-The behavior of this user story is demonstrated
-in [ValidateGroupOrder.feature](./src/test/resources/features/orders/ValidateGroupOrder.feature). The scenarios include
-validation of a group order, setting delivery times, and handling incompatible delivery times.
-
-
-<!-- ## Ce que fait votre projet
-
-
-### Principales User stories
-Vous mettez en évidence les principales user stories de votre projet.
-Chaque user story doit être décrite par 
-   - son identifiant en tant que issue github (#), 
-   - sa forme classique (As a… I want to… In order to…) (pour faciliter la lecture)
-   - Le nom du fichier feature Cucumber et le nom des scénarios qui servent de tests d’acceptation pour la story.
-   Les contenus détaillés sont dans l'issue elle-même. -->
-   
-
-   
