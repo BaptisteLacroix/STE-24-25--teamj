@@ -478,7 +478,6 @@ Ces erreurs m'ont permis de comprendre que :
 - **Collaborant sur la division des tâches** : J'ai travaillé avec l'équipe pour répartir les issues et garder la gestion de projet sur GitHub à jour.
 - - **Travaillant sur un proof of concept** : J'ai élaboré un proof of concept pour un déploiement cloud-native d'un de nos microservices dans Microsoft Azure.
 
-
 #### **Ce qui a bien été mené**
 
 - Une **gestion efficace des opérations** : Les corrections de pipelines et des tests automatisés ont permis d'éviter des retards supplémentaires.  
@@ -496,7 +495,30 @@ Ces expériences m'ont permis de comprendre que :
 - Une **préparation proactive** et une maîtrise des technologies nécessaires avant le début du projet sont essentielles.  
 - Une **bonne collaboration d'équipe** et des échanges réguliers permettent de surmonter efficacement les défis techniques.
 
+## **Architecte (MAÏSTRE ANTOINE)**
 
+Le rôle que j'ai joué fut celui de maintenir l'équipe dans la bonne direction technique afin de maintenir une architecture cohérente et ainsi minimiser la dette technique.
+
+- Faire le choix de l'implémentation d'un Framework backend rest customisé.
+- Garder une cohérence dans le choix du découpage des micro services et s'assurer que la philosophie de l'utilisation de ceux-ci étaient comprise par tous les membres de l'équipe
+
+  
+## **QA (TOUPENCE Tom)**
+
+Le rôle que j'ai assuré nous a permis l'acquisition de fiabilité et de qualité dans notre code :
+
+- **Réflexion et prise de recul** sur la façon dont nous allions tester notre code, notamment en manipulant les fichiers JSON.
+- **Vérifier** le bon découpage du code et **éviter** des appels direct entre des éléments de différents modules.
+
+#### **Ce qui a bien été mené**
+
+- L'utilisation des tests unitaires pour vérifier que les routes font bien se qu'on attend d'elle et qu'elle renvoie bien le résultat attendu.
+- Un scope de priorité de tests efficaces en priorisant les tests les plus importants.
+
+#### **Leçons apprises et erreurs**
+
+- **Éviter** la surcharge de requête vers les APIs le plus possible.
+- **Prise de conscience** du temps que peut prendre le refactor des tests du premier rendu.
 
 ### **Bilan d'équipe**
 
