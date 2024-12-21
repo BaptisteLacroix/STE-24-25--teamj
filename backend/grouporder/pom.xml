@@ -33,5 +33,22 @@
         <!-- Specify Source Directories -->
         <sourceDirectory>src/main/java</sourceDirectory>
         <testSourceDirectory>src/main/test</testSourceDirectory>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <mainClass>fr.unice.polytech.equipe.j.GroupOrderServer</mainClass>
+                </configuration>
+            </plugin>
+        </plugins>
     </build>
 </project>

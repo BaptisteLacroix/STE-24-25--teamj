@@ -14,6 +14,7 @@
         <module>backend/flexiblerestserver</module>
         <module>backend/restaurant</module>
         <module>backend/grouporder</module>
+        <module>backend/gateway</module>
     </modules>
 
     <repositories>
@@ -170,6 +171,14 @@
                             cucumber.junit-platform.naming-strategy=long
                         </configurationParameters>
                     </properties>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.4.0</version>
+                <configuration>
+                    <mainClass>org.dhappy.test.NeoTraverse</mainClass>
                 </configuration>
             </plugin>
         </plugins>
