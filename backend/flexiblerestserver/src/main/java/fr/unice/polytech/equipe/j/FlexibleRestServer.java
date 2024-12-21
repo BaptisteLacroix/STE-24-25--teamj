@@ -45,7 +45,7 @@ public class FlexibleRestServer {
     private String classpath;  // Add classpath to specify where to scan
     private final Map<Class<?>, Object> controllerInstances = new HashMap<>();
     private final Map<String, Map<HttpMethod, HttpHandler>> contextHandlers = new HashMap<>();
-    private static final ObjectMapper objectMapper = new ObjectMapper();
+    public static final ObjectMapper objectMapper = new ObjectMapper();
 
     /**
      * Constructor to initialize the server with a root package and port.
