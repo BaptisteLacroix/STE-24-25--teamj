@@ -1,4 +1,4 @@
-package fr.unice.polytech.equipe.j.restaurant;
+package java.fr.unice.polytech.equipe.j.restaurant.menu.restaurant;
 
 import fr.unice.polytech.equipe.j.TimeUtils;
 import org.junit.jupiter.api.Assertions;
@@ -9,9 +9,6 @@ import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
 
 class RestaurantServiceManagerTest {
     private RestaurantServiceManager restaurantServiceManager;

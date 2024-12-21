@@ -12,7 +12,7 @@ Feature: Any member of a group order can validate the group order at the end of 
       | La Table Royale    | Coq au Vin, Bouillabaisse, Crêpe Suzette               | 2024-10-18 14:00 | 2024-10-18 15:00 |
 
   Scenario: The creator of a group order can validate the group order.
-    Given [ValidateGroupOrder]the user is registered
+    Given [ValidateGroupOrder]the user "2ed64a86-d499-4a9c-a0a1-9aba06297348" is registered
     And [ValidateGroupOrder]the user creates a group order with delivery location "Campus Main Gate" and delivery time of 14:30 PM
     And [ValidateGroupOrder]the user receives a group order identifier
     When [ValidateGroupOrder]the user adds the following items to his order from the restaurant "Le Petit Nice":
@@ -22,7 +22,7 @@ Feature: Any member of a group order can validate the group order at the end of 
     Then [ValidateGroupOrder]the user validate it's order and the group order
 
   Scenario: The creator of a group order can validate the group order and specify a delivery time.
-    Given [ValidateGroupOrder]the user is registered
+    Given [ValidateGroupOrder]the user "2ed64a86-d499-4a9c-a0a1-9aba06297348" is registered
     And [ValidateGroupOrder]the user creates a group order with delivery location "Campus Main Gate"
     And [ValidateGroupOrder]the user receives a group order identifier
     When [ValidateGroupOrder]the user adds the following items to his order from the restaurant "Le Petit Jardin":
@@ -32,7 +32,7 @@ Feature: Any member of a group order can validate the group order at the end of 
     Then [ValidateGroupOrder]the user validates his order and validates the group order and specifies a delivery time of 15:00 PM
 
   Scenario: The creator of a Group order create it and tries to validate it with a delivery time that is not compatible with all sub-orders
-    Given [ValidateGroupOrder]the user is registered
+    Given [ValidateGroupOrder]the "2ed64a86-d499-4a9c-a0a1-9aba06297348" user is registered
     And [ValidateGroupOrder]the user creates a group order with delivery location "Campus Main Gate"
     And [ValidateGroupOrder]the user receives a group order identifier
     When [ValidateGroupOrder]the user adds the following items to his order from the restaurant "Le Petit Chateau":
@@ -44,7 +44,7 @@ Feature: Any member of a group order can validate the group order at the end of 
     And [ValidateGroupOrder]the group order delivery time is not set
 
   Scenario: The creator of a group order add it's order to the group order and another user joins the group order and validates it
-    Given [ValidateGroupOrder]the user is registered
+    Given [ValidateGroupOrder]the "2ed64a86-d499-4a9c-a0a1-9aba06297348" user is registered
     And [ValidateGroupOrder]the user creates a group order with delivery location "Campus Main Gate" and delivery time of 15:50 PM
     And [ValidateGroupOrder]the user receives a group order identifier
     And [ValidateGroupOrder]the user adds the following items to his order from the restaurant "Le Petit Nice":

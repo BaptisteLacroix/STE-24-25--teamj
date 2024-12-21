@@ -17,10 +17,10 @@ public class RequestUtil {
     public static final String DATABASE_ORDER_SERVICE_URI = "http://localhost:5000/api/database/orders";
     public static final String DATABASE_GROUPORDER_SERVICE_URI = "http://localhost:5000/api/database/groupOrders";
 
+    private static final HttpClient client = HttpClient.newHttpClient();
     public static java.net.http.HttpResponse<String> request(String basePath, String uri, HttpMethod method, String jsonBody) {
         try{
             String encodedUri = URLEncoder.encode(uri, StandardCharsets.UTF_8);
-            HttpClient client = HttpClient.newHttpClient();
             HttpRequest request;
             switch (method) {
                 case HttpMethod.GET:

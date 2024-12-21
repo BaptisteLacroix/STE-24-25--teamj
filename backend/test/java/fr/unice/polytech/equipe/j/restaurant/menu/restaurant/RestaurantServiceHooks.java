@@ -1,4 +1,4 @@
-package fr.unice.polytech.equipe.j.restaurant;
+package java.fr.unice.polytech.equipe.j.restaurant.menu.restaurant;
 
 import fr.unice.polytech.equipe.j.TimeUtils;
 import fr.unice.polytech.equipe.j.restaurant.menu.Menu;

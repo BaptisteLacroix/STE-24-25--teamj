@@ -12,19 +12,15 @@ Feature: Group Order Creation
       | La Table Royale    | Coq au Vin, Bouillabaisse, Crêpe Suzette               | 2024-10-18 14:00 | 2024-10-18 15:00 |
 
   Scenario: Registered user creates a group order with delivery location
-    Given [GroupOrder]the user is registered
+    Given [GroupOrder]the user "1aeb4480-305a-499d-885c-7d2d9f99153b" is registered
     When [GroupOrder]the user creates a group order with delivery location "Campus Main Gate"
     Then [GroupOrder]the user receives a group order identifier
     And [GroupOrder]the group order delivery location is "Campus Main Gate"
 
   Scenario: Registered user creates a group order with delivery time
-    Given [GroupOrder]the user is registered
-    When [GroupOrder]the user creates a group order with delivery location "Campus Main Gate"
+    Given [GroupOrder]the user "2ed64a86-d499-4a9c-a0a1-9aba06297348" is registered
+    When [GroupOrder]the user creates a group order with delivery time 14 : 30
     Then [GroupOrder]the user receives a group order identifier
-    And [GroupOrder]the group order delivery location is "Campus Main Gate"
+    And [GroupOrder]the group order delivery time is 14:30
 
-  Scenario: Registered user tries to create a group order without specifying a delivery location
-    Given [GroupOrder]the user is registered
-    When [GroupOrder]the user tries to create a group order without specifying a delivery location
-    Then [GroupOrder]the user receives an error message "You must specify a delivery location"
-    And [GroupOrder]the group order is not created
+

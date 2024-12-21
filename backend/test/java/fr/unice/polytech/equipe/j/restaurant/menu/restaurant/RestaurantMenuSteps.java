@@ -1,4 +1,4 @@
-package fr.unice.polytech.equipe.j.restaurant;
+package java.fr.unice.polytech.equipe.j.restaurant.menu.restaurant;
 
 import fr.unice.polytech.equipe.j.TimeUtils;
 import fr.unice.polytech.equipe.j.restaurant.menu.MenuItem;
@@ -12,7 +12,6 @@ import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 

@@ -1,4 +1,4 @@
-package fr.unice.polytech.equipe.j.restaurant;
+package java.fr.unice.polytech.equipe.j.restaurant.menu.restaurant;
 
 import fr.unice.polytech.equipe.j.order.Order;
 import fr.unice.polytech.equipe.j.order.OrderManager;
@@ -21,7 +21,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 
 public class RestaurantOverloadStepDefs {
     private RestaurantManager restaurantManager;

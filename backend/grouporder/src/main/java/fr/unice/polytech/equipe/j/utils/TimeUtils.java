@@ -8,6 +8,7 @@ public class TimeUtils {
     public static void setClock(Clock clock) {
         TimeUtils.clock = clock;
     }
+    public static Clock getClock() {return clock != null ? clock : Clock.systemDefaultZone();}
     public static LocalDateTime getNow() {
         return LocalDateTime.now(clock);
     }
