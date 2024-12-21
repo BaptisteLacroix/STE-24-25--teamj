@@ -73,6 +73,7 @@ public class GroupOrderController {
 
     @Route(value = "/{userId}/create", method = HttpMethod.POST)
     public HttpResponse createGroupOrder(@PathParam("userId") UUID userdId, @BeanParam DeliveryDetailsDTO deliveryDetailsDTO) {
+        System.out.println("test : ");
         try {
             System.out.println("Creating groupOrder");
             GroupOrder groupOrder1 = new GroupOrder(deliveryDetailsDTO);

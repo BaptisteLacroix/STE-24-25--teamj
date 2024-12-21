@@ -12,7 +12,7 @@ Feature: Group Order Creation
       | La Table Royale    | Coq au Vin, Bouillabaisse, Crêpe Suzette               | 2024-10-18 14:00 | 2024-10-18 15:00 |
 
   Scenario: Registered user creates a group order with delivery location
-    Given [GroupOrder]the user is registered
+    Given [GroupOrder]the user "2ed64a86-d499-4a9c-a0a1-9aba06297348" is registered
     When [GroupOrder]the user creates a group order with delivery location "Campus Main Gate"
     Then [GroupOrder]the user receives a group order identifier
     And [GroupOrder]the group order delivery location is "Campus Main Gate"
