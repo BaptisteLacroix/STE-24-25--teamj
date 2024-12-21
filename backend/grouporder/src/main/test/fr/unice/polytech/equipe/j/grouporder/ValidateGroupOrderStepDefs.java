@@ -74,7 +74,7 @@ public class ValidateGroupOrderStepDefs {
         Assertions.assertEquals(minute, this.groupOrderDTO.getDeliveryDetails().getDeliveryTime().getMinute());
         assertEquals(1, groupOrderDTO.getUsers().size());
 
-        HttpResponse<String> userResponse = request("http://localhost:5000/api/database/campusUsers", "/"+usrId1, HttpMethod.GET, "");
+        HttpResponse<String> userResponse = request("http://localhost:5002/api/database/campusUsers", "/"+usrId1, HttpMethod.GET, "");
         CampusUserDTO userDTO = new ObjectMapper().readValue(userResponse.body(), CampusUserDTO.class);
         assertEquals(userDTO, this.groupOrderDTO.getUsers().getFirst());
     }
