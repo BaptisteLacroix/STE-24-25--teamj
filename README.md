@@ -40,10 +40,10 @@ Conception : [README.md](./doc/README.md)
 
 ## Lancer le Frontend
 
-1. Accédez au répertoire `./frontend`.
+1. Accédez au répertoire `./frontend/ste-24-25--teamj-frontend`.
 2. Installez les dépendances nécessaires :
    ```bash
-   npm install
+   npm i
    ```
 3. Démarrez le serveur de développement :
    ```bash
@@ -53,12 +53,12 @@ Conception : [README.md](./doc/README.md)
 
 ## Lancer les Services Backend
 
-1. Ouvrez Ile projet avec ntelliJ IDEA.
-2. Accédez au fichier principal de chaque microservice et exécutez-le en cliquant sur le bouton "Run" :
-   - **BDD** : `backend/bdd/src/main/java/fr/unice/polytech/equipe/j/Application.java`
-   - **GroupOrder** : `backend/grouporder/src/main/java/fr/unice/polytech/equipe/j/order/grouporder/server/GroupOrderServer.java`
-   - **Restaurant** : `backend/restaurant/src/main/java/fr/unice/polytech/equipe/j/RestaurantServiceApplication.java`
-   - **Gateway** : `backend/gateway/src/main/java/fr/unice/polytech/equipe/j/GatewayApplication.java`
+1. Lancer votre IDE et ouvrir 4 terminaux à la racine du projet.
+2. Lancer sur chaque terminal une commande parmis les 4 ci-dessous:
+   - **BDD** : `mvn -pl backend\bdd exec:java`
+   - **GroupOrder** : `mvn -pl backend\grouporder exec:java`
+   - **Restaurant** : `mvn -pl backend\restaurant exec:java`
+   - **Gateway** : `mvn -pl backend\gateway exec:java`
 
 Une fois tous les services lancés, ils seront accessibles via leurs points d'entrée et pourront communiquer avec le frontend.
 
