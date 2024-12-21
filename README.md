@@ -20,7 +20,7 @@
 Rapport : [TeamJ-renduD1.pdf](./doc/report/TeamJ-renduD1.pdf)<br>
 Conception : [README.md](./doc/README.md)
 
-**Rendu Final D2** : [README.md](./doc/report/README.md)
+**Rendu Final D2** : [README.md](./doc/report/TeamJ-RenduD2.md)
 
 
 ---
@@ -49,19 +49,18 @@ Conception : [README.md](./doc/README.md)
    ```bash
    npm run dev
    ```
-4. Accédez à l'application via votre navigateur à l'adresse indiquée dans la console (par défaut : `http://localhost:3000`).
+4. Accédez à l'application via votre navigateur à l'adresse indiquée dans la console (par défaut : `http://localhost:5173`).
 
 ## Lancer les Services Backend
 
-1. Ouvrez IntelliJ IDEA.
+1. Ouvrez Ile projet avec ntelliJ IDEA.
 2. Accédez au fichier principal de chaque microservice et exécutez-le en cliquant sur le bouton "Run" :
    - **BDD** : `backend/bdd/src/main/java/fr/unice/polytech/equipe/j/Application.java`
    - **GroupOrder** : `backend/grouporder/src/main/java/fr/unice/polytech/equipe/j/order/grouporder/server/GroupOrderServer.java`
    - **Restaurant** : `backend/restaurant/src/main/java/fr/unice/polytech/equipe/j/RestaurantServiceApplication.java`
    - **Gateway** : `backend/gateway/src/main/java/fr/unice/polytech/equipe/j/GatewayApplication.java`
-3. Répétez cette étape pour chaque microservice.
 
-Une fois tous les services lancés, ils seront accessibles via leurs points d'entrée respectifs.
+Une fois tous les services lancés, ils seront accessibles via leurs points d'entrée et pourront communiquer avec le frontend.
 
 
 ---
@@ -88,6 +87,8 @@ Les services mentionnés ci-dessous se trouvent dans le répertoire `./backend`.
 - Jackson pour le traitement JSON.
 - FlexibleRestServer pour la communication avec le serveur.
 
+---
+
 ### FlexibleRestServer
 
 **But** : Fournit un serveur REST dynamique pour la gestion flexible des API.
@@ -99,6 +100,8 @@ Les services mentionnés ci-dessous se trouvent dans le répertoire `./backend`.
 **Dépendances** :
 - Dépendances minimales axées sur la fonctionnalité du serveur REST de base de Java.
 
+---
+
 ### Gateway
 
 **But** : Sert de point d'entrée, gérant et redirigeant les requêtes vers d'autres microservices.
@@ -109,6 +112,8 @@ Les services mentionnés ci-dessous se trouvent dans le répertoire `./backend`.
 
 **Dépendances** :
 - FlexibleRestServer.
+
+---
 
 ### GroupOrder
 
@@ -122,6 +127,8 @@ Les services mentionnés ci-dessous se trouvent dans le répertoire `./backend`.
 **Dépendances** :
 - BDD pour l'accès aux données.
 - FlexibleRestServer.
+
+---
 
 ### Restaurant
 
@@ -137,12 +144,13 @@ Les services mentionnés ci-dessous se trouvent dans le répertoire `./backend`.
 - FlexibleRestServer.
 - BDD.
 
+---
 
 ## Frontend
 
 Le frontend est dans le répertoire `./frontend`.
 
-Le frontend est construit avec React, TypeScript et Vite, offrant un environnement de développement moderne et rapide. Il intègre Tailwind CSS pour des interfaces utilisateurs réactives.
+Le frontend est construit avec React, TypeScript et Vite, offrant un environnement de développement moderne et rapide. Il intègre Tailwind CSS pour des interfaces utilisateurs responsive.
 
 
 ----
@@ -157,5 +165,5 @@ le lien vers notre kanban  : [kanban Équipe J](https://github.com/orgs/PNS-Conc
 
 ### Le lien vers le rapport détaillé
 
-**Rendu Final D2** : [README.md](./doc/report/README.md)
+**Rendu Final D2** : [README.md](./doc/report/TeamJ-RenduD2.md)
 
