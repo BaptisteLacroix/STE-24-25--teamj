@@ -62,6 +62,7 @@ Conception : [README.md](./doc/README.md)
 
 Une fois tous les services lancés, ils seront accessibles via leurs points d'entrée et pourront communiquer avec le frontend.
 
+**Remarque :** Essayez de vider le localstorage à chaque fois que vous voulez ouvrir une nouvelle fenêtre, ou que vous souhaitez recommencer une démonstration. Parfois, les données persistent et donc ça peut amener à des bugs.
 
 ---
 
