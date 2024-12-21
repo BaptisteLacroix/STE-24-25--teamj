@@ -514,6 +514,7 @@ Le rôle que j'ai assuré nous a permis l'acquisition de fiabilité et de qualit
 
 - L'utilisation des tests unitaires pour vérifier que les routes font bien se qu'on attend d'elle et qu'elle renvoie bien le résultat attendu.
 - Un scope de priorité de tests efficaces en priorisant les tests les plus importants.
+- Optimiser le code afin d'éviter les redondances (notamment pour les appels d'API).
 
 #### **Leçons apprises et erreurs**
 
