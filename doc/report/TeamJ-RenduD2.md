@@ -50,21 +50,21 @@ Ces fonctionnalités respectent les attentes du projet tout en offrant une expé
    - **Performance**: Le processus de prise de commande est fluide et optimisé pour gérer plusieurs utilisateurs ajoutant des menus simultanément. 
    - **Originalité**: L'implémentation du proxy pour simuler le service de paiement ajoute une flexibilité au système et permet une extensibilité future.
    - **Structuration**: Le système organise efficacement les commandes associées à une commande groupée, assurant une bonne lisibilité et maintenabilité du code.
-   - **Issue liée**: [[Issue #48](https://github.com/PNS-Conception/STE-24-25--teamj/issues/48)](#)
+   - **Issue liée**: [Issue #48](https://github.com/PNS-Conception/STE-24-25--teamj/issues/48)
      
 2. **Création de la commande groupée**:
    - **Simplicité**: Interface utilisateur intuitive permettant la création rapide de commandes groupées.
    - **Collaboratif**: Fonctionnalité permettant de gérer des commandes partagées, essentielle pour le concept du projet.
-   - **Issue liée**: [[Issue #48](https://github.com/PNS-Conception/STE-24-25--teamj/issues/48)](#)
+   - **Issue liée**: [Issue #48](https://github.com/PNS-Conception/STE-24-25--teamj/issues/48)
 
 3. **Navigation parmi les restaurants et leurs menus**:
    - **Flexibilité**: Filtrage par heure de livraison, offrant une personnalisation pour les utilisateurs selon leurs besoins.
-   - **Issue liée**: [[Issue #60](https://github.com/PNS-Conception/STE-24-25--teamj/issues/60)](#)
+   - **Issue liée**: [Issue #60](https://github.com/PNS-Conception/STE-24-25--teamj/issues/60)
 
 ### 1.3.2 Points faibles
 
  **Paiement simulé**:
-   - **Problème**: Le service REST déployé pour le paiement est aléatoire et non sécurisé, ce qui le rend non viable pour un déploiement réel.
+   - **Problème**: Le service REST déployé pour le paiement est basique.
    - **Amélioration**: Intégrer un service de paiement plus sophistiqué.
 
  **Gestion des utilisateurs et comptes utilisateur**:
