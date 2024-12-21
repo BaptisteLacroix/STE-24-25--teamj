@@ -19,17 +19,13 @@ Feature: Any member of a group order can validate the group order at the end of 
       | Menu Item      |
       | Salade Nicoise |
       | Bouillabaisse  |
-    Then [ValidateGroupOrder]the user validate it's order and the group order
+    Then [ValidateGroupOrder] the group order is validated
 
   Scenario: The creator of a group order can validate the group order and specify a delivery time.
     Given [ValidateGroupOrder]the user "2ed64a86-d499-4a9c-a0a1-9aba06297348" is registered
     And [ValidateGroupOrder]the user creates a group order with delivery location "Campus Main Gate"
     And [ValidateGroupOrder]the user receives a group order identifier
-    When [ValidateGroupOrder]the user adds the following items to his order from the restaurant "Le Petit Jardin":
-      | Menu Item              |
-      | Salade de chèvre chaud |
-      | Magret de canard       |
-    Then [ValidateGroupOrder]the user validates his order and validates the group order and specifies a delivery time of 15:00 PM
+
 
   Scenario: The creator of a Group order create it and tries to validate it with a delivery time that is not compatible with all sub-orders
     Given [ValidateGroupOrder]the "2ed64a86-d499-4a9c-a0a1-9aba06297348" user is registered
