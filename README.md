@@ -1,7 +1,7 @@
 # SopiaTech Eats-Team-24-25
 
 ![Status_badge](https://img.shields.io/badge/status-complet-brightgreen)
-![Version_badge](https://img.shields.io/badge/version-1.0.0-blue)
+![Version_badge](https://img.shields.io/badge/version-2.0.0-blue)
 
 ---
 
