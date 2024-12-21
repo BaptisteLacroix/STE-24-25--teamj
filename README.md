@@ -20,6 +20,9 @@
 Rapport : [TeamJ-renduD1.pdf](./doc/report/TeamJ-renduD1.pdf)<br>
 Conception : [README.md](./doc/README.md)
 
+**Rendu Final D2** : [README.md](./doc/README.md)
+
+
 ---
 
 ## Installation & Launch Instructions
@@ -48,44 +51,97 @@ Conception : [README.md](./doc/README.md)
 
 ---
 
-## Project Management
+## Structure du projet
 
-We have used GitHub Projects to manage our project. You can find the project
-board [here](https://github.com/orgs/PNS-Conception/projects/69).
-To ensure consistency in our commit messages, we follow the Conventional Commits standard.
-We use pre-commit hooks to enforce this convention.
-To enable the hooks, the developer must copy the files from the [hooks](./hooks) directory to the `.git/hooks`
-directory.
+Notre projet est organisé en deux répertoires principaux :
 
-### Hooks
+- `./backend` : Contient tous les services backend.
+- `./frontend` : Contient l'application frontend.
 
-- **commit-msg**:  
-  This hook checks if the commit message follows the Conventional Commits standard.
+Les services mentionnés ci-dessous se trouvent dans le répertoire `./backend`.
 
-```shell
-#!/bin/sh
-# This script enforces conventional commits and checks for an issue number in commit messages.
+### BDD
 
-COMMIT_MSG_FILE=$1
+**But** : Sert de couche de données, gérant les interactions avec la base de données pour les entités comme les restaurants, les commandes, les utilisateurs et les lieux de livraison.
 
-# Check for conventional commit format
-if ! grep -E -q '^(feat|fix|chore|refactor|docs|style|test|perf|ci|build|revert)(\([a-zA-Z0-9-]+\))?(!)?: .+' "$COMMIT_MSG_FILE"; then
-    echo "Error: Commit message does not follow conventional commit format."
-    echo "Please use the format: <type>(<scope>): <message>"
-    echo "The scope can only contain: [a-zA-Z], [0-9] and '-'"
-    exit 1
-fi
+**Classes clés** :
+- Gestion de la base de données : `HibernateUtil`, `DeliveryLocationDatabaseSeeder`, `RestaurantDatabaseSeeder`.
+- Définition des entités et DAO pour les commandes, les restaurants et les utilisateurs.
 
-# Check for the presence of an issue number
-if ! grep -E -q '#[0-9]+' "$COMMIT_MSG_FILE"; then
-    echo "Error: Commit message does not contain an issue number."
-    echo "Please include an issue number using the format: #[issue_number]"
-    exit 1
-fi
+**Dépendances** :
+- Hibernate pour l'ORM.
+- Jackson pour le traitement JSON.
+- FlexibleRestServer pour la communication avec le serveur.
 
-# If all checks pass, the commit is allowed
-exit 0
-```
+### FlexibleRestServer
+
+**But** : Fournit un serveur REST dynamique pour la gestion flexible des API.
+
+**Classes clés** :
+- `FlexibleRestServer` : Logique principale du serveur.
+- Utilitaires comme `HttpResponse` et `ResponseUtils` pour la gestion des réponses HTTP.
+
+**Dépendances** :
+- Dépendances minimales axées sur la fonctionnalité du serveur REST de base de Java.
+
+### Gateway
+
+**But** : Sert de point d'entrée, gérant et redirigeant les requêtes vers d'autres microservices.
+
+**Classes clés** :
+- Contrôleurs pour le traitement et la redirection des requêtes (`GatewayController`).
+- DTO pour l'échange de données entre le client et les services (`OrderDTO`, `MenuItemDTO`).
+
+**Dépendances** :
+- FlexibleRestServer.
+
+### GroupOrder
+
+**But** : Gère les commandes groupées, y compris le traitement et la coordination des commandes partagées entre utilisateurs.
+
+**Classes clés** :
+- Logique principale : `GroupOrder`, `GroupOrderProxy`.
+- Contrôleur : `GroupOrderController`.
+- DTO et utilitaires pour la gestion des échanges de données et leur formatage.
+
+**Dépendances** :
+- BDD pour l'accès aux données.
+- FlexibleRestServer.
+
+### Restaurant
+
+**But** : Gère les opérations des restaurants telles que la gestion des menus, les données des restaurants et le traitement des commandes.
+
+**Classes clés** :
+- Logique principale : `RestaurantServiceManager`, `IRestaurant`.
+- Contrôleurs et DTO pour gérer les opérations des restaurants et des menus.
+- Stratégies de tarification des commandes : `FreeItemFotNItemsOrderPriceStrategy`, `KPercentForNOrderPriceStrategy`.
+
+**Dépendances** :
+- Utilisation de DTO.
+- FlexibleRestServer.
+- BDD.
+
+### Transaction
+
+**But** : Gère le traitement des paiements avec plusieurs méthodes de paiement (par exemple, PayPal, carte de crédit).
+
+**Classes clés** :
+- `PaymentController` : Gère les requêtes de paiement.
+- `PaymentProcessorFactory` : Choisit dynamiquement le processeur de paiement (par exemple, PayPal, Paylib, carte de crédit).
+- DTO pour le traitement des paiements : `PaymentRequestDTO`, `PaymentResultDTO`.
+
+**Dépendances** :
+- Hibernate pour l'intégration de la base de données.
+- FlexibleRestServer pour la communication REST.
+
+## Frontend
+
+Le frontend est dans le répertoire `./frontend`.
+
+Le frontend est construit avec React, TypeScript et Vite, offrant un environnement de développement moderne et rapide. Il intègre Tailwind CSS pour des interfaces utilisateurs réactives.
+
+
 
 
 ### Branch Naming Convention
