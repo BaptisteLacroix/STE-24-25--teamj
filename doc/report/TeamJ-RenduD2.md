@@ -546,7 +546,7 @@ et le découpage des tâches. La communication et la réactivité face aux impr�
 | Répartition des points | Tom | Antoine | Baptiste | Abderrahmen | Total |
 |------------------------|-----|---------|----------|-------------|-------|
 | **Tom**                | 25  | 25      | 33       | 17          | 100   |
-| **Antoine**            | 30  | 20      | 35       | 15          | 100   |
+| **Antoine**            | 25  | 25      | 35       | 15          | 100   |
 | **Baptiste**           | 30  | 20      | 35       | 15          | 100   |
 | **Abderrahmen**        | 25  | 23      | 30       | 22          | 100   |
-| **TOTAL :**            | 110 | 88      | 133      | 69          | 400   |
+| **TOTAL :**            | 105 | 93      | 133      | 69          | 400   |
