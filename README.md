@@ -62,7 +62,7 @@ Conception : [README.md](./doc/README.md)
 
 Une fois tous les services lancés, ils seront accessibles via leurs points d'entrée et pourront communiquer avec le frontend.
 
-**Remarque :** Essayez de vider le localstorage à chaque fois que vous voulez ouvrir une nouvelle fenêtre, que vous vous connectez ou que vous souhaitez recommencer une démonstration. Parfois, les données persistent et donc ça peut amener à des bugs. De plus, parfois il est nécessaire de relancer les services.
+**Remarque :** Essayez de vider vider le localstorage pour se déconnecter si le bouton logout n'a pas fonctionné. Les utilisateurs connctés sont enregsitrés dans le localstorage donc pour 2 utilisateurs différents il faut 2 navigateurs (onglet normal + onglet privé). De plus, parfois il est nécessaire de relancer le service bdd pour clear toutes les anciennes données et recommencer proprement une démonstration.
 
 ---
 
