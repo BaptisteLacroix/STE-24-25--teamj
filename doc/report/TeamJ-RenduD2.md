@@ -16,6 +16,32 @@ Système de paiement:
 
 ## 1.3 Fonctionnalités: points forts, points faibles
 
+### Fonctionnalités
+
+#### 1. Prise de commande au sein d’une commande de groupe
+
+- **Ajout de menus** : Les utilisateurs peuvent ajouter des menus à une commande de groupe, en respectant les délais de préparation.
+- **Paiement** : 
+  - Le paiement est géré via un proxy simulant un service de paiement potentiel.
+- **Validation de la commande** : Bien que la validation finale de la commande de groupe (fermeture, exigence O6) ne soit pas obligatoire, notre système gère efficacement les commandes jusqu’à l’étape de validation.
+
+#### 2. Création de la commande groupée (O2)
+
+- Accessible depuis l’interface graphique.
+- Les utilisateurs peuvent initier une commande groupée et inviter d'autres participants.
+- Toutes les commandes associées à un groupe sont organisées et présentées de manière cohérente.
+
+#### 3. Navigation parmi les restaurants et leurs menus
+
+- **Recherche des restaurants** : Les utilisateurs peuvent parcourir les restaurants disponibles.
+- **Filtrage par heure de livraison** : 
+  - Les menus et restaurants disponibles peuvent être filtrés en fonction de l’heure de livraison souhaitée.
+  - Offre une navigation fluide et intuitive à travers les options.
+
+
+Ces fonctionnalités respectent les attentes du projet tout en offrant une expérience utilisateur fonctionnelle et efficace. Elles peuvent être testées et démontrées avec l’interface graphique fournie.
+
+
 ### 1.3.1 Points forts
 
 ### 1.3.2 Points faibles
