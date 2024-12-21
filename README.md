@@ -25,29 +25,44 @@ Conception : [README.md](./doc/README.md)
 
 ---
 
-## Installation & Launch Instructions
+# Comment lancer le projet, le tester et l'installer
 
-1. **Requirements:**
-    - Java JDK 21
-    - Maven (version 3.6.3 or higher)
-    - Git
+## Exécution des Tests
 
-2. **Setup**:
-    - Clone the repository:
-      ```bash
-      git clone https://github.com/PNS-Conception/STE-24-25--teamj.git
-      cd STE-24-25--teamj
-      ```
-    - Install dependencies with Maven:
-      ```bash
-      mvn clean install
-      ```
+**Tests Backend** :
+   - Accédez au répertoire `./backend`.
+   - Exécutez les tests avec Maven :
+     ```bash
+     mvn test
+     ```
+   - Les résultats des tests seront affichés dans la console.
 
-3. **Testing**:
-    - Run tests:
-      ```bash
-      mvn clean test
-      ```
+
+## Lancer le Frontend
+
+1. Accédez au répertoire `./frontend`.
+2. Installez les dépendances nécessaires :
+   ```bash
+   npm install
+   ```
+3. Démarrez le serveur de développement :
+   ```bash
+   npm run dev
+   ```
+4. Accédez à l'application via votre navigateur à l'adresse indiquée dans la console (par défaut : `http://localhost:3000`).
+
+## Lancer les Services Backend
+
+1. Ouvrez IntelliJ IDEA.
+2. Accédez au fichier principal de chaque microservice et exécutez-le en cliquant sur le bouton "Run" :
+   - **BDD** : `backend/bdd/src/main/java/fr/unice/polytech/equipe/j/Application.java`
+   - **GroupOrder** : `backend/grouporder/src/main/java/fr/unice/polytech/equipe/j/order/grouporder/server/GroupOrderServer.java`
+   - **Restaurant** : `backend/restaurant/src/main/java/fr/unice/polytech/equipe/j/RestaurantServiceApplication.java`
+   - **Gateway** : `backend/gateway/src/main/java/fr/unice/polytech/equipe/j/GatewayApplication.java`
+3. Répétez cette étape pour chaque microservice.
+
+Une fois tous les services lancés, ils seront accessibles via leurs points d'entrée respectifs.
+
 
 ---
 
@@ -122,18 +137,6 @@ Les services mentionnés ci-dessous se trouvent dans le répertoire `./backend`.
 - FlexibleRestServer.
 - BDD.
 
-### Transaction
-
-**But** : Gère le traitement des paiements avec plusieurs méthodes de paiement (par exemple, PayPal, carte de crédit).
-
-**Classes clés** :
-- `PaymentController` : Gère les requêtes de paiement.
-- `PaymentProcessorFactory` : Choisit dynamiquement le processeur de paiement (par exemple, PayPal, Paylib, carte de crédit).
-- DTO pour le traitement des paiements : `PaymentRequestDTO`, `PaymentResultDTO`.
-
-**Dépendances** :
-- Hibernate pour l'intégration de la base de données.
-- FlexibleRestServer pour la communication REST.
 
 ## Frontend
 
