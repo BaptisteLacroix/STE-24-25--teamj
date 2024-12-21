@@ -4,10 +4,7 @@ import fr.unice.polytech.equipe.j.backend.IGroupOrder;
 import fr.unice.polytech.equipe.j.delivery.DeliveryDetails;
 import fr.unice.polytech.equipe.j.delivery.DeliveryLocation;
 import fr.unice.polytech.equipe.j.backend.GroupOrder;
-import fr.unice.polytech.equipe.j.dto.DeliveryDetailsDTO;
-import fr.unice.polytech.equipe.j.dto.DeliveryLocationDTO;
-import fr.unice.polytech.equipe.j.dto.GroupOrderDTO;
-import fr.unice.polytech.equipe.j.dto.OrderStatus;
+import fr.unice.polytech.equipe.j.dto.*;
 
 public class DTOMapper {
 
@@ -57,4 +54,6 @@ public class DTOMapper {
                 deliveryLocationDTO.getAddress()
         );
     }
+
+
 }
