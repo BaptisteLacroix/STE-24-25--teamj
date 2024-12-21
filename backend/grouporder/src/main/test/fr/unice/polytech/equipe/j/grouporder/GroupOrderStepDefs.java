@@ -51,7 +51,7 @@ public class GroupOrderStepDefs {
     @Given("[GroupOrder]the user {string} is registered")
     public void the_user_is_registered(String id) {
         this.usrId1 = UUID.fromString(id);
-        this.creationResponse = request("http://localhost:5000/api/database/campusUsers", "/"+usrId1, HttpMethod.GET, "");
+        this.creationResponse = request("http://localhost:5002/api/database/campusUsers", "/"+usrId1, HttpMethod.GET, "");
         assertFalse(creationResponse.body().isEmpty());
     }
 

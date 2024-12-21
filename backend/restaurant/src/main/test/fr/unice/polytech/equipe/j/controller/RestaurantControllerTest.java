@@ -41,8 +41,8 @@ class RestaurantControllerTest {
     private static final UUID MANAGER_UUID = UUID.fromString("5926a1d4-1831-48ea-9106-b28cc16c9da3"); // TEST Manager
     private static final UUID MENU_ITEM_UUID = UUID.fromString("cdaa1fc4-621b-4b18-89df-1fafd39aadd0");
     private static final String BASE_URL = "http://localhost:5003/api/restaurants";
-    private static final String BASE_DATABASE_URL = "http://localhost:5000/api/database";
-    private static final String DATABASE_HEALTH_URL = "http://localhost:5000/api/database/health";  // Assuming you have a health check endpoint
+    private static final String BASE_DATABASE_URL = "http://localhost:5002/api/database";
+    private static final String DATABASE_HEALTH_URL = "http://localhost:5002/api/database/health";  // Assuming you have a health check endpoint
 
     @BeforeAll
     public static void startServer() {
