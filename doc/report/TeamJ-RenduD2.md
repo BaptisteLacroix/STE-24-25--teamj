@@ -22,7 +22,7 @@ Les fonctionnalités suivantes ont été intégralement implémentées conformé
 
 #### 1. Prise de commande au sein d’une commande de groupe
 
-- **Ajout de menus** : Les utilisateurs peuvent ajouter des menus à une commande de groupe, en respectant les délais de préparation. issue #62
+- **Ajout de menus** : Les utilisateurs peuvent ajouter des menus à une commande de groupe, en respectant les délais de préparation.
 - **Paiement** : 
   - Le paiement est géré via un proxy simulant un service de paiement potentiel.
 - **Validation de la commande** : Bien que la validation finale de la commande de groupe (fermeture, exigence O6) ne soit pas obligatoire, notre système gère efficacement les commandes jusqu’à l’étape de validation.
@@ -129,7 +129,6 @@ Les entités persistantes de l’application incluent :
 - **Menu** : Détails des menus des restaurants.
 - **MenuItem** : Éléments individuels des menus.
 - **DeliverLocation** : Informations sur les lieux de livraison.
-- ...
 
 Chaque entité est modélisée sous forme d’objets et mappée dans la base de données avec des ORM (Object-Relational
 Mapping).
@@ -151,7 +150,6 @@ service sous le dossier `dto` :
 - Exemple :
     - `bdd/src/main/java/fr/unice/polytech/equipe/j/restaurant/dto/RestaurantDTO.java`
     - `restaurant/src/main/java/fr/unice/polytech/equipe/j/database/dto/MenuItemDTO.java`
-    - ...
 
 Ces DTO standardisent les données transmises et permettent une meilleure validation.
 
