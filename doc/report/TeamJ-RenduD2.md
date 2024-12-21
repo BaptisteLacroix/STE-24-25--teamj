@@ -338,16 +338,18 @@ Dans le cadre de notre projet, nous avons développé et démontré une preuve d
 6. **Configuration du Sous-Domaine** :
    - Ajout d'un sous-domaine `payment.sophia-eats.food` aux enregistrements DNS de notre fournisseur de noms de domaine, garantissant l'accessibilité externe du service.
 
-### Améliorations Futures
+### Améliorations possibles
 
 - Étendre la preuve de concept à d'autres microservices pour garantir des stratégies de déploiement uniformes.
 - Intégrer des outils de monitoring et d'alerte (par exemple, Prometheus, Grafana) pour améliorer l'observabilité.
 - Automatiser la configuration de tout le pipeline de déploiement pour accélérer les itérations et réduire les interventions manuelles.
 
 ![aks](./images/aks.png)
+---
 ![argo](./images/argo.png)
+---
 ![domain](./images/domain.png)
-
+---
 
 
 # 3. Qualité des codes et gestion de projets
